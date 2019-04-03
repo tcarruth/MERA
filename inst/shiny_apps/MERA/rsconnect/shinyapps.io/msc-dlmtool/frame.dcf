@@ -1,0 +1,10 @@
+name: frame
+title:
+username:
+account: msc-dlmtool
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 451382
+bundleId: 1685864
+url: https://msc-dlmtool.shinyapps.io/frame/
+when: 1541530205.43607

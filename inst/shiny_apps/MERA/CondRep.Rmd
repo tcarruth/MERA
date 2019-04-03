@@ -1,0 +1,204 @@
+
+---
+title: "`r params$set_title`"
+subtitle: "`r params$set_type`"
+author: "`r params$OM@Source`"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true    
+runtime: shiny
+---
+
+<style type="text/css">
+
+body{ /* Normal  */
+   font-size: 16px;
+}
+td {  /* Table  */
+   font-size: 16px;
+}
+title { /* title */
+ font-size: 26px;
+}
+h1 { /* Header 1 */
+ font-size: 24px;
+ color: DarkBlue;
+}
+h2 { /* Header 2 */
+ font-size: 21px;
+ color: DarkBlue;
+}
+h3 { /* Header 3 */
+ font-size: 19px;
+ color: DarkBlue;
+}
+code.r{ /* Code block */
+  font-size: 16px;
+}
+pre { /* Code block */
+  font-size: 16px
+}
+</style>
+
+
+
+<br clear="both"/>
+
+# About this document
+
+This is a prototype of an automatic report that documents how an operating model was conditioned on data (for example by Stochastic Stock Reduction Analysis (DLMtool MCMC, Walters et al. 2003), Statistical Catch at Age (MSEtool TMB, Huynh 2018), state space delay difference model (MSEtool TMB, Huynh 2018).  
+
+<br clear="both"/>
+
+
+# Convergence diagnostics
+
+```{r Converge,echo=F,warning=F,error=F,results='asis',fig.width=10, fig.height=12}
+
+  nplot<-6
+
+  out<-params$SRAinfo
+  nits<-out$nits
+  thin<-out$thin
+  nsim<-out$nsim
+  nyears<-out$nyears
+  parstr<-out$parstr
+  nages<-out$maxage
+  burnin<-out$burnin
+  SSB<-out$SSB
+  PredF<-out$PredF
+  CAA<-out$CAA
+  CAL<-out$CAL
+  Ind<-out$Ind
+  mulen<-out$mulen
+  CAA_pred<-out$CAA_pred
+  RD<-out$RD
+  CALswitch<-out$CALswitch
+  CAAswitch<-out$CAAswitch
+  sel<-out$sel
+  SSB0<-out$SSB0
+  maxage<-out$maxage
+  
+  col<-rep(c("blue","red","green","orange","grey","brown","pink","yellow","dark red","dark blue","dark green"),100)
+
+  par(mfcol=c(5,2),mai=c(0.7,0.6,0.05,0.1))
+  pind<-(1:(nits/thin))*thin
+  matplot(pind,t(parstr[1:nplot,pind]),type='l',ylab="log R0",xlab="Iteration")
+  abline(v=burnin,lty=2)
+  matplot(pind,t(parstr[nsim+(1:nplot),pind]),type='l',ylab="log infl (sel)",xlab="Iteration")
+  abline(v=burnin,lty=2)
+  matplot(pind,t(parstr[(nsim*2)+(1:nplot),pind]),type='l',ylab="log slp (sel)",xlab="Iteration")
+  abline(v=burnin,lty=2)
+  matplot(pind,t(parstr[(nsim*30)+(1:nplot),pind]),type='l',ylab="recdev1",xlab="Iteration")
+  abline(v=burnin,lty=2)
+  matplot(pind,t(parstr[(nsim*40)+(1:nplot),pind]),type='l',ylab="recdev2",xlab="Iteration")
+  abline(v=burnin,lty=2)
+  
+  burn<-burnin:nits
+  plot(density(parstr[1:nsim,burn],adj=0.7),xlab="log(R0)",main="")
+  plot(density(parstr[nsim+(1:nsim),burn],adj=0.7),xlab="inflection selectivity",main="")
+  plot(density(parstr[(nsim*2)+(1:nsim),burn],adj=0.7),xlab="slope selectivity",main="")
+  plot(density(parstr[(nsim*30)+(1:nsim),burn],adj=0.7),xlab="recdev1",main="")
+  plot(density(parstr[(nsim*40)+(1:nsim),burn],adj=0.7),xlab="recdev2",main="")
+
+```
+
+
+# All posterior estimates
+
+```{r Converge2,echo=F,warning=F,error=F,results='asis',fig.width=10, fig.height=12}
+
+  par(mfrow=c(4+sum(CAAswitch,CALswitch),2),mai=c(0.65,0.6,0.02,0.1))
+  qq<-apply(SSB,2,quantile,p=c(0.05,0.25,0.5,0.75,0.95))
+  ylim<-c(0,max(qq))
+
+  matplot(t(SSB[1:nplot,]),ylim=ylim,type="l",xlab="Year",ylab="SSB")
+  xs<-dim(SSB)[2]
+  plot(qq[3,],ylim=ylim,type='l',xlab="Year",ylab="SSB")
+  polygon(c(1:xs,xs:1),c(qq[1,],qq[5,xs:1]),border=NA,col='light grey')
+  polygon(c(1:xs,xs:1),c(qq[2,],qq[4,xs:1]),border=NA,col='dark grey')
+  lines(qq[3,],lwd=1,col="white")
+
+  D<-SSB/SSB0
+
+  qq<-apply(D,2,quantile,p=c(0.05,0.25,0.5,0.75,0.95))
+  ylim<-c(0,max(qq))
+
+  matplot(t(D[1:nplot,]),ylim=ylim,type="l",xlab="Year",ylab="Depletion")
+  plot(qq[3,],ylim=ylim,type='l',xlab="Year",ylab="Depletion")
+  polygon(c(1:xs,xs:1),c(qq[1,],qq[5,xs:1]),border=NA,col='light grey')
+  polygon(c(1:xs,xs:1),c(qq[2,],qq[4,xs:1]),border=NA,col='dark grey')
+  lines(qq[3,],lwd=1,col="white")
+
+  qq<-apply(PredF,2,quantile,p=c(0.05,0.25,0.5,0.75,0.95))
+  ylim<-c(0,max(qq))
+
+  matplot(t(PredF[1:nplot,]),ylim=ylim,type="l",xlab="Year",ylab="Fish. Mort.")
+  plot(qq[3,],ylim=ylim,type='l',xlab="Year",ylab="Fish. Mort.")
+  polygon(c(1:xs,xs:1),c(qq[1,],qq[5,xs:1]),border=NA,col='light grey')
+  polygon(c(1:xs,xs:1),c(qq[2,],qq[4,xs:1]),border=NA,col='dark grey')
+  lines(qq[3,],lwd=1,col="white")
+
+  qq<-apply(sel,2,quantile,p=c(0.05,0.25,0.5,0.75,0.95))
+  ylim<-c(0,max(qq))
+  xs<-maxage
+  matplot(t(sel[1:nplot,]),ylim=ylim,type="l",xlab="Age",ylab="Selectivity")
+  plot(qq[3,],ylim=ylim,type='l',xlab="Age",ylab="Selectivity")
+  polygon(c(1:xs,xs:1),c(qq[1,],qq[5,xs:1]),border=NA,col='light grey')
+  polygon(c(1:xs,xs:1),c(qq[2,],qq[4,xs:1]),border=NA,col='dark grey')
+  lines(qq[3,],lwd=1,col="white")
+
+  RDx<-(-maxage+1):nyears
+
+  qq<-apply(RD,2,quantile,p=c(0.05,0.25,0.5,0.75,0.95))
+  ylim<-c(0,max(qq))
+  xs<-dim(RD)[2]
+  matplot(RDx,t(RD[1:nplot,]),ylim=ylim,type="l",xlab="Year",ylab="Rec. Dev.")
+  plot(RDx,qq[3,],ylim=ylim,type='l',xlab="Year",ylab="Rec. Dev.")
+  polygon(c(RDx,RDx[xs:1]),c(qq[1,],qq[5,xs:1]),border=NA,col='light grey')
+  polygon(c(RDx,RDx[xs:1]),c(qq[2,],qq[4,xs:1]),border=NA,col='dark grey')
+  lines(RDx,qq[3,],lwd=1,col="white")
+
+  
+  if(CAAswitch){
+    
+    plot(c(1,nyears),c(1,maxage),col='white',xlab="Year",ylab="Age")
+    legend("top",legend="Observed composition data",bty='n')
+    points(rep(1:nyears,nages),rep(1:nages,each=nyears),cex=CAA^0.5/max(CAA^0.5,na.rm=T)*1.5,
+         pch=19,col=makeTransparent("dark grey",60))
+  
+    CAA_pred1<-CAA_pred
+    CAA_pred1[CAA_pred1<0.002]<-NA
+    plot(c(1,dim(CAA)[1]),c(1,dim(CAA)[2]),col='white',xlab="Year",ylab="Age")
+    legend("top",legend="Predicted composition data (1 sim)",bty='n')
+    points(rep(1:nyears,nages),rep(1:nages,each=nyears),
+           cex=CAA_pred1[1,,]^0.5/max(CAA_pred1[1,,]^0.5,na.rm=T)*1.5, pch=19,
+           col=makeTransparent("dark grey",60))
+  }
+
+```
+
+
+<br clear="both"/>
+# Version Notes
+
+The package is subject to ongoing testing. If you find a bug or a problem please send a report to <t.carruthers@oceans.ubc.ca> so that it can be fixed!  
+
+<br clear="both"/>
+<br clear="both"/>
+<br clear="both"/>
+
+<hr />
+```{r copyright, results='asis',echo=FALSE, size="tiny"}
+
+  
+  cat(params$SessionID)
+  cat("\n\n")
+  cat(params$copyright)
+ 
+
+```
+<hr />

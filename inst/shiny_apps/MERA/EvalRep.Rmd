@@ -1,0 +1,241 @@
+---
+title: "`r params$set_title`"
+subtitle: "`r params$set_type`"
+author: "`r params$OM@Source`"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true    
+runtime: shiny   
+---
+
+
+<style type="text/css">
+
+body{ /* Normal  */
+   font-size: 16px;
+}
+td {  /* Table  */
+   font-size: 16px;
+}
+title { /* title */
+ font-size: 26px;
+}
+h1 { /* Header 1 */
+ font-size: 24px;
+ color: DarkBlue;
+}
+h2 { /* Header 2 */
+ font-size: 21px;
+ color: DarkBlue;
+}
+h3 { /* Header 3 */
+ font-size: 19px;
+ color: DarkBlue;
+}
+code.r{ /* Code block */
+  font-size: 16px;
+}
+pre { /* Code block */
+  font-size: 16px
+}
+</style>
+
+
+
+
+```{r set options, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(dpi=85)
+#options(width = 650)
+```
+
+<br>
+
+
+# About this document
+
+This is a prototype of an automatic report that describes the results of a demonstration analysis to support MSC certification. 
+
+<br>
+
+```{r progresssetup,echo=F}
+
+ incrate<-1/9
+ incProgress(incrate)
+
+```
+ 
+
+# Performance Indicator Table
+
+The Performance Indicator Table includes the probabilities of each MP achieving the relevant MSC PI thresholds for stock status (PI 1.1.1), rebuilding (PI 1.1.2) and harvest strategy (PI 1.2.1).  
+
+The MPs are presented in order of projected long-term yield relative to fishing at the FMSY reference rate.  MPs that pass all PI thresholds are in green and those that do not are presented in red.  MPs that are not available for use with current data are listed in black and the lacking data are listed in the last column to the right.
+
+MPs colored green are feasible and pass all of the performance indicator thresholds. MPs colored red are feasible but do not pass performance indicator thresholds. MPs colored black are not feasible. The column 'Reason not feasible'  explains the reason for this and can be due to data restrictions (D) controlled by data question 1, and/or management restrictions (M) controled by management question 1" 
+
+```{r Ptab,echo=F,warning=F,error=F,message=F}
+
+ Ptab_formatted(params$Ptab2,burnin=params$burnin,cols=params$MPcols,thresh=params$thresh)
+ Thresh_tab(params$thresh)
+ incProgress(incrate)
+
+```
+
+<br>
+
+
+# Performance Trade-Offs 
+
+Long term yield (LTY) vs probability biomass is greater than half BMSY in the first 10 years (PI.1.1.1a)
+
+```{r P1_LTY,echo=F,warning=F,error=F,message=F,fig.width=10, fig.height=10}
+P1_LTY_plot(params$MSEobj_top,MPcols=params$MPcols,burnin=params$burnin)
+
+```
+
+Long term yield (LTY) vs probability biomass is greater than half BMSY in years 11-50 (PI.1.2.1a)
+
+```{r P2_LTY,echo=F,warning=F,error=F,message=F,fig.width=10, fig.height=10}
+P2_LTY_plot(params$MSEobj_top,MPcols=params$MPcols)
+
+```
+
+Long term yield (LTY) vs probability biomass is greater than half BMSY in years 11-50 (PI.1.2.1a)
+
+```{r P3_LTY,echo=F,warning=F,error=F,message=F,fig.width=10, fig.height=10}
+P3_LTY_plot(params$MSEobj_top,MSEobj_reb_top,MPcols=params$MPcols)
+incProgress(incrate)
+```
+
+<br>
+
+
+# B/BMSY and relative yield projection plots
+
+For each MP a 50 year projection is presented showing the possible range of values for spawning biomass relative to MSY levels (B/BMSY) and yield relative to current yields. The colored region represents the 10th and 90th percentiles, the white line is the median trend and lines for two simulations are included to show the typical degree of variability within a simulation. 
+
+
+```{r pencil,echo=F,warning=F,error=F,message=F,results='asis',fig.width=12, fig.height=9}
+ 
+ nMPs<-length(params$MSEobj_top@MPs)
+ panelsperplot<-8
+ nplots<-ceiling(nMPs/panelsperplot)
+ plots<-split(1:nMPs, ceiling(seq_along(1:nMPs)/panelsperplot))
+ 
+ for(i in 1:length(plots)){
+   MSEobj2<-Sub(params$MSEobj_top,MPs=params$MSEobj_top@MPs[unlist(plots[i])])
+   Pplot3(MSEobj2,MPcols=params$MPcols[plots[[i]]],maxcol=4,maxrow=4)
+ }
+
+ 
+  incProgress(incrate)
+```
+
+# Rebuilding 
+
+A second MSE was run to determine how likely management procedures are to rebuild the stock were it from low stock levels (PI 1.1.2)
+
+The rebuilding analysis simulates the fishery currently in a depleted state even if the user-specified depletion in the operating model is higher.  In these cases, the rebuilding analysis provides added assurance whether a particular management procedure would be likely to rebuild the stock if the user-specified depletion level is overly optimistic and the stock status is more depleted in actuality, and thus in need of rebuilding.
+
+```{r rebuild,echo=F,warning=F,error=F,message=F,results='asis',fig.width=12, fig.height=9}
+ 
+ nMPs<-length(params$MSEobj_reb_top@MPs)
+ panelsperplot<-8
+ nplots<-ceiling(nMPs/panelsperplot)
+ plots<-split(1:nMPs, ceiling(seq_along(1:nMPs)/panelsperplot))
+ 
+ for(i in 1:length(plots)){
+   MSEobj2<-Sub(params$MSEobj_reb_top,MPs=params$MSEobj_reb_top@MPs[unlist(plots[i])])
+   Rplot(MSEobj2,MPcols=params$MPcols[plots[[i]]],maxcol=4,maxrow=4)
+ }
+
+ 
+incProgress(incrate)
+```
+
+
+# PI 1.1.1 Uncertainties 
+
+Each MP was tested over a number of simulated fisheries. Each simulation behaves differently. In these plots it is possible to see the distribution of simulations throughout the stock status PI.1.1.1 scores. 
+
+
+```{r uncertain,echo=F,warning=F,error=F,message=F,results='asis',fig.width=12, fig.height=9}
+ 
+ MSC_uncertain(params$MSEobj_top,MPcols=params$MPcols,maxMPs=params$MSEobj_top@nMPs, LTL=F,inc_thresh = F,burnin=params$burnin)
+
+ incProgress(incrate)
+
+```
+
+
+<br>
+
+# Cost of Current Uncertainties
+
+When answering questions in the Fishery, Management and Data panels above, you may have included more uncertainty in your answers to some questions. The Cost of Current Uncertainties analysis examines which questions are associated with the greatest veriability in long-term yield. To do this the range of values specified in each question is divided into subranges and the variance in yield is determined across among these sub-ranges. This provides a measure of which uncertainties are the largest determinants of future long term yield (ie which questions are the most important in determining performance as they were answered). 
+
+
+```{r CCU1,echo=F,warning=F,error=F,message=F,include=F}
+nMPs<-length(MSEobj_top@MPs)
+panelsperplot<-6
+nplots<-ceiling(nMPs/panelsperplot)
+plots<-split(1:nMPs, ceiling(seq_along(1:nMPs)/panelsperplot))
+#VOIout<-new('list')
+#for(i in 1:length(plots)){
+#  MSEobj2<-Sub(params$MSEobj_top,MPs=params$MSEobj_top@MPs[unlist(plots[i])])
+#  VOIout[[i]]<-getVOI(MSEobj2)#,ncomp=17,nbins=6)[[1]]
+#}
+incProgress(incrate)
+```
+
+
+
+```{r CCU2,echo=F,warning=F,error=F,message=F,fig.width=15, fig.height=10}
+
+
+for(i in 1:length(plots)){
+  #MSEobj2<-Sub(MSEobj_top,MPs=MSEobj_top@MPs[unlist(plots[i])])
+  #CCU_plot(VOIout[[i]],MSEobj2,MPcols=params$MPcols,maxrow=2)
+}
+incProgress(incrate)
+
+```
+
+
+# MSE convergence diagnostics
+
+Have enough simulations been carried out to interpret results? Ideally the lines in the graphs below should be flat and parallel to each other. If they are just parallel, the MP ranking may be stable but absolute MP performance is not.
+
+
+```{r Converge,echo=F,warning=F,error=F,message=F,fig.width=11, fig.height=5}
+
+Converge(MSEobj_top,PMs = list(Yield, P10),ncol=2,nrow=1)
+incProgress(incrate)
+
+```
+
+
+
+# Version Notes
+
+The package is subject to ongoing testing. If you find a bug or a problem please send a report to <t.carruthers@oceans.ubc.ca> so that it can be fixed!  
+
+<br clear="both"/>
+<br clear="both"/>
+<br clear="both"/>
+
+<hr />
+```{r copyright, results='asis',echo=FALSE, size="tiny"}
+
+  
+  cat(params$SessionID)
+  cat("\n\n")
+  cat(params$copyright)
+ 
+
+```
+<hr />

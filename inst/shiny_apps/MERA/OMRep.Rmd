@@ -1,0 +1,343 @@
+
+---
+title: "`r params$set_title`"
+subtitle: "`r params$set_type`"
+author: "`r params$OM@Source`"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true    
+runtime: shiny
+---
+
+<style type="text/css">
+
+body{ /* Normal  */
+   font-size: 16px;
+}
+td {  /* Table  */
+   font-size: 16px;
+}
+title { /* title */
+ font-size: 26px;
+}
+h1 { /* Header 1 */
+ font-size: 24px;
+ color: DarkBlue;
+}
+h2 { /* Header 2 */
+ font-size: 21px;
+ color: DarkBlue;
+}
+h3 { /* Header 3 */
+ font-size: 19px;
+ color: DarkBlue;
+}
+code.r{ /* Code block */
+  font-size: 16px;
+}
+pre { /* Code block */
+  font-size: 16px
+}
+</style>
+
+
+
+<br clear="both"/>
+
+# About this document
+
+This is a prototype of an automatic report that documents how the user specified the operating model and their various justifications.  
+
+<br clear="both"/>
+
+```{r labs,echo=F,warning=F,error=F,results='asis'}
+ incrate<-1/29
+ incProgress(incrate)
+ 
+ Flabs<-c("","Longevity","Stock depletion","Resilence","Historical effort pattern", "Inter-annual variability in historical effort", "Historical fishing efficiency changes","Future fishing efficiency changes","Length at maturity","Selectivity of small fish","Selectivity of large fish","Discard rate","Post-release mortality rate","Recruitment variability","Size of an existing MPA","Spatial mixing (movement) in/out of existing MPA","Size of a future potential MPA","Spatial mixing (movement) in/out of future potential MPA","Initial stock depletion")
+
+Flists<-c("","M_list","D_list","h_list","FP_list","F_list","q_list","qh_list","LM_list","sel_list","dome_list","DR_list","PRM_list","sigR_list","A_list","V_list","Ah_list","Vh_list","Dh_list")
+
+if(Just[[1]][1]!="No introduction / general comments were provided"){
+  
+  cat('\n')
+  cat("# Introduction")
+  cat('\n')
+  cat(Just[[1]][1])
+  cat('\n')
+  
+}
+
+```
+
+<br clear="both"/>
+
+# Fishery Characteristics
+
+```{r cars, echo=FALSE, results='asis',fig.width=7, fig.height=3.5,tidy=FALSE}
+
+
+doQJust<-function(Answered,Selected,Justification){
+  
+    Qtable<-data.frame(Answered)
+    
+    x<-Qtable %>%
+        mutate(
+          Answered = ifelse(Selected,
+                          cell_spec(Answered,"html",color = "black",font_size=15),
+                          cell_spec(Answered,"html",color = "#a6a6a6",font_size=14))
+        )%>%
+        select(everything())%>%
+        knitr::kable("html", escape = F,align = "l") %>%
+        kable_styling(bootstrap_options=c("hover"),full_width=F,position='float_left')
+    #%>%
+        #column_spec(1, width = "5cm")
+    print(x)
+    
+    Jtable<-Justification
+    names(Jtable)="Justification"
+    justtext<-as.character(Justification[1,1])
+    x<-Jtable %>%
+        mutate(
+          Justification = ifelse(grepl("No justification",justtext),
+                                 cell_spec(Justification, "html", color = "red",font_size=14),
+                                 cell_spec(Justification, "html", color = "black",font_size=14))
+        )%>%
+        select(everything())%>%
+        knitr::kable("html", escape = F,align = "l") %>%
+        kable_styling(bootstrap_options=c("hover"),full_width=F,position='float_right')#%>%
+        #column_spec(1, width = "5cm")
+    print(x)
+}
+  
+
+
+for(ff in 2:19){
+  cat("\\newpage")
+  cat('\n')
+  cat(paste0("## ",Flabs[ff]))
+  cat('\n')
+ 
+  Answer=names(unlist(get(Flists[ff])))
+  selected=unlist(PanelState[[1]][ff-1])
+  Justification=data.frame(Just[[1]][ff])
+  doQJust(Answer,selected,Justification)
+  cat("\\newpage")
+  temp<-as.character(unlist(params$inputnames[[1]][ff-1]))
+  cat("\n")
+  do.call(paste0("plot",temp),args=list(dummy="1"))
+  cat("\n\n")
+  incProgress(incrate)
+  
+}
+
+
+
+```
+
+<br clear="both"/>
+
+# Management Characteristics
+
+## Types of fishery management that are possible
+
+```{r M1_TAC_TAE, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+  
+  Answer=c("TAC (Total Allowable Catch): a catch limit","TAE (Total Allowable Effort): an effort limit", "Size limit","Time-area closures (a marine reserve)")
+  selected=unlist(PanelState[[2]][1])
+  Justification=data.frame(Just[[2]][1])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+## TAC offset: consistent overages/underages
+
+```{r M2_IB, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+  
+  Answer=names(unlist(IB_list))
+  selected=unlist(PanelState[[2]][2])
+  Justification=data.frame(Just[[2]][2])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  plotIB()
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+## TAC implementation variability
+
+```{r M3_IV, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+  
+  Answer=names(unlist(IV_list))
+  selected=unlist(PanelState[[2]][3])
+  Justification=data.frame(Just[[2]][3])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  plotIV()
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+## TAE offset: consistent overages/underages
+
+```{r M4_IBE, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+  
+  Answer=names(unlist(IBE_list))
+  selected=unlist(PanelState[[2]][4])
+  Justification=data.frame(Just[[2]][4])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  plotIB_E()
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+## TAE implementation variability
+
+```{r M5_IVE, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+  
+  Answer=names(unlist(IVE_list))
+  selected=unlist(PanelState[[2]][5])
+  Justification=data.frame(Just[[2]][5])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  plotIV_E()
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+
+## Size limit offset: consistent overages/underages
+
+```{r M6_IBE, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+  
+  Answer=names(unlist(IBSL_list))
+  selected=unlist(PanelState[[2]][6])
+  Justification=data.frame(Just[[2]][6])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  plotIB_SL()
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+## Size limit implementation variability
+
+```{r M7_IVE, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+  
+  Answer=names(unlist(IVSL_list))
+  selected=unlist(PanelState[[2]][7])
+  Justification=data.frame(Just[[2]][7])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  plotIV_SL()
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+
+# Data Characteristics
+
+## Available data types
+
+```{r D1_Data_types, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+
+  Answer=names(unlist(D1_list))
+  selected=unlist(PanelState[[3]][1])
+  Justification=data.frame(Just[[3]][1])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+## Catch reporting bias
+
+```{r D2_CB, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+  
+  Answer=names(unlist(CB_list))
+  selected=unlist(PanelState[[3]][2])
+  Justification=data.frame(Just[[3]][2])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  plotCB()
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+## Hyperstability in indices
+
+```{r D3_Beta, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+  
+  Answer=names(unlist(Beta_list))
+  selected=unlist(PanelState[[3]][3])
+  Justification=data.frame(Just[[3]][3])
+  doQJust(Answer,selected,Justification)
+  cat("\n\n") 
+  plotBeta()
+  incProgress(incrate)
+
+```
+
+<br clear="both"/>
+
+## Available data types
+
+```{r D4_Quality, echo=FALSE, results='asis',fig.width=7, fig.height=3.5}
+
+  Answer=names(unlist(Err_list))
+  selected=unlist(PanelState[[3]][4])
+  Justification=data.frame(Just[[3]][4])
+  doQJust(Answer,selected,Justification)
+  cat(" \n") 
+  incProgress(incrate)
+ 
+
+```
+
+<br clear="both"/>
+
+
+
+# Version Notes
+
+The package is subject to ongoing testing. If you find a bug or a problem please send a report to <t.carruthers@oceans.ubc.ca> so that it can be fixed!  
+
+<br clear="both"/>
+<br clear="both"/>
+<br clear="both"/>
+
+<hr />
+```{r copyright, results='asis',echo=FALSE, size="tiny"}
+
+  
+  cat(params$SessionID)
+  cat("\n\n")
+  cat(params$copyright)
+ 
+
+```
+<hr />

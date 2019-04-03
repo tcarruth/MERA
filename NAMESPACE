@@ -1,0 +1,2 @@
+export(Shiny)
+importFrom(corpcor,pseudoinverse)

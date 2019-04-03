@@ -1,0 +1,13 @@
+
+Variabele `r Flabs[ff]`
+Variabele `r PanelState[[1]][ff-1]`
+Variabele `r Flists[ff]`
+
+```{r childOM, echo=F,warning=F,error=F,message=F}
+cat('\n')
+cat(paste0("## ",Flabs[ff]))
+cat('\n')
+Answer=names(unlist(get(Flists[ff])))
+selected=unlist(PanelState[[1]][ff-1])
+Qtab(Answer,selected)
+```

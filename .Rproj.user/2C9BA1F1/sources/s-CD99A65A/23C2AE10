@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1527605632990.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "23C2AE10",
+    "lastKnownWriteTime" : 1527609564,
+    "last_content_update" : 1527609564212,
+    "path" : "C:/GitHub/FRAME/inst/shiny_apps/FRAME/ui.R",
+    "project_path" : "inst/shiny_apps/FRAME/ui.R",
+    "properties" : {
+        "cursorPosition" : "250,106",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
