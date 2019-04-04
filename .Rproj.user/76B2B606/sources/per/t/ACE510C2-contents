@@ -852,7 +852,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       withProgress(message = "Building questionnaire report", value = 0, {
       #doprogress("Building OM report",1)
-      OM<<-makeOM(PanelState,nsim=nsim)
+      #OM<<-makeOM(PanelState,nsim=nsim)
       src <- normalizePath('OMRep.Rmd')
 
       Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)

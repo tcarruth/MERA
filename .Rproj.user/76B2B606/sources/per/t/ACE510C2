@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "1014851282",
     "id" : "ACE510C2",
-    "lastKnownWriteTime" : 1554400964,
-    "last_content_update" : 1554400964775,
+    "lastKnownWriteTime" : 1554419569,
+    "last_content_update" : 1554419569646,
     "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/server.R",
     "project_path" : "inst/shiny_apps/MERA/server.R",
     "properties" : {
-        "cursorPosition" : "9,19",
-        "scrollLine" : "0"
+        "cursorPosition" : "854,7",
+        "scrollLine" : "841"
     },
     "relative_order" : 2,
     "source_on_save" : false,

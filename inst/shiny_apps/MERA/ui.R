@@ -223,7 +223,7 @@ shinyUI(
 
                             conditionalPanel(width=4,condition="output.Fpanel==7",
                                  checkboxGroupInput("qh", label = h5("7. Historical fishing efficiency changes",style="color:black"),
-                                                    choices = q_list, selected = q_list),
+                                                    choices = qh_list, selected = qh_list),
                                  actionLink("All_qh","UNKNOWN")),
 
                             conditionalPanel(width=4,condition="output.Fpanel==8",

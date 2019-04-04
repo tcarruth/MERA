@@ -40,7 +40,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
 
   OM@Source<-input$Author
   OM@interval<-input$interval
-  OM@proyears<-proyears<-input$proyears
+  OM@proyears<-proyears<-50#input$proyears
 
   #save(OM,file="OM.Rdata")  # debug
 
@@ -79,7 +79,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   OM@Linf<-c(100,100)
   OM@D<-getminmax(1,"D",PanelState)                                                        # F3 -----------
   OM@h<-getminmax(1,"h",PanelState)                                                        # F4 -----------
-
+ 
   # Ftrend and error                                                                       # F5 -----------
   loc<-match("FP",inputnames[[1]])
   cond<-(1:length(unlist(PanelState[[1]][loc])))[unlist(PanelState[[1]][loc])]
@@ -116,7 +116,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   
   # --- Selectivity -----------------------
   
-  OM@isRel<-FALSE
+  
   
   Sel50<-getminmax(1,"sel",PanelState)                                                     # F10 ----------
   Sel50sim<-runif(nsim,Sel50[1],Sel50[2])

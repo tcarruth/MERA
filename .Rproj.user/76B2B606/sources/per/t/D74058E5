@@ -5,14 +5,14 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "3286765093",
     "id" : "D74058E5",
     "lastKnownWriteTime" : 1554417431,
     "last_content_update" : 1554417431332,
     "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/Update_objects.R",
     "project_path" : "inst/shiny_apps/MERA/Update_objects.R",
     "properties" : {
-        "cursorPosition" : "15,0",
+        "cursorPosition" : "14,17",
         "scrollLine" : "0"
     },
     "relative_order" : 6,
