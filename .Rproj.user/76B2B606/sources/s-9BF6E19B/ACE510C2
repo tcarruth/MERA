@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1554330999562.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "ACE510C2",
+    "lastKnownWriteTime" : 1554400964,
+    "last_content_update" : 1554400964775,
+    "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/server.R",
+    "project_path" : "inst/shiny_apps/MERA/server.R",
+    "properties" : {
+        "cursorPosition" : "9,19",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

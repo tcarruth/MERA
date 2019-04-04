@@ -1,18 +1,13 @@
-
 getminmax<-function(panel,parameter,PanelState){
-  
   loc<-match(parameter,inputnames[[panel]])
   mins<-get(paste0(parameter,"_mins"))
   maxs<-get(paste0(parameter,"_maxes"))
   cond<-unlist(PanelState[[panel]][loc])
   range(mins[cond],maxs[cond])
-  
 }
 
 makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
 
-  # ---- Misc OM building ------------------------------------------------------------------------------------
-  
   OM<-LowSlopes(testOM)
 
   OM@R0<-100000
@@ -40,13 +35,14 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
 
   OM@Source<-input$Author
   OM@interval<-input$interval
-  OM@proyears<-proyears<-input$proyears
+  OM@proyears<-input$proyears
 
   #save(OM,file="OM.Rdata")  # debug
 
-  loc<-match("Err",inputnames[[3]])                                                        # D1 -----------
+  loc<-match("Err",inputnames[[3]])
   cond<-as.vector(unlist(PanelState[[3]][loc]))
   Dquality<-as.vector(unlist(Err_list)[cond])
+
 
   if(Dquality=="Err_perf"){
     temp<-new('OM',Albacore,Generic_Fleet,Perfect_Info,Perfect_Imp)
@@ -57,14 +53,11 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   }else{
     temp<-new('OM',Albacore,Generic_Fleet,Imprecise_Biased,Perfect_Imp)
   }
-  
   OM<-Replace(OM,temp,Sub="Obs")
 
-  
-  # ---- Fishery characteristics ---------------------------------------------------------------------------
-  
-  OM@M<-getminmax(1,"M",PanelState)                                                        # F2 ----------
-  OM@L50<-getminmax(1,"LM",PanelState)                                                     # F9 ----------
+  # Fishery characteristics -------
+  OM@M<-getminmax(1,"M",PanelState)                                                         # F2 ----------
+  OM@L50<-getminmax(1,"LM",PanelState)                                                      # F9 ----------
 
   if(is.na(maxage)){
     OM@maxage=ceiling(-log(0.02)/min(OM@M))
@@ -116,98 +109,44 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   
   # --- Selectivity -----------------------
   
-  OM@isRel<-FALSE
-  
   Sel50<-getminmax(1,"sel",PanelState)                                                     # F10 ----------
   Sel50sim<-runif(nsim,Sel50[1],Sel50[2])
 
+  
   L5<-OM@cpars$Linf*Sel50sim*0.8
   LFS<-OM@cpars$Linf*Sel50sim*1.2
   cond<-LFS>0.95*OM@cpars$Linf
   LFS[cond]<-0.95*OM@cpars$Linf[cond]
- 
+  
+  OM@cpars$L5<-L5
+  OM@cpars$LFS<-LFS
+
   OM@Vmaxlen<-getminmax(1,"dome",PanelState)                                               # F11 ----------
-  
-  
-  # --- Discarding ------------------------
   
   OM@DR<-getminmax(1,"DR",PanelState)                                                      # F12 ----------
   OM@Fdisc<-getminmax(1,"PRM",PanelState)                                                  # F13 ----------
-  
-  # --- Recruitment deviations ------------
-  
   OM@Perr<-getminmax(1,"sigR",PanelState)                                                  # F14 ----------
  
-  # --- MPAs ------------------------------
-  nareas<-3
-  Ahrng<-getminmax(1,"Ah",PanelState) # size / frac habitat area 3                         # F15 ----------
-  Vhrng<-getminmax(1,"Vh",PanelState) # prob staying in area 3                             # F16 ----------
-  Arng<-getminmax(1,"A",PanelState)   # size / frac habitat area 1                         # F17 ----------
-  Vrng<-getminmax(1,"V",PanelState)   # prob staying in area 3                             # F18 ----------
-  
-  Ahsim<-runif(nsim,Ahrng[1],Ahrng[2])
-  Vhsim<-runif(nsim,Vhrng[1],Vhrng[2])
-  Asim<-runif(nsim,Arng[1],Arng[2])
-  Vsim<-runif(nsim,Vrng[1],Vrng[2])
-  
-  ilogit<-function(x)log(x/(1-x))
-  logit<-function(x)exp(x)/(1+exp(x))
-  
-  mov1<-mov2<-array(NA,c(nsim,2,2))
-  
-  for(i in 1:nsim){
-    mov1[i,,]<-getmov2(i,Vsim,Asim)      
-    mov2[i,,]<-getmov2(i,Vhsim,Ahsim)
-  }
-  V2<-apply(cbind(mov1[,2,2]-Vhsim, # staying in areas 2 and 3 minus staying in area 3
-              mov2[,2,2]-Vsim), # staying in areas 2 and 3 minus staying in area 1
-        1,min) # an overestimate of the prob_staying in area 2
-  
-  Sz2<-1-(Ahsim+Asim)
-  Asize<-cbind(Asim,Sz2,Ahsim) # area 1 is Asim as future MPs close area 1
-  probs<-cbind(Vsim,V2,Vhsim)
- 
-  # plot(Ahsim,Vhsim,type='l',xlim=c(0,0.9)); lines(Asim,Vsim,col="grey"); lines(Sz2,V2,col="red")
-  
-  mov<-array(NA,c(nsim, maxage, nareas, nareas, nyears+proyears))
-  for(i in 1:nsim)mov[i,,,,]<-array(rep(makemov(fracs=Asize[i,], prob=probs[i,]),each=maxage),c(maxage,nareas,nareas,nyears+proyears))
-  
-  OM@MPA<-matrix(c(1,1,1,0,                                            # year1, area1 open, area2 open, area3 shut
-                   nyears-1,0,1,1),ncol=nareas+1,byrow=T)              # nyears-1, area1 shut, area2 open, area3 open              
-  
- 
-  # Initial depletion                                                                      # F19 ----------
-  initDrng<-getminmax(1,"Dh",PanelState)
-  
-  initD<-runif(nsim,initDrng[1],initDrng[2])
-  
-  
-  # ---- Management parameters -----------------------------------------------------------------------------------------------
-  
-  OM@TACFrac<-getminmax(2,"IB",PanelState)                                                 # M2 -----------
-  OM@TACSD<-getminmax(2,"IV",PanelState)                                                   # M3 -----------
-  
-  OM@TAEFrac<-getminmax(2,"IBE",PanelState)                                                # M4 -----------
-  OM@TAESD<-getminmax(2,"IVE",PanelState)                                                  # M5 -----------
-  
-  OM@SizeLimFrac<-getminmax(2,"IBSL",PanelState)                                           # M6 -----------
-  OM@SizeLimFrac<-getminmax(2,"IVSL",PanelState)                                           # M7 -----------
+  Arng<-getminmax(1,"A",PanelState)
+  Size_area_1<-Frac_area_1<-runif(nsim,Arng[1],Arng[2])
+  OM@Prob_staying<-1-getminmax(1,"V",PanelState)[2:1]
 
-  
-  # ---- Data parameters -----------------------------------------------------------------------------------------------------
-  
-  CB_rng<-getminmax(3,"CB",PanelState)                                                     # D2 -----------
+  # Management parameters
+  OM@TACFrac<-OM@TAEFrac<-getminmax(2,"IB",PanelState)
+  OM@TACSD<-OM@TAESD<-getminmax(2,"IV",PanelState)
+
+  # Data parameters
+  CB_rng<-getminmax(3,"CB",PanelState)
   Cbias<-runif(nsim,CB_rng[1],CB_rng[2])
 
-  OM@beta<-getminmax(3,"Beta",PanelState)                                                  # D3 -----------
- 
-  
-  # ---- Custom parameters ---------------------------------------------------------------------------------------------------
- 
-  OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias))
+  OM@beta<-getminmax(3,"Beta",PanelState)
+  D<-runif(nsim,OM@D[1],OM@D[2])
+
+  # Custom parameters
+  OM@cpars<-c(OM@cpars,list(D=D,Find=Find, Size_area_1=Size_area_1,
+                 Frac_area_1=Frac_area_1,Cbias=Cbias))
 
   saveRDS(OM,"OM_autosave.rda")
-  
   OM
 
 }
