@@ -67,7 +67,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   OM@L50<-getminmax(1,"LM",PanelState)                                                     # F9 ----------
 
   if(is.na(maxage)){
-    OM@maxage=ceiling(-log(0.02)/min(OM@M))
+    OM@maxage<-maxage<-ceiling(-log(0.02)/min(OM@M))
   }else{
     OM@maxage=maxage
   }
@@ -91,10 +91,11 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   h2sim<-h2s[Ftype]
   locsim<-PanelState[[4]][[1]]
   stmagsim<-PanelState[[4]][[2]]
+  cosim<-PanelState[[4]][[3]]
   Find<-array(NA,c(nsim,nyears))
   #Ftrendfunc<-function(                 M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,start_mag=1,bm=F,plot=F){
     
-  for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=locsim,start_mag=2-stmagsim,bm=F,plot=F)
+  for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=locsim,start_mag=2-stmagsim,co=cosim,bm=F,plot=F)
   # for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=0.5,start_mag=2-0.5,bm=F,plot=F)
   
  
@@ -115,9 +116,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   OM@qinc<-getminmax(1,"q",PanelState)                                                     # F8 ----------
   
   # --- Selectivity -----------------------
-  
-  
-  
+ 
   Sel50<-getminmax(1,"sel",PanelState)                                                     # F10 ----------
   Sel50sim<-runif(nsim,Sel50[1],Sel50[2])
 
@@ -127,7 +126,6 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   LFS[cond]<-0.95*OM@cpars$Linf[cond]
  
   OM@Vmaxlen<-getminmax(1,"dome",PanelState)                                               # F11 ----------
-  
   
   # --- Discarding ------------------------
   
@@ -139,6 +137,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   OM@Perr<-getminmax(1,"sigR",PanelState)                                                  # F14 ----------
  
   # --- MPAs ------------------------------
+ 
   nareas<-3
   Ahrng<-getminmax(1,"Ah",PanelState) # size / frac habitat area 3                         # F15 ----------
   Vhrng<-getminmax(1,"Vh",PanelState) # prob staying in area 3                             # F16 ----------
@@ -155,6 +154,8 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   
   mov1<-mov2<-array(NA,c(nsim,2,2))
   
+  message("gottohere1")
+  
   for(i in 1:nsim){
     mov1[i,,]<-getmov2(i,Vsim,Asim)      
     mov2[i,,]<-getmov2(i,Vhsim,Ahsim)
@@ -168,10 +169,10 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   probs<-cbind(Vsim,V2,Vhsim)
  
   # plot(Ahsim,Vhsim,type='l',xlim=c(0,0.9)); lines(Asim,Vsim,col="grey"); lines(Sz2,V2,col="red")
-  
+ 
   mov<-array(NA,c(nsim, maxage, nareas, nareas, nyears+proyears))
   for(i in 1:nsim)mov[i,,,,]<-array(rep(makemov(fracs=Asize[i,], prob=probs[i,]),each=maxage),c(maxage,nareas,nareas,nyears+proyears))
-  
+  message("gottohere2")
   OM@MPA<-matrix(c(1,1,1,0,                                            # year1, area1 open, area2 open, area3 shut
                    nyears-1,0,1,1),ncol=nareas+1,byrow=T)              # nyears-1, area1 shut, area2 open, area3 open              
   
@@ -181,7 +182,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   
   initD<-runif(nsim,initDrng[1],initDrng[2])
   
-  
+  message("gottohere3")
   # ---- Management parameters -----------------------------------------------------------------------------------------------
   
   OM@TACFrac<-getminmax(2,"IB",PanelState)                                                 # M2 -----------

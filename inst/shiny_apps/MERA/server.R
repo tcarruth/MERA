@@ -177,7 +177,7 @@ shinyServer(function(input, output, session) {
   Fpanel_names<-c("M_list","D_list","h_list","FP_list","F_list","qh_list","q_list","LM_list","sel_list","dome_list","DR_list","PRM_list","sigR_list","Ah_list","Vh_list","A_list","V_list","Dh_list")
   Mpanel_names<-c("M1_list","IB_list","IV_list","IBE_list","IVE_list","IBSL_list","IVSL_list")
   Dpanel_names<-c("D1_list","CB_list","Beta_list","Err_list")
-  Slider_names<-c("loc","stmag")
+  Slider_names<-c("loc","stmag","co")
 
   MasterList<<-list(Fpanel_names,Mpanel_names,Dpanel_names,Slider_names)
 
@@ -1509,9 +1509,9 @@ shinyServer(function(input, output, session) {
   )
   observeEvent(input$All_IBSL,
                if(input$All_IBSL == 0 | input$All_IBSL%%2 == 0){
-                 updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=input$IB)
+                 updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=IBSL_list[input$IB[length(input$IB):1]])
                }else{
-                 updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=input$IB)
+                 updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=IBSL_list[input$IB[length(input$IB):1]])
                }
   )
   observeEvent(input$All_IVSL,

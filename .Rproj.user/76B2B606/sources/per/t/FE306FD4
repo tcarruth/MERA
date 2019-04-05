@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "3403239405",
+    "hash" : "325637522",
     "id" : "FE306FD4",
-    "lastKnownWriteTime" : 1554333739,
-    "last_content_update" : 1554333739302,
+    "lastKnownWriteTime" : 1554488965,
+    "last_content_update" : 1554488965014,
     "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/Fishery_figs.R",
     "project_path" : "inst/shiny_apps/MERA/Fishery_figs.R",
     "properties" : {
-        "cursorPosition" : "10,28",
-        "scrollLine" : "0"
+        "cursorPosition" : "305,27",
+        "scrollLine" : "283"
     },
     "relative_order" : 5,
     "source_on_save" : false,
