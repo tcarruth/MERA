@@ -116,7 +116,7 @@ shinyUI(
 
              column(4,
 
-               radioButtons("Mode",label=NULL,choices=c("Streamlined","Advanced"),selected="Streamlined")),
+               radioButtons("Mode",label=NULL,choices=c("Risk Evaluation","Planning","Assessment"),selected="Risk Evaluation")),
 
                column(8,
                       h5("MERA contains two modes of differing complexity",style = "color:grey"),

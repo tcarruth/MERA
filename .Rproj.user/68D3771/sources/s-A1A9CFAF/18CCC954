@@ -7,13 +7,13 @@
     "folds" : "",
     "hash" : "0",
     "id" : "18CCC954",
-    "lastKnownWriteTime" : 1554434681,
-    "last_content_update" : 1554434681,
+    "lastKnownWriteTime" : 1554439165,
+    "last_content_update" : 1554439165318,
     "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/ui.R",
     "project_path" : "inst/shiny_apps/MERA/ui.R",
     "properties" : {
-        "cursorPosition" : "7,35",
-        "scrollLine" : "0"
+        "cursorPosition" : "139,8",
+        "scrollLine" : "120"
     },
     "relative_order" : 1,
     "source_on_save" : false,
