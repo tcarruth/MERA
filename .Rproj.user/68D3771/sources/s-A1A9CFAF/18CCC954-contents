@@ -94,7 +94,6 @@ shinyUI(
       )
     ),
     hr(),
-    
 
     h4("Welcome to MERA, a tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
     h5("MERA links a straightforward graphical questionaire to the powerful OMx operating model of DLMtool and MSEtool  to conduct rapid management strategy evaluation (MSE) for multiple management procedures (MPs). ",style = "color:grey"),
