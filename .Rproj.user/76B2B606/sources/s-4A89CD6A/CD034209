@@ -5,7 +5,7 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "849580598",
+    "hash" : "0",
     "id" : "CD034209",
     "lastKnownWriteTime" : 1554762811,
     "last_content_update" : 1554762811746,
@@ -13,7 +13,7 @@
     "project_path" : "inst/shiny_apps/MERA/Redos.R",
     "properties" : {
         "cursorPosition" : "54,63",
-        "scrollLine" : "15"
+        "scrollLine" : "0"
     },
     "relative_order" : 10,
     "source_on_save" : false,
