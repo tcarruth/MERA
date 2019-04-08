@@ -213,6 +213,7 @@ Err_list<<-list("Perfect" = "Err_perf","Good (accurate and precise)" = "Err_good
 
 loc<<-list("loc"=1)
 stmag<<-list("stmag"=1)
+co<<-list("co"=1)
 
 
 

@@ -176,7 +176,29 @@ warp<-function(n,y,ploty=F){ # linear warping function
 
 }
 
-Ftrendfunc<-function(M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,start_mag=1,bm=F,ploty=F){
+cutoff<-function(frac,y,ploty=F){
+  
+  ny<-length(y)
+  ip<-seq(1,(ny*frac),length.out=ny)
+  out<-rep(NA,ny)
+  out[1]<-y[1]
+  
+  for(i in 2:ny){
+    li<-floor(ip[i])
+    ui<-ceiling(ip[i])
+    dif<-y[ui]-y[li]
+    frac<-ip[i]-floor(ip[i])
+    out[i]<-y[li]+frac*dif
+  }
+  if(ploty){
+    plot(y)
+    points(ip,out,col='red',pch=2)
+  }
+  out
+
+}
+
+Ftrendfunc<-function(M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,co=1,start_mag=1,bm=F,ploty=F){
   # M1=0.4; M2=1.2; sd1=0.1; sd2=0.3; h2=1; ny=68; loc=1; start_mag=0.2; bm=F;  plot=T
   # M1=0.2; M2=0.7; sd1=0.1; sd2=0.18; h2=0; ny=68; loc=1; start_mag=0.2; bm=F; plot=T
   # M1=0.32; M2=0.75; sd1=0.14; sd2=0.15; h2=0; ny=68; loc=1; start_mag=1; bm=T; plot=T
@@ -251,15 +273,18 @@ Ftrendfunc<-function(M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,start_mag=1,
 
   }
 
-  ET2<-ET2/mean(ET2)
+  ET3<-cutoff(co,ET2,ploty=ploty)
+  
+  ET3<-ET3/mean(ET3)
 
   if(ploty){
     plot(E,ylim=c(0,max(E)*1.05),type="l")
     lines(ET,col='red')
     lines(ET2,col='blue')
+    lines(ET3,col='green')
   }
 
-  ET2
+  ET3
 
 }
 
@@ -274,7 +299,7 @@ plotFP <-function(dummy=1){
 
   trends<-array(NA,c(6,ny))
   # par(mfrow=c(3,2),mar=rep(0.1,4))
-  for(i in 1:6)trends[i,]<-Ftrendfunc(M1=M1s[i],M2=M2s[i],sd1=sd1s[i],sd2=sd2s[i],h2=h2s[i],bm=bms[i],loc=input$loc,start_mag=2-input$stmag,ny=ny)
+  for(i in 1:6)trends[i,]<-Ftrendfunc(M1=M1s[i],M2=M2s[i],sd1=sd1s[i],sd2=sd2s[i],h2=h2s[i],bm=bms[i],loc=input$loc,start_mag=2-input$stmag,co=input$co,ny=ny)
   cols<-rep(c(fcol,'black','dark grey'),2)
   ltys<-rep(c(1,2),each=3)
 

@@ -91,10 +91,11 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   h2sim<-h2s[Ftype]
   locsim<-PanelState[[4]][[1]]
   stmagsim<-PanelState[[4]][[2]]
+  cosim<-PanelState[[4]][[3]]
   Find<-array(NA,c(nsim,nyears))
   #Ftrendfunc<-function(                 M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,start_mag=1,bm=F,plot=F){
     
-  for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=locsim,start_mag=2-stmagsim,bm=F,plot=F)
+  for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=locsim,start_mag=2-stmagsim,co=cosim,bm=F,plot=F)
   # for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=0.5,start_mag=2-0.5,bm=F,plot=F)
   
  
