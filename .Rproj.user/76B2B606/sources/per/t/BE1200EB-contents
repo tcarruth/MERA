@@ -59,7 +59,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   }
   
   OM<-Replace(OM,temp,Sub="Obs")
-
+  
   
   # ---- Fishery characteristics ---------------------------------------------------------------------------
   
@@ -139,6 +139,8 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   # --- MPAs ------------------------------
  
   nareas<-3
+ 
+  
   Ahrng<-getminmax(1,"Ah",PanelState) # size / frac habitat area 3                         # F15 ----------
   Vhrng<-getminmax(1,"Vh",PanelState) # prob staying in area 3                             # F16 ----------
   Arng<-getminmax(1,"A",PanelState)   # size / frac habitat area 1                         # F17 ----------
@@ -209,6 +211,8 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
 
   saveRDS(OM,"OM_autosave.rda")
   
-  OM
+  #OM
+  testOM@nsim<-8
+  testOM
 
 }

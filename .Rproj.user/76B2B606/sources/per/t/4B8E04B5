@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1554760154416.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3010170350",
+    "id" : "4B8E04B5",
+    "lastKnownWriteTime" : 1536705195,
+    "last_content_update" : 1536705195,
+    "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/Analysis_results.R",
+    "project_path" : "inst/shiny_apps/MERA/Analysis_results.R",
+    "properties" : {
+        "cursorPosition" : "313,0",
+        "scrollLine" : "264"
+    },
+    "relative_order" : 13,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

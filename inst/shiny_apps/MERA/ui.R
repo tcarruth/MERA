@@ -95,10 +95,8 @@ shinyUI(
     ),
     hr(),
 
-    h4("Welcome to MERA, a tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
-    h5("MERA links a straightforward graphical questionaire to the powerful OMx operating model of DLMtool and MSEtool  to conduct rapid management strategy evaluation (MSE) for multiple management procedures (MPs). ",style = "color:grey"),
-    h5("In step A the fishery is characterized and any available data are loaded. In step B an operating model is constructed that is used in step C to evaluate feasible MPs or
-     apply a suitable MP (Application). Finally, in step D indicators can be used to detect changes in system dynamics.",style = "color:grey"),
+    h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
+    h5("MERA links a straightforward graphical questionaire to the powerful OMx operating model of DLMtool and MSEtool to conduct rapid close-loop simulation testing of multiple management procedures (MPs). ",style = "color:grey"),
     h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA.html", target="_blank"),style = "color:grey"),
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
@@ -120,7 +118,8 @@ shinyUI(
 
                column(8,
                       h5("MERA contains two modes of differing complexity",style = "color:grey"),
-                      h5(" - Streamlined mode is an entirely questionnaire based description of fishery dynamics for calculation of biological risk where data are limited",style = "color:grey"),
+                      h5(" - Risk evaluation mode: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
+                      h5(" - Planning mode: uses  is an entirely questionnaire based description of fishery dynamics for calculation of biological risk where data are limited",style = "color:grey"),
                       h5(" - Advanced mode builds on the questionnaire to use data to condition operating models and identify exceptional circumstances ", style = "color:grey")
                )
 
@@ -131,8 +130,8 @@ shinyUI(
 
       column(12,style="height:60px",
 
-            conditionalPanel(condition="output.Quest==0&input.Mode=='Risk Evaluation'",h4("STEP A: CHARACTERIZE FISHERY IN QUESTIONNAIRE")),
-            conditionalPanel(condition="output.Quest==1&input.Mode=='Risk Evaluation'",h4("STEP A: CHARACTERIZE FISHERY IN QUESTIONNAIRE",style="color:green")),
+            conditionalPanel(condition="output.Quest==0&input.Mode=='Risk Evaluation'",h4("CHARACTERIZE FISHERY")),
+            conditionalPanel(condition="output.Quest==1&input.Mode=='Risk Evaluation'",h4("CHARACTERIZE FISHERY",style="color:green")),
             conditionalPanel(condition="output.Quest==0&input.Mode!='Risk Evaluation'",h4("STEP A1: CHARACTERIZE FISHERY SYSTEM")),
             conditionalPanel(condition="output.Quest==1&input.Mode!='Risk Evaluation'",h4("STEP A1: CHARACTERIZE FISHERY SYSTEM",style="color:green")),
 
@@ -946,103 +945,135 @@ shinyUI(
             )
           )
         ), # risk evaluation doesn't have OM step mode
-    
-        column(12,style="height:45px"),
-  
-        conditionalPanel(condition="output.Calc==0&input.Mode=='Planning'",h4("STEP C: EVALUATION (MULTI-MP)")),
-        conditionalPanel(condition="output.Calc==1&input.Mode=='Planning'",h4("STEP C: EVALUATION (MULTI-MP)",style="color:green")),
-        conditionalPanel(condition="output.Calc==0&input.Mode=='Assessment'",h4("STEP C: EVALUATION (SINGLE MP)")),
-        conditionalPanel(condition="output.Calc==1&input.Mode=='Assessment'",h4("STEP C: EVALUATION (SINGLE MP)",style="color:green")),
-        conditionalPanel(condition="output.Calc==0&input.Mode=='Risk Evaluation'",h4("STEP B: EVALUATION")),
-        conditionalPanel(condition="output.Calc==1&input.Mode=='Risk Evaluation'",h4("STEP B: EVALUATION",style="color:green")),
-
-        hr(),
-
-        fluidRow(
-          column(1),
-          column(11,
-             fluidRow(
-                 column(4,conditionalPanel(condition="output.MadeOM==1",
-
-                   column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
-                   column(6,numericInput("interval", label = "Management interval", value=8,min=2,max=10)),
-
-                   #column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
-                   column(12,radioButtons('MPset',label="MP set",choices=c("Risk Assessment","Top 20","All","Demo"),selected="Demo",inline=T)),
-
-                   column(12,h5("Additional options",style="font-weight:bold"),style="height:22px"),
-                   #column(12,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),
-                   #        checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),
-                   #
-                   #checkboxInput("Parallel", label = "Parallel comp.", value = FALSE)),
-
-                   column(4,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),style="padding-top:0px"),
-                   column(4,checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),style="padding-top:0px"),
-                   column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"),
-
-                   column(12,actionButton("Calculate",h5("      RUN EVALUATION     ",style="color:red")))
-
-                   ),
-                   conditionalPanel(condition="output.MadeOM==0",
-
-                          h5("Operating model not built yet (Step B)", style = "color:grey")
-
+        
+        # =============== Risk Evaluation ================================================================================================================================================
+        conditionalPanel(condition="input.Mode=='Risk Evaluation'",
+           conditionalPanel(condition="output.Calc==0",h4("CALCULATE RISK")),
+           conditionalPanel(condition="output.Calc==1",h4("CALCULATE RISK",style="color:green")),
+           hr(),
+           column(12,style="height:45px"),
+           
+           fluidRow(
+             column(1),
+             column(11,
+                fluidRow(
+                  column(4,
+                                            
+                         
+                      column(12,actionButton("Calculate_risk",h5("      CALCULATE     ",style="color:red")))
+                  
+                  ),
+                      
+                  column(6,
+                         
+                         h5("Current fishing effort, current catches, FMSY fishing and zero catches are projected to evaluate status-quo fishery risk", style = "color:grey"),
+                       
+                         h5("A guide to the risk evaluation model can be found",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
+                         
                   )
-                ),
-
-                column(6,
-
-                       h5("Simulations can be run to test Multiple MPs over a certain number of projected years in which managment recommendations are updated every 'interval' years", style = "color:grey"),
-                       h5("- Risk Assessment: a set of MPs reflecting status quo management including reference management approaches", style = "color:grey"),
-                       h5("- Top 20: MPs that generally perform well in many cases but may not be appropriate for your operating model", style = "color:grey"),
-                       h5("- All: an MSE is run for all available MPs (~100) which can take 20 minutes or more", style = "color:grey"),
-                       h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
-                       h5("Users may wish not to include reference MPs (No ref. MPs) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
-                       h5("In situations where operating models are built with more than 48 simulations it can be much faster to use parallel computing ('Parallel comp.)
+              )
+                    
+             )
+           )
+           
+           
+        ),           
+    
+    
+        # =============== Planning =======================================================================================================================================================          
+        conditionalPanel(condition="input.Mode=='Planning'",
+           
+           conditionalPanel(condition="output.Calc==0",h4("STEP C: CALCULATE PROJECTIONS")),
+           conditionalPanel(condition="output.Calc==1",h4("STEP C: CALCULATE PROJECTIONS",style="color:green")),
+           hr(),
+           column(12,style="height:45px"),
+           
+           fluidRow(
+             column(1),
+             column(11,
+                    fluidRow(
+                      column(4,conditionalPanel(condition="output.MadeOM==1",
+                                                
+                                                column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
+                                                column(6,numericInput("interval", label = "Management interval", value=8,min=2,max=10)),
+                                                
+                                                #column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
+                                                column(12,radioButtons('MPset',label="MP set",choices=c("Top 20","All","Demo"),selected="Demo",inline=T)),
+                                                
+                                                column(12,h5("Additional options",style="font-weight:bold"),style="height:22px"),
+                                                #column(12,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),
+                                                #        checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),
+                                                #
+                                                #checkboxInput("Parallel", label = "Parallel comp.", value = FALSE)),
+                                                
+                                                column(4,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),style="padding-top:0px"),
+                                                column(4,checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),style="padding-top:0px"),
+                                                column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"),
+                                                
+                                                column(12,actionButton("Calculate",h5("      CALCULATE     ",style="color:red")))
+                                                
+                      ),
+                      conditionalPanel(condition="output.MadeOM==0",
+                                       
+                                       h5("Operating model not built yet (Step B)", style = "color:grey")
+                                       
+                      )
+                      ),
+                      
+                      column(6,
+                             
+                             h5("Simulations can be run to test Multiple MPs over a certain number of projected years in which managment recommendations are updated every 'interval' years", style = "color:grey"),
+                             h5("- Top 20: MPs that generally perform well in many cases but may not be appropriate for your operating model", style = "color:grey"),
+                             h5("- All: an MSE is run for all available MPs (~100) which can take 20 minutes or more", style = "color:grey"),
+                             h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
+                             h5("Users may wish not to include reference MPs (No ref. MPs) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
+                             h5("In situations where operating models are built with more than 48 simulations it can be much faster to use parallel computing ('Parallel comp.)
                           although the progress bar will not longer work ",style="color:grey"),
-                       h5("Documentation of the various MPs can be found as links in the results tables, below in the help section or online ",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
-
-               )
+                             h5("Documentation of the various MPs can be found as links in the results tables, below in the help section or online ",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
+                             
+                      )
+                    )
+                    
              )
-
+             
+           ),
+           
+           
+           fluidRow(
+             column(1),
+             column(6),
+             column(4,
+                    column(6,style="padding:10px",
+                           fileInput("Load_Eval","Load  (.Eval)")
+                    ),
+                    
+                    column(2,
+                           conditionalPanel(condition="output.Calc==1",
+                                            h5("Save",style="font-weight:bold"),
+                                            downloadButton("Save_Eval","",width=70)
+                           )
+                           
+                    ),
+                    column(4,
+                           
+                           conditionalPanel(condition="output.Calc==1",
+                                            h5("Evaluation Report",style="font-weight:bold"),
+                                            conditionalPanel(condition="input.Perf_type=='MSC continuity'",downloadButton("Build_Eval","")),
+                                            conditionalPanel(condition="input.Perf_type=='MSC'",downloadButton("Build_Eval_MSC",""))
+                           )
+                           
+                    )
              )
-
-        ),
-
-
-        fluidRow(
-          column(1),
-          column(6),
-          column(4,
-                 column(6,style="padding:10px",
-                        fileInput("Load_Eval","Load  (.Eval)")
-                 ),
-
-                 column(2,
-                        conditionalPanel(condition="output.Calc==1",
-                           h5("Save",style="font-weight:bold"),
-                           downloadButton("Save_Eval","",width=70)
-                        )
-
-                 ),
-                 column(4,
-
-                        conditionalPanel(condition="output.Calc==1",
-                              h5("Evaluation Report",style="font-weight:bold"),
-                              conditionalPanel(condition="input.Perf_type=='MSC continuity'",downloadButton("Build_Eval","")),
-                              conditionalPanel(condition="input.Perf_type=='MSC'",downloadButton("Build_Eval_MSC",""))
-                        )
-
-                 )
-          )
-        ),
-
-        column(12,style="height:15px"),
-
-        conditionalPanel(condition="input.Mode=='Advanced'",
-          conditionalPanel(condition="output.App==0",h4("STEP C2: APPLICATION (SINGLE MP)")),
-          conditionalPanel(condition="output.App==1",h4("STEP C2: APPLICATION (SINGLE MP)",style="color:green")),
-
+           )
+             
+        ),                 
+  
+    
+        conditionalPanel(condition="input.Mode=='Assessment'",
+          column(12,style="height:15px"),          
+          conditionalPanel(condition="output.Calc==0",h4("STEP C: STATUS DETERMINATION AND INDICATORS")),
+          conditionalPanel(condition="output.Calc==1",h4("STEP C: STATUS DETERMINATION AND INDICATORS",style="color:green")),
+       
           hr(),
 
           fluidRow(
@@ -1057,7 +1088,7 @@ shinyUI(
                         column(6,checkboxInput("Parallel_app", label = "Parallel comp.", value = FALSE)),
 
                         column(12,
-                               actionButton("Calculate_app",h5("      RUN APPLICATION     ",style="color:red"))
+                               actionButton("Calculate_app",h5("      CALCULATE     ",style="color:red"))
                         )
 
                        ),
@@ -1100,29 +1131,27 @@ shinyUI(
 
                    )
             )
-          )
-        ),
-
-        conditionalPanel(condition="input.Mode=='Advanced'",
+          ),
+          
           column(12,style="height:15px"),
-
-          conditionalPanel(condition="output.Ind==0",h4("STEP D: ANCILLARY INDICATORS (SINGLE MP - USES APPLICATION MSE OF STEP B2)")),
-          conditionalPanel(condition="output.Ind==1",h4("STEP D: ANCILLARY INDICATORS (SINGLE MP - USES APPLICATION MSE OF STEP B2)",style="color:green")),
-
+          
+          conditionalPanel(condition="output.Ind==0",h4("STEP D: AUXILIARY INDICATORS")),
+          conditionalPanel(condition="output.Ind==1",h4("STEP D: AUXILIARY INDICATORS",style="color:green")),
+          
           hr(),
-
+          
           fluidRow(
             column(1),
             column(11,#style="height:285px",
-
+          
                    fluidRow(
-
+          
                      column(3,style="padding:7px;padding-left:14px",
-
+          
                             conditionalPanel(condition="output.DataInd==0",
-
-                              h5("Compatible data file not loaded (at least three more years of data than LHYear)", style = "color:grey")
-
+          
+                              h5("Compatible data file not loaded (at least three more years of data than the last historical year 'LHYear')", style = "color:grey")
+          
                             ),
                             conditionalPanel(condition="output.App==0",
                               h5("Application not run yet (Step C2)", style = "color:grey")
@@ -1130,7 +1159,7 @@ shinyUI(
                             conditionalPanel(condition="output.DataInd==1&output.App==1",
                                 actionButton("Calculate_Ind",h5(" DETECT EXCEPTIONAL CIRCUMSTANCES  ",style="color:red"))
                             )
-
+          
                      ),
                      column(1),
                      column(6,style="padding:19px",
@@ -1141,64 +1170,22 @@ shinyUI(
                      )
                  )
             )
-          ),
+        ),
 
-          fluidRow(
-            column(1),
-            column(6),
-            column(4,
-                   column(8),
-                   column(4,
-                          conditionalPanel(width=4,condition="output.DataInd==1",
-                                  h5("Indicator Report",style="font-weight:bold"),
-                                  downloadButton("Build_AI"," ")
-                          )
-                   )
-             )
-          )
-        ), # input.Mode conditional panel
-
-        #conditionalPanel(width=12,condition="input.Mode=='Advanced'",
-
-         #            column(12,style="height:15px"),
-
-          #           h4("STEP E: ADVICE"),
-    #           hr(),
-
-    #           conditionalPanel(width=4,condition="output.Data==0",{
-
-
-    #    fluidRow(
-    # column(1),
-    #  column(11,h5("Data not loaded (Step A2)", style = "color:grey")
-
-
-    #   )
-    #  )
-
-    # }),
-
-    # conditionalPanel(width=4,condition="output.Data==1",{
-
-
-    #  fluidRow(
-    #   column(1),
-    #  column(11,
-
-    #    fluidRow(
-    #   column(2,
-    #          actionButton("calcAdvice","Calculate Advice")
-    #   )
-
-    #   )
-    # )
-
-    # )
-
-
-    # })
-
-    # ), # end of ADVICE
+        fluidRow(
+          column(1),
+          column(6),
+          column(4,
+                 column(8),
+                 column(4,
+                        conditionalPanel(width=4,condition="output.DataInd==1",
+                                h5("Indicator Report",style="font-weight:bold"),
+                                downloadButton("Build_AI"," ")
+                        )
+                 )
+           )
+        )
+        ),
 
 
         column(12,style="height:15px"),
@@ -1300,45 +1287,41 @@ shinyUI(
 
                                 fluidRow(
                                   column(width = 12,
+                                    
+                                    HTML("<br>"),
+                                    
+                                    h5(textOutput("P_Tab_1_title"),style="font-weight:bold"),
+                                    h5(textOutput("P_Tab_1_text")),
+                                    DT::dataTableOutput('P_Tab_1'),
+                                    
+                                    HTML("<br>"),
+                                   
+                                    h5(textOutput("P_Tab_2_title"),style="font-weight:bold"),
+                                    h5(textOutput("P_Tab_2_text")),
+                                    DT::dataTableOutput('P_Tab_2'),
+                                    
+                                    HTML("<br>"),
+                                    
+                                    h5(textOutput("P_Tab_3_title"),style="font-weight:bold"),
+                                    h5(textOutput("P_Tab_3_text")),
+                                    DT::dataTableOutput('P_Tab_3'),
+                                    
+                                    HTML("<br>"),
 
-                                         column(width = 12,h5("Performance Indicator Table",style="font-weight:bold")),
-                                         conditionalPanel(condition="input.Perf_type=='MSC continuity'",
-                                                            column(width=12,h5("< These performance metrics have been kept for App debugging reasons > The Performance Indicator Table includes the probabilities of each MP achieving the relevant MSC PI
-                                                            thresholds for stock status (PI 1.1.1), rebuilding (PI 1.1.2) and harvest strategy (PI 1.2.1).  The MPs are presented in
-                                                            order of projected long-term yield (relative to the MP of highest yield).
-                                                            MPs that pass all PI thresholds are in green and those that do not are presented in red.  MPs that are
-                                                            not available for use with current data are listed in black and the lacking data are listed in the last column to the
-                                                            right."))),
-                                         conditionalPanel(condition="input.Perf_type=='MSC'",
-                                                          column(width=12,h5(" The Performance Indicator Table includes the 'Stock Status' metrics - the probabilities of each MP exceeding the limit (0.5 BMSY) and
-                                                            the target (BMSY) biomass levels over the short term (burnin years). Also tabulated are the 'Harvest Strategy' metrics. These are similar but are evaluated over the long term (burnin-50 years).
-                                                            MPs that pass all probability thresholds are in green and those that do not are presented in red.  MPs that are  not available for use with current data are listed in black and the lacking data are listed in the last column to the
-                                                            right."))),
-                                         column(width=12,h5("MPs colored green are feasible and pass all of the performance indicator thresholds. MPs colored red are feasible but
-                                                            do not pass performance indicator thresholds. MPs colored black are not feasible. The column 'Reason not feasible'
-                                                            explains the reason for this and can be due to data restrictions (D) controlled by data question 1, and/or
-                                                            management restrictions (M) controled by management question 1.")),
-                                         tableOutput('Ptable'),
-                                         tableOutput('threshtable')
+                                    h5(textOutput("P_Fig_1_title"),style="font-weight:bold"),
+                                    h5(textOutput("P_Fig_1_text")),
+                                    plotOutput("P_Fig_1",height="auto"),
 
-                                         ),
-                                  column(width = 12,
-
-                                         column(width = 12,h5("Performance Trade-offs",style="font-weight:bold")),
-
-                                         conditionalPanel(condition="input.Perf_type=='MSC'",
-                                                          column(width=12,h5("The trade-off performance indicator Table includes all those MPs that satsified performance thresholds above.
-                                                                             Rebuilding is the probability that the stock rebuilds to BMSY levels after two mean generation times. Relative yield is the yield relative to the highest yield MP")),
-                                                          tableOutput('Ptable2'))
-
+                                    HTML("<br>"),
+                                    
+                                    h5(textOutput("P_Fig_2_title"),style="font-weight:bold"),
+                                    h5(textOutput("P_Fig_2_text")),
+                                    plotOutput("P_Fig_2",height="auto")
+                                         
                                   ),
-
-                                  column(width = 4,
-
-                                         column(width = 12,h5("Short-term stock status vs long term yield performance trade-off",style="color::grey")),
-                                         plotOutput("P1_LTY",height="auto")
-
-                                  ),
+                                  
+                                  
+                                  
                                   column(width = 4,
 
                                          column(width = 12,h5("Long-term stock status vs long term yield performance trade-off",style="color::grey")),

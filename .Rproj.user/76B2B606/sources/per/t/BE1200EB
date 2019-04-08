@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "701545835",
+    "hash" : "264260692",
     "id" : "BE1200EB",
-    "lastKnownWriteTime" : 1554489826,
-    "last_content_update" : 1554489826470,
+    "lastKnownWriteTime" : 1554757231,
+    "last_content_update" : 1554757231897,
     "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/makeOM.R",
     "project_path" : "inst/shiny_apps/MERA/makeOM.R",
     "properties" : {
-        "cursorPosition" : "102,17",
-        "scrollLine" : "72"
+        "cursorPosition" : "205,1",
+        "scrollLine" : "167"
     },
     "relative_order" : 9,
     "source_on_save" : false,

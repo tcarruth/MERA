@@ -1,0 +1,62 @@
+
+# ==================================================================================================== 
+# ====  Building skins for MERA  =====================================================================
+# ==================================================================================================== 
+
+# Testing
+
+setwd("C:/Users/tcarruth/Documents/GitHub/DLMDev/Testing/MERA")
+library(DLMtool)
+MSEobj<-runMSE(testOM,MPs=c("DCAC","MCD","DBSRA"))
+testOM_reb<-testOM
+testOM_reb@D<-c(0.1,0.15)
+MSEobj_reb<-runMSE(testOM_reb,MPs=c("DCAC","MCD","DBSRA"))
+
+
+# === Marine Stewardship Council ================================
+
+setwd(paste0(getwd(),"/MSC"))
+
+MSC_skin<-list()
+
+Intro_text<"This is a test of some MSC text"
+
+nTables<-1
+Tabs<-list()
+Tabs_text<-list()
+
+nFigs<-6
+Figs<-list()
+Figs_text<-list()
+
+
+
+
+
+
+
+# === FAO ========================================================
+
+
+
+
+# === PEW ========================================================
+
+
+
+# === DFO ========================================================
+
+
+
+
+# === NOAA ========================================================
+
+
+# === ICES ========================================================
+
+
+
+
+
+
+

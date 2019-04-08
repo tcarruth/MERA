@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1554747648580.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "302918832",
+    "id" : "2C057FBC",
+    "lastKnownWriteTime" : 1554763000,
+    "last_content_update" : 1554763000863,
+    "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/Default_skin_funcs.R",
+    "project_path" : "inst/shiny_apps/MERA/Default_skin_funcs.R",
+    "properties" : {
+        "cursorPosition" : "72,3",
+        "scrollLine" : "64"
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
