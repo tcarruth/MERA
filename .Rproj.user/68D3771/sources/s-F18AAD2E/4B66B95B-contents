@@ -29,14 +29,15 @@ shinyServer(function(input, output, session) {
   source("./Data_figs.R",local=TRUE)
 
   # Presentation of results
+  source("./Default_skin_funcs.R",local=TRUE)
   source("./Analysis_results.R",local=TRUE)
   source("./AI_results.R",local=TRUE)
   source("./Performance_table.R",local=TRUE)
-  source("./Performance_table_MSC.R",local=TRUE)
-  source("./Performance_table_TO.R",local=TRUE)
-  source("./Trade_off_plots.R",local=TRUE)
+  #source("./Performance_table_MSC.R",local=TRUE)
+  #source("./Performance_table_TO.R",local=TRUE)
+  #source("./Trade_off_plots.R",local=TRUE)
   source("./VOI.R",local=TRUE)
-  source("./MSC_source.R",local=TRUE)
+  #source("./MSC_source.R",local=TRUE)
   source("./Fease.R",local=TRUE)
 
   # OM construction / translation
@@ -47,8 +48,9 @@ shinyServer(function(input, output, session) {
   source("./OM_report.R",local=TRUE)
 
   # MSE running / indicator calculation
-  source("./MSE_runs.R",local=TRUE)
-
+  #source("./MSE_runs.R",local=TRUE)
+  source("./Redos.R",local=TRUE)
+  
   # Advice
   source("./Advice.R",local=TRUE)
 
@@ -177,7 +179,7 @@ shinyServer(function(input, output, session) {
   Fpanel_names<-c("M_list","D_list","h_list","FP_list","F_list","qh_list","q_list","LM_list","sel_list","dome_list","DR_list","PRM_list","sigR_list","Ah_list","Vh_list","A_list","V_list","Dh_list")
   Mpanel_names<-c("M1_list","IB_list","IV_list","IBE_list","IVE_list","IBSL_list","IVSL_list")
   Dpanel_names<-c("D1_list","CB_list","Beta_list","Err_list")
-  Slider_names<-c("loc","stmag")
+  Slider_names<-c("loc","stmag","co")
 
   MasterList<<-list(Fpanel_names,Mpanel_names,Dpanel_names,Slider_names)
 
@@ -678,21 +680,22 @@ shinyServer(function(input, output, session) {
           MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
         })
 
-        if(input$Debug){
+        #if(input$Debug){
           save(MSEobj_reb,file="MSEobj_reb")
           save(MSEobj,file="MSEobj")
           save(PanelState,file="PanelState")
-        }
+        #}
 
         # ==== Types of reporting ==========================================================
-
+        message("preredoEval")
         redoEval()
+        message("postredoEval")
         Calc(1)
         Tweak(0)
         updateTabsetPanel(session,"Res_Tab",selected="1")
 
 
-      },
+     },
       error = function(e){
         shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
                    For example a short lived stock a low stock depletion with recently declining effort.
@@ -1509,9 +1512,9 @@ shinyServer(function(input, output, session) {
   )
   observeEvent(input$All_IBSL,
                if(input$All_IBSL == 0 | input$All_IBSL%%2 == 0){
-                 updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=input$IB)
+                 updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=IBSL_list[input$IB[length(input$IB):1]])
                }else{
-                 updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=input$IB)
+                 updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=IBSL_list[input$IB[length(input$IB):1]])
                }
   )
   observeEvent(input$All_IVSL,

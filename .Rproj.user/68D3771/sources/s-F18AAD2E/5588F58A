@@ -5,7 +5,7 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "3283765005",
+    "hash" : "0",
     "id" : "5588F58A",
     "lastKnownWriteTime" : 1554436452,
     "last_content_update" : 1554436452229,
@@ -13,7 +13,7 @@
     "project_path" : "inst/shiny_apps/MERA/global.R",
     "properties" : {
         "cursorPosition" : "60,0",
-        "scrollLine" : "44"
+        "scrollLine" : "0"
     },
     "relative_order" : 5,
     "source_on_save" : false,

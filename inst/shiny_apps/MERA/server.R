@@ -680,21 +680,22 @@ shinyServer(function(input, output, session) {
           MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
         })
 
-        if(input$Debug){
+        #if(input$Debug){
           save(MSEobj_reb,file="MSEobj_reb")
           save(MSEobj,file="MSEobj")
           save(PanelState,file="PanelState")
-        }
+        #}
 
         # ==== Types of reporting ==========================================================
-
+        message("preredoEval")
         redoEval()
+        message("postredoEval")
         Calc(1)
         Tweak(0)
         updateTabsetPanel(session,"Res_Tab",selected="1")
 
 
-      },
+     },
       error = function(e){
         shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
                    For example a short lived stock a low stock depletion with recently declining effort.

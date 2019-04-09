@@ -59,7 +59,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   }
   
   OM<-Replace(OM,temp,Sub="Obs")
-
+  
   
   # ---- Fishery characteristics ---------------------------------------------------------------------------
   
@@ -91,10 +91,11 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   h2sim<-h2s[Ftype]
   locsim<-PanelState[[4]][[1]]
   stmagsim<-PanelState[[4]][[2]]
+  cosim<-PanelState[[4]][[3]]
   Find<-array(NA,c(nsim,nyears))
   #Ftrendfunc<-function(                 M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,start_mag=1,bm=F,plot=F){
     
-  for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=locsim,start_mag=2-stmagsim,bm=F,plot=F)
+  for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=locsim,start_mag=2-stmagsim,co=cosim,bm=F,plot=F)
   # for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=0.5,start_mag=2-0.5,bm=F,plot=F)
   
  
@@ -123,6 +124,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   LFS<-OM@cpars$Linf*Sel50sim*1.2
   cond<-LFS>0.95*OM@cpars$Linf
   LFS[cond]<-0.95*OM@cpars$Linf[cond]
+  Linf<-rep(100,nsim)
  
   OM@Vmaxlen<-getminmax(1,"dome",PanelState)                                               # F11 ----------
   
@@ -138,6 +140,8 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   # --- MPAs ------------------------------
  
   nareas<-3
+ 
+  
   Ahrng<-getminmax(1,"Ah",PanelState) # size / frac habitat area 3                         # F15 ----------
   Vhrng<-getminmax(1,"Vh",PanelState) # prob staying in area 3                             # F16 ----------
   Arng<-getminmax(1,"A",PanelState)   # size / frac habitat area 1                         # F17 ----------
@@ -204,10 +208,12 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   
   # ---- Custom parameters ---------------------------------------------------------------------------------------------------
  
-  OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias))
+  OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Linf=Linf,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias))
 
   saveRDS(OM,"OM_autosave.rda")
   
-  OM
+  #OM
+  testOM@nsim<-8
+  testOM
 
 }

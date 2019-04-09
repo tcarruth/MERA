@@ -124,6 +124,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   LFS<-OM@cpars$Linf*Sel50sim*1.2
   cond<-LFS>0.95*OM@cpars$Linf
   LFS[cond]<-0.95*OM@cpars$Linf[cond]
+  Linf<-rep(100,nsim)
  
   OM@Vmaxlen<-getminmax(1,"dome",PanelState)                                               # F11 ----------
   
@@ -207,7 +208,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
   
   # ---- Custom parameters ---------------------------------------------------------------------------------------------------
  
-  OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias))
+  OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Linf=Linf,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias))
 
   saveRDS(OM,"OM_autosave.rda")
   
