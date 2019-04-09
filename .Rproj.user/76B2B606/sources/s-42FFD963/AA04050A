@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1554835237691.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1401238300",
+    "id" : "AA04050A",
+    "lastKnownWriteTime" : 1554840463,
+    "last_content_update" : 1554840463540,
+    "path" : "~/GitHub/DLMDev/Testing/MERA/OM autosave test.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "70,0",
+        "scrollLine" : "53",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 15,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
