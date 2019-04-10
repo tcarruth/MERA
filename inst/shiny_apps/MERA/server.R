@@ -29,45 +29,44 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Data_figs.R",local=TRUE)
 
   # Presentation of results
-  source("./Default_skin_funcs.R",local=TRUE)
+  source("./Source/Skins/Default_skin_funcs.R",local=TRUE)
+ 
   source("./Analysis_results.R",local=TRUE)
   source("./AI_results.R",local=TRUE)
-  source("./Performance_table.R",local=TRUE)
-  #source("./Performance_table_MSC.R",local=TRUE)
-  #source("./Performance_table_TO.R",local=TRUE)
-  #source("./Trade_off_plots.R",local=TRUE)
-  source("./VOI.R",local=TRUE)
-  #source("./MSC_source.R",local=TRUE)
-  source("./Fease.R",local=TRUE)
+  #source("./VOI.R",local=TRUE)
+  #source("./Fease.R",local=TRUE)
 
   # OM construction / translation
-  source("./makeOM.R",local=TRUE)
-  source("./ML2D.R",local=TRUE)
-
+  source("./Source/OM/makeOM.R",local=TRUE)
+  source("./Source/OM/ML2D.R",local=TRUE)
+  source('./Source/OM/Backwards.R',local=TRUE ) # Stochastic SRA until progress bar update comes to DLMtool
+  
   # Reporting
-  source("./OM_report.R",local=TRUE)
+  source("./Source/Reports/OM_report.R",local=TRUE)
 
   # MSE running / indicator calculation
-  #source("./MSE_runs.R",local=TRUE)
-  source("./Redos.R",local=TRUE)
+  source("./Source/MSE/Redos.R",local=TRUE)
   
   # Advice
   source("./Advice.R",local=TRUE)
-
-  # Miscellaneous
-  source("./Misc.R",local=TRUE)
-  source("./Data_trim.R",local=TRUE)
-  #source('./modSampCpars.R',local=TRUE)
-  source("./Update_objects.R",local=TRUE) # functions that update stored objects, panelstate justification etc
-  source('./Fease_Functions.R',local=TRUE )
+  
+  # SRA related
   source('./Source/SSRA/SSRA.R',local=TRUE ) # Stochastic SRA wrapper
   source('./Source/SSRA/StochasticSRA_MSC.R',local=TRUE ) # Stochastic SRA until progress bar update comes to DLMtool
-  source('./Backwards.R',local=TRUE ) # Stochastic SRA until progress bar update comes to DLMtool
-  #assignInNamespace("SampleCpars",SampleCpars_mod, ns="DLMtool")
-  #assignInNamespace("incProgress",shiny::incProgress, ns="DLMtool")
-
-  source('./Custom_MPs.R',local=TRUE)
-
+  
+  # Data related
+  source("./Source/Data/Data_trim.R",local=TRUE)
+  source('./Source/Data/Fease_Functions.R',local=TRUE )
+  
+  # MP related
+  source('./Source/MPs/Custom_MPs.R',local=TRUE)
+  
+  # MERA shiny app related
+  source("./Source/App/Update_objects.R",local=TRUE) # functions that update stored objects, panelstate justification etc
+  
+  # Miscellaneous
+  source("./Source/Misc/Misc.R",local=TRUE)
+ 
   incProgress<-shiny::incProgress
 
   # --------------------------------------------------------------
@@ -474,7 +473,7 @@ shinyServer(function(input, output, session) {
       CondOM(0)
       Ind(0)
       Quest(0)
-      redoEval()
+      redoPlan()
       updateTabsetPanel(session,"Res_Tab",selected="1")
     }else{
       shinyalert("File read error", "This does not appear to be a MERA evaluation object", type = "error")
@@ -520,7 +519,7 @@ shinyServer(function(input, output, session) {
       CondOM(0)
       Quest(0)
       Ind(0)
-      redoApp()
+      redoEval()
       updateTabsetPanel(session,"Res_Tab",selected="2")
     }else{
       shinyalert("File read error", "This does not appear to be a MERA Application object", type = "error")
@@ -661,13 +660,14 @@ shinyServer(function(input, output, session) {
 
     #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
 
-    #tryCatch({
+    tryCatch({
 
-        withProgress(message = "Running Evaluation", value = 0, {
+        withProgress(message = "Running Planning Evaluation", value = 0, {
           silent=T
           MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
         })
         
+        MSEobj@Misc[[4]]<<-SampList
         Dep_reb<-runif(OM@nsim,input$Dep_reb[1],input$Dep_reb[2]) # is a %
         OM_reb<-OM
         OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0 
@@ -676,6 +676,7 @@ shinyServer(function(input, output, session) {
         withProgress(message = "Rebuilding Analysis", value = 0, {
           MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
         })
+        MSEobj_reb@Misc[[4]]<<-SampList
 
         if(input$Debug){
           save(OM,file="OM")
@@ -689,22 +690,22 @@ shinyServer(function(input, output, session) {
 
         # ==== Types of reporting ==========================================================
           
-        if(input$Debug)message("preredoEval")
-        redoEval()
-        if(input$Debug)message("postredoEval")
+        if(input$Debug)message("preredoPlan")
+        redoPlan()
+        if(input$Debug)message("postredoPlan")
         Calc(1)
         Tweak(0)
         updateTabsetPanel(session,"Res_Tab",selected="1")
 
-     #},
-      #error = function(e){
-      #  shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-       #            For example a short lived stock a low stock depletion with recently declining effort.
-      #             Try revising operating model parameters.", type = "info")
-      #  return(0)
-      #}
+     },
+      error = function(e){
+        shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+                   For example a short lived stock a low stock depletion with recently declining effort.
+                  Try revising operating model parameters.", type = "info")
+        return(0)
+      }
 
-    #)
+    )
 
   }) # press calculate
 
@@ -728,7 +729,7 @@ shinyServer(function(input, output, session) {
     }
 
     tryCatch({
-        withProgress(message = "Running Application", value = 0, {
+        withProgress(message = "Running Evaluation", value = 0, {
           AppMPs<-input$sel_MP
           MSEobj_app<<-runMSE(OM,MPs=AppMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
 
@@ -753,7 +754,7 @@ shinyServer(function(input, output, session) {
 
         App(1)
         Tweak(0)
-        redoApp()
+        redoEval()
         updateTabsetPanel(session,"Res_Tab",selected="2")
       },
       error = function(e){
@@ -828,8 +829,8 @@ shinyServer(function(input, output, session) {
   # Update tables if ...
 
   observeEvent(input$Redo,{
-    if(input$Res_Tab==1)  redoEval()
-    if(input$Res_Tab==2)  redoApp()
+    if(input$Res_Tab==1)  redoPlan()
+    if(input$Res_Tab==2)  redoEval()
     Tweak(0)
   })
 

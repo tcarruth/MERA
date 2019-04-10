@@ -101,7 +101,6 @@ shinyUI(
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
 
-
     fluidRow(
 
       HTML("<br>"),
@@ -114,13 +113,13 @@ shinyUI(
 
              column(4,
 
-               radioButtons("Mode",label=NULL,choices=c("Risk Evaluation","Planning","Assessment"),selected="Planning")),
+               radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Planning","Evaluation"),selected="Planning")),
 
                column(8,
                       h5("MERA contains two modes of differing complexity",style = "color:grey"),
-                      h5(" - Risk evaluation mode: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
-                      h5(" - Planning mode: uses  is an entirely questionnaire based description of fishery dynamics for calculation of biological risk where data are limited",style = "color:grey"),
-                      h5(" - Advanced mode builds on the questionnaire to use data to condition operating models and identify exceptional circumstances ", style = "color:grey")
+                      h5(" - Risk Assessment mode: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
+                      h5(" - Planning mode: calculate the performance of many candidate management options (multiple MPs)",style = "color:grey"),
+                      h5(" - Evaluation mode: given an MP is in use, analyse new data and monitor performance (single MP)", style = "color:grey")
                )
 
       ),
@@ -130,10 +129,10 @@ shinyUI(
 
       column(12,style="height:60px",
 
-            conditionalPanel(condition="output.Quest==0&input.Mode=='Risk Evaluation'",h4("CHARACTERIZE FISHERY")),
-            conditionalPanel(condition="output.Quest==1&input.Mode=='Risk Evaluation'",h4("CHARACTERIZE FISHERY",style="color:green")),
-            conditionalPanel(condition="output.Quest==0&input.Mode!='Risk Evaluation'",h4("STEP A1: CHARACTERIZE FISHERY SYSTEM")),
-            conditionalPanel(condition="output.Quest==1&input.Mode!='Risk Evaluation'",h4("STEP A1: CHARACTERIZE FISHERY SYSTEM",style="color:green")),
+            conditionalPanel(condition="output.Quest==0&input.Mode=='Risk Assessment'",h4("CHARACTERIZE FISHERY")),
+            conditionalPanel(condition="output.Quest==1&input.Mode=='Risk Assessment'",h4("CHARACTERIZE FISHERY",style="color:green")),
+            conditionalPanel(condition="output.Quest==0&input.Mode!='Risk Assessment'",h4("STEP A1: CHARACTERIZE FISHERY SYSTEM")),
+            conditionalPanel(condition="output.Quest==1&input.Mode!='Risk Assessment'",h4("STEP A1: CHARACTERIZE FISHERY SYSTEM",style="color:green")),
 
             hr()
       ),
@@ -822,7 +821,7 @@ shinyUI(
 
        column(12,style="height:25px"),
 
-       conditionalPanel(condition="input.Mode!='Risk Evaluation'",
+       conditionalPanel(condition="input.Mode!='Risk Assessment'",
 
          conditionalPanel(condition="output.CondOM==0",h4("STEP A2: LOAD AVAILABLE DATA (OPTIONAL)")),
          conditionalPanel(condition="output.CondOM==1",h4("STEP A2: LOAD AVAILABLE DATA (OPTIONAL)",style="color:green")),
@@ -868,10 +867,10 @@ shinyUI(
 
         column(12,style="height:45px"),
 
-        conditionalPanel(condition="output.MadeOM==0&input.Mode!='Risk Evaluation'",h4("STEP B: BUILD OPERATING MODELS")),
-        conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Evaluation'",h4("STEP B: BUILD OPERATING MODELS",style="color:green")),
+        conditionalPanel(condition="output.MadeOM==0&input.Mode!='Risk Assessment'",h4("STEP B: BUILD OPERATING MODELS")),
+        conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Assessment'",h4("STEP B: BUILD OPERATING MODELS",style="color:green")),
 
-        conditionalPanel(condition="input.Mode!='Risk Evaluation'",
+        conditionalPanel(condition="input.Mode!='Risk Assessment'",
           hr(),
   
           fluidRow(
@@ -913,13 +912,13 @@ shinyUI(
             column(4,
   
                   column(6,style="padding:10px",
-                         conditionalPanel(condition="input.Mode!='Risk Evaluation'",
+                         conditionalPanel(condition="input.Mode!='Risk Assessment'",
   
                          fileInput("Load_OM","Load  (.OM)"))
                   ),
   
                   column(2,
-                         conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Evaluation'",
+                         conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Assessment'",
                            h5("Save",style="font-weight:bold"),
                            downloadButton("Save_OM","",width=70)
                          )
@@ -946,8 +945,8 @@ shinyUI(
           )
         ), # risk evaluation doesn't have OM step mode
         
-        # =============== Risk Evaluation ================================================================================================================================================
-        conditionalPanel(condition="input.Mode=='Risk Evaluation'",
+        # =============== Risk Assessment ================================================================================================================================================
+        conditionalPanel(condition="input.Mode=='Risk Assessment'",
            conditionalPanel(condition="output.Calc==0",h4("CALCULATE RISK")),
            conditionalPanel(condition="output.Calc==1",h4("CALCULATE RISK",style="color:green")),
            hr(),
@@ -968,7 +967,7 @@ shinyUI(
                          
                          h5("Current fishing effort, current catches, FMSY fishing and zero catches are projected to evaluate status-quo fishery risk", style = "color:grey"),
                        
-                         h5("A guide to the risk evaluation model can be found",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
+                         h5("A guide to the Risk Assessment mode can be found",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
                          
                   )
               )
@@ -1059,9 +1058,8 @@ shinyUI(
                     column(4,
                            
                            conditionalPanel(condition="output.Calc==1",
-                                            h5("Evaluation Report",style="font-weight:bold"),
-                                            conditionalPanel(condition="input.Perf_type=='MSC continuity'",downloadButton("Build_Eval","")),
-                                            conditionalPanel(condition="input.Perf_type=='MSC'",downloadButton("Build_Eval_MSC",""))
+                                            h5("Planning Report",style="font-weight:bold"),
+                                            downloadButton("Build_Plan","")
                            )
                            
                     )
@@ -1071,7 +1069,7 @@ shinyUI(
         ),                 
   
     
-        conditionalPanel(condition="input.Mode=='Assessment'",
+        conditionalPanel(condition="input.Mode=='Evaluation'",
           column(12,style="height:15px"),          
           conditionalPanel(condition="output.Calc==0",h4("STEP C: STATUS DETERMINATION AND INDICATORS")),
           conditionalPanel(condition="output.Calc==1",h4("STEP C: STATUS DETERMINATION AND INDICATORS",style="color:green")),
@@ -1201,35 +1199,19 @@ shinyUI(
 
             fluidRow(
               column(2,
-                conditionalPanel(width=4,condition="(output.App==1|output.Calc==1)&(input.Res_Tab==1|input.Res_Tab==2)",
-
+                conditionalPanel(width=4,condition="output.Calc==1",
+                  column(12,HTML("<br>")),
+                  h4("Options",style="font-weight:bold"),
                   column(12,HTML("<br>")),
                   column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
                   column(12,HTML("<br>","<br>")),
                   numericInput("burnin", label = "Burn-in years", value=10,min=5,max=20),
+                  numericInput("res", label = "Reporting resolution", value=1,min=1,max=10),
                   numericInput("ntop", label = "Number of top MPs to display", value=10,min=1,max=80),
                   #checkboxInput("LTL", label = "Low Trophic Level PIs", value = FALSE),
-                  selectInput("Perf_type", label = "Performance metrics", choices=c("MSC","MSC continuity"),selected="MSC"),
                   column(12,conditionalPanel(condition="output.Data==1",checkboxInput("Fease", label = "Advanced data feasibility", value = FALSE))),
-                  column(12,HTML("<br>","<br>")),
-                  h5("Probability Thresholds",style="font-weight:bold"),
-                  hr(),
-                  conditionalPanel(condition="input.Perf_type=='MSC continuity'",
-                    sliderInput("P111a","P.1.1.1a",min=0,max=100,value=70,step=5),
-                    sliderInput("P111b","P.1.1.1b",min=0,max=100,value=50,step=5),
-                    sliderInput("P112","P.1.1.2",min=0,max=100,value=70,step=5),
-                    sliderInput("P121a","P.1.2.1a",min=0,max=100,value=80,step=5),
-                    sliderInput("P121b","P.1.2.1b",min=0,max=100,value=50,step=5),
-                    actionButton("Default_thres","Reset to default thresholds")
-                  ),
-                  conditionalPanel(condition="input.Perf_type=='MSC'",
-                   sliderInput("P_STL","Stock Status - Limit",min=0,max=100,value=70,step=5),
-                   sliderInput("P_STT","Stock Status - Target",min=0,max=100,value=50,step=5),
-                   sliderInput("P_LTL","Harvest Strategy - Limit",min=0,max=100,value=80,step=5),
-                   sliderInput("P_LTT","Harvest Strategy - Target",min=0,max=100,value=50,step=5),
-                   actionButton("Default_thres_MSC","Reset to default thresholds")
-                  )
-
+                  column(12,HTML("<br>","<br>"))
+        
                 ), # end of app or eval control panel
 
                 conditionalPanel(width=4,condition="output.Ind==1&input.Res_Tab==3",
@@ -1277,229 +1259,135 @@ shinyUI(
 
 
               column(10,
-               tabsetPanel( id = "Res_Tab",selected=1,
-                tabPanel(h4("Evaluation",style = "color:black"),
-                         conditionalPanel(condition="output.Calc==0&input.Mode=='Streamlined'",
-                                          h5("Evaluation MSE not run yet (Step C)", style = "color:grey")
-                         ),
-                         conditionalPanel(condition="output.Calc==0&input.Mode=='Advanced'",
-                                          h5("Evaluation MSE not run yet (Step C1)", style = "color:grey")
-                         ),
-                         conditionalPanel(condition="output.Calc==1",
+              
+                 conditionalPanel(condition="output.Calc==0&input.Mode=='Streamlined'",
+                                  h5("Evaluation MSE not run yet (Step C)", style = "color:grey")
+                 ),
+                 conditionalPanel(condition="output.Calc==0&input.Mode=='Advanced'",
+                                  h5("Evaluation MSE not run yet (Step C1)", style = "color:grey")
+                 ),
+                 conditionalPanel(condition="output.Calc==1",
 
-                                fluidRow(
-                                  column(width = 12,
-                                    
-                                    HTML("<br>"),
-                                    
-                                    h5(textOutput("P_Tab_1_title"),style="font-weight:bold"),
-                                    h5(textOutput("P_Tab_1_text")),
-                                    DT::dataTableOutput('P_Tab_1'),
-                                    
-                                    HTML("<br>"),
-                                    
-                                    h5(textOutput("P_Fig_1_title"),style="font-weight:bold"),
-                                    h5(textOutput("P_Fig_1_text")),
-                                    plotOutput("P_Fig_1",height="auto"),
-                                    
-                                    HTML("<br>"),
-                                   
-                                    h5(textOutput("P_Tab_2_title"),style="font-weight:bold"),
-                                    h5(textOutput("P_Tab_2_text")),
-                                    DT::dataTableOutput('P_Tab_2'),
-                                    
-                                    HTML("<br>"),
-                                    
-                                    h5(textOutput("P_Fig_2_title"),style="font-weight:bold"),
-                                    h5(textOutput("P_Fig_2_text")),
-                                    plotOutput("P_Fig_2",height="auto"),
-                                    
-                                    HTML("<br>"),
-                                    
-                                    h5(textOutput("P_Tab_3_title"),style="font-weight:bold"),
-                                    h5(textOutput("P_Tab_3_text")),
-                                    DT::dataTableOutput('P_Tab_3'),
-                                    
-                                    HTML("<br>"),
-                                    
-                                    h5(textOutput("P_Fig_3_title"),style="font-weight:bold"),
-                                    h5(textOutput("P_Fig_3_text")),
-                                    plotOutput("P_Fig_3",height="auto"),
-                                    
-                                    HTML("<br>"),
-                                    
-                                    h5(textOutput("P_Tab_4_title"),style="font-weight:bold"),
-                                    h5(textOutput("P_Tab_4_text")),
-                                    DT::dataTableOutput('P_Tab_4'),
-                                    
-                                    HTML("<br>"),
-                                    
-                                    h5(textOutput("P_Fig_4_title"),style="font-weight:bold"),
-                                    h5(textOutput("P_Fig_4_text")),
-                                    plotOutput("P_Fig_4",height="auto")
-                                          
-                                         
-                                  ),
-                                  
-                                  column(width = 4,
-
-                                         column(width = 12,h5("Long-term stock status vs long term yield performance trade-off",style="color::grey")),
-                                         plotOutput("P2_LTY",height="auto")
-
-                                  ),
-
-                                  column(width = 4,
-
-                                         column(width = 12,h5("Rebuilding performance vs long term yield trade-off",style="color::grey")),
-                                         plotOutput("P3_LTY",height="auto")
-
-                                  )
-                                ), # end of fluid row
-
-                                fluidRow(
-                                  column(width = 12,h5("B/BMSY and Yield (relative to today) projection plots",style="font-weight:bold")),
-                                  column(width=12,h5("Projections of biomass and yield relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations")),
-                                  plotOutput("wormplot",height="auto"),
-
-                                  column(width = 12,h5("Rebuilding analysis",style="font-weight:bold")),
-                                  column(width=12,h5("Projections of biomass relative to MSY and unfished (B0) levels. The rebuilding analysis simulates the fishery currently in a depleted state even if the user-specified depletion in the operating model is higher.
-                                                     In these cases, the rebuilding analysis provides added assurance whether a particular management procedure would be likely to rebuild the stock if the user-specified depletion level is overly optimistic and the stock status is more depleted in actuality, and thus in need of rebuilding.
-                                                     The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations")),
-                                  plotOutput("wormplot2",height="auto"),
-
-                                  column(width = 12,h5("PI.1.1.1 uncertainties",style = "font-weight:bold")),
-                                  column(width=12,h5("These plots show how many simulations could be assigned to each of the SG regions defined by PI.1.1.1 ")),
-                                  plotOutput("PI111_uncertain",height="auto"),
-
-                                  column(width = 12,h5("Cost of Current Uncertainties Analysis",style = "font-weight:bold")),
-                                  column(width=12,h5("This is a post-hoc analysis to determine which question led to the largest uncertainty in long term yield.
-                                                     The ranges in the answers of each question are divided into 8 separate 'bins'.
-                                                     The variance in long term yield among these bins is represented in the bars below.
-                                                     Note: this is not informative of MP performance, but should be used after an MP is selected to evaluate the cost or relevance of each question")),
-                                  plotOutput("CCU",height="auto"),
-
-                                  column(width = 12,h5("MSE convergence diagnostics",style = "font-weight:bold")),
-                                  column(width=12,h5("Have enough simulations been carried out to interpret results? Ideally the lines in the graphs below should be flat and parallel to each other. If they are just parallel, the MP ranking may be stable but absolute MP performance is not")),
-                                  plotOutput("Eval_Converge",height="auto")
-
-                                ) # end of fluid row
-
-                    ), value=1),
-
-                    tabPanel(h4("Application",style = "color:black"),
-                             conditionalPanel(condition="output.App==0&input.Mode=='Advanced'",
-                                     h5("Application MSE not run yet (Step C2)", style = "color:grey")
-                             ),
-                             conditionalPanel(condition="output.App==0&input.Mode=='Streamlined'",
-                                     h5("Application results are calculated in Advanced mode only", style = "color:grey")
-                             ),
-                             conditionalPanel(condition="output.App==1",
-
-                                              column(width = 12,
-
-                                                     fluidRow(
-                                                       column(width = 12,h5("Performance Indicator Table",style="font-weight:bold")),
-                                                       conditionalPanel(condition="input.Perf_type=='MSC continuity'",
-                                                                        column(width=12,h5("< These performance metrics have been kept for App debugging reasons > The Performance Indicator Table includes the probabilities of each MP achieving the relevant MSC PI
-                                                                                           thresholds for stock status (PI 1.1.1), rebuilding (PI 1.1.2) and harvest strategy (PI 1.2.1).  The MPs are presented in
-                                                                                           order of projected long-term yield (relative to the highest yield MP).
-                                                                                           MPs that pass all PI thresholds are in green and those that do not are presented in red.  MPs that are
-                                                                                           not available for use with current data are listed in black and the lacking data are listed in the last column to the
-                                                                                           right."))),
-                                                       conditionalPanel(condition="input.Perf_type=='MSC'",
-                                                                        column(width=12,h5("The Performance Indicator Table includes the 'Stock Status' metrics - the probabilities of each MP exceeding the limit (0.5 BMSY) and
-                                                                                           the target (BMSY) biomass levels over the short term (burnin years). Also tabulated are the 'Harvest Strategy' metrics. These are similar but are evaluated over the long term (burnin-50 years).
-                                                                                           MPs that pass all probability thresholds are in green and those that do not are presented in red.  MPs that are  not available for use with current data are listed in black and the lacking data are listed in the last column to the
-                                                                                           right."))),
-                             tableOutput('App_Ptable'),
-                             tableOutput('App_threshtable'),
-
-                             column(width = 12,h5("Biomass projection plots and risk assessment",style="font-weight:bold")),
-                             column(width=12,h5("Projections of biomass that show the derivation of the various PI scores in the table above")),
-                             plotOutput("MSC_PMs",height="auto"),
-
-                             column(width = 12,h5("B/BMSY and Yield (relative to today) projection plots",style="font-weight:bold")),
-                             column(width=12,h5("Projections of biomass and yield. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations.")),
-                             plotOutput("App_wormplot",height="auto"),
-
-                             column(width = 12,h5("F/FMSY and Yield (relative to MSY) projection plots",style="font-weight:bold")),
-                             column(width=12,h5("Projections of fishing mortality rate and yield relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations.")),
-                             plotOutput("App_wormplot2",height="auto"),
-
-                             column(width = 12,h5("Rebuilding analysis",style="font-weight:bold")),
-                             column(width=12,h5("Projections of biomass relative to MSY and unfished (B0) levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations.")),
-                             plotOutput("App_wormplot3",height="auto"),
-
-                             column(width = 12,h5("PI.1.1.1 uncertainties",style = "font-weight:bold")),
-                             column(width=12,h5("These plots show how many simulations could be assigned to each of the SG regions defined by PI.1.1.1 ")),
-                             plotOutput("App_PI111_uncertain",height="auto"),
-
-                             column(width = 12,h5("Cost of Current Uncertainties Analysis",style = "font-weight:bold")),
-                             column(width=12,h5("This is a post-hoc analysis to determine which question led to the largest uncertainty in long term yield. The ranges in the answers of each question are divided into 8 separate 'bins'. The variance in long term yield among these bins is represented in the bars below.")),
-                             plotOutput("App_CCU",height="auto"),
-
-                             column(width = 12,h5("Value of information analysis",style = "font-weight:bold")),
-                             column(width=12,h5("This is similar to cost-of-current uncertainties but identifies those data errors and biases that are most likely to impact the long-term yield performance of the MP.")),
-                             plotOutput("App_VOI",height="auto")
-
-
-                          )
-                      )
-
-                    ),
-                    value=2),
-
-                    tabPanel(h4("Indicators",style = "color:black"),
-
-                             conditionalPanel(condition="output.Ind==0&input.Mode=='Advanced'",
-                                      h5("Indicators not calculated yet (Step D)", style = "color:grey")
-                             ),
-                             conditionalPanel(condition="output.App==0&input.Mode=='Streamlined'",
-                                              h5("Indicator results are calculated in Advanced mode only", style = "color:grey")
-                             ),
-                             conditionalPanel(condition="output.Ind==1",
-                               column(width=12,h5("In this demonstration version of the ancillary indicators function, an example observed data point after 6 years (blue cross) is compared to the posterior predictive data of the operating model. The Mahalanobis distance is the multivariate distance from the posterior mean, taking account of data cross-correlation. When the observed data are within the 95th percentile the data are considered consistent with the operating model")),
-                               hr(),
-                               fluidRow(
-                                 column(width = 12,h5("Posterior predictive data cross-correlation (statistics over the first 6 projected years)",style="color::grey")),
-                                 column(width = 12,h5("CS = Catch Slope, CV = Catch Variability, CM = Catch Mean",style="color::grey")),
-                                 column(width = 12,h5("IS = Index Slope, IM = Index Mean",style="color::grey")),
-                                 column(width = 12,h5("MLS = Mean Length Slope, MLM = Mean Length",style="color::grey")),
-
-                                 plotOutput("CC",height="auto"),
-                                 column(width = 12,h5("Mahalanobis distance / quantile plot",style="color::grey")),
-                                 plotOutput("mdist",height="auto")
-
-                               )
-                             ),
-
-                             value=3),
-
-
-                tabPanel(h4("Advice",style = "color:black"),
-                         conditionalPanel(condition="output.AdCalc==0&input.Mode=='Advanced'",
-                           h5("Data not loaded yet (Step A2)", style = "color:grey")
-                         ),
-                         conditionalPanel(condition="output.AdCalc==0&input.Mode=='Streamlined'",
-                           h5("Advice is calculated in Advanced mode only", style = "color:grey")
-                         ),
-                         conditionalPanel(condition="output.AdCalc==1",
-                           column(12,style="height:25px"),
-                           DT::dataTableOutput('Advice'),
-                           plotOutput("Advice_TAC",height="auto")
-                         ),
-                         value=4)
-
-               )
-              )
-            )
-          )
+                    fluidRow(
+                      column(width = 12,
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Tab_1_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Tab_1_text")),
+                        DT::dataTableOutput('P_Tab_1'),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Fig_1_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Fig_1_text")),
+                        plotOutput("P_Fig_1",height="auto"),
+                        
+                        HTML("<br>"),
+                       
+                        h4(textOutput("P_Tab_2_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Tab_2_text")),
+                        DT::dataTableOutput('P_Tab_2'),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Fig_2_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Fig_2_text")),
+                        plotOutput("P_Fig_2",height="auto"),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Tab_3_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Tab_3_text")),
+                        DT::dataTableOutput('P_Tab_3'),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Fig_3_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Fig_3_text")),
+                        plotOutput("P_Fig_3",height="auto"),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Tab_4_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Tab_4_text")),
+                        DT::dataTableOutput('P_Tab_4'),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Fig_4_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Fig_4_text")),
+                        plotOutput("P_Fig_4",height="auto"),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Tab_5_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Tab_5_text")),
+                        DT::dataTableOutput('P_Tab_5'),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Fig_5_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Fig_5_text")),
+                        plotOutput("P_Fig_5",height="auto"),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Tab_6_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Tab_6_text")),
+                        DT::dataTableOutput('P_Tab_6'),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Fig_6_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Fig_6_text")),
+                        plotOutput("P_Fig_6",height="auto"),  
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Tab_7_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Tab_7_text")),
+                        DT::dataTableOutput('P_Tab_7'),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Fig_7_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Fig_7_text")),
+                        plotOutput("P_Fig_7",height="auto"), 
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Tab_8_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Tab_8_text")),
+                        DT::dataTableOutput('P_Tab_8'),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Fig_8_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Fig_8_text")),
+                        plotOutput("P_Fig_8",height="auto"), 
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Tab_9_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Tab_9_text")),
+                        DT::dataTableOutput('P_Tab_9'),
+                        
+                        HTML("<br>"),
+                        
+                        h4(textOutput("P_Fig_9_title"),style="font-weight:bold"),
+                        h5(textOutput("P_Fig_9_text")),
+                        plotOutput("P_Fig_9",height="auto") 
+                             
+                      ) # column
+                    ) # fluid row
+                  ) # conditional panel
+              )# column
+            ) # fluid row
+          ) # column
       ), # end of Results
 
-
-
-     
-     conditionalPanel(condition="input.Mode!='Risk Evaluation'",
+     conditionalPanel(condition="input.Mode!='Risk Assessment'",
                       column(12,style="height:15px"),
       h4("HELP"),
       hr(),
@@ -1544,7 +1432,7 @@ shinyUI(
 
       column(12,style="height:45px"),
 
-      conditionalPanel(condition="input.Mode!='Risk Evaluation'",
+      conditionalPanel(condition="input.Mode!='Risk Assessment'",
             h4("ADVANCED"),
             hr(),
 

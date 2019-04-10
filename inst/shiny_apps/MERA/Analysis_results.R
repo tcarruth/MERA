@@ -125,18 +125,7 @@ MSC_PMs<-function(MSEobj,MSEobj_reb,curyr=2018,MGTmult=2,MPcols=NA){
   mtext("After 2MGT",3,line=labline,cex=labcex,col='dark grey',font=2)
 }
 
-plotquant<-function(x,p=c(0.05,0.25,0.75,0.95),yrs,qcol,lcol,addline=T,ablines=NA){
-  ny<-length(yrs)
-  qs<-apply(x,2,quantile,p=p[c(1,4)])
-  qsi<-apply(x,2,quantile,p=p[2:3])
-  polygon(c(yrs,yrs[ny:1]),c(qs[1,],qs[2,ny:1]),border=NA,col='#b3ecff')
 
-  polygon(c(yrs,yrs[ny:1]),c(qsi[1,],qsi[2,ny:1]),border=NA,col=qcol)
-  if(!is.na(ablines[1]))abline(h=ablines,col='#99999980')
-
-  if(addline)for(i in 1:2)lines(yrs,x[i,],col=lcol,lty=i)
-  lines(yrs,apply(x,2,quantile,p=0.5),lwd=2,col="white")
-}
 
 Pplot3<-function(MSEobj,maxcol=6,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",curyr=2018,quants=c(0.05,0.25,0.75,0.95),MPcols,maxrow=NA){
 

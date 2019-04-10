@@ -1,0 +1,527 @@
+
+# ====================================================================================================================================
+# ====  Skins  =======================================================================================================================
+# ====================================================================================================================================
+
+
+
+
+Skins<-list()
+
+# ==== MSC =============================================================================
+
+# Reused Table code
+
+
+
+
+
+# Reused Figure code
+
+BMSYproj<-function(MSEobj,MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",quants=c(0.05,0.25,0.75,0.95)){
+  
+  MPcols<-rep('purple',MSEobj@nMPs)
+  
+  maxcol=5
+  MPs<-MSEobj@MPs
+  nMPs<-length(MPs)
+  yrs<-Current_Year+(1:MSEobj@proyears)
+  
+  nc<-maxcol
+  nr<-ceiling(nMPs/nc)
+  par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+  
+  B_BMSY<-MSEobj@B_BMSY
+  Blims <- c(0,quantile(B_BMSY,0.95))
+
+  for(i in 1:nMPs){
+    plot(range(yrs),Blims,col="white")
+    plotquant(B_BMSY[,i,],p=quants,yrs,qcol,lcol,ablines=c(0.5,1))
+    mtext(MSEobj@MPs[i],3,line=0.2,font=2,col=MPcols[i])
+    
+    if(i==1){
+      Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
+      legend('topleft',legend=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" ),bty='n')
+    }
+  }
+  mtext("B/BMSY",2,line=0.7,outer=T)
+  mtext("Projection Year",1,line=0.7,outer=T)
+  
+}
+
+plotquant<-function(x,p=c(0.05,0.25,0.75,0.95),yrs,qcol,lcol,addline=T,ablines=NA){
+  ny<-length(yrs)
+  qs<-apply(x,2,quantile,p=p[c(1,4)])
+  qsi<-apply(x,2,quantile,p=p[2:3])
+  polygon(c(yrs,yrs[ny:1]),c(qs[1,],qs[2,ny:1]),border=NA,col='#b3ecff')
+  
+  polygon(c(yrs,yrs[ny:1]),c(qsi[1,],qsi[2,ny:1]),border=NA,col=qcol)
+  if(!is.na(ablines[1]))abline(h=ablines,col='#99999980')
+  
+  if(addline)for(i in 1:2)lines(yrs,x[i,],col=lcol,lty=i)
+  lines(yrs,apply(x,2,quantile,p=0.5),lwd=2,col="white")
+}
+
+LT_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",quants=c(0.05,0.25,0.75,0.95)){
+  
+  MPcols<-rep('purple',MSEobj_reb@nMPs)
+  
+  MPs<-MSEobj_reb@MPs
+  nMPs<-length(MPs)
+  yrs<-Current_Year+(1:MSEobj_reb@proyears)
+  
+  nr<-ceiling(nMPs/maxcol)
+  nc<-maxcol
+  
+  par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+  
+  B_BMSY<-MSEobj_reb@B_BMSY
+  B_B0<-MSEobj_reb@B_BMSY*MSEobj_reb@OM$SSBMSY_SSB0#<-MSEobj_reb@C/ array(rep(MSEobj_reb@C[,,1],MSEobj_reb@proyears),dim(MSEobj_reb@C))#MSEobj_reb@OM$RefY
+  
+  Blims <- c(0,quantile(B_BMSY,0.95))
+  B2lims<- c(0,quantile(B_B0,0.95))
+  
+  for(i in 1:nMPs){
+    
+    plot(range(yrs),Blims,col="white")
+    plotquant(B_BMSY[,i,],p=quants,yrs,qcol,lcol,ablines=c(0.5,1))
+    mtext(MSEobj_reb@MPs[i],3,line=0.2,font=2,col=MPcols[i])
+    
+    if(i==1){
+      Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
+      legend('topleft',legend=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" ),bty='n')
+    }
+  }
+  
+  mtext("B/BMSY",2,line=0.7,outer=T)
+  mtext("Projection Year",1,line=0.7,outer=T)
+  
+}
+
+ST_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",quants=c(0.05,0.25,0.75,0.95)){
+  
+  MPcols<-rep('purple',MSEobj_reb@nMPs)
+  
+  MPs<-MSEobj_reb@MPs
+  nMPs<-length(MPs)
+  ny<-10
+  yrs<-Current_Year+(1:ny)
+  
+  nr<-ceiling(nMPs/maxcol)
+  nc<-maxcol
+  
+  par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+  
+  B_BMSY<-MSEobj_reb@B_BMSY
+  B_B0<-MSEobj_reb@B_BMSY*MSEobj_reb@OM$SSBMSY_SSB0#<-MSEobj_reb@C/ array(rep(MSEobj_reb@C[,,1],MSEobj_reb@proyears),dim(MSEobj_reb@C))#MSEobj_reb@OM$RefY
+  
+  Blims <- c(0,quantile(B_BMSY[,,1:ny],0.95))
+ 
+  for(i in 1:nMPs){
+    
+    plot(range(yrs),Blims,col="white")
+    plotquant(B_BMSY[,i,1:ny],p=quants,yrs,qcol,lcol,ablines=c(0.5,1))
+    mtext(MSEobj_reb@MPs[i],3,line=0.2,font=2,col=MPcols[i])
+    
+    if(i==1){
+      Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
+      legend('topleft',legend=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" ),bty='n')
+    }
+  }
+  
+  mtext("B/BMSY",2,line=0.7,outer=T)
+  mtext("Projection Year",1,line=0.7,outer=T)
+  
+}
+
+
+CCU_plot<-function(MSEobj,MSEobj_reb,options=list(),maxrow=1,maxcol=3){
+
+  MPcols<-rep('purple',MSEobj@nMPs)
+  
+  #          F2   F3           F4     F5      F6      F7        F8       F9      F10         F11        F12    F13    F14       F15      F16      F17     F18      F19 
+  opt1<-  c("M",  "D", "hs",  "Ftype","Esd",  "qhssim", "qinc",  "L50",  "Sel50sim", "Vmaxlen", "DR",  "Fdisc", "procsd", "Ahsim", "Vhsim", "Asim", "Vsim", "initD",
+            "TACFrac", "TACSD", "TAEFrac","TAESD", "SizeLimFrac","SizeLimSD","Cbias","betas","RefY")
+  
+  MSEtemp<-MSEobj
+  MSEtemp@OM<-cbind(MSEtemp@OM,betas=MSEtemp@Obs$betas,MSEtemp@Misc[[4]])
+  MSEtemp@OM<-MSEtemp@OM[,names(MSEtemp@OM)%in%opt1]
+  VOIout<-VOI(MSEtemp,ncomp=15,nbins=8,plot=F)[[1]]
+  
+              
+  qno<-   c("F2",       "F3",             "F4",       "F5",            "F6",         "F7",               "F8",                  "F9",                "F10",        "F11",      "F12",        "F13",              "F14",      "F15",            "F16",         "F17",         "F18",           "F19",
+            "M2",       "M3",          "M4",         "M5",     "M6",               "M7", "D2",    "D3")
+  qtext<- c("Longevity","Stock depletion","Steepness","Effort Pattern","Effort Var.","Hist. catchability","Future catchability","Length at Maturity","Selectivity","Dome Sel.","Discard rate","Post. Rel. Mort.","Rec. Var.","Hist. MPA size", "Hist. Mixing", "Future MPA", "Future Mixing", "Initial Dep.",
+            "TAC offset", "TAC Var.", "TAE offset", "TAE Var", "Size Lim. offset", "Size Lim. Var.", "Cat. Rep. Bias.","Hyperstability")
+  nMPs<-MSEobj@nMPs
+  
+  nrow=ceiling(nMPs/maxcol)
+  par(mfrow=c(max(maxrow,nrow),maxcol),mai=c(2.4,0.4,0.2,0.01),omi=c(0.3,0.3,0.05,0.01))
+  
+  for(i in 1:MSEobj@nMPs){
+    
+    MP<-MSEobj@MPs[i]
+    dat<-VOIout[match(MP,VOIout[,1])+0:1,2:16]
+    lab1<-qno[match(as.factor(unlist(dat[1,])),opt1)]
+    dat2<-aggregate(as.numeric(as.character(unlist(dat[2,]))),by=list(lab1),max)
+    dat2<-dat2[order(dat2$x,decreasing=T),]
+    labs<-paste(qno,qtext,sep=" - ")
+    
+    barplot(dat2[,2],names.arg=labs[match(dat2[,1],qno)], las=2,col=rgb(0.4,0.8,0.95),border=NA,cex.axis=1.4,cex.names=1.3)
+    mtext(MP,3,adj=0.8,font=2,cex=1,col=MPcols[i])
+    
+  }
+  
+  mtext("Question / operating model characteristic",1,outer=T,line=0.5)
+  mtext("Variability in Long Term Yield (% LTY)",2,outer=T,line=0.5)
+  
+}
+
+
+VOI_plot<-function(MSEobj,MSEobj_reb,options=list(),maxrow=1,maxcol=3){
+  
+  MPcols<-rep('purple',MSEobj@nMPs)
+
+  Obsnam<-c("Abias",       "Aerr",        "betas",       "BMSY_B0bias", "Brefbias",    "CAA_ESS",     "CAL_ESS",    "Cbias",      
+            "Crefbias",    "Csd",         "Dbias" ,      "Derr",        "FMSY_Mbias",  "hbias",       "Irefbias",    "Isd",         "Kbias",       "lenMbias",   
+            "LFCbias",     "LFSbias",     "Linfbias",    "Mbias",       "Recsd",       "t0bias")
+  
+  MSEobj@Obs<-MSEobj@Obs[,names(MSEobj@Obs)%in%Obsnam]
+  VOIout<-VOI(MSEobj,ncomp=12,nbins=8,plot=F)[[2]]
+  
+  Obstext<- c("Abs. biomass bias","Abs. biomass Err.","Hyperstability","BMSY_B0 bias","BMSY bias","CAA n samps","CAL n samps","Catch bias",
+              "MSY bias","Catch Err.","Depletion bias","Depletion Err.","FMSY_M bias","Steepness bias", "Index Targ. bias", "Index Err.", "V.B. K bias", "Len. Mat. bias",
+              "Small Sel. bias", "Large Sel. bias", "V.B. Linf bias", "M bias", "Recruit. err", "VB t0 bias")
+  
+  
+  
+  MPplot<-rep(F,MSEobj@nMPs)
+  
+  for(i in 1:MSEobj@nMPs){
+    
+    MP<-MSEobj@MPs[i]
+   
+    dat<-VOIout[match(MP,VOIout[,1])+0:1,2:13]
+    ind<-dat[2,]!=""&!is.na(dat[2,])
+    MPplot[i]<-sum(ind[1:length(ind)])>0
+  }  
+    
+  nMPs<-sum(MPplot)+1 # plus the list of prescriptive MPs
+  nrow=ceiling(nMPs/maxcol)
+  par(mfrow=c(max(maxrow,nrow),maxcol),mai=c(2.4,0.4,0.2,0.01),omi=c(0.3,0.3,0.05,0.01))
+ 
+  for(i in (1:MSEobj@nMPs)[MPplot]){
+
+    MP<-MSEobj@MPs[i]
+    dat<-VOIout[match(MP,VOIout[,1])+0:1,2:13]
+    ind<-dat[2,]!=""
+    dat<-as.matrix(dat[,ind],ncol=sum(ind))  
+    Obsgot<-as.character(unlist(dat[1,]))
+   
+    lab1<-Obstext[match(Obsgot,Obsnam)]
+    dat2<-aggregate(as.numeric(as.character(unlist(dat[2,]))),by=list(lab1),max)
+    dat2<-dat2[order(dat2$x,decreasing=T),]
+    labs<-dat2[,1]
+    barplot(dat2[,2],names.arg=labs, las=2,col=rgb(0.4,0.8,0.95),border=NA,cex.axis=1.4,cex.names=1.3)
+    mtext(MP,3,font=2,cex=1,col=MPcols[i])
+    
+  }
+  
+  plot(c(0,1),axes=F,xlab="",ylab="",main='',col='white')
+  prescriptive<-MSEobj@MPs[!MPplot]
+  legend('center',legend=prescriptive,title="MPs without data requirements:",cex=1.3,bty='n')
+  
+  mtext("Question / operating model characteristic",1,outer=T,line=0.5)
+  mtext("Variability in Long Term Yield (% LTY)",2,outer=T,line=0.5)
+  
+}
+
+
+# ============= Risk Assessment ==================
+
+  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- Misc <- options <- list()
+  
+  # These are the names of widgets and their values to display in this skin / mode
+  #             years in projection,  year resolution of reporting  rounding of digits
+  options<-list(burnin=10,            res=1)
+  
+  
+  # --- Tables --- 
+  Tab_title[[1]] <- "Risk assessment tab 1. Projected biomass relative to the LRP"
+  Tab_text[[1]] <-"Risk assessment tab 1 text. The probability that projected biomass is above 50% BMSY. "
+  
+  Tabs[[1]]<-function(MSEobj,MSEobj_reb,options,rnd=1){
+    
+    nMPs<-MSEobj@nMPs
+    proyears<-MSEobj@proyears
+    ind<-1+(0:1000*options$res)
+    ind<-ind[ind<=min(options$burnin,proyears)]
+    
+    LRP<-round(apply(MSEobj@B_BMSY[,,1:options$burnin,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind]
+    Tab1<-as.data.frame(cbind(MSEobj@MPs,LRP))
+    colnams<-c("MP",ind+Current_Year)
+    names(Tab1)<-colnams
+    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+    datatable(Tab1,caption=caption)%>%
+      formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
+    
+  }
+  
+  
+  Fig_title[[1]] <- "B/BMSY and Yield (relative to today) projection plots"
+  Fig_text[[1]] <- "Projections of biomass and yield relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points." 
+  
+  Figs[[1]]<-function(MSEobj,MSEobj_reb,options=list())BMSYproj(MSEobj,MSEobj_reb,options)
+
+  Risk_Assessment<-list(Tabs=Tabs,Figs=Figs,Tab_title=Tab_title,Tab_text=Tab_text, Fig_title=Fig_title,Fig_text=Fig_text,options=options)
+  
+  
+# ============= Planning =========================
+  
+  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Misc <- options <- list()
+  
+  # These are the names of widgets and their values to display in this skin / mode
+  #             years in projection,  year resolution of reporting  rounding of digits
+  options<-list(burnin=10,            res=1)
+  
+  # --- Tables --- 
+  Tab_title[[1]] <- "Table 1. Projected biomass relative to the LRP"
+  Tab_text[[1]] <-"The probability that projected biomass is above 50% BMSY. Probabilities of 50% or lower are shaded red. Probabilities over 90% are shaded green. "
+  
+  Tabs[[1]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1),rnd=1){
+    
+    nMPs<-MSEobj@nMPs
+    proyears<-MSEobj@proyears
+    ind<-1+(0:1000*options$res)
+    ind<-ind[ind<=min(options$burnin,proyears)]
+    
+    LRP<-round(apply(MSEobj@B_BMSY[,,1:options$burnin,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind]
+    Tab1<-as.data.frame(cbind(MSEobj@MPs,LRP))
+    colnams<-c("MP",ind+Current_Year)
+    names(Tab1)<-colnams
+    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+    datatable(Tab1,caption=caption)%>%
+      formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,90),c('red','orange','green')))
+    
+  }
+  
+  Tab_title[[2]] <- "Table 2. Projected biomass relative to the TRP"
+  Tab_text[[2]] <-"The probability that projected biomass is above BMSY"
+  
+  Tabs[[2]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1),rnd=1){
+    
+    nMPs<-MSEobj@nMPs
+    proyears<-MSEobj@proyears
+    ind<-1+(0:1000*options$res)
+    ind<-ind[ind<=min(options$burnin,proyears)]
+    
+    TRP<-round(apply(MSEobj@B_BMSY[,,1:options$burnin,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind]
+    Tab2<-as.data.frame(cbind(MSEobj@MPs,TRP))
+    colnams<-c("MP",ind+Current_Year)
+    names(Tab2)<-colnams
+    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+    datatable(Tab2,caption=caption)%>%
+      formatStyle(columns = 2:ncol(Tab2), valueColumns = 2:ncol(Tab2), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
+    
+  }
+  
+  Tab_title[[3]] <- Tab_title[[4]] <- Tab_title[[5]] <- Tab_title[[6]] <- "" # make extras empty
+
+
+  # --- Figures ---
+  
+  Fig_title[[1]]<-""
+  
+  Fig_title[[2]] <- "Figure 1. Biomass projection relative to the Target and Limit Reference Points"
+  Fig_text[[2]] <- "Projections of biomass and yield relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the Target (BMSY) and Limit (50% BMSY) Reference Points." 
+  Figs[[2]]<-function(MSEobj,MSEobj_reb,options=list()) BMSYproj(MSEobj,MSEobj_reb,options)
+  Fig_dim[[2]]<-function(dims)list(height=ceiling(dims$nMPs/5)*250,width=1100)
+  
+  Fig_title[[3]] <- "Figure 2. Long-term HCR"
+  Fig_text[[3]] <- "Projections of biomass relative to MSY and unfished (B0) levels given a starting depletion of half BMSY. The rebuilding analysis simulates the fishery currently in a depleted state even if the user-specified depletion in the operating model is higher.
+  In these cases, the rebuilding analysis provides added assurance whether a particular management procedure would be likely to rebuild the stock if the user-specified depletion level is overly optimistic and the stock status is more depleted in actuality, and thus in need of rebuilding.
+  The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the limit and target reference points" 
+  Figs[[3]]<-function(MSEobj,MSEobj_reb,options=list()) LT_HCR(MSEobj,MSEobj_reb,options)
+  Fig_dim[[3]]<-function(dims)list(height=ceiling(dims$nMPs/5)*250,width=1100)
+  
+  Fig_title[[4]] <- "Figure 3. Short-term HCR"
+  Fig_text[[4]] <- "As Figure 2 but over the first 10 years." 
+  Figs[[4]] <- function(MSEobj,MSEobj_reb,options=list()) LT_HCR(MSEobj,MSEobj_reb,options)
+  Fig_dim[[4]]<-function(dims)list(height=ceiling(dims$nMPs/5)*250,width=1100)
+  
+  Fig_title[[5]] <- "Figure 4. Evaluation of current uncertainties"
+  Fig_text[[5]] <- "This figure identifies those questions across which there is the highest variability in long term yield (average yield over last 10 years of the projection). This figures identifies which elements of the questionnaire (Step A) are the most consequential uncertainties." 
+  Figs[[5]] <- function(MSEobj,MSEobj_reb,options=list()) CCU_plot(MSEobj,MSEobj_reb,options)
+  Fig_dim[[5]]<-function(dims)list(height=ceiling(dims$nMPs/3)*350,width=1300)
+  
+  Fig_title[[6]] <- "Figure 5. Value of information"
+  Fig_text[[6]] <- "This figure identifies the key observation uncertainties (biases and errors) in determing the long-term yield performance of MPs (average yield over last 10 years of the projection)." 
+  Figs[[6]] <- function(MSEobj,MSEobj_reb,options=list()) VOI_plot(MSEobj,MSEobj_reb,options)
+  Fig_dim[[6]]<-function(dims)list(height=ceiling(dims$nMPs/3)*350,width=1300)
+  
+  
+  Planning<-list(Tabs=Tabs,Figs=Figs,Tab_title=Tab_title,Tab_text=Tab_text, Fig_title=Fig_title,Fig_text=Fig_text,Fig_dim=Fig_dim,options=options)
+  
+
+# ============= Evaluation =======================
+
+  
+  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Misc <- options <- list()
+  
+  # These are the names of widgets and their values to display in this skin / mode
+  #             years in projection,  year resolution of reporting  rounding of digits
+  options<-list(burnin=10,            res=1)
+
+  # --- Tables --- 
+  Tab_title[[1]] <- "Test table 1 title"
+  Tab_text[[1]] <-"Test table 1 text"
+
+  Tabs[[1]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1),res=5){
+    
+    nMPs<-MSEobj@nMPs
+    proyears<-MSEobj@proyears
+    ind<-1+(0:1000*options$res)
+    ind<-ind[ind<=min(options$burnin,proyears)]
+    
+    LRP<-round(apply(MSEobj@B_BMSY[,,1:options$burnin,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind]
+    Tab1<-as.data.frame(cbind(MSEobj@MPs,LRP))
+    colnams<-c("MP",ind+Current_Year)
+    names(Tab1)<-colnams
+    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+    datatable(Tab1,caption=caption)%>%
+      formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
+  
+  }
+  
+  Tab_title[[2]] <- "Test table 2 title"
+  Tab_text[[2]] <-"Test table 2 text"
+  
+  Tabs[[2]]<-function(MSEobj,MSEobj_reb, options=list(burnin=10,res=1),res=5){
+    
+    nMPs<-MSEobj@nMPs
+    proyears<-MSEobj@proyears
+    ind<-1+(0:1000*options$res)
+    ind<-ind[ind<=min(options$burnin,proyears)]
+    
+    TRP<-round(apply(MSEobj@B_BMSY[,,1:options$burnin,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind]
+    Tab2<-as.data.frame(cbind(MSEobj@MPs,TRP))
+    colnams<-c("MP",ind+Current_Year)
+    names(Tab2)<-colnams
+    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+    datatable(Tab2,caption=caption)%>%
+      formatStyle(columns = 2:ncol(Tab2), valueColumns = 2:ncol(Tab2), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
+    
+  }
+
+  
+  Tab_title[[3]] <- "Long term HCR"
+  Tab_text[[3]] <-"Probability of biomass exceeding the target reference point in the final 10 projected years. This theoretical rebuilding analysis simulates the fishery currently in a depleted state even if the user-specified depletion in the operating model is higher.
+                    This analysis determines whether a particular management procedure can be expected to rebuild the stock from below BMSY levels."
+  
+  Tabs[[3]]<-function(MSEobj,MSEobj_reb,options=list(),res=5){
+    
+    nMPs<-MSEobj_reb@nMPs
+    proyears<-MSEobj_reb@proyears
+    ind<-proyears-(0:9)# last 1o years
+    TRP<-round(apply(MSEobj_reb@B_BMSY[,,1:proyears,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind]
+    Tab3<-as.data.frame(cbind(MSEobj_reb@MPs,TRP))
+    colnams<-c("MP",ind+Current_Year)
+    names(Tab3)<-colnams
+    Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+    datatable(Tab3,caption=caption)%>%
+      formatStyle(columns = 2:ncol(Tab3), valueColumns = 2:ncol(Tab3), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
+      
+    
+  }
+  
+  Tab_title[[4]] <- "Short term HCR"
+  Tab_text[[4]] <-"Probability of biomass exceeding the target reference point in the earliest of 20 years or two mean generation times."
+  
+  Tabs[[4]]<-function(MSEobj, MSEobj_reb,options=list(),hrz=20,rnd=1){
+    
+    nMPs<-MSEobj_reb@nMPs
+    proyears<-MSEobj_reb@proyears
+    
+    MGT2<-2* MSEobj_reb@OM$MGT
+    if(ceiling(max(MGT2))<hrz)hrz<-ceiling(max(MGT2))
+    hrz<-min(hrz+2,proyears)
+    
+    ind<-1:hrz
+    TRP<-round(apply(MSEobj_reb@B_BMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind]
+    
+    shaderng=range(ceiling(MGT2))
+    shaderng[2]<-min(hrz,shaderng[2])
+    
+    Tab4<-as.data.frame(cbind(MSEobj_reb@MPs,TRP))
+    colnams<-c("MP",ind+Current_Year)
+    names(Tab4)<-colnams
+    Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+    datatable(Tab4,caption=caption)%>%
+      formatStyle(columns = 2:ncol(Tab4), valueColumns = 2:ncol(Tab4), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))%>%
+      formatStyle(colnams[1+shaderng[1]:shaderng[2]],backgroundColor='lightgrey')
+    
+  }
+ 
+  
+  # --- Figures ---
+ 
+  Fig_title[[1]]<-""
+  
+  Fig_title[[2]] <- "Figure 1. B/BMSY and Yield (relative to today) projection plots"
+  Fig_text[[2]] <- "Projections of biomass and yield relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points." 
+  
+  Figs[[2]]<-function(MSEobj,MSEobj_reb,options=list()) BMSYproj(MSEobj,MSEobj_reb,options)
+  
+  Fig_title[[3]] <- "Long-term HCR"
+  Fig_text[[3]] <- "Projections of biomass relative to MSY and unfished (B0) levels given a starting depletion of half BMSY. The rebuilding analysis simulates the fishery currently in a depleted state even if the user-specified depletion in the operating model is higher.
+                    In these cases, the rebuilding analysis provides added assurance whether a particular management procedure would be likely to rebuild the stock if the user-specified depletion level is overly optimistic and the stock status is more depleted in actuality, and thus in need of rebuilding.
+                    The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the limit and target reference points" 
+
+  Figs[[3]]<-function(MSEobj,MSEobj_reb,options=list()) LT_HCR(MSEobj,MSEobj_reb,options)
+  
+  Fig_title[[4]] <- ""
+  
+  Evaluation<-list(Tabs=Tabs,Figs=Figs,Tab_title=Tab_title,Tab_text=Tab_text, Fig_title=Fig_title,Fig_text=Fig_text)
+ 
+
+# ========== Build ============================= 
+  
+MSC<-list(Risk_Assessment=Risk_Assessment,Planning=Planning,Evaluation=Evaluation) 
+Skins[[1]]<-MSC
+
+
+
+# ===== FAO ========================================================================================
+
+
+# ============= Risk Evaluation ================
+
+# ============= Planning =======================
+
+# ============= Assessment =====================
+
+
+
+# ===== Pew ========================================================================================
+
+
+# ============= Risk Evaluation ================
+
+# ============= Planning =======================
+
+# ============= Assessment =====================
+
+
+
+
+# ====== Wrap up ====================================================================================
+
+Skin<-Skins[[1]]
+

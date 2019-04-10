@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1554926170654.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2878228134",
+    "id" : "AEDBD58B",
+    "lastKnownWriteTime" : 1554931968,
+    "last_content_update" : 1554931968028,
+    "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/global.R",
+    "project_path" : "inst/shiny_apps/MERA/global.R",
+    "properties" : {
+        "cursorPosition" : "122,54",
+        "scrollLine" : "81",
+        "source_window_id" : "wurt7pbmacnjs"
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
