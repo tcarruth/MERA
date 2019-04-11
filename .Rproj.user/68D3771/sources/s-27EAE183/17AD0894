@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "4208926822",
+    "hash" : "1718282136",
     "id" : "17AD0894",
-    "lastKnownWriteTime" : 1555001319,
-    "last_content_update" : 1555001319691,
+    "lastKnownWriteTime" : 1555025822,
+    "last_content_update" : 1555025822917,
     "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/Source/Skins/Default_skin_funcs.R",
     "project_path" : "inst/shiny_apps/MERA/Source/Skins/Default_skin_funcs.R",
     "properties" : {
-        "cursorPosition" : "548,21",
-        "scrollLine" : "530"
+        "cursorPosition" : "553,75",
+        "scrollLine" : "536"
     },
     "relative_order" : 7,
     "source_on_save" : false,

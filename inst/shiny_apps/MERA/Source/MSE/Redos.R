@@ -11,7 +11,7 @@ redoPlan<-function(fease=F){
     
     # option code
     #options <- list(burnin = input$burnin, res=input$res)
-    options <- list(burnin = 10, res=1)
+    options <- list( res=1)
      
     for(res in 1:nres){
       
@@ -38,7 +38,7 @@ redoPlan<-function(fease=F){
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(Skin$Planning$Fig_text[[res2]])
           height=Skin$Planning$Fig_dim[[res2]](dims)$height
           width=Skin$Planning$Fig_dim[[res2]](dims)$width
-          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Planning$Figs[[res2]](MSEobj,MSEobj_reb,options), height =height , width = width) 
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Planning$Figs[[res2]](MSEobj,MSEobj_reb,options), height =ceiling(height) , width = ceiling(width)) 
         }
         
       })
@@ -83,7 +83,7 @@ redoEval<-function(fease=F){
     
     # option code
     #options <- list(burnin = input$burnin, res=input$res)
-    options <- list(burnin = 10, res=1)
+    options <- list(burnin = input$YIU, res=1)
     
     for(res in 1:nres){
       
@@ -108,7 +108,9 @@ redoEval<-function(fease=F){
         }else{ 
           output[[paste0("P_Fig_",res2,"_title")]]<-renderText(Skin$Evaluation$Fig_title[[res2]])
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(Skin$Evaluation$Fig_text[[res2]])
-          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Evaluation$Figs[[res2]](MSEobj,MSEobj_reb,options), height =ceiling(MSEobj@nMPs/6)*320 , width = 1300) 
+          height=Skin$Evaluation$Fig_dim[[res2]](dims)$height
+          width=Skin$Evaluation$Fig_dim[[res2]](dims)$width
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Evaluation$Figs[[res2]](MSEobj,MSEobj_reb,options), height =ceiling(height) , width = ceiling(width)) 
         }
         
       })
@@ -141,6 +143,76 @@ redoEval<-function(fease=F){
   })
 }
 
+
+redoRA<-function(fease=F){
+  
+  withProgress(message = "Calculating Risk Assessment results", value = 0, {
+    
+    nres<-length(Skin$Risk_Assessment$Tab_title)
+    dims<-list(nMPs=MSEobj@nMPs)
+    incrate<-1/nres
+    
+    # option code
+    #options <- list(burnin = input$burnin, res=input$res)
+    #options <- list(burnin = input$YIU, res=1)
+    
+    for(res in 1:nres){
+      
+      local({
+        
+        res2<-res
+        
+        if(Skin$Evaluation$Tab_title[[res2]]==""){
+          output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
+          output[[paste0("P_Tab_",res2,"_text")]]<-renderText(NULL)
+          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(NULL) 
+        }else{
+          output[[paste0("P_Tab_",res2,"_title")]]<-renderText(Skin$Risk_Assessment$Tab_title[[res2]])
+          output[[paste0("P_Tab_",res2,"_text")]]<-renderText(Skin$Risk_Assessment$Tab_text[[res2]])
+          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(Skin$Risk_Assessment$Tabs[[res2]](MSEobj,MSEobj_reb,options)) 
+        }
+        
+        if(Skin$Evaluation$Fig_title[[res2]]==""){
+          output[[paste0("P_Fig_",res2,"_title")]]<-renderText(NULL)
+          output[[paste0("P_Fig_",res2,"_text")]]<-renderText(NULL)
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(NULL) 
+        }else{ 
+          output[[paste0("P_Fig_",res2,"_title")]]<-renderText(Skin$Risk_Assessment$Fig_title[[res2]])
+          output[[paste0("P_Fig_",res2,"_text")]]<-renderText(Skin$Risk_Assessment$Fig_text[[res2]])
+          height=Skin$Risk_Assessment$Fig_dim[[res2]](dims)$height
+          width=Skin$Risk_Assessment$Fig_dim[[res2]](dims)$width
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Risk_Assessment$Figs[[res2]](MSEobj,MSEobj_reb,options), height =ceiling(height) , width = ceiling(width)) 
+        }
+        
+      })
+      
+      incProgress(incrate)
+      
+    }
+    
+    
+    if(nres<9){
+      
+      for(res in (nres+1):9){
+        local({
+          res2<-res
+          output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
+          output[[paste0("P_Tab_",res2,"_text")]]<-renderText(NULL)
+          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(NULL)
+          
+          output[[paste0("P_Fig_",res2,"_title")]]<-renderText(NULL)
+          output[[paste0("P_Fig_",res2,"_text")]]<-renderText(NULL)
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(NULL)
+          
+        })
+      }
+      
+    }
+    
+    incProgress(incrate)
+    
+  })
+}
 
 
 redoInd<-function(){

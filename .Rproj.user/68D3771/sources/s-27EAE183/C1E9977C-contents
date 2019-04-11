@@ -993,7 +993,7 @@ shinyUI(
                     fluidRow(
                       column(4,conditionalPanel(condition="output.MadeOM==1",
                                                 
-                              column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
+                             # column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
                               column(6,numericInput("interval", label = "Management interval", value=8,min=2,max=10)),
                               
                               #column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
@@ -1083,11 +1083,13 @@ shinyUI(
                    fluidRow(
                      column(4,
                        conditionalPanel(condition="output.MadeOM>0",
-                        column(6,numericInput("proyears_app", label = "Years in use", value=5,min=2,max=20)),
+                        #column(6,numericInput("proyears_app", label = "Years in use", value=5,min=2,max=20)),
                         column(6,numericInput("interval_app", label = "Management interval", value=2,min=2,max=10)),
+                        column(9,sliderInput("Dep_reb_app",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
+                        column(2,HTML("<br><br>"),actionButton("Dep_reb_def_app",h5("DEFAULT",style="color:grey"))),
                         column(6,selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0)),style="padding:10px"),
                         column(6,checkboxInput("Parallel_app", label = "Parallel comp.", value = FALSE)),
-
+                         
                         column(12,
                                actionButton("Calculate_app",h5("      CALCULATE     ",style="color:red"))
                         )
@@ -1207,8 +1209,9 @@ shinyUI(
                   column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
                   column(12,HTML("<br>","<br>")),
                   numericInput("burnin", label = "Burn-in years", value=10,min=5,max=20),
+                  numericInput("YIU",label="Years in use",value=6,min=2,max=30),
                   numericInput("res", label = "Reporting resolution", value=1,min=1,max=10),
-                  numericInput("ntop", label = "Number of top MPs to display", value=10,min=1,max=80),
+                  #numericInput("ntop", label = "Number of top MPs to display", value=10,min=1,max=80),
                   #checkboxInput("LTL", label = "Low Trophic Level PIs", value = FALSE),
                   column(12,conditionalPanel(condition="output.Data==1",checkboxInput("Fease", label = "Advanced data feasibility", value = FALSE))),
                   column(12,HTML("<br>","<br>"))
@@ -1267,7 +1270,7 @@ shinyUI(
                  conditionalPanel(condition="output.Eval==0&input.Mode=='Evaluation'",
                                   h5("Evaluation MSE not run yet (Step C1)", style = "color:grey")
                  ),
-                 conditionalPanel(condition="output.Plan==1|output.Eval==1",
+                 conditionalPanel(condition="output.Plan==1|output.Eval==1|output.RA==1",
 
                     fluidRow(
                       column(width = 12,

@@ -79,6 +79,7 @@ shinyServer(function(input, output, session) {
   Data<-reactiveVal(0)
   CondOM<-reactiveVal(0)
   MadeOM<-reactiveVal(0)
+  RA<-reactiveVal(0) # Have run risk assessment (multi MP)
   Plan<-reactiveVal(0) # Have run Planning (multi MP)
   Eval<-reactiveVal(0)  # Have run Evaluation (single MP)
   DataInd<-reactiveVal(0) # Indicator data loaded
@@ -96,8 +97,9 @@ shinyServer(function(input, output, session) {
   output$CondOM   <- reactive({ CondOM()})
   output$MadeOM   <- reactive({ MadeOM()})
 
+  output$RA       <- reactive({ RA()})
   output$Plan     <- reactive({ Plan()})
-  output$Eval      <- reactive({ Eval()})
+  output$Eval     <- reactive({ Eval()})
   output$DataInd  <- reactive({ DataInd()})
   output$Ind      <- reactive({ Ind()})
 
@@ -115,6 +117,7 @@ shinyServer(function(input, output, session) {
   outputOptions(output,"CondOM",suspendWhenHidden=FALSE)
   outputOptions(output,"MadeOM",suspendWhenHidden=FALSE)
 
+  outputOptions(output,"RA",suspendWhenHidden=FALSE)
   outputOptions(output,"Plan",suspendWhenHidden=FALSE)
   outputOptions(output,"Eval",suspendWhenHidden=FALSE)
   outputOptions(output,"DataInd",suspendWhenHidden=FALSE)
@@ -643,6 +646,62 @@ shinyServer(function(input, output, session) {
 ### MSE functions
 #############################################################################################################################################################################
 
+  
+  observeEvent(input$Calculate_risk,{
+    
+    Fpanel(1)
+    MPs<-c('curE','curC','FMSYref','NFref')
+    nsim<-8
+    OM<<-makeOM(PanelState,nsim=nsim)
+    OM@interval<<-1
+    
+    parallel=F
+    if(input$Parallel){
+      
+      if(nsim>47){
+        
+        parallel=T
+        setup()
+        
+      }
+      
+    }
+     
+    #tryCatch({
+      
+      withProgress(message = "Running Risk Assessment", value = 0, {
+        silent=T
+        MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=F,parallel=parallel)
+      })
+      
+      
+      MSEobj@Misc[[4]]<<-SampList
+      
+      MSEobj_reb<-MSEobj
+      
+      # ==== Types of reporting ==========================================================
+      
+      if(input$Debug)message("preredoPlan")
+      redoRA()
+      if(input$Debug)message("postredoPlan")
+      RA(1)
+      Tweak(0)
+      #updateTabsetPanel(session,"Res_Tab",selected="1")
+      
+    #},
+    #error = function(e){
+    #  shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+       #            For example a short lived stock a low stock depletion with recently declining effort.
+      #            Try revising operating model parameters.", type = "info")
+     # return(0)
+    #}
+    
+    #)
+    
+  }) # press calculate
+  
+  
+  
   observeEvent(input$Calculate,{
 
     Fpanel(1)
@@ -652,10 +711,12 @@ shinyServer(function(input, output, session) {
     if(input$Parallel){
 
       if(nsim>47){
+        
         parallel=T
         setup()
 
       }
+      
     }
 
     #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
@@ -695,7 +756,7 @@ shinyServer(function(input, output, session) {
         if(input$Debug)message("postredoPlan")
         Plan(1)
         Tweak(0)
-        updateTabsetPanel(session,"Res_Tab",selected="1")
+        #updateTabsetPanel(session,"Res_Tab",selected="1")
 
      },
       error = function(e){
@@ -727,26 +788,33 @@ shinyServer(function(input, output, session) {
         setup()
       }
     }
-    #OM@proyears<-input$proyears_app
-    #OM@interval<-input$interval_app
+    #YIU<-input$proyears_app # Years in use
+    OM_eval<-OM
+    #OM_eval@proyears<-YIU
+    OM_eval@interval<-input$interval_app
+    #OM_eval@cpars$mov<-OM_eval@cpars$mov[,,,,1:OM@nyears+YIU]
     
-    #tryCatch({
+    tryCatch({
         withProgress(message = "Running Evaluation", value = 0, {
           EvalMPs<-input$sel_MP
-          MSEobj<<-runMSE(OM,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
+          MSEobj<<-runMSE(OM_eval,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
 
         })
         
-        MSEobj@Misc[[4]]<-SampList
+        MSEobj@Misc[[4]]<<-SampList
 
         MGT2<-ceiling(MSEobj@OM$MGT*2)
         MGT2[MGT2<5]<-5
         MGT2[MGT2>20]<-20
 
-        OM_reb<-OM
-        OM@proyears<-max(MGT2)+2 # only have to compute to this year
+        OM_reb<-OM_eval
+        #OM_reb@proyears<-max(MGT2)+2 # only have to compute to this year
         OM_reb@cpars$D<-MSEobj@OM$SSBMSY_SSB0/2#apply(MSEobj@SSB_hist[,,MSEobj@nyears,],1, sum)/(MSEobj@OM$SSB0*2) # start from half BMSY
-
+        
+        Dep_reb<-runif(OM@nsim,input$Dep_reb_app[1],input$Dep_reb_app[2]) # is a %
+        OM_reb<-OM_eval
+        OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0 
+        
         withProgress(message = "Rebuilding Analysis", value = 0, {
           MSEobj_reb<<-runMSE(OM_reb,MPs=EvalMPs,silent=T,control=list(progress=T),parallel=parallel)
         })
@@ -761,15 +829,15 @@ shinyServer(function(input, output, session) {
         Eval(1)
         Tweak(0)
         redoEval()
-        updateTabsetPanel(session,"Res_Tab",selected="2")
-      #},
-     # error = function(e){
-      #  shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-       #            For example a short lived stock a low stock depletion with recently declining effort.
-        #           Try revising operating model parameters.", type = "info")
-      #  return(0)
-      #}
-    #) # try catch
+        #updateTabsetPanel(session,"Res_Tab",selected="2")
+      },
+      error = function(e){
+        shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+                   For example a short lived stock a low stock depletion with recently declining effort.
+                   Try revising operating model parameters.", type = "info")
+        return(0)
+      }
+    ) # try catch
 
   }) # calculate MSE app
 
@@ -777,7 +845,7 @@ shinyServer(function(input, output, session) {
     tryCatch({
 
       redoInd()
-      updateTabsetPanel(session,"Res_Tab",selected="3")
+      #updateTabsetPanel(session,"Res_Tab",selected="3")
       Ind(1)
     },
     error = function(e){
@@ -1518,8 +1586,14 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$Dep_reb_def,
               
-        updateSliderInput(session,"Dep_reb",value=c(50,50),min=5,max=100)
+        updateSliderInput(session,"Dep_reb",value=c(50,50),min=10,max=100)
               
+  )
+  
+  observeEvent(input$Dep_reb_def_app,
+               
+               updateSliderInput(session,"Dep_reb_app",value=c(50,50),min=10,max=100)
+               
   )
   
 
