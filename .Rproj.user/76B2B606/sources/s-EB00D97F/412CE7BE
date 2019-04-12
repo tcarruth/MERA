@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1554911875779.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "412CE7BE",
+    "lastKnownWriteTime" : 1555093591,
+    "last_content_update" : 1555093591464,
+    "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/Source/MSE/Redos.R",
+    "project_path" : "inst/shiny_apps/MERA/Source/MSE/Redos.R",
+    "properties" : {
+        "cursorPosition" : "139,7",
+        "scrollLine" : "135"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
