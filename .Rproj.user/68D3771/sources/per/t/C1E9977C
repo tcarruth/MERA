@@ -5,14 +5,14 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "928664027",
     "id" : "C1E9977C",
     "lastKnownWriteTime" : 1555024946,
     "last_content_update" : 1555024946203,
     "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/ui.R",
     "project_path" : "inst/shiny_apps/MERA/ui.R",
     "properties" : {
-        "cursorPosition" : "1264,22",
+        "cursorPosition" : "1275,40",
         "scrollLine" : "1253"
     },
     "relative_order" : 1,

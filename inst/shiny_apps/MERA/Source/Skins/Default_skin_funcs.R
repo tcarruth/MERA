@@ -426,8 +426,8 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
       formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
     
   }
-  Tab_title[[2]] <- Tab_title[[3]] <- "" # make extras empty
-  
+  Tab_title[[2]] <- Tab_title[[3]] <- Tab_title[[4]] <- Tab_title[[5]] <- Tab_title[[6]] <- Tab_title[[7]] <- Tab_title[[8]] <- Tab_title[[9]] <- "" # make extras empty
+
   
   Fig_title[[1]] <- "Figure 1. Risk Assessment. B/BMSY and Yield (relative to today) projection plots"
   Fig_text[[1]] <-  "Figure 1. Risk assessment text. Projections of biomass and yield relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points." 
@@ -435,8 +435,7 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
   Figs[[1]]<-function(MSEobj,MSEobj_reb,options=list())plot(1:10)#BMSYproj(MSEobj,MSEobj_reb,options)
   Fig_dim[[1]]<-function(dims)list(height=350,width=1000)
   
-  Fig_title[[2]] <- Fig_title[[3]] <- "" # make extras empty
-  
+  Fig_title[[2]] <- Fig_title[[3]] <- Fig_title[[4]] <- Fig_title[[5]]<- Fig_title[[7]] <- Fig_title[[8]] <- Fig_title[[9]] <- "" # make extras empty
   
   
   Risk_Assessment<-list(Tabs=Tabs,Figs=Figs,Tab_title=Tab_title,Tab_text=Tab_text, Fig_title=Fig_title,Fig_text=Fig_text,Fig_dim=Fig_dim,options=options)

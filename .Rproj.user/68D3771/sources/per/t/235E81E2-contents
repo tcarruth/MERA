@@ -156,7 +156,7 @@ redoRA<-function(fease=F){
     #options <- list(burnin = input$burnin, res=input$res)
     #options <- list(burnin = input$YIU, res=1)
     
-    for(res in 1:nres){
+    for(res in 1:1){
       
       local({
         
@@ -179,9 +179,9 @@ redoRA<-function(fease=F){
         }else{ 
           output[[paste0("P_Fig_",res2,"_title")]]<-renderText(Skin$Risk_Assessment$Fig_title[[res2]])
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(Skin$Risk_Assessment$Fig_text[[res2]])
-          height=Skin$Risk_Assessment$Fig_dim[[res2]](dims)$height
-          width=Skin$Risk_Assessment$Fig_dim[[res2]](dims)$width
-          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Risk_Assessment$Figs[[res2]](MSEobj,MSEobj_reb,options), height =ceiling(height) , width = ceiling(width)) 
+          #height=Skin$Risk_Assessment$Fig_dim[[res2]](dims)$height
+          #width=Skin$Risk_Assessment$Fig_dim[[res2]](dims)$width
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Risk_Assessment$Figs[[res2]](MSEobj,MSEobj_reb,options), height =ceiling(400) , width = ceiling(1000)) 
         }
         
       })

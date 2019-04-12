@@ -653,7 +653,7 @@ shinyServer(function(input, output, session) {
     MPs<-c('curE','curC','FMSYref','NFref')
     nsim<-8
     OM<<-makeOM(PanelState,nsim=nsim)
-    OM@interval<<-1
+    OM@interval<<-8
     
     parallel=F
     if(input$Parallel){

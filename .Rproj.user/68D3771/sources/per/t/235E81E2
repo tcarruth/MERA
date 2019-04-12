@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "2435161556",
     "id" : "235E81E2",
-    "lastKnownWriteTime" : 1555024713,
-    "last_content_update" : 1555024713074,
+    "lastKnownWriteTime" : 1555026412,
+    "last_content_update" : 1555026412945,
     "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/Source/MSE/Redos.R",
     "project_path" : "inst/shiny_apps/MERA/Source/MSE/Redos.R",
     "properties" : {
-        "cursorPosition" : "181,42",
-        "scrollLine" : "160"
+        "cursorPosition" : "158,18",
+        "scrollLine" : "144"
     },
     "relative_order" : 8,
     "source_on_save" : false,
