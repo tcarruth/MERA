@@ -113,7 +113,7 @@ shinyUI(
 
          column(4,
 
-           radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Planning","Evaluation"),selected="Planning")),
+           radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Planning","Evaluation"),selected="Risk Assessment")),
 
            column(8,
                   h5("MERA contains three modes of varying complexity",style = "color:grey"),
@@ -131,8 +131,8 @@ shinyUI(
 
         conditionalPanel(condition="output.Quest==0&input.Mode=='Risk Assessment'",h4("CHARACTERIZE FISHERY")),
         conditionalPanel(condition="output.Quest==1&input.Mode=='Risk Assessment'",h4("CHARACTERIZE FISHERY",style="color:green")),
-        conditionalPanel(condition="output.Quest==0&input.Mode!='Risk Assessment'",h4("STEP A1: CHARACTERIZE FISHERY SYSTEM")),
-        conditionalPanel(condition="output.Quest==1&input.Mode!='Risk Assessment'",h4("STEP A1: CHARACTERIZE FISHERY SYSTEM",style="color:green")),
+        conditionalPanel(condition="output.Quest==0&input.Mode!='Risk Assessment'",h4("STEP A: CHARACTERIZE FISHERY SYSTEM")),
+        conditionalPanel(condition="output.Quest==1&input.Mode!='Risk Assessment'",h4("STEP A: CHARACTERIZE FISHERY SYSTEM",style="color:green")),
 
         hr()
       ),
@@ -823,8 +823,8 @@ shinyUI(
 
        conditionalPanel(condition="input.Mode!='Risk Assessment'",
 
-         conditionalPanel(condition="output.CondOM==0",h4("STEP A2: LOAD AVAILABLE DATA (OPTIONAL)")),
-         conditionalPanel(condition="output.CondOM==1",h4("STEP A2: LOAD AVAILABLE DATA (OPTIONAL)",style="color:green")),
+         conditionalPanel(condition="output.CondOM==0",h4("STEP B: LOAD AVAILABLE DATA (OPTIONAL)")),
+         conditionalPanel(condition="output.CondOM==1",h4("STEP B: LOAD AVAILABLE DATA (OPTIONAL)",style="color:green")),
 
          hr(),
 
@@ -867,8 +867,8 @@ shinyUI(
 
         column(12,style="height:45px"),
 
-        conditionalPanel(condition="output.MadeOM==0&input.Mode!='Risk Assessment'",h4("STEP B: BUILD OPERATING MODELS")),
-        conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Assessment'",h4("STEP B: BUILD OPERATING MODELS",style="color:green")),
+        conditionalPanel(condition="output.MadeOM==0&input.Mode!='Risk Assessment'",h4("STEP C: BUILD OPERATING MODELS")),
+        conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Assessment'",h4("STEP C: BUILD OPERATING MODELS",style="color:green")),
 
         conditionalPanel(condition="input.Mode!='Risk Assessment'",
           hr(),
@@ -998,8 +998,8 @@ shinyUI(
         # =============== Planning =======================================================================================================================================================          
         conditionalPanel(condition="input.Mode=='Planning'",
            
-           conditionalPanel(condition="output.Plan==0",h4("STEP C: CALCULATE PROJECTIONS")),
-           conditionalPanel(condition="output.Plan==1",h4("STEP C: CALCULATE PROJECTIONS",style="color:green")),
+           conditionalPanel(condition="output.Plan==0",h4("STEP D: CALCULATE PROJECTIONS")),
+           conditionalPanel(condition="output.Plan==1",h4("STEP D: CALCULATE PROJECTIONS",style="color:green")),
            hr(),
            column(12,style="height:45px"),
            
@@ -1088,8 +1088,8 @@ shinyUI(
     
         conditionalPanel(condition="input.Mode=='Evaluation'",
           column(12,style="height:15px"),          
-          conditionalPanel(condition="output.Plan==0",h4("STEP C: STATUS DETERMINATION AND INDICATORS")),
-          conditionalPanel(condition="output.Plan==1",h4("STEP C: STATUS DETERMINATION AND INDICATORS",style="color:green")),
+          conditionalPanel(condition="output.Plan==0",h4("STEP D: STATUS DETERMINATION AND INDICATORS")),
+          conditionalPanel(condition="output.Plan==1",h4("STEP D: STATUS DETERMINATION AND INDICATORS",style="color:green")),
        
           hr(),
 
@@ -1112,7 +1112,7 @@ shinyUI(
 
                        ),
                        conditionalPanel(condition="output.MadeOM==0",
-                            h5("Operating model not built yet (Step B)", style = "color:grey")
+                            h5("Operating model not built yet (Step C)", style = "color:grey")
                       )
                      ),
                      column(6,
@@ -1153,8 +1153,8 @@ shinyUI(
           
           column(12,style="height:15px"),
           
-          conditionalPanel(condition="output.Ind==0",h4("STEP D: AUXILIARY INDICATORS")),
-          conditionalPanel(condition="output.Ind==1",h4("STEP D: AUXILIARY INDICATORS",style="color:green")),
+          conditionalPanel(condition="output.Ind==0",h4("STEP E: AUXILIARY INDICATORS")),
+          conditionalPanel(condition="output.Ind==1",h4("STEP E: AUXILIARY INDICATORS",style="color:green")),
           
           hr(),
           
@@ -1172,7 +1172,7 @@ shinyUI(
           
                             ),
                             conditionalPanel(condition="output.Eval==0",
-                              h5("Application not run yet (Step C2)", style = "color:grey")
+                              h5("Evaluation not run yet (Step D)", style = "color:grey")
                             ),
                             conditionalPanel(condition="output.DataInd==1&output.Eval==1",
                                 actionButton("Calculate_Ind",h5(" DETECT EXCEPTIONAL CIRCUMSTANCES  ",style="color:red"))
@@ -1223,9 +1223,12 @@ shinyUI(
                   column(12,HTML("<br>")),
                   column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
                   column(12,HTML("<br>","<br>")),
-                  numericInput("burnin", label = "Burn-in years", value=10,min=5,max=20),
-                  numericInput("YIU",label="Years in use",value=6,min=2,max=30),
-                  numericInput("res", label = "Reporting resolution", value=1,min=1,max=10),
+                  
+                  # --- Reporting Options ---------------------------------------------
+                  numericInput("burnin", label = "Burn-in years", value=10,min=5,max=20), # burnin- some initial spool up time period
+                  numericInput("YIU",label="Years in use",value=6,min=2,max=30),          # years in use - how long the MP has been used for   
+                  numericInput("res", label = "Reporting resolution", value=1,min=1,max=10), # resolution of reporting (years)
+                  
                   #numericInput("ntop", label = "Number of top MPs to display", value=10,min=1,max=80),
                   #checkboxInput("LTL", label = "Low Trophic Level PIs", value = FALSE),
                   column(12,conditionalPanel(condition="output.Data==1",checkboxInput("Fease", label = "Advanced data feasibility", value = FALSE))),

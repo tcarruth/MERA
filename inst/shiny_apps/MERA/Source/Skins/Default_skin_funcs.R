@@ -419,7 +419,7 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
     names(Tab1)<-colnams
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption)%>%
+    datatable(Tab1,caption=caption, options=list(dom='t'))%>%
       formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
     
   }
@@ -441,7 +441,7 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
     names(Tab1)<-colnams
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption)%>%
+    datatable(Tab1,caption=caption,options=list(dom='t'))%>%
       formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
     
   }
@@ -660,7 +660,7 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
     TRP<-matrix(round(apply(MSEobj_reb@B_BMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
     
     shaderng=range(ceiling(MGT2))
-    #shaderng[2]<-min(20,shaderng[2])
+    shaderng[2]<-min(20,shaderng[2])
     
     Tab4<-as.data.frame(cbind(MSEobj_reb@MPs,TRP))
     colnams<-c("MP",Current_Year+(1:20)-options$YIU)

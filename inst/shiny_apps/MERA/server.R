@@ -19,7 +19,6 @@ source("./global.R")
 shinyServer(function(input, output, session) {
 
   Version<<-"4.1.1"
-  #options(browser = false)
   # MPs
 
   # -------------------------------------------------------------
@@ -29,8 +28,11 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Data_figs.R",local=TRUE)
 
   # Presentation of results
-  source("./Source/Skins/Default_skin_funcs.R",local=TRUE)
- 
+  source("./Source/Skins/MSC.R",local=TRUE)
+  Skins<<-new('list')
+  Skins[[1]]<-MSC
+  Skin<-MSC
+  
   #source("./Analysis_results.R",local=TRUE)
   source("./AI_results.R",local=TRUE)
   #source("./VOI.R",local=TRUE)
@@ -593,7 +595,7 @@ shinyServer(function(input, output, session) {
 
     nsim<<-input$nsim
 
-    tryCatch({
+    #tryCatch({
 
       if(input$Cond_ops == "MERA SRA ML (DLMtool)"){
         withProgress(message = "Building OM from Questionnaire & SRA ML", value = 0, {
@@ -634,13 +636,13 @@ shinyServer(function(input, output, session) {
         OM<<-makeOM(PanelState,nsim=nsim)
 
       }
-     },
-     error = function(e){
-      shinyalert("Could not build operating model", "Try again with another OM conditioning method or examine data object", type = "info")
-      return(0)
-     }
+     #},
+     #error = function(e){
+    #  shinyalert("Could not build operating model", "Try again with another OM conditioning method or examine data object", type = "info")
+    #  return(0)
+    # }
 
-    )
+    #)
 
     Quest(1)
     MadeOM(1)
@@ -807,7 +809,7 @@ shinyServer(function(input, output, session) {
     OM_eval@interval<-input$interval_app
     #OM_eval@cpars$mov<-OM_eval@cpars$mov[,,,,1:OM@nyears+YIU]
     
-    tryCatch({
+    #tryCatch({
         withProgress(message = "Running Evaluation", value = 0, {
           EvalMPs<-input$sel_MP
           MSEobj<<-runMSE(OM_eval,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
@@ -845,14 +847,14 @@ shinyServer(function(input, output, session) {
         Tweak(0)
         redoEval()
         #updateTabsetPanel(session,"Res_Tab",selected="2")
-      },
-      error = function(e){
-        shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-                   For example a short lived stock a low stock depletion with recently declining effort.
-                   Try revising operating model parameters.", type = "info")
-        return(0)
-      }
-    ) # try catch
+      #},
+      #error = function(e){
+      #  shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+       #            For example a short lived stock a low stock depletion with recently declining effort.
+        #           Try revising operating model parameters.", type = "info")
+        #return(0)
+      #}
+    #) # try catch
 
   }) # calculate MSE app
 
@@ -930,7 +932,7 @@ shinyServer(function(input, output, session) {
     # For PDF output, change this to "report.pdf"
     # updateTextInput(session, "Name", value = input$Name),
 
-    filename =  function(){  paste0(namconv(input$Name),"_OM.html") },
+    filename =  function(){  paste0(namconv(input$Name),"_Questionnaire_Report.html") },
     content = function(file) {
       withProgress(message = "Building questionnaire report", value = 0, {
       #doprogress("Building OM report",1)
