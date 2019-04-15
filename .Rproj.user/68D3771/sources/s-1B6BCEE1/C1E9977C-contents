@@ -1142,8 +1142,7 @@ shinyUI(
                           conditionalPanel(condition="output.Eval==1",
                                  column(12,style="height:50px",
                                         h5("Application Report",style="font-weight:bold"),
-                                        conditionalPanel(condition="input.Perf_type=='MSC continuity'",downloadButton("Build_App","")),
-                                        conditionalPanel(condition="input.Perf_type=='MSC'",downloadButton("Build_App_MSC",""))
+                                        downloadButton("Build_Eval","")
 
                                  )
                           )
@@ -1446,9 +1445,6 @@ shinyUI(
                )
         )
       )),
-
-
-
 
       column(12,style="height:45px"),
 

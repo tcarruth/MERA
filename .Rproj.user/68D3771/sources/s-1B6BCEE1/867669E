@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "3950980681",
     "id" : "867669E",
-    "lastKnownWriteTime" : 1555107197,
-    "last_content_update" : 1555107197487,
-    "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/RA.Rmd",
-    "project_path" : "inst/shiny_apps/MERA/RA.Rmd",
+    "lastKnownWriteTime" : 1555305696,
+    "last_content_update" : 1555305696098,
+    "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/Eval.Rmd",
+    "project_path" : "inst/shiny_apps/MERA/Eval.Rmd",
     "properties" : {
-        "cursorPosition" : "88,88",
-        "scrollLine" : "64"
+        "cursorPosition" : "601,0",
+        "scrollLine" : "571"
     },
     "relative_order" : 14,
     "source_on_save" : false,

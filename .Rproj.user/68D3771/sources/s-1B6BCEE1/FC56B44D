@@ -1,21 +1,21 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1555099486204.000,
+    "created" : 1555302007026.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "4083646507",
-    "id" : "75B683AF",
-    "lastKnownWriteTime" : 1555106776,
-    "last_content_update" : 1555106776145,
+    "hash" : "0",
+    "id" : "FC56B44D",
+    "lastKnownWriteTime" : 1555302039,
+    "last_content_update" : 1555302039589,
     "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/Source/App/Debug.R",
     "project_path" : "inst/shiny_apps/MERA/Source/App/Debug.R",
     "properties" : {
-        "cursorPosition" : "3,16",
+        "cursorPosition" : "9,19",
         "scrollLine" : "0"
     },
-    "relative_order" : 11,
+    "relative_order" : 8,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_source"

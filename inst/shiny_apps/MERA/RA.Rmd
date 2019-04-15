@@ -56,9 +56,19 @@ knitr::opts_chunk$set(dpi=85)
 <br>
 
 
-# Old intro title
 
-Old intro
+
+```{r Intro, echo=F,warning=F,error=F,message=F,results='asis'}
+
+  cat("\\newpage")
+  cat('\n')
+  cat(paste0("# ",params$Skin$RA$Intro_title[[1]]))
+  cat('\n')
+  cat(params$Skin$RA$Intro_text[[1]])    
+  cat('\n')
+
+```
+
 
 <br>
 

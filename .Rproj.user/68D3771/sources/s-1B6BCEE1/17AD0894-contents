@@ -392,11 +392,14 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
 
 # ============= Risk Assessment ==================
 
-  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- new('list')
+  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
   
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
   options<-list(res=5)
+  
+  Intro_title[[1]] <- "Introduction"
+  Intro_text[[1]] <- "Status quo fishing effort and catches are projected to evaluate biological risk. Zero catch and FMSY fishing are also projected to frame performance."
   
   # --- Tables --- 
   Tab_title[[1]] <- "Table 1. Projected biomass relative 50% BMSY"
@@ -454,17 +457,21 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
   
   Fig_title[[1]] <- ""#<- Fig_title[[3]] <- Fig_title[[4]] <- Fig_title[[5]]<- Fig_title[[7]] <- Fig_title[[8]] <- Fig_title[[9]] <- "" # make extras empty
   
-  Risk_Assessment<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, Fig_text=Fig_text, Fig_dim=Fig_dim, options=options)
+  Risk_Assessment<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
+                        Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
   
   
   
 # ============= Planning =========================
   
-  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- new('list')
+  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
   
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
   options<-list(burnin=10,            res=1)
+  
+  Intro_title[[1]] <- "Introduction"
+  Intro_text[[1]] <- "Planning mode projects multiple MPs to evaluate their absolute and relative performance with respect to target and limit reference points."
   
   # --- Tables --- 
   Tab_title[[1]] <- "Table 1. Projected biomass relative to the LRP"
@@ -564,17 +571,22 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
   Figs[[9]] <- function(MSEobj,MSEobj_reb,options=list()) Tplot(MSEobj,MSEobj_reb,options)
   Fig_dim[[9]]<-function(dims)list(height=550,width=1100)
   
-  Planning<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, Fig_text=Fig_text, Fig_dim=Fig_dim, options=options)
+  Planning<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
+                 Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
   
 
 # ============= Evaluation =======================
 
-  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- new('list')
+  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
   
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
   options<-list(YIU = 5)
 
+  Intro_title[[1]] <- "Introduction"
+  Intro_text[[1]] <- "A single MP is projected to evaluate implied stock status and develop auxiliary indicators."
+  
+  
   # --- Tables --- 
   Tab_title[[1]] <- "Table 1. Biomass relative to 50% BMSY"
   Tab_text[[1]] <-"The biomass projection for the interim years that an MP has been in use."
@@ -700,7 +712,8 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
   
   Fig_title[[7]] <- Fig_title[[8]] <- Fig_title[[9]] <- "" # make extras empty
   
-  Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, Fig_text=Fig_text, Fig_dim=Fig_dim, options=options)
+  Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
+                   Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
  
 
 # ========== Build ============================= 

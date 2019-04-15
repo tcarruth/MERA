@@ -36,3 +36,35 @@ RecJust<-function(){
   }
 
 }
+
+Update_Options<-function(){
+  
+  shinyjs::hide("burnin")
+  shinyjs::hide("YIU")
+  shinyjs::hide("res")
+  
+  if(input$Mode=='Planning'){
+    nopt<-length(Skin$Planning$options)
+    if(nopt>0){
+      for(i in 1:nopt){
+        optnam<-names(Skin$Planning$options[i])
+        shinyjs::show(optnam)
+        updateNumericInput(session, optnam,value=as.numeric(Skin$Planning$options[i]))
+      }
+    }
+  }
+  
+  if(input$Mode=='Evaluation'){
+    nopt<-length(Skin$Evaluation$options)
+    if(nopt>0){
+      for(i in 1:nopt){
+        optnam<-names(Skin$Evaluation$options[i])
+        shinyjs::show(optnam)
+        updateNumericInput(session, optnam,value=as.numeric(Skin$Evaluation$options[i]))
+      }
+    }
+  }
+  
+  
+
+}
