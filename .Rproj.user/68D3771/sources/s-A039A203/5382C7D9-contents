@@ -1,0 +1,49 @@
+library(plotly)
+library(purrr)
+library(dplyr)
+
+# map qsec to circle area (between 5 to 20 pixels)
+mtcars <- mtcars %>%
+  mutate(size = scales::rescale(sqrt(qsec), to = c(5, 20)))
+
+# creates a list of 32 circle shapes (one for each row/car)
+circles <- pmap(
+  mtcars[c("mpg", "wt", "size")],
+  function(mpg, wt, size) {
+    list(
+      type = "circle",
+      xanchor = mpg,
+      yanchor = wt,
+      x0 = -size/2,
+      y0 = -size/2,
+      x1 = size/2,
+      y1 = size/2,
+      xsizemode = "pixel", 
+      ysizemode = "pixel",
+      # other visual properties
+      fillcolor = "red",
+      line = list(color = "transparent"),
+      layer = "below"
+    )
+  }
+)
+
+yrs<-c(1950,2015)
+yr<-ceiling(seq(yrs[1],yrs[2],length.out=12))
+eff<-seq(0,2,length.out=12)
+effmod<-data.frame(yr=yr,eff=eff)
+
+plot_ly(effmod, color = I("black")) %>%
+  add_markers(x = ~yr, y = ~eff, text = ~eff, marker = list(size = 6)) %>%
+  config(edits = list(shapePosition = TRUE)) #%>%add_lines(x = ~yr, y = ~eff)
+
+
+plot_ly(mtcars, color = I("black")) %>%
+  add_markers(x = ~mpg, y = ~wt, text = ~qsec, marker = list(size = 3)) %>%
+  layout(shapes = circles) %>%
+  config(edits = list(shapePosition = TRUE)) %>%add_lines(x = ~mpg, y = ~wt)
+
+
+
+
+
