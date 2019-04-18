@@ -1,0 +1,302 @@
+
+# === Build script for Atlantic Cod in NAFO 4T4Vn (GSL) =======================
+
+library(DLMtool)
+
+# setwd("C:/Users/tcarruth/Documents/GitHub/DLMDev/Case_Studies/Cod_4T4Vn_DFO")
+
+OM<-XL2OM("Cod_4T4Vn_DFO.xlsx") # Basic setup
+
+# --- cpars --------------------------------------------------------
+yrs<-1971:2014
+proyears<-OM@proyears
+nyears<-length(yrs)
+maxage<-OM@maxage
+nsim<-OM@nsim
+
+
+extendmat<-function(mat){
+  lastfullcol<-match(TRUE,apply(mat,2,FUN=function(x)sum(is.na(x))==length(x)))-1
+  mat[,(lastfullcol+1):ncol(mat)] <- mat[,lastfullcol]
+  mat
+}
+
+fillmat<-function(mat,yrsmth=5){
+
+  mat2<-mat
+  inc<-(yrsmth-1)/2
+  cwna<-(1:ncol(mat))[apply(mat2,2,FUN=function(x)sum(is.na(x))>0)]
+  for(c in cwna){
+    for(r in 1:nrow(mat)){
+      if(is.na(mat2[r,c])){
+        minr<-max(1,r-inc)
+        maxr<-min(nrow(mat),r+inc)
+        mat2[r,c]<-mean(mat[minr:maxr,c],na.rm=T)
+      }
+  }}
+
+  mat3<-mat2
+  inc<-max(6,yrsmth)
+  cwna<-(1:ncol(mat2))[apply(mat2,2,FUN=function(x)sum(is.na(x))>0)]
+  if(length(cwna)>0){
+  for(c in cwna){
+    for(r in 1:nrow(mat)){
+      if(is.na(mat2[r,c])){
+        minr<-max(1,r-inc)
+        maxr<-min(nrow(mat),r+inc)
+        mat3[r,c]<-mean(mat[minr:maxr,c],na.rm=T)
+      }
+    }}
+  }
+
+  mat3
+}
+
+getBH<-function(par,SSB,rec,SSBpR,mode=1,plot=F,R0){
+
+  h<-0.3+0.65*exp(par[1])/(1+exp(par[1])) # between 0.25 and 0.95
+  R0<-exp(par[2])
+  recpred<-((0.8*R0*h*SSB)/(0.2*SSBpR*R0*(1-h)+(h-0.2)*SSB))
+
+  if(plot){
+    ord<-order(SSB)
+    cols=rep("#0000ff95",length(rec))
+    plot(SSB[ord],rec[ord],ylim=c(0,max(rec,R0)),xlim=c(0,max(SSB,R0*max(SSBpR))),xlab="",ylab="",col=cols[ord],pch=19)
+    points(SSB,recpred,col='orange',pch=19)
+    abline(v=c(0.2*R0*max(SSBpR),R0*max(SSBpR)),lty=2,col='red')
+    abline(h=c(R0,R0*h),lty=2,col='red')
+    legend('topright',legend=c(paste0("h = ",round(h,3)),paste0("lnR0 = ",round(log(R0),3))),bty='n')
+  }
+
+  if(mode==1){
+    return(sum(((rec-recpred)/100000)^2))
+    #return(-sum(dnorm(log(recpred)-log(rec),0,0.5,log=T)))#-dnorm(pars[1],0,2,log=T)) # add a vague prior on h = 0.8
+    #return(-sum(dnorm(recpred,rec,rec*0.5,log=T)))
+
+  }else{
+    return(rec-recpred)
+  }
+
+}
+
+
+
+# === get VPA selectivity and apical F ================================
+
+Fage<-read.csv("data/Cod_4T4Vn_VPA_F_2015.csv")
+Fmat<-array(NA,c(nyears,maxage))
+Fmat[,1:13]<-as.matrix(Fage[,2:14])
+Fmat<-extendmat(Fmat)
+
+# --- Derive selectivity -------
+sel<-Fmat
+Fapical<-apply(sel,1,max)
+sel<-sel/Fapical
+
+V <- array(NA, dim = c(nsim, maxage, nyears + proyears))
+# 1971-2014
+Vindhist<-as.matrix(expand.grid(1:nsim,1:maxage,1:nyears))
+V[Vindhist]<-sel[Vindhist[,3:2]]
+
+# 2015-2064 # 50 year projection based on average of last three years
+selrecent<-apply(V[1,,nyears+(-2:0)],1,mean) # recent selectivity is mean over last 4 years 2005-2008
+selrecent<-selrecent/max(selrecent)
+Vindpro<-as.matrix(expand.grid(1:nsim,1:maxage,nyears+(1:proyears)))
+V[Vindpro]<-selrecent[Vindpro[,2]]
+
+# --- Derive apical F trend
+
+Ftrend<-apply(Fmat,1,max)
+Find<-array(rep(Ftrend,each=nsim),c(nsim,nyears))
+
+# ==== Filling out the various matrices ============================
+
+# Create blank arrays for cpars
+M_ageArray <- Mat_age <- Len_age<- Wt_age <- array(NA, dim = c(nsim, maxage, nyears + proyears))
+
+SSBraw<-read.csv("data/Cod_4T4Vn_VPA_SSB_2015.csv")
+SSB<-SSBraw[SSBraw$Year>1970&SSBraw$Year<2015,2]
+Nvpa<-read.csv("data/Cod_4T4Vn_VPA_N_2015.csv")
+Mraw<-read.csv("data/Cod_4T4Vn_VPA_M_2015.csv")
+Len_age_raw<-read.csv("data/Cod_4T4Vn_VPA_LenAge_2015.csv")
+Wt_age_raw<-read.csv("data/Cod_4T4Vn_VPA_WtAge_2015.csv")
+Mat_age_raw<-as.matrix(read.csv("data/Cod_4T4Vn_VPA_MatAge_2015.csv"))
+
+# --- Fill missing values of weight and length at age ---
+Wt_age_raw<-fillmat(Wt_age_raw)[,2:16]
+Len_age_raw<-fillmat(Len_age_raw)[,2:16]
+
+ind<-as.matrix(expand.grid(1:nsim,1:ncol(Wt_age_raw),1:nyears))
+Wt_age[ind]<-Wt_age_raw[ind[,3:2]]
+Wt_age[,,nyears+(1:proyears)]<-rep(Wt_age[,,nyears],proyears)
+aind<-a2ind<-as.matrix(expand.grid(1:nsim,16:maxage,1:(nyears+proyears)))
+a2ind[,2]<-15
+Wt_age[aind]<-Wt_age[a2ind]
+
+Len_age[ind]<-Len_age_raw[ind[,3:2]]
+Len_age[,,nyears+(1:proyears)]<-rep(Len_age[,,nyears],proyears)
+Len_age[aind]<-Len_age[a2ind]
+
+# --- Maturity array filling ---
+Mat_age[,,]<-NA
+Mat_age[,1,]<-0
+Mat_age[,2:12,]<-rep(rep(as.vector(Mat_age_raw[1,2:12]),each=nsim),nyears+proyears) # assume 1950s maturity
+
+for(i in 2:nrow(Mat_age_raw)){
+
+  syr<-Mat_age_raw[i,1]-1950
+  if(i<nrow(Mat_age_raw))eyr<-Mat_age_raw[i+1,1]-1951
+  if(i==nrow(Mat_age_raw))eyr<-nyears+proyears
+  yind<-syr:eyr
+  ny<-length(yind)
+  matvec<-as.vector(Mat_age_raw[i,2:12])
+  Mat_age[,2:12,syr:eyr]<-rep(matvec,each=nsim)
+
+}
+
+Mat_age[,13:maxage,]<-1
+
+# SSB / N check
+SSBa<-Nvpa[1:nyears,2:12]*t(Mat_age[1,3:13,1:nyears])*t(Wt_age[1,3:13,1:nyears])
+SSBt<-apply(SSBa,1,sum)
+#plot(SSBt,ylim=c(0,max(SSBt)))
+#dept<-SSBt[nyears]/SSBt[1]
+#depVPA<-SSB[nyears]/SSB[1]
+#Z<-array(NA,dim(Nvpa))
+
+#for(y in 1:(nyears-1)){
+#  for( a in 1:9){
+#    Z[y,a]<-(-log(Nvpa[y+1,a+2]/Nvpa[y,a+1]))
+#  }
+#}
+
+
+
+# --- Mortality array filling ---
+Myrs<-Mraw[,1]-1970
+Mind<-as.matrix(expand.grid(1:nsim,1:4,Myrs)) # Ages 1-4 (starts age 1) up to 2010
+M_ageArray[Mind]<-Mraw[Mind[,3],2]
+
+Mind<-as.matrix(expand.grid(1:nsim,5:maxage,Myrs)) # Ages 1-4 up to 2010
+M_ageArray[Mind]<-Mraw[Mind[,3],3]
+#Mtempvec<-(Mraw[,3]-Mraw[1,3])*0.1+Mraw[1,3]
+#M_ageArray[Mind]<-Mtempvec[Mind[,3]]
+cbind(Z[1:nyears,c(1,6)],t(M_ageArray[1,c(3,8),1:44]))
+
+othyrs<-41:(nyears+proyears)
+Mto<-Mfrom<-as.matrix(expand.grid(1:nsim,1:maxage,othyrs)) # 2011+
+Mfrom[,3]<-40
+M_ageArray[Mto]<-M_ageArray[Mfrom]
+#M_ageArray[]<-0.001
+
+cumM<-array(0,dim(M_ageArray))
+for(s in 1:nsim){
+for(a in 2:maxage){
+  cumM[s,a,]<-apply(matrix(M_ageArray[s,1:(a-1),],nrow=a-1),2,sum)
+}}
+surv<-exp(-cumM)
+
+SSBpR<-Mat_age*Wt_age*surv
+SSBpR<-apply(SSBpR[1,,],2,sum)[1:nyears]
+
+# === Stock recruitment parameters R0 and steepness ================
+
+rec<-rep(NA,nyears) # N0 recruitment reconstruction
+for(i in 1:(nyears-1)){
+  M1<-Mraw[min(max(1,i-1),40),2]
+  #M0<-Mraw[min(max(1,i-2),40),2]
+  rec[i]<-Nvpa[i+1,2]*exp(M1)
+}
+rec[nyears]<-rec[nyears-1]
+#rec<-rec*1.03^((1:nyears)-(nyears/2))
+#rec[24:44]<-rec[24:44]*5
+#plot(rec); abline(h=mean(rec),col='red')
+
+
+#plot(SSB,rec,xlim=c(0,max(SSB)),ylim=c(0,max(rec)),yaxs='i')
+#SSB0<-4e5
+#R0<-1.1e7
+#par<-log(c(0.5,R0))
+#SSBpR<-SSB0/R0
+
+#out<-optim(par=par,getBH,SSB=SSB,rec=rec,SSBpR=SSBpR,mode=1)
+#OM@R0<-rep(exp(out$par[2]),2)
+#rep(0.3+0.65*exp(out$par[1])/(1+exp(out$par[1])),2)
+OM@h<-rep(0.99999,2) # SSB  - invariant recruitment
+OM@R0<-mean(rec)
+
+recdevs<-log(rec/mean(rec))
+
+SSB0a<-Mat_age[1,,]*Wt_age[1,,]*OM@R0*surv[1,,]
+SSB0v<-apply(SSB0a,2,sum)
+SSB0<-mean(SSB0v[1:6])
+D<-rlnorm(nsim,log(SSB[nyears]/SSB0),0.05)
+OM@D<-c(0.0315,0.032)
+
+#jpeg("images/SR.jpg",res=300,width=5,height=5,units='in')
+#  recdiff<-getBH(out$par,SSB=SSB,rec=rec,SSBpR=SSBpR,mode=2,plot=T)
+#  mtext("SSB",1,line=2.7)
+#  mtext("Recruitment",2,line=2.6)
+#dev.off()
+
+procsd<-sd(recdevs)
+procmu <- -0.5 * (procsd)^2  # adjusted log normal mean
+AC<-acf(recdevs)$acf[2,1,1]
+OM@Perr<-rep(procsd,2)
+OM@AC=rep(AC,2)
+
+predyr1<-as.vector(mean(rec)*surv[1,,1])
+yr1devs<-rep(0,maxage)
+yr1devs[2:12]<-unlist(log(as.vector(Nvpa[1,2:12])/predyr1[2:12]))
+M1<-Mraw[1,2]
+yr1devs[1]<-log(Nvpa[2,2]*exp(M1)/predyr1[1])
+yr1devs[13:maxage]<-yr1devs[12]
+
+Perr<-array(NA,c(nsim,nyears+proyears+maxage))
+Perr[,1:maxage]<-rep(yr1devs[maxage:1],each=nsim)
+Perr[,maxage+(1:nyears)]<-rep(recdevs,each=nsim)
+Perr[,maxage+nyears+(1:proyears)]<-matrix(rnorm(nsim*proyears,rep(procmu,nsim*proyears),rep(procsd,nsim*proyears)),nrow=nsim)
+for (y in maxage+nyears+(1:proyears)) Perr[, y] <- AC * Perr[, y - 1] +   Perr[, y] * (1 - AC * AC)^0.5
+Perr<-exp(Perr)
+#Perr<-Perr/apply(Perr,1,mean)
+
+#            selectivity apical F   natural mortality rate   rec devs   weight at age    length at age      maturity at age
+OM@cpars<-list(V=V,     Find=Find, M_ageArray=M_ageArray,   Perr_y=Perr, Wt_age = Wt_age, Len_age = Len_age, Mat_age = Mat_age)
+
+# Check recruitment matches (more or less - remember that there is time-varying M for age 0 and 1)
+#cbind(Nvpa[3:nyears,2],Perr[1,maxage+(1:(nyears-2))]*OM@R0*exp(-M_ageArray[1,1,1:(nyears-2)])) 
+
+#Nvpa<-N
+# rbind(apply(N[1,3:13,1,],1,sum),Nvpa[1,2:12]) # Ncheck
+# rbind(apply(N[1,3:13,40,],1,sum),Nvpa[40,2:12]) # Ncheck
+# rbind(apply(N[1,3:13,42,],1,sum),Nvpa[42,2:12]) # Ncheck
+# rbind(Nvpa[2:nyears,2],OM@cpars$Perr_y[1,OM@maxage+(1:(OM@nyears-1))]*OM@R0[1]*exp(-M_ageArray[1,1,1:(OM@nyears-1)]))
+# rbind(Nvpa[2:nyears,2],OM@cpars$Perr_y[1,OM@maxage+(1:(OM@nyears-1))]*OM@R0[1]*exp(-M_ageArray[1,1,1:(OM@nyears-1)]),apply(N[1,2,2:nyears,],1,sum))
+
+# runMSE arguments
+#CheckMPs = FALSE; timelimit = 1; Hist=FALSE; ntrials=50; fracD=0.05; CalcBlow=FALSE;HZN=2; Bfrac=0.5; AnnualMSY=TRUE; silent=FALSE; PPD=FALSE; parallel=FALSE; save_name=NULL; checks=FALSE; control=NULL
+
+# Check that OM age 2 numbers match those of the N matrix after histYrs (around line 530 of runMSE.R)
+#                           VPA numbers at age 2 (age class 3, ages 0 and 1 have occurred)                                                runMSE N matrix after histYrs     
+#rbind(OM@cpars$Perr_y[1,OM@maxage+(1:(OM@nyears-1))]*OM@R0[1]*exp(-M_ageArray[1,1,1:(OM@nyears-2)]),apply(N[1,2,3:nyears,],1,sum))
+
+#recs <- apply(N[,1,1:nyears,], c(1,2), sum)
+#plot(recs[1,])
+#lines(OM@cpars$Perr_y[1,OM@maxage:(OM@maxage+nyears)] * R0[1])
+
+# plot(OM)
+
+# --- Create the OM document
+OMdoc(OM,openFile=FALSE)
+
+saveRDS(OM, file="OM.Rdata")
+
+
+# --- Robustness OMs ------------------
+
+# Coming soon
+
+
+# === End of OM build =============================================================================
+
+
