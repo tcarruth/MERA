@@ -18,7 +18,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"4.1.2"
+  Version<<-"4.1.3"
   # MPs
 
   # -------------------------------------------------------------
@@ -665,11 +665,11 @@ shinyServer(function(input, output, session) {
     
     Fpanel(1)
     MPs<-c('curE','curC','FMSYref','NFref')
-    nsim<-8
+    nsim<-96
     OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
     
-    OM@interval<<-8
+    OM@interval<<-12
     
     parallel=F
     if(input$Parallel){
