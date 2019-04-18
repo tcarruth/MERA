@@ -308,7 +308,7 @@ plotFP <-function(dummy=1){
 
   if(sum(cond)>0){
 
-    plot(range(yrs),c(0,max(trends,na.rm=T)),col="white",xlab="",ylab="")
+    plot(range(yrs),c(0,max(trends,na.rm=T)),col="white",xlab="",ylab="",yaxs='i')
     #axis(2)
     #axis(1,c(-10e6,10e6),c(-10e6,10e6))
     mtext("Historical year",1,line=2)
@@ -345,6 +345,7 @@ plotF <- function(dummy=1){
   cond2<-F_nams%in%input$F
 
   if(sum(cond)>0&sum(cond2)>0){
+    
     par(mfrow=c(1,2),mai=c(0.3,0.5,0.01,0.01), omi=c(0.4,0.4,0.55,0.1),cex.main = 1.5, cex.lab=1.35 )
 
     #trends<-trends[cond,]
@@ -362,7 +363,7 @@ plotF <- function(dummy=1){
     stochtrends[Eind]<-Esdarray[Eind]*trends[Tind]
     stochtrends<-stochtrends/apply(stochtrends,1,mean)
 
-    plot(range(yrs),c(0,quantile(stochtrends,0.98)),col="white",xlab="",ylab="")
+    plot(range(yrs),c(0,quantile(stochtrends,0.98)),col="white",xlab="",ylab="",yaxs='i')
     B90s<-apply(stochtrends[rep(cond,each=simbyt),],2,quantile,p=c(0.05,0.95))
     B50s<-apply(stochtrends[rep(cond,each=simbyt),],2,quantile,p=c(0.25,0.75))
 

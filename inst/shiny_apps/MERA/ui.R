@@ -81,7 +81,7 @@ shinyUI(
              h2("MERA")
       ),
       column(5,style="height:65px",
-             h5("method evaluation and risk assessment    (MSC-DLMtool App v4.1.3)",style="padding:19px;")
+             h5("method evaluation and risk assessment    (MSC-DLMtool App v4.1.5)",style="padding:19px;")
       ),
 
       column(3,offset=2,style="padding:14px;height:65px",
@@ -96,7 +96,7 @@ shinyUI(
     hr(),
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
-    h5("MERA links a straightforward graphical questionaire to the powerful OMx operating model of DLMtool and MSEtool to conduct rapid close-loop simulation testing of multiple management procedures (MPs). ",style = "color:grey"),
+    h5("MERA links a straightforward graphical questionaire to the powerful OMx operating model of DLMtool and MSEtool to conduct rapid closed-loop simulation testing of multiple management procedures (MPs). ",style = "color:grey"),
     h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA.html", target="_blank"),style = "color:grey"),
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),

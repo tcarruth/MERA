@@ -552,8 +552,8 @@ FeaseLabs<-function(MPs,dat=NA){
     ind<-1+(0:1000*options$res)
     ind<-ind[ind<=proyears]
     
-    LRP<-round(apply(MSEobj@B_BMSY,2:3,mean)*100,rnd)[,ind]
-    Tab1<-as.data.frame(cbind(c("Current effort", "Current catches", "FMSY fishing", "Zero fishing"),LRP),stringsAsFactors = F)
+    TRP<-round(apply(MSEobj@B_BMSY>1,2:3,mean)*100,rnd)[,ind]
+    Tab1<-as.data.frame(cbind(c("Current effort", "Current catches", "FMSY fishing", "Zero fishing"),TRP),stringsAsFactors = F)
     for(i in 2:ncol(Tab1)) Tab1[,i]<-as.numeric(Tab1[,i])
     colnams<-c("MP",ind+Current_Year)
     names(Tab1)<-colnams

@@ -18,7 +18,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"4.1.3"
+  Version<<-"4.1.5"
   # MPs
 
   # -------------------------------------------------------------
@@ -943,7 +943,8 @@ shinyServer(function(input, output, session) {
                      SessionID=SessionID,
                      copyright=paste("copyright (c) NRDC",CurrentYr)
       )
-
+      knitr::knit_meta(class=NULL, clean = TRUE) 
+    
       output<-render(input="OMRep.Rmd",output_format="html_document", params = params)
       file.copy(output, file)
 
@@ -981,6 +982,7 @@ shinyServer(function(input, output, session) {
                      copyright=paste("copyright (c) NRDC",CurrentYr)
       )
       incProgress(0.2)
+      knitr::knit_meta(class=NULL, clean = TRUE) 
       output<-render(input="DataRep.Rmd",output_format="html_document", params = params)
       incProgress(0.7)
       file.copy(output, file)
@@ -1023,6 +1025,7 @@ shinyServer(function(input, output, session) {
                      copyright=paste("copyright (c) NRDC",CurrentYr)
       )
       incProgress(0.1)
+      knitr::knit_meta(class=NULL, clean = TRUE) 
       output<-render(input="CondRep.Rmd",output_format="html_document", params = params)
       incProgress(0.8)
       file.copy(output, file)
@@ -1061,6 +1064,7 @@ shinyServer(function(input, output, session) {
                      copyright=paste("copyright (c) NRDC",CurrentYr)
       )
       incProgress(0.1)
+      knitr::knit_meta(class=NULL, clean = TRUE) 
       output<-render(input="OM_full_Rep.Rmd",output_format="html_document", params = params)
       incProgress(0.8)
       file.copy(output, file)
@@ -1096,7 +1100,7 @@ shinyServer(function(input, output, session) {
                        SessionID=SessionID,
                        copyright=paste(Copyright,CurrentYr)
         )
-        
+        knitr::knit_meta(class=NULL, clean = TRUE) 
         out<-render("RA.Rmd", params = params)
         file.rename(out, file)
       })
@@ -1133,7 +1137,7 @@ shinyServer(function(input, output, session) {
                        SessionID=SessionID,
                        copyright=paste(Copyright,CurrentYr)
         )
-        
+        knitr::knit_meta(class=NULL, clean = TRUE) 
         out<-render("Plan.Rmd", params = params)
         file.rename(out, file)
       })
@@ -1170,7 +1174,7 @@ shinyServer(function(input, output, session) {
                        SessionID=SessionID,
                        copyright=paste(Copyright,CurrentYr)
         )
-        
+        knitr::knit_meta(class=NULL, clean = TRUE) 
         out<-render("Eval.Rmd", params = params)
         file.rename(out, file)
       })
@@ -1217,7 +1221,7 @@ shinyServer(function(input, output, session) {
                      SessionID=SessionID,
                      copyright=paste(Copyright,CurrentYr)
       )
-
+      knitr::knit_meta(class=NULL, clean = TRUE)
       out<-render("IndRep.Rmd", params = params)
       file.rename(out, file)
       })
