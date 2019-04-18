@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555515143788.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F160637A",
+    "lastKnownWriteTime" : 1555515389,
+    "last_content_update" : 1555515389335,
+    "path" : "~/GitHub/MERA/inst/shiny_apps/MERA/Source/Questionnaire/Fishery_figs.R",
+    "project_path" : "inst/shiny_apps/MERA/Source/Questionnaire/Fishery_figs.R",
+    "properties" : {
+        "cursorPosition" : "934,0",
+        "scrollLine" : "933"
+    },
+    "relative_order" : 14,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
