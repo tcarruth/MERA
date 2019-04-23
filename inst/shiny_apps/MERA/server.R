@@ -18,7 +18,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"4.1.5"
+  Version<<-"4.1.6"
   # MPs
 
   # -------------------------------------------------------------
@@ -167,7 +167,7 @@ shinyServer(function(input, output, session) {
 
     c(
 "1. Provide the time series (specify years, if possible) that exist for catch, effort, and CPUE/abundance indices.
-
+
 2. Describe how these data collected (e.g., log books, dealer reporting, observers).
 
 3. Describe what types of sampling programs and methodologies exist for data collection, including the time-series of available sampling data and quality.
@@ -451,10 +451,10 @@ shinyServer(function(input, output, session) {
   })
 
 
-  # Eval save
-  output$Save_Eval<- downloadHandler(
+  # Plan save
+  output$Save_Plan<- downloadHandler(
 
-    filename = function()paste0(namconv(input$Name),".Eval"),
+    filename = function()paste0(namconv(input$Name),".Plan"),
 
     content=function(file){
 
@@ -465,10 +465,10 @@ shinyServer(function(input, output, session) {
 
   )
 
-  # Eval load
-  observeEvent(input$Load_Eval,{
+  # Plan load
+  observeEvent(input$Load_Plan,{
 
-    filey<-input$Load_Eval
+    filey<-input$Load_Plan
 
     tryCatch({
       listy<-readRDS(file=filey$datapath)
@@ -493,13 +493,13 @@ shinyServer(function(input, output, session) {
       redoPlan()
       updateTabsetPanel(session,"Res_Tab",selected="1")
     }else{
-      shinyalert("File read error", "This does not appear to be a MERA evaluation object", type = "error")
+      shinyalert("File read error", "This does not appear to be a MERA planning object", type = "error")
     }
 
   })
 
-  # App save
-  output$Save_App<- downloadHandler(
+  # Eval save
+  output$Save_Eval<- downloadHandler(
 
     filename = function()paste0(namconv(input$Name),".Eval"),
 
@@ -511,10 +511,10 @@ shinyServer(function(input, output, session) {
     }
   )
 
-  # App load
-  observeEvent(input$Load_App,{
+  # Eval load
+  observeEvent(input$Load_Eval,{
 
-    filey<-input$Load_App
+    filey<-input$Load_Eval
 
     tryCatch({
       listy<-readRDS(file=filey$datapath)
@@ -720,7 +720,7 @@ shinyServer(function(input, output, session) {
   
   
   
-  observeEvent(input$Calculate,{
+  observeEvent(input$Calculate_Plan,{
 
     Fpanel(1)
     MPs<<-getMPs()
@@ -741,14 +741,14 @@ shinyServer(function(input, output, session) {
     Update_Options()
     #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
 
-    tryCatch({
+    #tryCatch({
 
-        withProgress(message = "Running Planning Evaluation", value = 0, {
+        withProgress(message = "Running Planning Analysis", value = 0, {
           silent=T
           MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
         })
         
-        MSEobj@Misc[[4]]<<-SampList
+        if(exists('SampList'))MSEobj@Misc[[4]]<<-SampList
         Dep_reb<-runif(OM@nsim,input$Dep_reb[1],input$Dep_reb[2]) # is a %
         OM_reb<-OM
         OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0 
@@ -770,22 +770,22 @@ shinyServer(function(input, output, session) {
         Tweak(0)
         #updateTabsetPanel(session,"Res_Tab",selected="1")
 
-     },
-      error = function(e){
-        shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-                   For example a short lived stock a low stock depletion with recently declining effort.
-                  Try revising operating model parameters.", type = "info")
-        return(0)
-      }
+     #},
+      #error = function(e){
+       # shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+        #           For example a short lived stock a low stock depletion with recently declining effort.
+         #         Try revising operating model parameters.", type = "info")
+        #return(0)
+      #}
 
-    )
+    #)
 
   }) # press calculate
 
 
   # ------------------------------------------------------------------------------------------------------------------------------------
 
-  observeEvent(input$Calculate_app,{
+  observeEvent(input$Calculate_Eval,{
 
     Fpanel(1)
 
@@ -941,7 +941,7 @@ shinyServer(function(input, output, session) {
                      ntop=input$ntop,
                      inputnames=inputnames,
                      SessionID=SessionID,
-                     copyright=paste("copyright (c) NRDC",CurrentYr)
+                     copyright=paste(Copyright,CurrentYr)
       )
       knitr::knit_meta(class=NULL, clean = TRUE) 
     
@@ -979,7 +979,7 @@ shinyServer(function(input, output, session) {
                      ntop=input$ntop,
                      inputnames=inputnames,
                      SessionID=SessionID,
-                     copyright=paste("copyright (c) NRDC",CurrentYr)
+                     copyright=paste(Copyright,CurrentYr)
       )
       incProgress(0.2)
       knitr::knit_meta(class=NULL, clean = TRUE) 
@@ -1022,7 +1022,7 @@ shinyServer(function(input, output, session) {
                      ntop=input$ntop,
                      inputnames=inputnames,
                      SessionID=SessionID,
-                     copyright=paste("copyright (c) NRDC",CurrentYr)
+                     copyright=paste(Copyright,CurrentYr)
       )
       incProgress(0.1)
       knitr::knit_meta(class=NULL, clean = TRUE) 
@@ -1061,7 +1061,7 @@ shinyServer(function(input, output, session) {
                      ntop=input$ntop,
                      inputnames=inputnames,
                      SessionID=SessionID,
-                     copyright=paste("copyright (c) NRDC",CurrentYr)
+                     copyright=paste(Copyright,CurrentYr)
       )
       incProgress(0.1)
       knitr::knit_meta(class=NULL, clean = TRUE) 

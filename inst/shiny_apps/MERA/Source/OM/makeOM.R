@@ -12,9 +12,7 @@ getminmax<-function(panel,parameter,PanelState){
 makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
-  
-  
-  
+
   OM<-LowSlopes(testOM)
 
   OM@R0<-100000

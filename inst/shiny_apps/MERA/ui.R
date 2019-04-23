@@ -81,7 +81,7 @@ shinyUI(
              h2("MERA")
       ),
       column(5,style="height:65px",
-             h5("method evaluation and risk assessment    (MSC-DLMtool App v4.1.5)",style="padding:19px;")
+             h5("method evaluation and risk assessment    (MSC-DLMtool App v4.1.6)",style="padding:19px;")
       ),
 
       column(3,offset=2,style="padding:14px;height:65px",
@@ -1027,7 +1027,7 @@ shinyUI(
                               column(4,checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),style="padding-top:0px"),
                               column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"),
                               
-                              column(12,actionButton("Calculate",h5("      CALCULATE     ",style="color:red")))
+                              column(12,actionButton("Calculate_Plan",h5("      CALCULATE     ",style="color:red")))
                               
                       ),
                       conditionalPanel(condition="output.MadeOM==0",
@@ -1061,21 +1061,21 @@ shinyUI(
              column(6),
              column(4,
                     column(6,style="padding:10px",
-                           fileInput("Load_Eval","Load  (.Eval)")
+                           fileInput("Load_Plan","Load  (.Plan)")
                     ),
                     
                     column(2,
                            conditionalPanel(condition="output.Plan==1",
-                                            h5("Save",style="font-weight:bold"),
-                                            downloadButton("Save_Eval","",width=70)
+                                  h5("Save",style="font-weight:bold"),
+                                  downloadButton("Save_Plan","",width=70)
                            )
                            
                     ),
                     column(4,
                            
                            conditionalPanel(condition="output.Plan==1",
-                                            h5("Planning Report",style="font-weight:bold"),
-                                            downloadButton("Build_Plan","")
+                                  h5("Planning Report",style="font-weight:bold"),
+                                  downloadButton("Build_Plan","")
                            )
                            
                     )
@@ -1107,7 +1107,7 @@ shinyUI(
                         column(6,checkboxInput("Parallel_app", label = "Parallel comp.", value = FALSE)),
                          
                         column(12,
-                               actionButton("Calculate_app",h5("      CALCULATE     ",style="color:red"))
+                               actionButton("Calculate_Eval",h5("      CALCULATE     ",style="color:red"))
                         )
 
                        ),
@@ -1116,7 +1116,7 @@ shinyUI(
                       )
                      ),
                      column(6,
-                         h5("In the application mode, a single MP is tested over a greater number of simulations.", style = "color:grey")
+                         h5("In the Evaluation mode, a single MP is tested over a greater number of simulations.", style = "color:grey")
                      )
                    )
             )
@@ -1127,13 +1127,13 @@ shinyUI(
             column(6),
             column(4,
                    column(6,style="padding:10px",
-                          fileInput("Load_App","Load  (.App)")
+                          fileInput("Load_Eval","Load  (.Eval)")
                    ),
 
                    column(2,
                           conditionalPanel(condition="output.Eval==1",
                                  h5("Save",style="font-weight:bold"),
-                                 downloadButton("Save_App","",width=70)
+                                 downloadButton("Save_Eval","",width=70)
                           )
 
                    ),
@@ -1141,7 +1141,7 @@ shinyUI(
 
                           conditionalPanel(condition="output.Eval==1",
                                  column(12,style="height:50px",
-                                        h5("Application Report",style="font-weight:bold"),
+                                        h5("Evaluation Report",style="font-weight:bold"),
                                         downloadButton("Build_Eval","")
 
                                  )
@@ -1182,7 +1182,7 @@ shinyUI(
                      column(1),
                      column(6,style="padding:19px",
                           h5("A similar data file to step A2 can be loaded here with extended data for years after operating model conditioning",style = "color:grey"),
-                          h5("These data can be compared against the predicted data of the Application operating model and used to detect exceptional
+                          h5("These data can be compared against the predicted data of the Evaluation operating model and used to detect exceptional
                                circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://drive.google.com/open?id=1Liif_ugfDbzIKZMBusHNemgfi3cohvtr", target="_blank"),style = "color:grey"),
                           h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
                      )
@@ -1241,35 +1241,7 @@ shinyUI(
                   sliderInput("Ind_Alpha","Type I error (Prob false positive rejection, alpha)",min=0.01,max=0.25,value=0.05,step=0.01)
                 ),# end of indicator control panel
 
-                conditionalPanel(width=4,condition="output.Data==1 & input.Res_Tab==4",
-
-                  conditionalPanel(width=4,condition="output.Plan==1 & output.Eval==1",
-
-                        radioButtons("Advice_allMPs",label="Calculate advice for a set of MPs",
-                                     choices = c("Custom MPs","Application MP","Evaluation MPs","All feasible MPs"),selected="Custom MPs")
-
-                  ),
-
-                  conditionalPanel(width=4,condition="output.Plan==0 & output.Eval==1",
-
-                       radioButtons("Advice_nE",label="Calculate advice for a set of MPs",
-                                    choices = c("Custom MPs","Application MP","All feasible MPs"),selected="Custom MPs")
-
-                  ),
-
-                  conditionalPanel(width=4,condition="output.Plan==1 & output.Eval==0",
-
-                       radioButtons("Advice_nA",label="Calculate advice for a set of MPs",
-                                    choices = c("Custom MPs","Evaluation MPs","All feasible MPs"),selected="Custom MPs")
-
-                  ),
-
-                  conditionalPanel(width=4,condition="output.Plan==0 & output.Eval==0",
-
-                       radioButtons("Advice_nEA",label="Calculate advice for a set of MPs",
-                                    choices = c("Custom MPs","All feasible MPs"),selected="Custom MPs")
-
-                  ),
+                conditionalPanel(width=4,condition="output.Data==1",
 
                   selectInput("Advice_MP1", label = "Custom MP 1", choices=c("curE","curC","curC75"),selected="curE"),
                   selectInput("Advice_MP2", label = "Custom MP 2", choices=c("curE","curC","curC75"),selected="curC"),

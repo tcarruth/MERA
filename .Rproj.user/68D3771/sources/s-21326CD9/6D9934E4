@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555566251226.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "6D9934E4",
+    "lastKnownWriteTime" : 1552576120,
+    "last_content_update" : 1552576120,
+    "path" : "C:/GitHub/DLMDev/Case_Studies/Cod_4T4Vn_DFO/Build.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "143,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

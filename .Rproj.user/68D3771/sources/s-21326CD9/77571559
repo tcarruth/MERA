@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555988557982.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "77571559",
+    "lastKnownWriteTime" : 1555990324,
+    "last_content_update" : 1555990324860,
+    "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/Source/SSRA/StochasticSRA_MSC.R",
+    "project_path" : "inst/shiny_apps/MERA/Source/SSRA/StochasticSRA_MSC.R",
+    "properties" : {
+        "cursorPosition" : "511,1",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

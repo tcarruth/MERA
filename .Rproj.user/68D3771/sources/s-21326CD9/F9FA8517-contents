@@ -1,0 +1,625 @@
+---
+title: "`r params$set_title`"#
+subtitle: "`r params$set_type` "
+author: "`r params$OM@Source`"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false    
+runtime: shiny   
+---
+
+
+<style type="text/css">
+
+body{ /* Normal  */
+   font-size: 16px;
+}
+td {  /* Table  */
+   font-size: 16px;
+}
+title { /* title */
+ font-size: 26px;
+}
+h1 { /* Header 1 */
+ font-size: 24px;
+ color: DarkBlue;
+}
+h2 { /* Header 2 */
+ font-size: 21px;
+ color: DarkBlue;
+}
+h3 { /* Header 3 */
+ font-size: 19px;
+ color: DarkBlue;
+}
+code.r{ /* Code block */
+  font-size: 16px;
+}
+pre { /* Code block */
+  font-size: 16px
+}
+</style>
+
+
+
+
+```{r set options, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(dpi=85)
+
+#options(width = 650)
+```
+
+
+<br>
+
+```{r progresssetup,echo=F}
+
+incrate<-1/10
+incProgress(incrate)
+
+library(DT)
+dims<-list(nMPs=params$MSEobj@nMPs)
+
+
+```
+
+
+
+```{r Intro, echo=F,warning=F,error=F,message=F,results='asis'}
+
+  cat("\\newpage")
+  cat('\n')
+  cat(paste0("# ",params$Skin$Planning$Intro_title[[1]]))
+  cat('\n')
+  cat(params$Skin$Planning$Intro_text[[1]])    
+  cat('\n')
+
+```
+
+
+
+
+```{r Chunk1t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-1
+  
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Tab_title)>=i){
+  if(params$Skin$Planning$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Tab_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+  
+  width=params$Skin$Planning$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$Planning$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+``` 
+
+```{r Chunk1f, echo=F,warning=F,error=F,message=F,results='asis',fig.height=height, fig.width=width}
+
+   cat("\\newpage")
+  if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Fig_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+  incProgress(incrate)
+```
+
+
+
+```{r Chunk2t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-2
+  
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Tab_title)>=i){
+  if(params$Skin$Planning$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Tab_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+  
+  width=params$Skin$Planning$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$Planning$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk2f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Fig_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+```
+
+
+
+```{r Chunk3t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-3
+  
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Tab_title)>=i){
+  if(params$Skin$Planning$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Tab_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+  
+  width=params$Skin$Planning$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$Planning$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk3f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Fig_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+```
+
+
+
+```{r Chunk4t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-4
+  
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Tab_title)>=i){
+  if(params$Skin$Planning$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Tab_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+  
+  width=params$Skin$Planning$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$Planning$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk4f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Fig_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+```
+
+
+
+
+
+```{r Chunk5t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-5
+  
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Tab_title)>=i){
+  if(params$Skin$Planning$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Tab_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+  
+  width=params$Skin$Planning$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$Planning$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk5f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Fig_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+```
+
+
+
+
+```{r Chunk6t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-6
+  
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Tab_title)>=i){
+  if(params$Skin$Planning$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Tab_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+  
+  width=params$Skin$Planning$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$Planning$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk6f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Fig_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+```
+
+
+
+
+```{r Chunk7t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-7
+  
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Tab_title)>=i){
+  if(params$Skin$Planning$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Tab_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+  
+  width=params$Skin$Planning$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$Planning$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk7f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Fig_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+```
+
+
+
+
+```{r Chunk8t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-8
+  
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Tab_title)>=i){
+  if(params$Skin$Planning$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Tab_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+  
+  width=params$Skin$Planning$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$Planning$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk8f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Fig_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+```
+
+
+
+
+```{r Chunk9t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-9
+  
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Tab_title)>=i){
+  if(params$Skin$Planning$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Tab_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+  
+  width=params$Skin$Planning$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$Planning$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk9f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$Planning$Fig_title)>=i){
+  if(params$Skin$Planning$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$Planning$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$Planning$Fig_text[[i]])    
+    cat('\n')
+    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+  }
+  }
+
+```
+
+
+
+# Version Notes
+
+The package is subject to ongoing testing. If you find a bug or a problem please send a report to <t.carruthers@oceans.ubc.ca> so that it can be fixed!  
+
+<br clear="both"/>
+<br clear="both"/>
+<br clear="both"/>
+
+<hr />
+```{r copyright, results='asis',echo=FALSE, size="tiny"}
+
+  
+  cat(params$SessionID)
+  cat("\n\n")
+  cat(params$copyright)
+ 
+
+```
+<hr />
+
+

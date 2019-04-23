@@ -61,7 +61,7 @@ plotquant<-function(x,p=c(0.05,0.25,0.75,0.95),yrs,qcol,lcol,addline=T,ablines=N
   if(!is.na(ablines[1]))abline(h=ablines,col='#99999980')
   
   if(addline)for(i in 1:2)lines(yrs,x[i,],col=lcol,lty=i)
-  lines(yrs,apply(x,2,quantile,p=0.5),lwd=2,col="white")
+  lines(yrs,apply(x,2,quantile,p=0.5,na.rm=T),lwd=2,col="white")
 }
 
 LT_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",quants=c(0.05,0.25,0.75,0.95),vline=NA,fease=F){
@@ -178,6 +178,7 @@ CCU_plot<-function(MSEobj,MSEobj_reb,options=list(),maxrow=1,maxcol=3,fease=F){
             "TACFrac", "TACSD", "TAEFrac","TAESD", "SizeLimFrac","SizeLimSD","Cbias","betas","RefY")
   
   MSEtemp<-MSEobj
+  if(length(MSEtemp@Misc)<4)MSEtemp@Misc[[4]]<-NULL
   MSEtemp@OM<-cbind(MSEtemp@OM,betas=MSEtemp@Obs$betas,MSEtemp@Misc[[4]])
   MSEtemp@OM<-MSEtemp@OM[,names(MSEtemp@OM)%in%opt1]
   VOIout<-VOI(MSEtemp,ncomp=15,nbins=6,plot=F)[[1]]
@@ -251,7 +252,7 @@ VOI_plot<-function(MSEobj,MSEobj_reb,options=list(),maxcol=6,fease=F){
 
     MP<-MSEobj@MPs[i]
     dat<-VOIout[match(MP,VOIout[,1])+0:1,2:13]
-    ind<-dat[2,]!=""
+    ind<-dat[2,]!=""&!is.na(dat[2,])
     dat<-as.matrix(dat[,ind],ncol=sum(ind))  
     Obsgot<-as.character(unlist(dat[1,]))
    
@@ -291,9 +292,11 @@ Yproj<-function(MSEobj,MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95)
   par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
   
   Yd<-MSEobj@C/ array(rep(MSEobj@C[,,1],MSEobj@proyears),dim(MSEobj@C))#MSEobj@OM$RefY
-  Yd[is.na(Yd)]<-0
+  #Yd[is.na(Yd)]<-0
+  Yd[Yd==Inf]<-NA
+  Yd[Yd==NaN]<-NA
   
-  Ylims<- c(0,min(10,quantile(Yd,0.95)))
+  Ylims<- c(0,min(10,quantile(Yd,0.95,na.rm=T)))
   
   for(i in 1:nMPs){
     plot(range(yrs),Ylims,col="white")
@@ -700,7 +703,7 @@ FeaseLabs<-function(MPs,dat=NA){
   Fig_title[[9]] <- "Figure 8. Yield - Biomass trade-offs"
   Fig_text[[9]] <- "Trade-off between yield and biomass risks" 
   Figs[[9]] <- function(MSEobj,MSEobj_reb,options=list()) Tplot(MSEobj,MSEobj_reb,options)
-  Fig_dim[[9]]<-function(dims)list(height=550,width=1100)
+  Fig_dim[[9]]<-function(dims)list(height=650,width=1300)
   
   Planning<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                  Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)

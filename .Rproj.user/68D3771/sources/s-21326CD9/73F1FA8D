@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555989281436.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "73F1FA8D",
+    "lastKnownWriteTime" : 1555992557,
+    "last_content_update" : 1555992557202,
+    "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/Source/OM/makeOM.R",
+    "project_path" : "inst/shiny_apps/MERA/Source/OM/makeOM.R",
+    "properties" : {
+        "cursorPosition" : "14,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 10,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

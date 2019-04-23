@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555989744054.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "19997415",
+    "lastKnownWriteTime" : 1554954065,
+    "last_content_update" : 1554954065,
+    "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/Source/Data/Data_trim.R",
+    "project_path" : "inst/shiny_apps/MERA/Source/Data/Data_trim.R",
+    "properties" : {
+        "cursorPosition" : "35,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 12,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

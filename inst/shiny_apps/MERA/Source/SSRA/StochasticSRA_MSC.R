@@ -99,7 +99,7 @@ StochasticSRA_MSC<-function(OM,CAA,Chist,Ind=NA,ML=NA,CAL=NA,mulen=NA,wts=c(1,1,
                         Jump_fac=1,nits=4000, burnin=500,thin=10,ESS=300,MLsd=0.1,
                         ploty=T,nplot=6,SRAdir=NA,shiny=T){
 
-  OM <- updateMSE(OM) # Check that all required slots in OM object contain values
+  #OM <- updateMSE(OM) # Check that all required slots in OM object contain values
 
   nyears<-length(Chist)
   if(class(Chist)=="matrix")nyears<-nrow(Chist)
@@ -111,7 +111,6 @@ StochasticSRA_MSC<-function(OM,CAA,Chist,Ind=NA,ML=NA,CAL=NA,mulen=NA,wts=c(1,1,
     if(sum(is.na(Ind))<nyears)Ind<-Ind/mean(Ind,na.rm=T) # normalize Ind to mean 1
   }
   if(length(ML)==1)ML<-rep(NA,nyears)
-
 
   Umax<-1-exp(-OM@maxF) # get SRA umax from OM
   Imiss<-is.na(Ind)     # which SSB index observations are missing?
@@ -491,13 +490,28 @@ StochasticSRA_MSC<-function(OM,CAA,Chist,Ind=NA,ML=NA,CAL=NA,mulen=NA,wts=c(1,1,
   Wt_age <- array(Wt_age, dim=c(dim=c(nsim, maxage, nyears+proyears)))
   Len_age <- array(Len_age, dim=c(nsim, maxage, nyears+proyears))
   Marray <- matrix(M, nrow=nsim, ncol=proyears+nyears)
-  OM@cpars<-list(D=dep,M=M,procsd=procsd,AC=AC,hs=hs,Linf=Linf,
-                 Wt_age=Wt_age, Len_age=Len_age, Marray=Marray,
-                 K=K,t0=t0,L50=L50,
-                 L5=L5,LFS=L95,Find=PredF,
-                 V=array(sel,c(nsim,maxage,nyears)),Perr=Perr,R0=R0,
-                 Iobs=apply(Ires,1,sd,na.rm=T),
-                 SSB=SSB,SSB0=SSB0,RD=RD) # not valid for runMSE code but required
+  OM@cpars$D=dep
+  OM@cpars$M=M
+  OM@cpars$procsd=procsd
+  OM@cpars$AC=AC
+  OM@cpars$hs=hs
+  OM@cpars$Linf=Linf
+  OM@cpars$Wt_age=Wt_age
+  OM@cpars$Len_age=Len_age
+  OM@cpars$Marray=Marray
+  OM@cpars$K=K
+  OM@cpars$t0=t0
+  OM@cpars$L50=L50
+  OM@cpars$L5=L5
+  OM@cpars$LFS=L95
+  OM@cpars$Find=PredF
+  OM@cpars$V=array(sel,c(nsim,maxage,nyears))
+  OM@cpars$Perr=Perr
+  OM@cpars$R0=R0
+  OM@cpars$Iobs=apply(Ires,1,sd,na.rm=T)
+  OM@cpars$SSB=SSB
+  OM@cpars$SSB0=SSB0
+  OM@cpars$RD=RD # not valid for runMSE code but required
   #params<-
   list(OM=OM,SRAinfo=list(nits=nits,nsim=nsim,thin=thin,nyears=nyears,maxage=maxage,nages=maxage,parstr=parstr,burnin=burnin,SSB=SSB,
                 PredF=PredF,RD=RD,CAA=CAA,CAL=CAL,CAA_pred=CAA_pred,CAL_pred=CAL_pred,Ind=Ind,mulen=mulen,
