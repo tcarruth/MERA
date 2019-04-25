@@ -28,10 +28,12 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Data_figs.R",local=TRUE)
 
   # Presentation of results
+  source("./Source/Skins/FAO.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
   Skins<<-new('list')
   Skins[[1]]<-MSC
-  Skin<-MSC
+  Skin<- MSC # FAO
+  
   
   #source("./Analysis_results.R",local=TRUE)
   source("./AI_results.R",local=TRUE)
@@ -665,7 +667,7 @@ shinyServer(function(input, output, session) {
     
     Fpanel(1)
     MPs<-c('curE','curC','FMSYref','NFref')
-    nsim<-96
+    nsim<- 96
     OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
     
