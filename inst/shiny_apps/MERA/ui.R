@@ -35,6 +35,7 @@ shinyUI(
                       output{ font-size:13px;}
                       tbody{ font-size:13px;}
                       style{ font-size:13px;}
+                      .datatables .display {margin-left: 0;}
 
                       [type = 'number'] {font-size:13px;height:30px;}
                       [type = 'text'] {font-size:13px;}

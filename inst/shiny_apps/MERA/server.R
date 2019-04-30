@@ -1,3 +1,4 @@
+quick <- TRUE # switch to use 3 sims for quick test runs in RA mode
 
 library(shiny)
 library(DLMtool)
@@ -32,7 +33,7 @@ shinyServer(function(input, output, session) {
   source("./Source/Skins/MSC.R",local=TRUE)
   Skins<<-new('list')
   Skins[[1]]<-MSC
-  Skin<- MSC # FAO
+  Skin<- FAO # MSC # FAO
   
   
   #source("./Analysis_results.R",local=TRUE)
@@ -667,7 +668,7 @@ shinyServer(function(input, output, session) {
     
     Fpanel(1)
     MPs<-c('curE','curC','FMSYref','NFref')
-    nsim<- 96
+    nsim <- ifelse(quick, 3, 96)
     OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
     

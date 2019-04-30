@@ -2,6 +2,64 @@
 # ====  FAO Skin  ====================================================================================================================
 # ====================================================================================================================================
 
+# Performance Metrics
+P50_1 <<- function (MSEobj = NULL, Ref = 0.5, Yrs = NULL) {
+  Yrs <- ChkYrs(Yrs, MSEobj)
+  PMobj <- new("PMobj")
+  PMobj@Name <- "Spawning Biomass relative to SBMSY"
+  if (Ref != 1) {
+    PMobj@Caption <- paste0("Prob. SB > ", Ref, " SBMSY (Years ", 
+                            Yrs[1], " - ", Yrs[2], ")")
+  }
+  else {
+    PMobj@Caption <- paste0("Prob. SB > SBMSY (Years ", 
+                            Yrs[1], " - ", Yrs[2], ")")
+  }
+  PMobj@Ref <- Ref
+  PMobj@Stat <- MSEobj@B_BMSY[, , Yrs[1]:Yrs[2]]
+  PMobj@Prob <- calcProb(PMobj@Stat > PMobj@Ref, MSEobj)
+  PMobj@Mean <- calcMean(PMobj@Prob)
+  PMobj@MPs <- MSEobj@MPs
+  PMobj
+}
+class(P50_1) <<- "PM"
+
+P50_2 <<- function (MSEobj = NULL, Ref = 0.5, Yrs = NULL) {
+  Yrs <- ChkYrs(Yrs, MSEobj)
+  PMobj <- new("PMobj")
+  PMobj@Name <- "Spawning Biomass relative to SBMSY"
+  if (Ref != 1) {
+    PMobj@Caption <- paste0("Prob. SB > ", Ref, " SBMSY (Years ", 
+                            Yrs[1], " - ", Yrs[2], ")")
+  }
+  else {
+    PMobj@Caption <- paste0("Prob. SB > SBMSY (Years ", 
+                            Yrs[1], " - ", Yrs[2], ")")
+  }
+  PMobj@Ref <- Ref
+  PMobj@Stat <- MSEobj@B_BMSY[, , Yrs[1]:Yrs[2]]
+  PMobj@Prob <- calcProb(PMobj@Stat > PMobj@Ref, MSEobj)
+  PMobj@Mean <- calcMean(PMobj@Prob)
+  PMobj@MPs <- MSEobj@MPs
+  PMobj
+}
+class(P50_2) <<- "PM"
+
+Yield1 <<- function (MSEobj = NULL, Ref = 1, Yrs = -5) {
+  Yrs <- ChkYrs(Yrs, MSEobj)
+  PMobj <- new("PMobj")
+  PMobj@Name <- paste0("Yield relative to Reference Yield (Years ", 
+                       Yrs[1], "-", Yrs[2], ")")
+  PMobj@Caption <- "Average relative long-term yield"
+  RefYd <- array(MSEobj@OM$RefY, dim = dim(MSEobj@C[, , Yrs[1]:Yrs[2]]))
+  PMobj@Stat <- MSEobj@C[, , Yrs[1]:Yrs[2]]/RefYd
+  PMobj@Ref <- Ref
+  PMobj@Prob <- calcProb(PMobj@Stat, MSEobj)
+  PMobj@Mean <- calcMean(PMobj@Prob)
+  PMobj@MPs <- MSEobj@MPs
+  PMobj
+}
+class(Yield1) <<- "PM"
 
 # ============= Risk Assessment ==================
 
@@ -17,73 +75,15 @@ Intro_text[[1]] <- "Status quo fishing effort and catches are projected to evalu
 # --- Figures ----
 
 # Trade-Off Plot 
-Fig_title[[1]] <- "Figure 1. Prob. B > 0.5BMSY and average long-term Yield Trade-Off Plot"
-Fig_text[[1]] <-  "The probability spawning biomass is above 0.5BMSY in years mean generation time through year 50" 
+Fig_title[[1]] <- "Figure 1. Probability B > 0.5BMSY, F < FMSY, and average long-term Yield Trade-Off Plot"
+Fig_text[[1]] <-  "The probability spawning biomass is above 0.5BMSY and F < FMSY in projection years from mean generation time (MGT) through last projection year against the average long-term yield." 
 
 Figs[[1]]<-function(MSEobj, MSEobj_reb, options=list()){
-  
-  P50_1 <- function (MSEobj = NULL, Ref = 0.5, Yrs = NULL) {
-    Yrs <- ChkYrs(Yrs, MSEobj)
-    PMobj <- new("PMobj")
-    PMobj@Name <- "Spawning Biomass relative to SBMSY"
-    if (Ref != 1) {
-      PMobj@Caption <- paste0("Prob. SB > ", Ref, " SBMSY (Years ", 
-                              Yrs[1], " - ", Yrs[2], ")")
-    }
-    else {
-      PMobj@Caption <- paste0("Prob. SB > SBMSY (Years ", 
-                              Yrs[1], " - ", Yrs[2], ")")
-    }
-    PMobj@Ref <- Ref
-    PMobj@Stat <- MSEobj@B_BMSY[, , Yrs[1]:Yrs[2]]
-    PMobj@Prob <- calcProb(PMobj@Stat > PMobj@Ref, MSEobj)
-    PMobj@Mean <- calcMean(PMobj@Prob)
-    PMobj@MPs <- MSEobj@MPs
-    PMobj
-  }
-  class(P50_1) <- "PM"
-  
-  P50_2 <- function (MSEobj = NULL, Ref = 0.5, Yrs = NULL) {
-    Yrs <- ChkYrs(Yrs, MSEobj)
-    PMobj <- new("PMobj")
-    PMobj@Name <- "Spawning Biomass relative to SBMSY"
-    if (Ref != 1) {
-      PMobj@Caption <- paste0("Prob. SB > ", Ref, " SBMSY (Years ", 
-                              Yrs[1], " - ", Yrs[2], ")")
-    }
-    else {
-      PMobj@Caption <- paste0("Prob. SB > SBMSY (Years ", 
-                              Yrs[1], " - ", Yrs[2], ")")
-    }
-    PMobj@Ref <- Ref
-    PMobj@Stat <- MSEobj@B_BMSY[, , Yrs[1]:Yrs[2]]
-    PMobj@Prob <- calcProb(PMobj@Stat > PMobj@Ref, MSEobj)
-    PMobj@Mean <- calcMean(PMobj@Prob)
-    PMobj@MPs <- MSEobj@MPs
-    PMobj
-  }
-  class(P50_2) <- "PM"
-  
-  Yield1 <- function (MSEobj = NULL, Ref = 1, Yrs = -5) {
-    Yrs <- ChkYrs(Yrs, MSEobj)
-    PMobj <- new("PMobj")
-    PMobj@Name <- paste0("Yield relative to Reference Yield (Years ", 
-                         Yrs[1], "-", Yrs[2], ")")
-    PMobj@Caption <- "Average relative long-term yield"
-    RefYd <- array(MSEobj@OM$RefY, dim = dim(MSEobj@C[, , Yrs[1]:Yrs[2]]))
-    PMobj@Stat <- MSEobj@C[, , Yrs[1]:Yrs[2]]/RefYd
-    PMobj@Ref <- Ref
-    PMobj@Prob <- calcProb(PMobj@Stat, MSEobj)
-    PMobj@Mean <- calcMean(PMobj@Prob)
-    PMobj@MPs <- MSEobj@MPs
-    PMobj
-  }
-  class(Yield1) <- "PM"
-  
   MGT <- round(mean(MSEobj@OM$MGT),0)
-  PMlist <- c("P50_1", "Yield1", "P50_2", "Yield1")
+  PMlist <- c("P50_1", "Yield1", "PNOF", "Yield1")
+
   Labels <- list(curE="Current Effort", curC="Current Catch", FMSYref="FMSY Fishing", NFref="No Fishing")
-  TradePlot(MSEobj, PMlist=PMlist, Labels=Labels, Show='plots',
+  DLMtool::TradePlot(MSEobj, PMlist=PMlist, Labels=Labels, Show='plots',
             Lims=c(0.8, 0, 0.8,0),
             Yrs=list(P50_1=c(MGT, MSEobj@proyears), P50_2=-10))
   
@@ -118,12 +118,11 @@ Tab_text[[2]] <- "The probability spawning biomass is above 0.5BMSY in years mea
 
 Tabs[[2]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
   nMPs<-MSEobj@nMPs
-  
   Labels <- list(curE="Current Effort", curC="Current Catch", FMSYref="FMSY Fishing", NFref="No Fishing")
   PMlist <- c('P50_1', 'P50_2')
   nPM <- length(PMlist)
   runPM <- vector("list", length(PMlist))
-  
+
   MGT <- round(mean(MSEobj@OM$MGT),0)
   Yrs <- list(c(MGT, MSEobj@proyears), c(-10))
   for (X in 1:length(PMlist)) {
@@ -172,14 +171,14 @@ Tabs[[2]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
     paste0("<a href='", TabDF$url[fail.ind&MPwithurl],"' style='color: #FF0000' ' target='_blank'>", TabDF$MP[fail.ind&MPwithurl],"</a>")
 
   TabDF$url <- NULL; TabDF$Type = NULL; TabDF$min <- NULL
-  DT::datatable(TabDF, escape=FALSE, 
+  caption <- "CAPTION"
+  DT::datatable(TabDF, escape=FALSE, caption=caption,
                 colnames=c('', "MP", runPM[[1]]@Caption, runPM[[2]]@Caption),
-                extensions = c('Responsive'), 
-                class = 'cell-border stripe', 
+                class = 'display', 
                 options = list(
                   dom = 't',
-                  columnDefs = list(list(width = '200px', targets = "_all")),
-                  autoWidth = TRUE)) 
+                  autoWidth = TRUE,
+                  columnDefs = list(list(width = '200px', targets = "_all")))) 
 
 }
 
@@ -428,6 +427,11 @@ Fig_dim[[2]]<-function(dims)list(height=ceiling(dims$nMPs/5)*250,width=1100)
 Planning<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
 
+
+# ========== Evaluation ========================
+
+Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
+                 Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
 
 # ========== Build ============================= 
 
