@@ -891,6 +891,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$res,{ Tweak(1) })
   observeEvent(input$M1,{ Tweak(1) })
   observeEvent(input$D1,{ Tweak(1) })
+  # observeEvent(input$minProb,{ Tweak(1) })
 
   # Update tables if ...
 

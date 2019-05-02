@@ -1229,7 +1229,7 @@ shinyUI(
                   numericInput("burnin", label = "Burn-in years", value=10,min=5,max=20), # burnin- some initial spool up time period
                   numericInput("YIU",label="Years in use",value=6,min=2,max=30),          # years in use - how long the MP has been used for   
                   numericInput("res", label = "Reporting resolution", value=1,min=1,max=10), # resolution of reporting (years)
-                  
+                  # sliderInput("minProb", label = "Minimum Probability Limit", value=0.8,min=0, max=1, step=0.05), # minimum prob. limit to be considered acceptable (planning)
                   #numericInput("ntop", label = "Number of top MPs to display", value=10,min=1,max=80),
                   #checkboxInput("LTL", label = "Low Trophic Level PIs", value = FALSE),
                   column(12,conditionalPanel(condition="output.Data==1",checkboxInput("Fease", label = "Advanced data feasibility", value = FALSE))),
