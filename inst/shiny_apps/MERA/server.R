@@ -1,4 +1,4 @@
-quick <- TRUE # switch to use 3 sims for quick test runs in RA mode
+quick <- FALSE # switch to use 3 sims for quick test runs in RA mode
 
 library(shiny)
 library(DLMtool)
@@ -758,6 +758,7 @@ shinyServer(function(input, output, session) {
         
         
         withProgress(message = "Rebuilding Analysis", value = 0, {
+          if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
           MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
         })
         MSEobj_reb@Misc[[4]]<<-SampList
@@ -1566,5 +1567,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$debug,
               updateTextAreaInput(session,"Debug1",value=MadeOM())
   )
+  
+
 
 })

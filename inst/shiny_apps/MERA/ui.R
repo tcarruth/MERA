@@ -71,7 +71,9 @@ shinyUI(
                       line-height: 1.1;
                       }
 
-                      "))
+                      ")),
+      tags$script(src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.16/iframeResizer.contentWindow.min.js",
+                  type="text/javascript") # added for dynamic size iframe on website
     ),
 
     includeCSS("www/custom.css"),
