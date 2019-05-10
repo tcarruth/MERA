@@ -906,7 +906,7 @@ Tabs[[8]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
     df$Feasible[df$MP %in% notFease] <- 'No'
     df$Feasible[df$Feasible != "No"] <- "Yes"
     
-    acceptMPs <- df %>% filter(min>=Prob) %>% select(MP)
+    # acceptMPs <- df %>% filter(min>=Prob) %>% select(MP)
 
     TabDF <- tidyr::spread(df, PM, prob)
     TabDF <- TabDF %>% dplyr::arrange(desc(min))
