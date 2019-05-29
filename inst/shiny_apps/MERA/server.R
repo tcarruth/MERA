@@ -29,11 +29,11 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Data_figs.R",local=TRUE)
 
   # Presentation of results
-  source("./Source/Skins/FAO.R",local=TRUE)
+  # source("./Source/Skins/FAO.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
   Skins<<-new('list')
   Skins[[1]]<-MSC
-  Skin<- FAO # MSC # FAO
+  Skin<- MSC # FAO
   
   
   #source("./Analysis_results.R",local=TRUE)
