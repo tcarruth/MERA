@@ -49,7 +49,7 @@ Update_Options<-function(){
       for(i in 1:nopt){
         optnam<-names(Skin$Planning$options[i])
         shinyjs::show(optnam)
-        updateNumericInput(session, optnam,value=as.numeric(Skin$Planning$options[i]))
+        updateNumericInput(session, optnam,value=as.numeric(Skin$Planning$options[i]))  
       }
     }
   }

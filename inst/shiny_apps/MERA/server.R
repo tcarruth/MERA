@@ -1,3 +1,4 @@
+quick <- FALSE # switch to use 3 sims for quick test runs in RA mode
 
 library(shiny)
 library(DLMtool)
@@ -28,10 +29,12 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Data_figs.R",local=TRUE)
 
   # Presentation of results
+  # source("./Source/Skins/FAO.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
   Skins<<-new('list')
   Skins[[1]]<-MSC
-  Skin<-MSC
+  Skin<- MSC # FAO
+  
   
   #source("./Analysis_results.R",local=TRUE)
   source("./AI_results.R",local=TRUE)
@@ -665,7 +668,7 @@ shinyServer(function(input, output, session) {
     
     Fpanel(1)
     MPs<-c('curE','curC','FMSYref','NFref')
-    nsim<-96
+    nsim <- ifelse(quick, 3, 96)
     OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
     
@@ -755,6 +758,7 @@ shinyServer(function(input, output, session) {
         
         
         withProgress(message = "Rebuilding Analysis", value = 0, {
+          if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
           MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
         })
         MSEobj_reb@Misc[[4]]<<-SampList
@@ -888,6 +892,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$res,{ Tweak(1) })
   observeEvent(input$M1,{ Tweak(1) })
   observeEvent(input$D1,{ Tweak(1) })
+  # observeEvent(input$minProb,{ Tweak(1) })
 
   # Update tables if ...
 
@@ -1562,5 +1567,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$debug,
               updateTextAreaInput(session,"Debug1",value=MadeOM())
   )
+  
+
 
 })
