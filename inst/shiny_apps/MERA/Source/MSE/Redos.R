@@ -222,7 +222,7 @@ redoEval<-function(fease=F){
 redoInd<-function(){
 
   styr=max(dat@Year)-min(dat@Year)+1
-  PPD<-MSEobj_app@Misc[[1]]
+  PPD<-MSEobj@Misc$Data[[1]]
 
   # Standardization
   PPD@Cat<-PPD@Cat/PPD@Cat[,styr]
@@ -244,6 +244,6 @@ redoInd<-function(){
   indData<-getinds(dat_ind,styr=styr,res=res,tsd=tsd,stat=stat)
 
   output$CC<-renderPlot( CC(indPPD,indData,pp=1,res=res),height =700 ,width=700)
-  output$mdist<-renderPlot(plot_mdist(indPPD,indData,alpha=input$Ind_Alpha),height =550 ,width=550)
+  output$mdist<-renderPlot(plot_mdist(indPPD,indData,alpha=0.05),height =550 ,width=550)
 
 }

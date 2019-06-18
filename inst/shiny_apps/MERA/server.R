@@ -18,7 +18,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"4.1.6"
+  Version<<-"4.1.7"
   # MPs
 
   # -------------------------------------------------------------
@@ -689,7 +689,7 @@ shinyServer(function(input, output, session) {
       
       withProgress(message = "Running Risk Assessment", value = 0, {
         silent=T
-        MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=F,parallel=parallel)
+        MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
       })
       
       MSEobj@Misc[[4]]<<-SampList

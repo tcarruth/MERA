@@ -48,6 +48,49 @@ BMSYproj<-function(MSEobj,MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.
   
 }
 
+B0proj<-function(MSEobj,MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",quants=c(0.05,0.25,0.75,0.95),vline=NA,fease=F){
+  
+  if(fease){
+    MPcols=MPcols#FeaseLabs(MSEobj@MPs)$MPcols
+  }else{
+    MPcols<-rep('black',MSEobj@nMPs)
+  }
+  
+  MPs<-MSEobj@MPs
+  nMPs<-length(MPs)
+  
+  if("YIU"%in%names(options)){
+    yrs<-Current_Year+(1:MSEobj_reb@proyears)-options$YIU
+  }else{
+    yrs<-Current_Year+(1:MSEobj_reb@proyears)
+  }
+  
+  nc<-maxcol
+  nr<-ceiling(nMPs/nc)
+  par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+  
+  B_B0<-MSEobj@SSB/MSEobj@OM$SSB0
+  Blims <- c(0,quantile(B_B0,0.95))
+  
+  for(i in 1:nMPs){
+    plot(range(yrs),Blims,col="white")
+    plotquant(B_B0[,i,],p=quants,yrs,qcol,lcol,ablines=c(0.2))
+    mtext(MSEobj@MPs[i],3,line=0.2,font=2,col=MPcols[i])
+    
+    if(i==1){
+      Bdeps<-MSEobj@OM$D#MSEobj_reb@B_BMSY[,1,1]#
+      legend('topleft',legend=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% unfished SSB" ),bty='n')
+    }
+    if(!is.na(vline))abline(v=yrs[vline],lwd=2)
+    if("YIU"%in%names(options))abline(v=yrs[options$YIU],lwd=2) #polygon(yrs[c(1,options$burnin,options$burnin,1)],c(-10,-10,10,10),col='lightgrey',border=NA)
+    
+  }
+  
+  mtext("SSB / SSB0",2,line=0.7,outer=T)
+  mtext("Year",1,line=0.7,outer=T)
+  
+}
+
 plotquant<-function(x,p=c(0.05,0.25,0.75,0.95),yrs,qcol,lcol,addline=T,ablines=NA){
   #plot(range(yrs),Ylims,col="white")
   
@@ -761,11 +804,31 @@ FeaseLabs<-function(MPs,dat=NA){
       formatStyle(columns = 2:ncol(Tab2), valueColumns = 2:ncol(Tab2), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
     
   }
-
-  Tab_title[[3]] <- "Table 3. Long term HCR"
-  Tab_text[[3]] <-"Probability of biomass exceeding the target reference point in the years since MP adoption."
+  
+  Tab_title[[3]] <- "Table 3. Spawning biomass relative to 20% of SSB unfished"
+  Tab_text[[3]] <-"Probability of biomass exceeding 20% unfished levels in the years since MP adoption."
   
   Tabs[[3]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1),rnd=1){
+    
+    B_B0<-MSEobj@SSB/MSEobj@OM$SSB0
+    nMPs<-MSEobj_reb@nMPs
+    proyears<-MSEobj_reb@proyears
+    ind<-1:min(options$YIU,proyears)
+    RP<-matrix(round(apply(B_B0[,,ind,drop=F]>0.2,2:3,mean)*100,rnd),nrow=nMPs)
+    Tab3<-as.data.frame(cbind(MSEobj@MPs,RP))
+    colnams<-c("MP",Current_Year-((options$YIU-1):0))
+    names(Tab3)<-colnams
+    Bdeps<-MSEobj_reb@OM$D#MSEobj_reb@B_BMSY[,1,1]#
+    caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% of unfished SSB" )
+    datatable(Tab3,caption=caption,options=list(ordering=F,dom='t'))%>%
+      formatStyle(columns = 2:ncol(Tab3), valueColumns = 2:ncol(Tab3), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
+    
+  }
+
+  Tab_title[[4]] <- "Table 4. Long term HCR"
+  Tab_text[[4]] <-"Probability of biomass exceeding the target reference point in the years since MP adoption."
+  
+  Tabs[[4]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1),rnd=1){
     
     nMPs<-MSEobj_reb@nMPs
     proyears<-MSEobj_reb@proyears
@@ -781,10 +844,10 @@ FeaseLabs<-function(MPs,dat=NA){
 
   }
   
-  Tab_title[[4]] <- "Table 4. Short term HCR"
-  Tab_text[[4]] <-"Probability of biomass exceeding the target reference point in the years since MP adoption"
+  Tab_title[[5]] <- "Table 5. Short term HCR"
+  Tab_text[[5]] <-"Probability of biomass exceeding the target reference point in the years since MP adoption"
   
-  Tabs[[4]]<-function(MSEobj, MSEobj_reb,options=list(),rnd=1){
+  Tabs[[5]]<-function(MSEobj, MSEobj_reb,options=list(),rnd=1){
     
     nMPs<-MSEobj_reb@nMPs
     proyears<-MSEobj_reb@proyears
@@ -807,7 +870,7 @@ FeaseLabs<-function(MPs,dat=NA){
     
   }
  
-  Tab_title[[5]] <- Tab_title[[6]] <- Tab_title[[7]] <- Tab_title[[8]] <- Tab_title[[9]] <- "" # make extras empty
+  Tab_title[[6]] <- Tab_title[[7]] <- Tab_title[[8]] <- Tab_title[[9]] <- "" # make extras empty
   
   # --- Figures ---
  
@@ -819,32 +882,38 @@ FeaseLabs<-function(MPs,dat=NA){
   Figs[[2]]<-function(MSEobj,MSEobj_reb,options=list()) BMSYproj(MSEobj,MSEobj_reb,options,maxcol=1)
   Fig_dim[[2]] <- function(dims)list(height=420,width=600)
   
-  Fig_title[[3]] <- "Figure 2. Long-term HCR"
-  Fig_text[[3]] <- "Projections of biomass relative to MSY and unfished (B0) levels given a starting depletion of half BMSY. The rebuilding analysis simulates the fishery currently in a depleted state even if the user-specified depletion in the operating model is higher.
+  Fig_title[[3]] <- "Figure 2. Biomass projected since MP adoption relative to unfished SSB"
+  Fig_text[[3]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
+  
+  Figs[[3]]<-function(MSEobj,MSEobj_reb,options=list()) B0proj(MSEobj,MSEobj_reb,options,maxcol=1)
+  Fig_dim[[3]] <- function(dims)list(height=420,width=600)
+  
+  Fig_title[[4]] <- "Figure 3. Long-term HCR"
+  Fig_text[[4]] <- "Projections of biomass relative to MSY and unfished (B0) levels given a starting depletion of half BMSY. The rebuilding analysis simulates the fishery currently in a depleted state even if the user-specified depletion in the operating model is higher.
   In these cases, the rebuilding analysis provides added assurance whether a particular management procedure would be likely to rebuild the stock if the user-specified depletion level is overly optimistic and in need of rebuilding.
   The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the limit and target reference points. The bold black vertical line is the current year, the black vertical line denotes the last 10 years of the projection over which results are tabulated." 
 
-  Figs[[3]]<-function(MSEobj,MSEobj_reb,options=list()) LT_HCR(MSEobj,MSEobj_reb,options,maxcol=1,vline=41)
-  Fig_dim[[3]] <- function(dims)list(height=420,width=600)
-  
-  Fig_title[[4]] <- "Figure 3. Short-term HCR"
-  Fig_text[[4]] <- "As Figure 2 but over a 20 year projection. The shaded grey region is the period between the minimum and maximum values of two mean generation times." 
-  
-  Figs[[4]]<-function(MSEobj,MSEobj_reb,options=list()) ST_HCR(MSEobj,MSEobj_reb,options,plotMGT=T,maxcol=1)
+  Figs[[4]]<-function(MSEobj,MSEobj_reb,options=list()) LT_HCR(MSEobj,MSEobj_reb,options,maxcol=1,vline=41)
   Fig_dim[[4]] <- function(dims)list(height=420,width=600)
   
-  Fig_title[[5]] <- "Figure 4. Evaluation of current uncertainties"
-  Fig_text[[5]] <- "This figure identifies those questions across which there is the highest variability in long term yield (average yield over last 10 years of the projection). This figures identifies which elements of the questionnaire (Step A) are the most consequential uncertainties." 
-  Figs[[5]] <- function(MSEobj,MSEobj_reb,options=list()) CCU_plot(MSEobj,MSEobj_reb,options,maxcol=1)
-  Fig_dim[[5]]<-function(dims)list(height=420,width=600)
+  Fig_title[[5]] <- "Figure 4. Short-term HCR"
+  Fig_text[[5]] <- "As Figure 2 but over a 20 year projection. The shaded grey region is the period between the minimum and maximum values of two mean generation times." 
   
-  Fig_title[[6]] <- "Figure 5. Value of information"
-  Fig_text[[6]] <- "This figure identifies the key observation uncertainties (biases and errors) in determing the long-term yield performance of MPs (average yield over last 10 years of the projection)." 
-  Figs[[6]] <- function(MSEobj,MSEobj_reb,options=list()) VOI_plot(MSEobj,MSEobj_reb,options,maxcol=1)
+  Figs[[5]]<-function(MSEobj,MSEobj_reb,options=list()) ST_HCR(MSEobj,MSEobj_reb,options,plotMGT=T,maxcol=1)
+  Fig_dim[[5]] <- function(dims)list(height=420,width=600)
+  
+  Fig_title[[6]] <- "Figure 5. Evaluation of current uncertainties"
+  Fig_text[[6]] <- "This figure identifies those questions across which there is the highest variability in long term yield (average yield over last 10 years of the projection). This figures identifies which elements of the questionnaire (Step A) are the most consequential uncertainties." 
+  Figs[[6]] <- function(MSEobj,MSEobj_reb,options=list()) CCU_plot(MSEobj,MSEobj_reb,options,maxcol=1)
   Fig_dim[[6]]<-function(dims)list(height=420,width=600)
   
+  Fig_title[[7]] <- "Figure 6. Value of information"
+  Fig_text[[7]] <- "This figure identifies the key observation uncertainties (biases and errors) in determing the long-term yield performance of MPs (average yield over last 10 years of the projection)." 
+  Figs[[7]] <- function(MSEobj,MSEobj_reb,options=list()) VOI_plot(MSEobj,MSEobj_reb,options,maxcol=1)
+  Fig_dim[[7]]<-function(dims)list(height=420,width=600)
   
-  Fig_title[[7]] <- Fig_title[[8]] <- Fig_title[[9]] <- "" # make extras empty
+  
+  Fig_title[[8]] <- Fig_title[[9]] <- "" # make extras empty
   
   Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                    Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)

@@ -132,10 +132,11 @@ plot_mdist<-function(indPPD,indData,alpha=0.05){
   dist<-mahalanobis_robust(x=obs, center=nullm, cov=nullcov)
   dists<-mahalanobis_robust(x=nullsims, center=nullm, cov=nullcov)
   dists<-dists[!is.na(dists)]
-
+  
+  xlim=c(0,max(dist*1.05,quantile(dists,0.98)))
   par(mai=c(1.5,1.5,1.2,0.05))
-  dens<-density(dists,from=0,to=quantile(dists,0.99))
-  xlim=c(0,quantile(dists,0.98))
+  dens<-density(dists,from=0,to=xlim[2])
+  
   plot(dens,xlab="",main="",col='blue',ylab="",xlim=xlim)
   thresh<-quantile(dists,1-alpha)
   abline(v=thresh,lty=2,lwd=2)
@@ -160,6 +161,6 @@ plot_mdist<-function(indPPD,indData,alpha=0.05){
 
   text(dist,max(dens$y)*0.05,"D (observed data)",font=2,col="orange")
   legend('top',legend=leg,text.col=lcol,text.font=2)
-  mtext(paste("AI Analysis for",MSEobj_app@MPs[1]),3,line=0.1)
+  mtext(paste("AI Analysis for",MSEobj@MPs[1]),3,line=0.1)
 
 }

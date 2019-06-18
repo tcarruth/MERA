@@ -81,7 +81,7 @@ shinyUI(
              h2("MERA")
       ),
       column(5,style="height:65px",
-             h5("method evaluation and risk assessment    (MSC-DLMtool App v4.1.6)",style="padding:19px;")
+             h5("method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)",style="padding:19px;")
       ),
 
       column(3,offset=2,style="padding:14px;height:65px",
@@ -1088,8 +1088,8 @@ shinyUI(
     
         conditionalPanel(condition="input.Mode=='Evaluation'",
           column(12,style="height:15px"),          
-          conditionalPanel(condition="output.Plan==0",h4("STEP D: STATUS DETERMINATION AND INDICATORS")),
-          conditionalPanel(condition="output.Plan==1",h4("STEP D: STATUS DETERMINATION AND INDICATORS",style="color:green")),
+          conditionalPanel(condition="output.Plan==0",h4("STEP D: STATUS DETERMINATION")),
+          conditionalPanel(condition="output.Plan==1",h4("STEP D: STATUS DETERMINATION",style="color:green")),
        
           hr(),
 
@@ -1371,7 +1371,13 @@ shinyUI(
                         
                         h4(textOutput("P_Fig_9_title"),style="font-weight:bold"),
                         h5(textOutput("P_Fig_9_text")),
-                        plotOutput("P_Fig_9",height="auto") 
+                        plotOutput("P_Fig_9",height="auto"),
+                        
+                        
+                        column(12,style="height:15px"),
+                        plotOutput("CC",height="auto"),
+                        plotOutput("mdist",height="auto")
+         
                              
                       ) # column
                     ) # fluid row
@@ -1381,6 +1387,8 @@ shinyUI(
           ) # column
       ), # end of Results
 
+    
+    
      conditionalPanel(condition="input.Mode!='Risk Assessment'",
                       column(12,style="height:15px"),
       h4("HELP"),

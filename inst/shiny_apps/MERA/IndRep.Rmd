@@ -71,10 +71,10 @@ In this preliminary analysis, seven data types are monitored in the posterior pr
  
   dat<-params$dat
   dat_ind<-params$dat_ind
-  MSEobj_app<-params$MSEobj_app
+  MSEobj<-params$MSEobj
   
   styr=max(dat@Year)+1
-  PPD<-MSEobj_app@Misc[[1]]
+  PPD<-MSEobj@Misc$Data[[1]]
 
   # Standardization
   PPD@Cat<-PPD@Cat/PPD@Cat[,styr]
