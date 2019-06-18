@@ -19,7 +19,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"4.1.7"
+  Version<<-"4.2.1"
   # MPs
 
   # -------------------------------------------------------------
@@ -248,7 +248,7 @@ shinyServer(function(input, output, session) {
 
       MSClog<-list(PanelState, Just, Des)
       doprogress("Saving Questionnaire")
-      saveRDS(MSClog,file)
+      #saveRDS(MSClog,file)
 
     }
 
@@ -613,11 +613,6 @@ shinyServer(function(input, output, session) {
 
         OM<-makeOM(PanelState,nsim=nsim,nyears=ncol(dat@Cat),maxage=dat@MaxAge)
 
-        if(input$Debug){
-          saveRDS(OM,"OM_autosave.rda")
-          saveRDS(dat,"Data_autosave.rda")
-        }
-
         updateTextAreaInput(session,"Debug1",value=paste(OM@nyears,ncol(dat@Cat)))
         withProgress(message = "Building OM from Questionnaire & S-SRA", value = 0, {
           SRAout<<-SSRA_wrap(OM,dat)
@@ -697,9 +692,7 @@ shinyServer(function(input, output, session) {
       
       MSEobj@Misc[[4]]<<-SampList
       MSEobj_reb<<-MSEobj
-      
-      if(input$Debug)SaveDebug()
-      
+     
       # ==== Types of reporting ==========================================================
       
       if(input$Debug)message("preredoRA")
@@ -755,15 +748,12 @@ shinyServer(function(input, output, session) {
         Dep_reb<-runif(OM@nsim,input$Dep_reb[1],input$Dep_reb[2]) # is a %
         OM_reb<-OM
         OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0 
-        
-        
+          
         withProgress(message = "Rebuilding Analysis", value = 0, {
           if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
           MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
         })
         MSEobj_reb@Misc[[4]]<<-SampList
-
-        if(input$Debug)SaveDebug()
 
         # ==== Types of reporting ==========================================================
           
@@ -839,13 +829,6 @@ shinyServer(function(input, output, session) {
         })
         
         MSEobj_reb@Misc[[4]]<-SampList
-
-        if(input$Debug)SaveDebug()
-        
-        if(input$Debug){
-          save(MSEobj_reb,file="MSEobj_reb")
-          save(MSEobj,file="MSEobj")
-        }
 
         Eval(1)
         Tweak(0)
@@ -1244,7 +1227,7 @@ shinyServer(function(input, output, session) {
 
     UpJust()
     Des<<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-    MSCsave_auto()
+    #MSCsave_auto()
     #getMPs()
     #selectedMP<<-MPs[2]
 
@@ -1263,7 +1246,7 @@ shinyServer(function(input, output, session) {
     UpJust()
 
     Des<<-list(Name=input$Name,Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-    MSCsave_auto()
+    #MSCsave_auto()
 
   })
 
@@ -1281,7 +1264,7 @@ shinyServer(function(input, output, session) {
     UpJust()
 
     Des<<-list(Name=input$Name,Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-    MSCsave_auto()
+    #MSCsave_auto()
 
   })
 
