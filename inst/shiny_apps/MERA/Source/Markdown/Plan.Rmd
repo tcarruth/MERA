@@ -95,6 +95,9 @@ dims<-list(nMPs=params$MSEobj@nMPs)
     cat(params$Skin$Planning$Tab_text[[i]])    
     cat('\n')
     params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Tabs[[i]]))>1){
+      params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }  
   }
   }
 
@@ -131,7 +134,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Figs[[i]]))>1){
+      params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -151,7 +156,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Tabs[[i]]))>1){
+      params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    } 
   }
   } 
 
@@ -189,7 +196,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Figs[[i]]))>1){
+      params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -208,7 +217,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Tabs[[i]]))>1){
+      params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    } 
   }
   } 
 
@@ -246,7 +257,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Figs[[i]]))>1){
+      params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -265,7 +278,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Tabs[[i]]))>1){
+      params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    } 
   }
   } 
 
@@ -303,7 +318,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Figs[[i]]))>1){
+      params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -324,7 +341,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Tabs[[i]]))>1){
+      params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    } 
   }
   } 
 
@@ -362,7 +381,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Figs[[i]]))>1){
+      params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -382,7 +403,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Tabs[[i]]))>1){
+      params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    } 
   }
   } 
 
@@ -420,7 +443,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Figs[[i]]))>1){
+      params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -440,7 +465,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Tabs[[i]]))>1){
+      params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    } 
   }
   } 
 
@@ -478,7 +505,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Figs[[i]]))>1){
+      params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -498,7 +527,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Tabs[[i]]))>1){
+      params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    } 
   }
   } 
 
@@ -536,7 +567,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Figs[[i]]))>1){
+      params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -556,7 +589,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Tabs[[i]]))>1){
+      params$Skin$Planning$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    } 
   }
   } 
 
@@ -594,7 +629,9 @@ if(length(params$Skin$Planning$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Planning$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Planning$Figs[[i]]))>1){
+      params$Skin$Planning$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    } 
   }
   }
 

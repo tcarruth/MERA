@@ -10,7 +10,7 @@ UpPanelState<-function(){
   for(j in 1:length(Slider_names)) {
     PanelState[[4]][[j]] <<-sapply(inputnames[[4]][j],function(x) input[[x]])
   }
-  saveRDS(PanelState,file="PanelState_autosave.rds")
+  #saveRDS(PanelState,file="PanelState_autosave.rds")
 }
 
 UpJust<-function(){

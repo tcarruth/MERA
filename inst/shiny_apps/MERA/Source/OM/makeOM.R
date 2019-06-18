@@ -224,7 +224,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
     Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
   }
   
-  saveRDS(OM,"OM_autosave.rda")
+  #saveRDS(OM,"OM_autosave.rda")
   
   SampList<<-data.frame(Ftype,Esdrand,qhssim,Sel50sim,Ahsim,Vhsim,Asim,Vsim,initD,Cbias)
   

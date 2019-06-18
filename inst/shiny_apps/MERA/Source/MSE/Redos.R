@@ -13,12 +13,20 @@ redoRA<-function(fease=F){
     # option code
     options <- list(res=5)
     
+    if(Skin$Risk_Assessment$Intro_title[[1]]==""){
+      output[["P_Intro_title"]]<-renderText(NULL)
+      output[["P_Intro_text"]]<-renderText(NULL)
+    }else{
+      output[["P_Intro_title"]]<-renderText(Skin$Risk_Assessment$Intro_title[[1]])
+      output[["P_Intro_text"]]<-renderText(Skin$Risk_Assessment$Intro_text[[1]])
+    }
+    
     for(res in 1:nres){
       
       local({
         
         res2<-res
-        
+         
         if(Skin$Risk_Assessment$Tab_title[[res2]]==""){
           output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
           output[[paste0("P_Tab_",res2,"_text")]]<-renderText(NULL)
@@ -86,7 +94,15 @@ redoPlan<-function(fease=F){
     # option code
     options <- list(burnin = input$burnin, res=input$res)
     #options <- list( res=1)
-     
+    
+    if(Skin$Planning$Intro_title[[1]]==""){
+      output[["P_Intro_title"]]<-renderText(NULL)
+      output[["P_Intro_text"]]<-renderText(NULL)
+    }else{
+      output[["P_Intro_title"]]<-renderText(Skin$Planning$Intro_title[[1]])
+      output[["P_Intro_text"]]<-renderText(Skin$Planning$Intro_text[[1]])
+    } 
+    
     for(res in 1:nres){
       
       local({
@@ -158,6 +174,14 @@ redoEval<-function(fease=F){
     # option code
     #options <- list(burnin = input$burnin, res=input$res)
     options <- list(YIU = input$YIU, res=1)
+    
+    if(Skin$Evaluation$Intro_title[[1]]==""){
+      output[["P_Intro_title"]]<-renderText(NULL)
+      output[["P_Intro_text"]]<-renderText(NULL)
+    }else{
+      output[["P_Intro_title"]]<-renderText(Skin$Evaluation$Intro_title[[1]])
+      output[["P_Intro_text"]]<-renderText(Skin$Evaluation$Intro_text[[1]])
+    } 
     
     for(res in 1:nres){
       

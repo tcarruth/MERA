@@ -107,7 +107,7 @@ plotquant<-function(x,p=c(0.05,0.25,0.75,0.95),yrs,qcol,lcol,addline=T,ablines=N
   lines(yrs,apply(x,2,quantile,p=0.5,na.rm=T),lwd=2,col="white")
 }
 
-LT_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",quants=c(0.05,0.25,0.75,0.95),vline=NA,fease=F){
+LT_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=6,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",quants=c(0.05,0.25,0.75,0.95),vline=NA,fease=F){
   
   if(fease){
     MPcols=MPcols#FeaseLabs(MSEobj@MPs)$MPcols
@@ -154,7 +154,7 @@ LT_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.9
   
 }
 
-ST_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",quants=c(0.05,0.25,0.75,0.95),plotMGT=FALSE, fease=F){
+ST_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=6,qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4",quants=c(0.05,0.25,0.75,0.95),plotMGT=FALSE, fease=F){
   
   if(fease){
     MPcols=MPcols#FeaseLabs(MSEobj@MPs)$MPcols
@@ -583,7 +583,16 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab1)<-colnams
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption, options=list(dom='t'))%>%
+    datatable(Tab1,caption=caption,
+              extensions = 'Buttons',
+              options=list(buttons = 
+                             list('copy', list(
+                               extend = 'collection',
+                               buttons = c('csv', 'excel', 'pdf'),
+                               text = 'Download'
+                             )),
+                           dom = 'Brti')
+                           )%>%
       formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
     
   }
@@ -605,7 +614,15 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab1)<-colnams
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption,options=list(dom='t'))%>%
+    datatable(Tab1,caption=caption,
+              extensions = 'Buttons',
+              options=list(buttons = 
+                             list('copy', list(
+                               extend = 'collection',
+                               buttons = c('csv', 'excel', 'pdf'),
+                               text = 'Download'
+                             )),
+                           dom = 'Brti'))%>%
       formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
     
   }
@@ -663,7 +680,16 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab1)<-colnams
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption) %>%
+    datatable(Tab1,caption=caption, extensions = 'Buttons',
+                   options=list(buttons = 
+                                 list('copy', list(
+                                   extend = 'collection',
+                                   buttons = c('csv', 'excel', 'pdf'),
+                                   text = 'Download'
+                                  )),
+                               dom = 'Blfrtip'
+                               )
+              )%>%
       formatStyle(columns = 4:ncol(Tab1), valueColumns = 4:ncol(Tab1), color = styleInterval(c(50,90),c('red','orange','green')))  %>%
       formatStyle(columns=1, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red"))) %>%
       formatStyle(columns=2, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red")))%>%
@@ -690,7 +716,16 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab1)<-colnams
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption) %>%
+    datatable(Tab1,caption=caption, extensions = 'Buttons',
+              options=list(buttons = 
+                             list('copy', list(
+                               extend = 'collection',
+                               buttons = c('csv', 'excel', 'pdf'),
+                               text = 'Download'
+                             )),
+                           dom = 'Blfrtip'
+                      )
+      )%>%
       formatStyle(columns = 4:ncol(Tab1), valueColumns = 4:ncol(Tab1), color = styleInterval(c(50,90),c('red','orange','green')))  %>%
       formatStyle(columns=1, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red")))%>%
       formatStyle(columns=2, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red")))%>%
@@ -716,12 +751,12 @@ FeaseLabs<-function(MPs,dat=NA){
   In these cases, the rebuilding analysis provides added assurance whether a particular management procedure would be likely to rebuild the stock if the user-specified depletion level is overly optimistic and in need of rebuilding.
   The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the limit and target reference points" 
   Figs[[3]]<-function(MSEobj,MSEobj_reb,options=list()) LT_HCR(MSEobj,MSEobj_reb,options,fease=T)
-  Fig_dim[[3]]<-function(dims)list(height=ceiling(dims$nMPs/5)*250,width=1100)
+  Fig_dim[[3]]<-function(dims)list(height=ceiling(dims$nMPs/6)*250,width=1200)
   
   Fig_title[[4]] <- "Figure 3. Short-term HCR"
   Fig_text[[4]] <- "As Figure 2 but over the first 10 years." 
   Figs[[4]] <- function(MSEobj,MSEobj_reb,options=list()) ST_HCR(MSEobj,MSEobj_reb,options,fease=T)
-  Fig_dim[[4]]<-function(dims)list(height=ceiling(dims$nMPs/5)*250,width=1100)
+  Fig_dim[[4]]<-function(dims)list(height=ceiling(dims$nMPs/6)*250,width=1200)
   
   Fig_title[[5]] <- "Figure 4. Evaluation of current uncertainties"
   Fig_text[[5]] <- "This figure identifies those questions across which there is the highest variability in long term yield (average yield over last 10 years of the projection). This figures identifies which elements of the questionnaire (Step A) are the most consequential uncertainties." 
@@ -780,7 +815,17 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab1)<-colnams
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption,options=list(ordering=F,dom='t'))%>%
+    datatable(Tab1,caption=caption,extensions = 'Buttons',
+              options=list(buttons = 
+                             list('copy', list(
+                               extend = 'collection',
+                               buttons = c('csv', 'excel', 'pdf'),
+                               text = 'Download'
+                             )),
+                           dom = 'Brti', 
+                           ordering=F
+              )
+    )%>%
       formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
   
   }
@@ -800,7 +845,17 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab2)<-colnams
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab2,caption=caption,options=list(ordering=F,dom='t'))%>%
+    datatable(Tab2,caption=caption,
+                   options=list(buttons = 
+                                  list('copy', list(
+                                      extend = 'collection',
+                                      buttons = c('csv', 'excel', 'pdf'),
+                                      text = 'Download'
+                                  )),
+                                dom = 'Brti', 
+                                ordering=F
+                               )
+    )%>%
       formatStyle(columns = 2:ncol(Tab2), valueColumns = 2:ncol(Tab2), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
     
   }
@@ -820,7 +875,17 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab3)<-colnams
     Bdeps<-MSEobj_reb@OM$D#MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% of unfished SSB" )
-    datatable(Tab3,caption=caption,options=list(ordering=F,dom='t'))%>%
+    datatable(Tab3,caption=caption,
+                options=list(buttons = 
+                               list('copy', list(
+                                 extend = 'collection',
+                                 buttons = c('csv', 'excel', 'pdf'),
+                                 text = 'Download'
+                               )),
+                             dom = 'Brti', 
+                             ordering=F
+                )
+      )%>%
       formatStyle(columns = 2:ncol(Tab3), valueColumns = 2:ncol(Tab3), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
     
   }
@@ -839,7 +904,17 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab3)<-colnams
     Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab3,caption=caption,options=list(ordering=F,dom='t'))%>%
+    datatable(Tab3,caption=caption,
+                options=list(buttons = 
+                               list('copy', list(
+                                 extend = 'collection',
+                                 buttons = c('csv', 'excel', 'pdf'),
+                                 text = 'Download'
+                               )),
+                             dom = 'Brti', 
+                             ordering=F
+                )
+      )%>%
       formatStyle(columns = 2:ncol(Tab3), valueColumns = 2:ncol(Tab3), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
 
   }
@@ -864,7 +939,17 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab4)<-colnams
     Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab4,caption=caption,options=list(ordering=F,dom='t'))%>%
+    datatable(Tab4,caption=caption,
+                options=list(buttons = 
+                               list('copy', list(
+                                 extend = 'collection',
+                                 buttons = c('csv', 'excel', 'pdf'),
+                                 text = 'Download'
+                               )),
+                             dom = 'Brti', 
+                             ordering=F
+                )
+      )%>%
       formatStyle(columns = 2:ncol(Tab4), valueColumns = 2:ncol(Tab4), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))%>%
       formatStyle(colnams[1+shaderng[1]:shaderng[2]],backgroundColor='lightgrey')
     
@@ -922,7 +1007,7 @@ FeaseLabs<-function(MPs,dat=NA){
 # ========== Build ============================= 
   
 MSC<-list(Risk_Assessment=Risk_Assessment,Planning=Planning,Evaluation=Evaluation) 
-
+None<-list()
 
 
 

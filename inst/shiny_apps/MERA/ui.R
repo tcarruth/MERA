@@ -84,17 +84,18 @@ shinyUI(
              h2("MERA")
       ),
       column(5,style="height:65px",
-             h5("method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)",style="padding:19px;")
+             h5(textOutput("Version") ,style="padding:19px;")
       ),
-
-      column(3,offset=2,style="padding:14px;height:65px",
+      column(2),
+      column(3,style="padding:14px;height:65px",
              fluidRow(
 
                column(7,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
                column(5,tags$a(img(src = "MSC4.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank'))
 
             )
-      )
+      ),
+      column(1,selectInput("Skin", label = "", choices=c("None"),selected="None"))
     ),
     hr(),
 
@@ -1269,111 +1270,116 @@ shinyUI(
                       column(width = 12,
                         
                         HTML("<br>"),
+                       
+                        h4(htmlOutput("P_Intro_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Intro_text")),
+                       
+                        HTML("<br>"),
                         
-                        h4(textOutput("P_Tab_1_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Tab_1_text")),
+                        h4(htmlOutput("P_Tab_1_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_1_text")),
                         DT::dataTableOutput('P_Tab_1'),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Fig_1_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Fig_1_text")),
+                        h4(htmlOutput("P_Fig_1_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_1_text")),
                         plotOutput("P_Fig_1",height="auto"),
                         
                         #HTML("<br>"),
                        
-                        h4(textOutput("P_Tab_2_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Tab_2_text")),
+                        h4(htmlOutput("P_Tab_2_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_2_text")),
                         DT::dataTableOutput('P_Tab_2'),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Fig_2_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Fig_2_text")),
+                        h4(htmlOutput("P_Fig_2_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_2_text")),
                         plotOutput("P_Fig_2",height="auto"),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Tab_3_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Tab_3_text")),
+                        h4(htmlOutput("P_Tab_3_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_3_text")),
                         DT::dataTableOutput('P_Tab_3'),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Fig_3_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Fig_3_text")),
+                        h4(htmlOutput("P_Fig_3_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_3_text")),
                         plotOutput("P_Fig_3",height="auto"),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Tab_4_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Tab_4_text")),
+                        h4(htmlOutput("P_Tab_4_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_4_text")),
                         DT::dataTableOutput('P_Tab_4'),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Fig_4_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Fig_4_text")),
+                        h4(htmlOutput("P_Fig_4_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_4_text")),
                         plotOutput("P_Fig_4",height="auto"),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Tab_5_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Tab_5_text")),
+                        h4(htmlOutput("P_Tab_5_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_5_text")),
                         DT::dataTableOutput('P_Tab_5'),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Fig_5_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Fig_5_text")),
+                        h4(htmlOutput("P_Fig_5_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_5_text")),
                         plotOutput("P_Fig_5",height="auto"),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Tab_6_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Tab_6_text")),
+                        h4(htmlOutput("P_Tab_6_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_6_text")),
                         DT::dataTableOutput('P_Tab_6'),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Fig_6_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Fig_6_text")),
+                        h4(htmlOutput("P_Fig_6_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_6_text")),
                         plotOutput("P_Fig_6",height="auto"),  
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Tab_7_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Tab_7_text")),
+                        h4(htmlOutput("P_Tab_7_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_7_text")),
                         DT::dataTableOutput('P_Tab_7'),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Fig_7_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Fig_7_text")),
+                        h4(htmlOutput("P_Fig_7_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_7_text")),
                         plotOutput("P_Fig_7",height="auto"), 
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Tab_8_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Tab_8_text")),
+                        h4(htmlOutput("P_Tab_8_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_8_text")),
                         DT::dataTableOutput('P_Tab_8'),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Fig_8_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Fig_8_text")),
+                        h4(htmlOutput("P_Fig_8_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_8_text")),
                         plotOutput("P_Fig_8",height="auto"), 
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Tab_9_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Tab_9_text")),
+                        h4(htmlOutput("P_Tab_9_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_9_text")),
                         DT::dataTableOutput('P_Tab_9'),
                         
                         #HTML("<br>"),
                         
-                        h4(textOutput("P_Fig_9_title"),style="font-weight:bold"),
-                        h5(textOutput("P_Fig_9_text")),
+                        h4(htmlOutput("P_Fig_9_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_9_text")),
                         plotOutput("P_Fig_9",height="auto"),
                         
                         

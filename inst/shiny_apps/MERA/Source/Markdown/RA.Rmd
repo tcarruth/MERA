@@ -96,7 +96,8 @@ dims<-list(nMPs=params$MSEobj@nMPs)
     cat('\n')
     cat(params$Skin$Risk_Assessment$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Risk_Assessment$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    test<-params$Skin$Risk_Assessment$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(!is.null(test))params$Skin$Risk_Assessment$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
   }
   }
 
@@ -133,7 +134,9 @@ if(length(params$Skin$Risk_Assessment$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Risk_Assessment$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Risk_Assessment$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Risk_Assessment$Figs[[i]]))>1){
+      params$Skin$Risk_Assessment$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -153,7 +156,9 @@ if(length(params$Skin$Risk_Assessment$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Risk_Assessment$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Risk_Assessment$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Risk_Assessment$Tabs[[i]]))>1){
+      params$Skin$Risk_Assessment$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }  
   }
   } 
 
@@ -191,7 +196,9 @@ if(length(params$Skin$Risk_Assessment$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Risk_Assessment$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Risk_Assessment$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Risk_Assessment$Figs[[i]]))>1){
+      params$Skin$Risk_Assessment$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -210,7 +217,9 @@ if(length(params$Skin$Risk_Assessment$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Risk_Assessment$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Risk_Assessment$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Risk_Assessment$Tabs[[i]]))>1){
+      params$Skin$Risk_Assessment$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }  
   }
   } 
 
@@ -248,7 +257,9 @@ if(length(params$Skin$Risk_Assessment$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Risk_Assessment$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Risk_Assessment$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Risk_Assessment$Figs[[i]]))>1){
+      params$Skin$Risk_Assessment$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 
@@ -267,7 +278,9 @@ if(length(params$Skin$Risk_Assessment$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Risk_Assessment$Tab_text[[i]])    
     cat('\n')
-    params$Skin$Risk_Assessment$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Risk_Assessment$Tabs[[i]]))>1){
+      params$Skin$Risk_Assessment$Tabs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }  
   }
   } 
 
@@ -305,7 +318,9 @@ if(length(params$Skin$Risk_Assessment$Fig_title)>=i){
     cat('\n')
     cat(params$Skin$Risk_Assessment$Fig_text[[i]])    
     cat('\n')
-    params$Skin$Risk_Assessment$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    if(length(body(params$Skin$Risk_Assessment$Figs[[i]]))>1){
+      params$Skin$Risk_Assessment$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+    }
   }
   }
 

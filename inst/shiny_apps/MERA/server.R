@@ -1,4 +1,4 @@
-quick <- FALSE # switch to use 3 sims for quick test runs in RA mode
+quick <- TRUE # switch to use 3 sims for quick test runs in RA mode
 
 library(shiny)
 library(DLMtool)
@@ -15,13 +15,11 @@ options(shiny.maxRequestSize=1000*1024^2)
 
 source("./global.R")
 
-
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
   Version<<-"4.2.1"
-  # MPs
-
+  
   # -------------------------------------------------------------
   # Explanatory figures
   source("./Source/Questionnaire/Fishery_figs.R",local=TRUE)
@@ -29,15 +27,11 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Data_figs.R",local=TRUE)
 
   # Presentation of results
-  # source("./Source/Skins/FAO.R",local=TRUE)
+  source("./Source/Skins/FAO.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
-  Skins<<-new('list')
-  Skins[[1]]<-MSC
-  Skin<- MSC # FAO
-  
   
   #source("./Analysis_results.R",local=TRUE)
-  source("./AI_results.R",local=TRUE)
+  source("./Source/AI/AI_results.R",local=TRUE)
   #source("./VOI.R",local=TRUE)
   #source("./Fease.R",local=TRUE)
 
@@ -53,7 +47,7 @@ shinyServer(function(input, output, session) {
   source("./Source/MSE/Redos.R",local=TRUE)
   
   # Advice
-  source("./Advice.R",local=TRUE)
+  source("./Source/Advice/Advice.R",local=TRUE)
   
   # SRA related
   source('./Source/SSRA/SSRA.R',local=TRUE ) # Stochastic SRA wrapper
@@ -69,8 +63,7 @@ shinyServer(function(input, output, session) {
   # MERA shiny app related
   source("./Source/App/Update_objects.R",local=TRUE) # functions that update stored objects, panelstate justification etc
   source("./Source/App/Debug.R",local=TRUE) # functions that update stored objects, panelstate justification etc
-  
-  
+
   # Miscellaneous
   source("./Source/Misc/Misc.R",local=TRUE)
  
@@ -112,7 +105,7 @@ shinyServer(function(input, output, session) {
 
   output$AdCalc   <- reactive({ AdCalc()})
   output$Tweak    <- reactive({Tweak()})
-
+  
   outputOptions(output,"Fpanel",suspendWhenHidden=FALSE)
   outputOptions(output,"Mpanel",suspendWhenHidden=FALSE)
   outputOptions(output,"Dpanel",suspendWhenHidden=FALSE)
@@ -132,11 +125,31 @@ shinyServer(function(input, output, session) {
 
   outputOptions(output,"AdCalc",suspendWhenHidden=FALSE)
   outputOptions(output,"Tweak",suspendWhenHidden=FALSE)
-
+  
   output$Fpanelout <- renderText({ paste("Fishery",Fpanel(),"/ 19")})
   output$Mpanelout <- renderText({ paste("Management",Mpanel(),"/ 7")})
   output$Dpanelout <- renderText({ paste("Data",Dpanel(),"/ 4")})
 
+  # Update UI
+  output$Version<-renderText(paste0("method evaluation and risk assessment    MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
+  
+  # Skins
+  #Skins<<-new('list')
+  Skin_nams<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
+  updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected="MSC")
+  #for(i in 1:length(Skin_nams))Skins[[i]]<-get(Skin_nams[i])
+  #Skin<- Skins[[1]] # MSC FAO
+  Skin<-MSC
+  observeEvent(input$Skin,{
+    temp<-input$Skin
+    Skin<<-get(temp) 
+    updateTextAreaInput(session,"Debug1",value=temp)
+  })# update MP selection in Evaluation
+  shinyjs::disable("Skin")
+  onevent("mouseenter", "Skin", shinyjs::enable("Skin"))
+  onevent("mouseleave", "Skin", shinyjs::disable("Skin"))
+ 
+  
   # Some useful things
   USERID<-Sys.getenv()[names(Sys.getenv())=="USERNAME"]
   SessionID<-paste0(USERID,"-",strsplit(as.character(Sys.time())," ")[[1]][1],"-",strsplit(as.character(Sys.time())," ")[[1]][2])
@@ -663,7 +676,7 @@ shinyServer(function(input, output, session) {
     
     Fpanel(1)
     MPs<-c('curE','curC','FMSYref','NFref')
-    nsim <- ifelse(quick, 3, 96)
+    nsim <- ifelse(quick, 8, 96)
     OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
     
@@ -907,9 +920,9 @@ shinyServer(function(input, output, session) {
     filename =  function(){  paste0(namconv(input$Name),"_Questionnaire_Report.html") },
     content = function(file) {
       withProgress(message = "Building questionnaire report", value = 0, {
-      #doprogress("Building OM report",1)
+      
       OM<<-makeOM(PanelState,nsim=nsim)
-      src <- normalizePath('OMRep.Rmd')
+      src <- normalizePath('Source/Markdown/OMRep.Rmd')
 
       Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
       MSClog<-list(PanelState, Just, Des)
@@ -949,7 +962,7 @@ shinyServer(function(input, output, session) {
       withProgress(message = "Building data report", value = 0, {
       nsim<<-input$nsim
       OM<<-makeOM(PanelState,nsim=nsim)
-      src <- normalizePath('DataRep.Rmd')
+      src <- normalizePath('Source/Markdown/DataRep.Rmd')
 
       Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
       MSClog<-list(PanelState, Just, Des)
@@ -989,7 +1002,7 @@ shinyServer(function(input, output, session) {
 
       incProgress(0.1)
       #OM<<-makeOM(PanelState,nsim=nsim)
-      src <- normalizePath('CondRep.Rmd')
+      src <- normalizePath('Source/Markdown/CondRep.Rmd')
 
       Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
       MSClog<-list(PanelState, Just, Des)
@@ -1029,7 +1042,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       withProgress(message = "Building operating model report", value = 0, {
       #OM<<-makeOM(PanelState,nsim=nsim)
-      src <- normalizePath('OM_full_Rep.Rmd')
+      src <- normalizePath('Source/Markdown/OM_full_Rep.Rmd')
       incProgress(0.1)
       Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
       MSClog<-list(PanelState, Just, Des)
@@ -1067,7 +1080,7 @@ shinyServer(function(input, output, session) {
     
     content = function(file) {
       withProgress(message = "Building risk assessment report", value = 0, {
-        src <- normalizePath('RA.Rmd')
+        src <- normalizePath('Source/Markdown/RA.Rmd')
         Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
         MSClog<-list(PanelState, Just, Des)
         
@@ -1103,7 +1116,7 @@ shinyServer(function(input, output, session) {
     
     content = function(file) {
       withProgress(message = "Building planning report", value = 0, {
-        src <- normalizePath('Plan.Rmd')
+        src <- normalizePath('Source/Markdown/Plan.Rmd')
         Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
         MSClog<-list(PanelState, Just, Des)
         
@@ -1140,7 +1153,7 @@ shinyServer(function(input, output, session) {
     
     content = function(file) {
       withProgress(message = "Building evaluation report", value = 0, {
-        src <- normalizePath('Eval.Rmd')
+        src <- normalizePath('Source/Markdown/Eval.Rmd')
         Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
         MSClog<-list(PanelState, Just, Des)
         
@@ -1177,7 +1190,7 @@ shinyServer(function(input, output, session) {
     filename = function(){paste0(namconv(input$Name),"_AI.html")}, #"report.html",
     content = function(file) {
       withProgress(message = "Building indicators report", value = 0, {
-      src <- normalizePath('IndRep.Rmd')
+      src <- normalizePath('Source/Markdown/IndRep.Rmd')
 
       test<-match(input$sel_MP,MPs)
       if(is.na(test))mm<-1
@@ -1551,6 +1564,6 @@ shinyServer(function(input, output, session) {
               updateTextAreaInput(session,"Debug1",value=MadeOM())
   )
   
-
+  
 
 })
