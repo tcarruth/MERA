@@ -45,6 +45,8 @@ pre { /* Code block */
 
 
 
+<img src="logo.png" width="120" align="left">
+
 
 ```{r set options, echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")

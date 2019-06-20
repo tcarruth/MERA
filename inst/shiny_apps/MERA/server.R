@@ -18,7 +18,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"4.2.1"
+  Version<<-"4.3.2"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -27,7 +27,7 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Data_figs.R",local=TRUE)
 
   # Presentation of results
-  source("./Source/Skins/FAO.R",local=TRUE)
+  source("./Source/Skins/ABNJ.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
   
   #source("./Analysis_results.R",local=TRUE)
@@ -80,6 +80,7 @@ shinyServer(function(input, output, session) {
   CondOM<-reactiveVal(0)
   MadeOM<-reactiveVal(0)
   RA<-reactiveVal(0) # Have run risk assessment (multi MP)
+  Status<-reactiveVal(0) # Has a status determination been run yet?
   Plan<-reactiveVal(0) # Have run Planning (multi MP)
   Eval<-reactiveVal(0)  # Have run Evaluation (single MP)
   DataInd<-reactiveVal(0) # Indicator data loaded
@@ -99,6 +100,7 @@ shinyServer(function(input, output, session) {
   output$MadeOM   <- reactive({ MadeOM()})
 
   output$RA       <- reactive({ RA()})
+  output$Status   <- reactive({ Status()})
   output$Plan     <- reactive({ Plan()})
   output$Eval     <- reactive({ Eval()})
   output$DataInd  <- reactive({ DataInd()})
@@ -121,6 +123,7 @@ shinyServer(function(input, output, session) {
   outputOptions(output,"MadeOM",suspendWhenHidden=FALSE)
 
   outputOptions(output,"RA",suspendWhenHidden=FALSE)
+  outputOptions(output,"Status",suspendWhenHidden=FALSE)
   outputOptions(output,"Plan",suspendWhenHidden=FALSE)
   outputOptions(output,"Eval",suspendWhenHidden=FALSE)
   outputOptions(output,"DataInd",suspendWhenHidden=FALSE)
@@ -145,12 +148,19 @@ shinyServer(function(input, output, session) {
   #for(i in 1:length(Skin_nams))Skins[[i]]<-get(Skin_nams[i])
   #Skin<- Skins[[1]] # MSC FAO
   Skin<-MSC
+  
   observeEvent(input$Skin,{
     temp<-input$Skin
     Skin<<-get(temp) 
     SkinNo(match(temp,Skin_nams))
+    RA(0)
+    Plan(0)
+    Eval(0)
     updateTextAreaInput(session,"Debug1",value=temp)
+    
   })# update MP selection in Evaluation
+  
+  
   shinyjs::hide("Skin")
   onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
   onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
@@ -929,13 +939,15 @@ shinyServer(function(input, output, session) {
       
       OM<<-makeOM(PanelState,nsim=nsim)
       src <- normalizePath('Source/Markdown/OMRep.Rmd')
-
+      src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+     
       Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
       MSClog<-list(PanelState, Just, Des)
 
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
       file.copy(src, 'OMRep.Rmd', overwrite = TRUE)
+      file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
 
       library(rmarkdown)
       params <- list(test = input$Name,
@@ -969,13 +981,15 @@ shinyServer(function(input, output, session) {
       nsim<<-input$nsim
       OM<<-makeOM(PanelState,nsim=nsim)
       src <- normalizePath('Source/Markdown/DataRep.Rmd')
-
+      src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+ 
       Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
       MSClog<-list(PanelState, Just, Des)
 
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
       file.copy(src, 'DataRep.Rmd', overwrite = TRUE)
+      file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
 
       library(rmarkdown)
       params <- list(test = input$Name,
@@ -1009,14 +1023,16 @@ shinyServer(function(input, output, session) {
       incProgress(0.1)
       #OM<<-makeOM(PanelState,nsim=nsim)
       src <- normalizePath('Source/Markdown/CondRep.Rmd')
-
+      src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+     
       Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
       MSClog<-list(PanelState, Just, Des)
 
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
       file.copy(src, 'CondRep.Rmd', overwrite = TRUE)
-
+      file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
+      
       library(rmarkdown)
       params <- list(test = input$Name,
                      set_title=paste0("Operating Model Conditioning Report for ",input$Name),
@@ -1049,6 +1065,8 @@ shinyServer(function(input, output, session) {
       withProgress(message = "Building operating model report", value = 0, {
       #OM<<-makeOM(PanelState,nsim=nsim)
       src <- normalizePath('Source/Markdown/OM_full_Rep.Rmd')
+      src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+     
       incProgress(0.1)
       Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
       MSClog<-list(PanelState, Just, Des)
@@ -1056,7 +1074,8 @@ shinyServer(function(input, output, session) {
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
       file.copy(src, 'OM_full_Rep.Rmd', overwrite = TRUE)
-
+      file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
+      
       library(rmarkdown)
       params <- list(test = input$Name,
                      set_title=paste0("Full Operating Model Specification Report for ",input$Name),
@@ -1080,6 +1099,23 @@ shinyServer(function(input, output, session) {
   )
 
   
+ # output$downloadReport <- downloadHandler(
+  #  filename = function() {
+   #   paste0('Report_.pdf')
+  #  },
+  #  content = function(file) {
+  #    src <- normalizePath('report.rmd')
+  #    src2 <- normalizePath('www/MSC.png') #NEW 
+  #    owd <- setwd(tempdir())
+  #    on.exit(setwd(owd))
+  #    file.copy(src, 'report.rmd')
+  #    file.copy(src2, 'logo.png') #NEW
+  #    library(rmarkdown)
+  #    out <- render('report.rmd',pdf_document())
+  #    file.rename(out, file)
+  #  }
+  #)
+  
   output$Build_RA <-downloadHandler(
     
     filename = function(){paste0(namconv(input$Name),"_MERA_Risk_Assessment_Report.html")}, #"report.html",
@@ -1087,12 +1123,15 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       withProgress(message = "Building risk assessment report", value = 0, {
         src <- normalizePath('Source/Markdown/RA.Rmd')
+        src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+       
         Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
         MSClog<-list(PanelState, Just, Des)
-        
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
         file.copy(src, 'RA.Rmd', overwrite = TRUE)
+        file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
+        
         options=Skin$Risk_Assessment$options
         library(rmarkdown)
         options()
@@ -1101,6 +1140,7 @@ shinyServer(function(input, output, session) {
                        set_type=paste0("Risk Assessment of Status Quo Management "," (MERA version ",Version,")"),
                        Skin=Skin,
                        MSEobj=MSEobj,
+                       OM=OM,
                        MSEobj_reb=MSEobj_reb,
                        OM=OM,
                        options=options,
@@ -1108,7 +1148,7 @@ shinyServer(function(input, output, session) {
                        copyright=paste(Copyright,CurrentYr)
         )
         knitr::knit_meta(class=NULL, clean = TRUE) 
-        out<-render("RA.Rmd", params = params)
+        out<-render("RA.Rmd", output_format="html_document", params = params)
         file.rename(out, file)
       })
     }
@@ -1123,12 +1163,15 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       withProgress(message = "Building planning report", value = 0, {
         src <- normalizePath('Source/Markdown/Plan.Rmd')
+        src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+      
         Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
         MSClog<-list(PanelState, Just, Des)
         
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
         file.copy(src, 'Plan.Rmd', overwrite = TRUE)
+        file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
         options=Skin$Risk_Assessment$options
         library(rmarkdown)
         options <- list(burnin = input$burnin, res=input$res)
@@ -1160,12 +1203,14 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       withProgress(message = "Building evaluation report", value = 0, {
         src <- normalizePath('Source/Markdown/Eval.Rmd')
+        src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+       
         Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
         MSClog<-list(PanelState, Just, Des)
-        
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
         file.copy(src, 'Eval.Rmd', overwrite = TRUE)
+        file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
         options=Skin$Risk_Assessment$options
         library(rmarkdown)
         options <- list(YIU = input$YIU, res=1)
@@ -1197,7 +1242,8 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       withProgress(message = "Building indicators report", value = 0, {
       src <- normalizePath('Source/Markdown/IndRep.Rmd')
-
+      src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+     
       test<-match(input$sel_MP,MPs)
       if(is.na(test))mm<-1
       if(!is.na(test))mm<-test
@@ -1208,6 +1254,7 @@ shinyServer(function(input, output, session) {
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
       file.copy(src, 'IndRep.Rmd', overwrite = TRUE)
+      file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
 
       library(rmarkdown)
       params <- list(test = input$Name,

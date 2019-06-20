@@ -45,6 +45,9 @@ pre { /* Code block */
 
 
 
+<img src="logo.png" width="120" align="left">
+
+
 <br clear="both"/>
 
 # About this document

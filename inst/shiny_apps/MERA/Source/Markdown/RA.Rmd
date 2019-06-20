@@ -1,14 +1,17 @@
+
+<img src="logo.png" width="120" align="left">
+
 ---
-title: "`r params$set_title`"#
-subtitle: "`r params$set_type` "
+title: "`r params$set_title`"
+subtitle: "`r params$set_type`"
 author: "`r params$OM@Source`"
 date: "`r Sys.Date()`"
 output: 
   html_document:
     toc: true
     toc_float: true
-    number_sections: false    
-runtime: shiny   
+    number_sections: true    
+runtime: shiny
 ---
 
 
@@ -46,7 +49,11 @@ pre { /* Code block */
 
 
 
+
+<br clear="both"/>
+
 ```{r set options, echo = FALSE}
+
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 knitr::opts_chunk$set(dpi=85)
 

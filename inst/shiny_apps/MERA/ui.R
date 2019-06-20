@@ -92,7 +92,7 @@ shinyUI(
 
                column(7,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
                conditionalPanel(condition="output.SkinNo==2",column(5,tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank'))),
-               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "FAO.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')))
+               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')))
                
             )
       ),
@@ -111,9 +111,6 @@ shinyUI(
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
 
     fluidRow(
-
-     
-
 
       column(12,HTML("<br>")),
 
@@ -736,11 +733,7 @@ shinyUI(
                     HTML("<br>"),
                     textAreaInput("blank",h5("",style = "color:grey"), "", height = "120px")
                   )
-
-
                )
-
-
             )
         ),
         column(12,
@@ -774,12 +767,8 @@ shinyUI(
                                          textOutput("Fpanelout"),
                                          textOutput("Mpanelout"),
                                          textOutput("Dpanelout")
-
                         )
                  )
-
-
-
               )
            ),
 
@@ -795,7 +784,7 @@ shinyUI(
 
                           h5("Save",style="font-weight:bold"),
                           downloadButton("Save","",width=70)
-                ),
+                 ),
 
                  column(4,
                        h5("Questionnaire Report",style="font-weight:bold"),
@@ -805,416 +794,485 @@ shinyUI(
 
           )
         )
-       ), # end of Step 1 fluid row
+    ), # end of Step 1 fluid row
 
        
     HTML("<br>"),
-    column(12,
+    
+    #column(12,
            h4("STEP B: SELECT MODE"),
-           hr()
-    ),
+           hr(),
+    #),
     column(1),
     column(11,
            
            column(4,
                   
-                  radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Planning","Evaluation"),selected="Risk Assessment")),
+                  radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Status Determination","Management Planning","Management Evaluation"),selected="Risk Assessment")),
            
            column(8,
-                  h5("MERA contains three modes of varying complexity",style = "color:grey"),
-                  h5(" - Risk Assessment mode: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
-                  h5(" - Planning mode: calculate the expected future performance of many candidate management options (multiple MPs)",style = "color:grey"),
-                  h5(" - Evaluation mode: given an MP is in use, analyse new data and monitor performance (single MP)", style = "color:grey")
+                  h5("MERA contains four modes of varying complexity and objectives",style = "color:grey"),
+                  h5(" - Risk Assessment: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
+                  h5(" - Status Determination: use the questionnaire and data to estimate population status",style = "color:grey"),
+                  h5(" - Management Planning: calculate the expected future performance of many candidate management procedures",style = "color:grey"),
+                  h5(" - Management Evaluation: given a management procedure is in use, analyse new data and monitor performance", style = "color:grey")
            )
            
     ),
     
+    column(12,style="height:15px"),
     
-    column(12,style="height:25px"),
-
-       conditionalPanel(condition="input.Mode!='Risk Assessment'",
-
-         conditionalPanel(condition="output.CondOM==0",h4("STEP C: LOAD AVAILABLE DATA (OPTIONAL)")),
-         conditionalPanel(condition="output.CondOM==1",h4("STEP C: LOAD AVAILABLE DATA (OPTIONAL)",style="color:green")),
-
-         hr(),
-
-         fluidRow(
-            column(1),
-            column(11,style="height:155px",
-
-               fluidRow(
-                 column(3,style="padding:7px;padding-left:14px",
-                        fileInput("Load_Data","Load available data  (.csv)")
-                 ),
-                 column(1),
-                 column(6,style="padding:19px",
-                        h5("When formatted into a DLMtool/MSEtool csv data file, fishery data can be used to:",style = "color:grey"),
-                        h5(" - condition operating models",style = "color:grey"),
-                        h5(" - determine feasible MPs", style = "color:grey"),
-                        h5(" - assess the fishery status", style = "color:grey"),
-                        h5(" - test for exceptional circumstances.",style = "color:grey"),
-                        h5("A description of the data object can be found ",a("here", href="https://dlmtool.github.io/DLMtool/cheat_sheets/Data", target="_blank"),style = "color:grey")
-
-                 )
-              )
-            )
-          ),
-
-          fluidRow(
-              column(1),
-              column(6),
-              column(4,
-                    column(8),
-                    column(4,
-                           conditionalPanel(width=4,condition="output.Data==1",
-                            h5("Data Report",style="font-weight:bold"),
-                            downloadButton("Build_Data"," ")
-                           )
-                    )
-              )
-          )
-        ),  # RA MSE conditional panel
-
-        column(12,style="height:45px"),
-
-        conditionalPanel(condition="output.MadeOM==0&input.Mode!='Risk Assessment'",h4("STEP D: BUILD OPERATING MODELS")),
-        conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Assessment'",h4("STEP D: BUILD OPERATING MODELS",style="color:green")),
-
-        conditionalPanel(condition="input.Mode!='Risk Assessment'",
-          hr(),
-  
-          fluidRow(
-             column(1),
-             column(11,
-  
-                fluidRow(
-  
-                  column(4,
-                    
-                      numericInput("nsim", label = "No. simulations", value=8,min=8,max=1000),
-                    
-  
-                    conditionalPanel(condition="output.Data==1",
-                      selectInput("Cond_ops", label = "Conditioning Method", choices=c("None"),selected="None")
-                    ),
-  
-                    actionButton("Build_OM_2",h5("BUILD OPERATING MODEL",style="color:red"))
-  
-                    ),
-  
-                    column(6,style="padding-left:8px",
-                         style="padding:19px",
-                         h5("Operating models are specified from the responses in the questionnaire (Step A)", style = "color:grey"),
-                         h5("Alternatively, in MSE mode, users can use upload their data and condition models using
-                            stochastic SRA ",a("(Walters et al. 2006)", href="https://drive.google.com/open?id=10kpQwOsvsDCojN2MyUYgRj9-IUQMQmAB", target="_blank"),style = "color:grey"),
-                         h5("For demonstration purposes a small number of simulations (e.g. n = 24) is enough. For MP comparisons in 'Evaluation' mode,
-                            100 simulations is generally sufficient to get convergence in performance rankings. In more detailed Application or Indicator
-                            steps where specific MPs are tested, a larger number is recommended (e.g. n = 200) to get stable absolute performance", style = "color:grey")
-  
-                    )
-  
-                )
-             )
-          ),
-  
-          fluidRow(
-            column(7),
-            column(4,
-  
-                  column(6,style="padding:10px",
-                         conditionalPanel(condition="input.Mode!='Risk Assessment'",
-  
-                         fileInput("Load_OM","Load  (.OM)"))
-                  ),
-  
-                  column(2,
-                         conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Assessment'",
-                           h5("Save",style="font-weight:bold"),
-                           downloadButton("Save_OM","",width=70)
-                         )
-                  ),
-  
-                  column(4,
-  
-                    conditionalPanel(condition="output.MadeOM==1",
-  
-                       h5("OM Report",style="font-weight:bold"),
-                       downloadButton("Build_full_OM","")
-  
-                    ),
-  
-                    conditionalPanel(condition="output.CondOM==1",
-  
-                        h5("Conditioning Report",style="font-weight:bold"),
-                        downloadButton("Build_Cond","")
-  
-                    )
-                  )
-  
-            )
-          )
-        ), # risk evaluation doesn't have OM step mode
-        
-        # =============== Risk Assessment ================================================================================================================================================
-        conditionalPanel(condition="input.Mode=='Risk Assessment'",
-           conditionalPanel(condition="output.Plan==0",h4("STEP C: CALCULATE RISK")),
-           conditionalPanel(condition="output.Plan==1",h4("STEP C: CALCULATE RISK",style="color:green")),
-           hr(),
-           column(12,style="height:45px"),
-           
-           fluidRow(
-             column(1),
-             column(11,
-                fluidRow(
-                  column(4,
-                                            
-                         
-                      column(12,actionButton("Calculate_risk",h5("      CALCULATE     ",style="color:red")))
-                  
-                  ),
-                      
-                  column(6,
-                         
-                         h5("Current fishing effort, current catches, FMSY fishing and zero catches are projected to evaluate status-quo fishery risk", style = "color:grey"),
-                       
-                         h5("A guide to the Risk Assessment mode can be found",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
-                         
-                  )
-              )
-                    
-             )
-           ),
-           
-           fluidRow(
-             column(1),
-             column(6),
-             column(4,
-                    
-                    column(4,
-                           
-                           conditionalPanel(condition="output.RA==1",
-                                            h5("Risk Assessment Report",style="font-weight:bold"),
-                                            downloadButton("Build_RA","")
-                           )
-                           
-                    )
-             )
-           )
-           
-           
-        ),           
-    
-    
-        # =============== Planning =======================================================================================================================================================          
-        conditionalPanel(condition="input.Mode=='Planning'",
-           
-           conditionalPanel(condition="output.Plan==0",h4("STEP E: CALCULATE PROJECTIONS")),
-           conditionalPanel(condition="output.Plan==1",h4("STEP E: CALCULATE PROJECTIONS",style="color:green")),
-           hr(),
-           column(12,style="height:45px"),
-           
-           fluidRow(
-             column(1),
-             column(11,
-                    fluidRow(
-                      column(4,conditionalPanel(condition="output.MadeOM==1",
-                                                
-                             # column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
-                              column(6,numericInput("interval", label = "Management interval", value=8,min=2,max=10)),
-                              
-                              #column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
-                              column(12,radioButtons('MPset',label="MP set",choices=c("Top 20","All","Demo"),selected="Demo",inline=T)),
-                              
-                              column(9,sliderInput("Dep_reb",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
-                              column(2,HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey"))),
-                              column(12,h5("Additional options",style="font-weight:bold"),style="height:22px"),
-                              #column(12,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),
-                              #        checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),
-                              #
-                              #checkboxInput("Parallel", label = "Parallel comp.", value = FALSE)),
-                              
-                              column(4,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),style="padding-top:0px"),
-                              column(4,checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),style="padding-top:0px"),
-                              column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"),
-                              
-                              column(12,actionButton("Calculate_Plan",h5("      CALCULATE     ",style="color:red")))
-                              
-                      ),
-                      conditionalPanel(condition="output.MadeOM==0",
+    # =============== Risk Assessment ================================================================================================================================================
+    conditionalPanel(condition="input.Mode=='Risk Assessment'",
+                     
+                     conditionalPanel(condition="output.Plan==0",h4("STEP C: CALCULATE RISK")),
+                     conditionalPanel(condition="output.Plan==1",h4("STEP C: CALCULATE RISK",style="color:green")),
+                     hr(),
+                     column(12,style="height:45px"),
+                     
+                     fluidRow(
+                       column(1),
+                       column(11,
+                              fluidRow(
+                                column(4,
                                        
-                                       h5("Operating model not built yet (Step B)", style = "color:grey")
+                                       column(12,actionButton("Calculate_risk",h5("      CALCULATE     ",style="color:red")))
                                        
-                      )
-                      ),
-                      
-                      column(6,
-                             
-                             h5("Simulations can be run to test Multiple MPs over a certain number of projected years in which managment recommendations are updated every 'interval' years", style = "color:grey"),
-                             h5("- Top 20: MPs that generally perform well in many cases but may not be appropriate for your operating model", style = "color:grey"),
-                             h5("- All: an MSE is run for all available MPs (~100) which can take 20 minutes or more", style = "color:grey"),
-                             h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
-                             h5("Users may wish not to include reference MPs (No ref. MPs) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
-                             h5("In situations where operating models are built with more than 48 simulations it can be much faster to use parallel computing ('Parallel comp.)
-                          although the progress bar will not longer work ",style="color:grey"),
-                             h5("Documentation of the various MPs can be found as links in the results tables, below in the help section or online ",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
-                             
-                      )
-                    )
-                    
-             )
-             
-           ),
-           
-           
-           fluidRow(
-             column(1),
-             column(6),
-             column(4,
-                    column(6,style="padding:10px",
-                           fileInput("Load_Plan","Load  (.Plan)")
-                    ),
-                    
-                    column(2,
-                           conditionalPanel(condition="output.Plan==1",
-                                  h5("Save",style="font-weight:bold"),
-                                  downloadButton("Save_Plan","",width=70)
-                           )
-                           
-                    ),
-                    column(4,
-                           
-                           conditionalPanel(condition="output.Plan==1",
-                                  h5("Planning Report",style="font-weight:bold"),
-                                  downloadButton("Build_Plan","")
-                           )
-                           
-                    )
-             )
-           )
-             
-        ),                 
-  
-        # ====================== Evaluation ========================================================================
+                                ),
+                                
+                                column(6,
+                                       
+                                       h5("Current fishing effort, current catches, FMSY fishing and zero catches are projected to evaluate status-quo fishery risk", style = "color:grey"),
+                                       
+                                       h5("A guide to the Risk Assessment mode can be found",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
+                                       
+                                )
+                              )
+                              
+                       )
+                     ),
+                     
+                     fluidRow(
+                       column(1),
+                       column(6),
+                       column(4,
+                              
+                              column(4,
+                                     
+                                     conditionalPanel(condition="output.RA==1",
+                                                      h5("Risk Assessment Report",style="font-weight:bold"),
+                                                      downloadButton("Build_RA","")
+                                     )
+                                     
+                              )
+                       )
+                     )
+                     
+    ),           
     
-        conditionalPanel(condition="input.Mode=='Evaluation'",
-          column(12,style="height:15px"),          
-          conditionalPanel(condition="output.Plan==0",h4("STEP E: STATUS DETERMINATION")),
-          conditionalPanel(condition="output.Plan==1",h4("STEP E: STATUS DETERMINATION",style="color:green")),
-       
-          hr(),
+ 
+   conditionalPanel(condition="input.Mode!='Risk Assessment'",
 
-          fluidRow(
-            column(1),
-            column(11,
-                   fluidRow(
-                     column(4,
-                       conditionalPanel(condition="output.MadeOM>0",
-                        #column(6,numericInput("proyears_app", label = "Years in use", value=5,min=2,max=20)),
-                        column(6,numericInput("interval_app", label = "Management interval", value=2,min=2,max=10)),
-                        column(9,sliderInput("Dep_reb_app",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
-                        column(2,HTML("<br><br>"),actionButton("Dep_reb_def_app",h5("DEFAULT",style="color:grey"))),
-                        column(6,selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0)),style="padding:10px"),
-                        column(6,checkboxInput("Parallel_app", label = "Parallel comp.", value = FALSE)),
-                         
-                        column(12,
-                               actionButton("Calculate_Eval",h5("      CALCULATE     ",style="color:red"))
-                        )
+     conditionalPanel(condition="output.CondOM==0",h4("STEP C: LOAD AVAILABLE DATA (OPTIONAL)")),
+     conditionalPanel(condition="output.CondOM==1",h4("STEP C: LOAD AVAILABLE DATA (OPTIONAL)",style="color:green")),
 
-                       ),
-                       conditionalPanel(condition="output.MadeOM==0",
-                            h5("Operating model not built yet (Step C)", style = "color:grey")
-                      )
-                     ),
-                     column(6,
-                         h5("In the Evaluation mode, a single MP is tested over a greater number of simulations.", style = "color:grey")
-                     )
-                   )
-            )
-          ),
+     hr(),
 
-          fluidRow(
-            column(1),
-            column(6),
-            column(4,
-                   column(6,style="padding:10px",
-                          fileInput("Load_Eval","Load  (.Eval)")
-                   ),
+     fluidRow(
+        column(1),
+        column(11,style="height:155px",
 
-                   column(2,
-                          conditionalPanel(condition="output.Eval==1",
-                                 h5("Save",style="font-weight:bold"),
-                                 downloadButton("Save_Eval","",width=70)
-                          )
+           fluidRow(
+             column(3,style="padding:7px;padding-left:14px",
+                    fileInput("Load_Data","Load available data  (.csv)")
+             ),
+             column(1),
+             column(6,style="padding:19px",
+                    h5("When formatted into a DLMtool/MSEtool csv data file, fishery data can be used to:",style = "color:grey"),
+                    h5(" - condition operating models",style = "color:grey"),
+                    h5(" - determine feasible MPs", style = "color:grey"),
+                    h5(" - assess the fishery status", style = "color:grey"),
+                    h5(" - test for exceptional circumstances.",style = "color:grey"),
+                    h5("A description of the data object can be found ",a("here", href="https://dlmtool.github.io/DLMtool/cheat_sheets/Data", target="_blank"),style = "color:grey")
 
-                   ),
-                   column(4,
+             )
+          )
+        )
+      ),
 
-                          conditionalPanel(condition="output.Eval==1",
-                                 column(12,style="height:50px",
-                                        h5("Evaluation Report",style="font-weight:bold"),
-                                        downloadButton("Build_Eval","")
-
-                                 )
-                          )
-
-                   )
-            )
-          ),
-          
-          column(12,style="height:15px"),
-          
-          conditionalPanel(condition="output.Ind==0",h4("STEP F: AUXILIARY INDICATORS")),
-          conditionalPanel(condition="output.Ind==1",h4("STEP F: AUXILIARY INDICATORS",style="color:green")),
-          
-          hr(),
-          
-          fluidRow(
-            column(1),
-            column(11,#style="height:285px",
-          
-                   fluidRow(
-          
-                     column(3,style="padding:7px;padding-left:14px",
-          
-                            conditionalPanel(condition="output.DataInd==0",
-          
-                              h5("Compatible data file not loaded (at least three more years of data than the last historical year 'LHYear')", style = "color:grey")
-          
-                            ),
-                            conditionalPanel(condition="output.Eval==0",
-                              h5("Evaluation not run yet (Step D)", style = "color:grey")
-                            ),
-                            conditionalPanel(condition="output.DataInd==1&output.Eval==1",
-                                actionButton("Calculate_Ind",h5(" DETECT EXCEPTIONAL CIRCUMSTANCES  ",style="color:red"))
-                            )
-          
-                     ),
-                     column(1),
-                     column(6,style="padding:19px",
-                          h5("A similar data file to step A2 can be loaded here with extended data for years after operating model conditioning",style = "color:grey"),
-                          h5("These data can be compared against the predicted data of the Evaluation operating model and used to detect exceptional
-                               circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://drive.google.com/open?id=1Liif_ugfDbzIKZMBusHNemgfi3cohvtr", target="_blank"),style = "color:grey"),
-                          h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
-                     )
-                 )
-            )
-        ),
-
-        fluidRow(
+      fluidRow(
           column(1),
           column(6),
           column(4,
-                 column(8),
-                 column(4,
-                        conditionalPanel(width=4,condition="output.DataInd==1",
-                                h5("Indicator Report",style="font-weight:bold"),
-                                downloadButton("Build_AI"," ")
-                        )
-                 )
-           )
+                column(8),
+                column(4,
+                       conditionalPanel(width=4,condition="output.Data==1",
+                        h5("Data Report",style="font-weight:bold"),
+                        downloadButton("Build_Data"," ")
+                       )
+                )
+          )
+      )
+    ),  # RA MSE conditional panel
+
+    column(12,style="height:45px"),
+
+    conditionalPanel(condition="output.MadeOM==0&!(input.Mode=='Risk Assessment'|input.Mode=='Status Determination')",h4("STEP D: BUILD OPERATING MODELS")),
+    conditionalPanel(condition="output.MadeOM==1&!(input.Mode=='Risk Assessment'|input.Mode=='Status Determination')",h4("STEP D: BUILD OPERATING MODELS",style="color:green")),
+
+    conditionalPanel(condition="!(input.Mode=='Risk Assessment'|input.Mode=='Status Determination')",
+      hr(),
+
+      fluidRow(
+         column(1),
+         column(11,
+
+            fluidRow(
+
+              column(4,
+                
+                  numericInput("nsim", label = "No. simulations", value=8,min=8,max=1000),
+                
+
+                conditionalPanel(condition="output.Data==1",
+                  selectInput("Cond_ops", label = "Conditioning Method", choices=c("None"),selected="None")
+                ),
+
+                actionButton("Build_OM_2",h5("BUILD OPERATING MODEL",style="color:red"))
+
+                ),
+
+                column(6,style="padding-left:8px",
+                     style="padding:19px",
+                     h5("Operating models are specified from the responses in the questionnaire (Step A)", style = "color:grey"),
+                     h5("Alternatively, in MSE mode, users can use upload their data and condition models using
+                        stochastic SRA ",a("(Walters et al. 2006)", href="https://drive.google.com/open?id=10kpQwOsvsDCojN2MyUYgRj9-IUQMQmAB", target="_blank"),style = "color:grey"),
+                     h5("For demonstration purposes a small number of simulations (e.g. n = 24) is enough. For MP comparisons in 'Evaluation' mode,
+                        100 simulations is generally sufficient to get convergence in performance rankings. In more detailed Application or Indicator
+                        steps where specific MPs are tested, a larger number is recommended (e.g. n = 200) to get stable absolute performance", style = "color:grey")
+
+                )
+
+            )
+         )
+      ),
+
+      fluidRow(
+        column(7),
+        column(4,
+
+              column(6,style="padding:10px",
+                     conditionalPanel(condition="input.Mode!='Risk Assessment'",
+
+                     fileInput("Load_OM","Load  (.OM)"))
+              ),
+
+              column(2,
+                     conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Assessment'",
+                       h5("Save",style="font-weight:bold"),
+                       downloadButton("Save_OM","",width=70)
+                     )
+              ),
+
+              column(4,
+
+                conditionalPanel(condition="output.MadeOM==1",
+
+                   h5("OM Report",style="font-weight:bold"),
+                   downloadButton("Build_full_OM","")
+
+                ),
+
+                conditionalPanel(condition="output.CondOM==1",
+
+                    h5("Conditioning Report",style="font-weight:bold"),
+                    downloadButton("Build_Cond","")
+
+                )
+              )
+
         )
-        ),
+      )
+    ), # risk evaluation doesn't have OM step mode
+    
+    
+    # =============== Status Determination ===========================================================================================================
+     conditionalPanel(condition="input.Mode=='Status Determination'",
+                     
+       conditionalPanel(condition="output.Status==0",h4("STEP D: CALCULATE POPULATION STATUS")),
+       conditionalPanel(condition="output.Status==1",h4("STEP D: CALCULATE POPULATION STATUS",style="color:green")),
+       
+       
+       hr(),
+       column(12,style="height:45px"),
+       
+       fluidRow(
+         column(1),
+         column(11,
+                fluidRow(
+                  column(4,conditionalPanel(condition="output.Data==1",
+                                            
+                         column(12,actionButton("Calculate_Status",h5("      CALCULATE     ",style="color:red")))
+                                            
+                  ),
+                  conditionalPanel(condition="output.Data==0",
+                                   
+                          h5("Data not loaded yet model not built yet (Step C)", style = "color:grey")
+                                   
+                  )
+                  ),
+                  
+                  column(6,
+                         
+                         h5("Status determination bla bla ", style = "color:grey"),
+                         h5("bla", style = "color:grey")
+                                 
+                  )
+                )
+                
+         )
+         
+       ),
+       
+       
+       fluidRow(
+         column(1),
+         column(6),
+         column(4,
+                column(6,style="padding:10px",
+                       fileInput("Load_Status","Load  (.Status)")
+                ),
+                
+                column(2,
+                       conditionalPanel(condition="output.Status==1",
+                                        h5("Save",style="font-weight:bold"),
+                                        downloadButton("Save_Status","",width=70)
+                       )
+                       
+                ),
+                column(4,
+                       
+                       conditionalPanel(condition="output.Status==1",
+                                        h5("Status Report",style="font-weight:bold"),
+                                        downloadButton("Build_Status","")
+                       )
+                       
+                )
+         )
+       )
+       
+    ),                 
+
+  
+    # =============== Planning =======================================================================================================================================================          
+    conditionalPanel(condition="input.Mode=='Management Planning'",
+       column(12,style="height:15px"), 
+       conditionalPanel(condition="output.Plan==0",h4("STEP E: CALCULATE PROJECTIONS")),
+       conditionalPanel(condition="output.Plan==1",h4("STEP E: CALCULATE PROJECTIONS",style="color:green")),
+       hr(),
+       column(12,style="height:45px"),
+       
+       fluidRow(
+         column(1),
+         column(11,
+                fluidRow(
+                  column(4,conditionalPanel(condition="output.MadeOM==1",
+                                            
+                         # column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
+                          column(6,numericInput("interval", label = "Management interval", value=8,min=2,max=10)),
+                          
+                          #column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
+                          column(12,radioButtons('MPset',label="MP set",choices=c("Top 20","All","Demo"),selected="Demo",inline=T)),
+                          
+                          column(9,sliderInput("Dep_reb",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
+                          column(2,HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey"))),
+                          column(12,h5("Additional options",style="font-weight:bold"),style="height:22px"),
+                          #column(12,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),
+                          #        checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),
+                          #
+                          #checkboxInput("Parallel", label = "Parallel comp.", value = FALSE)),
+                          
+                          column(4,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),style="padding-top:0px"),
+                          column(4,checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),style="padding-top:0px"),
+                          column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"),
+                          
+                          column(12,actionButton("Calculate_Plan",h5("      CALCULATE     ",style="color:red")))
+                          
+                  ),
+                  conditionalPanel(condition="output.MadeOM==0",
+                                   
+                                   h5("Operating model not built yet (Step B)", style = "color:grey")
+                                   
+                  )
+                  ),
+                  
+                  column(6,
+                         
+                         h5("Simulations can be run to test Multiple MPs over a certain number of projected years in which managment recommendations are updated every 'interval' years", style = "color:grey"),
+                         h5("- Top 20: MPs that generally perform well in many cases but may not be appropriate for your operating model", style = "color:grey"),
+                         h5("- All: an MSE is run for all available MPs (~100) which can take 20 minutes or more", style = "color:grey"),
+                         h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
+                         h5("Users may wish not to include reference MPs (No ref. MPs) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
+                         h5("In situations where operating models are built with more than 48 simulations it can be much faster to use parallel computing ('Parallel comp.)
+                      although the progress bar will not longer work ",style="color:grey"),
+                         h5("Documentation of the various MPs can be found as links in the results tables, below in the help section or online ",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
+                         
+                  )
+                )
+                
+         )
+         
+       ),
+       
+       
+       fluidRow(
+         column(1),
+         column(6),
+         column(4,
+                column(6,style="padding:10px",
+                       fileInput("Load_Plan","Load  (.Plan)")
+                ),
+                
+                column(2,
+                       conditionalPanel(condition="output.Plan==1",
+                              h5("Save",style="font-weight:bold"),
+                              downloadButton("Save_Plan","",width=70)
+                       )
+                       
+                ),
+                column(4,
+                       
+                       conditionalPanel(condition="output.Plan==1",
+                              h5("Planning Report",style="font-weight:bold"),
+                              downloadButton("Build_Plan","")
+                       )
+                       
+                )
+         )
+       )
+         
+    ),                 
+
+    # ====================== Evaluation ========================================================================
+
+    conditionalPanel(condition="input.Mode=='Management Evaluation'",
+      column(12,style="height:15px"),          
+      conditionalPanel(condition="output.Plan==0",h4("STEP E: MP EVALUATION")),
+      conditionalPanel(condition="output.Plan==1",h4("STEP E: MP EVALUATION",style="color:green")),
+   
+      hr(),
+
+      fluidRow(
+        column(1),
+        column(11,
+               fluidRow(
+                 column(4,
+                   conditionalPanel(condition="output.MadeOM>0",
+                    #column(6,numericInput("proyears_app", label = "Years in use", value=5,min=2,max=20)),
+                    column(6,numericInput("interval_app", label = "Management interval", value=2,min=2,max=10)),
+                    column(9,sliderInput("Dep_reb_app",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
+                    column(2,HTML("<br><br>"),actionButton("Dep_reb_def_app",h5("DEFAULT",style="color:grey"))),
+                    column(6,selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0)),style="padding:10px"),
+                    column(6,checkboxInput("Parallel_app", label = "Parallel comp.", value = FALSE)),
+                     
+                    column(12,
+                           actionButton("Calculate_Eval",h5("      CALCULATE     ",style="color:red"))
+                    )
+
+                   ),
+                   conditionalPanel(condition="output.MadeOM==0",
+                        h5("Operating model not built yet (Step C)", style = "color:grey")
+                  )
+                 ),
+                 column(6,
+                     h5("In the Evaluation mode, a single MP is tested over a greater number of simulations.", style = "color:grey")
+                 )
+               )
+        )
+      ),
+
+      fluidRow(
+        column(1),
+        column(6),
+        column(4,
+               column(6,style="padding:10px",
+                      fileInput("Load_Eval","Load  (.Eval)")
+               ),
+
+               column(2,
+                      conditionalPanel(condition="output.Eval==1",
+                             h5("Save",style="font-weight:bold"),
+                             downloadButton("Save_Eval","",width=70)
+                      )
+
+               ),
+               column(4,
+
+                      conditionalPanel(condition="output.Eval==1",
+                             column(12,style="height:50px",
+                                    h5("Evaluation Report",style="font-weight:bold"),
+                                    downloadButton("Build_Eval","")
+
+                             )
+                      )
+
+               )
+        )
+      ),
+      
+      column(12,style="height:15px"),
+      
+      conditionalPanel(condition="output.Ind==0",h4("STEP F: AUXILIARY INDICATORS")),
+      conditionalPanel(condition="output.Ind==1",h4("STEP F: AUXILIARY INDICATORS",style="color:green")),
+      
+      hr(),
+      
+      fluidRow(
+        column(1),
+        column(11,#style="height:285px",
+      
+               fluidRow(
+      
+                 column(3,style="padding:7px;padding-left:14px",
+      
+                        conditionalPanel(condition="output.DataInd==0",
+      
+                          h5("Compatible data file not loaded (at least three more years of data than the last historical year 'LHYear')", style = "color:grey")
+      
+                        ),
+                        conditionalPanel(condition="output.Eval==0",
+                          h5("Evaluation not run yet (Step D)", style = "color:grey")
+                        ),
+                        conditionalPanel(condition="output.DataInd==1&output.Eval==1",
+                            actionButton("Calculate_Ind",h5(" DETECT EXCEPTIONAL CIRCUMSTANCES  ",style="color:red"))
+                        )
+      
+                 ),
+                 column(1),
+                 column(6,style="padding:19px",
+                      h5("A similar data file to step A2 can be loaded here with extended data for years after operating model conditioning",style = "color:grey"),
+                      h5("These data can be compared against the predicted data of the Evaluation operating model and used to detect exceptional
+                           circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://drive.google.com/open?id=1Liif_ugfDbzIKZMBusHNemgfi3cohvtr", target="_blank"),style = "color:grey"),
+                      h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
+                 )
+             )
+        )
+    ),
+
+    fluidRow(
+      column(1),
+      column(6),
+      column(4,
+             column(8),
+             column(4,
+                    conditionalPanel(width=4,condition="output.DataInd==1",
+                            h5("Indicator Report",style="font-weight:bold"),
+                            downloadButton("Build_AI"," ")
+                    )
+             )
+       )
+    )
+    ),
 
 
         column(12,style="height:15px"),
@@ -1266,10 +1324,10 @@ shinyUI(
               div(style='height:500px; overflow-y: scroll', 
              
               
-                 conditionalPanel(condition="output.Plan==0&input.Mode=='Planning'",
+                 conditionalPanel(condition="output.Plan==0&input.Mode=='Management Planning'",
                                   h5("Planning MSE not run yet (Step C)", style = "color:grey")
                  ),
-                 conditionalPanel(condition="output.Eval==0&input.Mode=='Evaluation'",
+                 conditionalPanel(condition="output.Eval==0&input.Mode=='Management Evaluation'",
                                   h5("Evaluation MSE not run yet (Step C1)", style = "color:grey")
                  ),
                  conditionalPanel(condition="output.Plan==1|output.Eval==1|output.RA==1",

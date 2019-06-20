@@ -1,4 +1,6 @@
 
+<img src="logo.png" width="120" align="left">
+
 ---
 title: "`r params$set_title`"
 subtitle: "`r params$set_type`"
@@ -11,6 +13,7 @@ output:
     number_sections: true    
 runtime: shiny
 ---
+
 
 <style type="text/css">
 
@@ -42,6 +45,8 @@ pre { /* Code block */
   font-size: 16px
 }
 </style>
+
+
 
 
 

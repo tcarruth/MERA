@@ -44,6 +44,8 @@ pre { /* Code block */
 </style>
 
 
+<img src="logo.png" width="120" align="left">
+
 
 <br clear="both"/>
 
@@ -55,7 +57,7 @@ This is a prototype of an automatic report that documents all dynamical features
 
 ```{r labs,echo=F,warning=F,error=F,results='asis',fig.width=9,fig.height=9}
 
-plot(params$OM) # rmd = T
+plot(params$OM,rmd=T,silent=T) # rmd = T
 
 ```
 
