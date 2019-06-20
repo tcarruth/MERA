@@ -678,9 +678,14 @@ FeaseLabs<-function(MPs,dat=NA){
     for(i in 4:ncol(Tab1))Tab1[,i]<-as.numeric(Tab1[,i])
     colnams<-c("MP","MP type","Feasibility",ind+Current_Year)
     names(Tab1)<-colnams
+    
+    URLs <- sapply(Tab1$MP, MPurl) %>% unlist()
+    MPwithurl <- !is.na(URLs) 
+    Tab1$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab1$MP[MPwithurl],"</a>")
+    
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption, extensions = 'Buttons',
+    datatable(Tab1,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                    options=list(buttons = 
                                  list('copy', list(
                                    extend = 'collection',
@@ -691,9 +696,10 @@ FeaseLabs<-function(MPs,dat=NA){
                                )
               )%>%
       formatStyle(columns = 4:ncol(Tab1), valueColumns = 4:ncol(Tab1), color = styleInterval(c(50,90),c('red','orange','green')))  %>%
-      formatStyle(columns=1, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red"))) %>%
+      formatStyle(columns=1, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red")))%>%
       formatStyle(columns=2, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red")))%>%
-      formatStyle(columns=3, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red")))   
+      formatStyle(columns=3, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red")))  
+      
   }
   
   Tab_title[[2]] <- "Table 2. Projected biomass relative to the TRP"
@@ -714,9 +720,14 @@ FeaseLabs<-function(MPs,dat=NA){
     for(i in 4:ncol(Tab1))Tab1[,i]<-as.numeric(Tab1[,i])
     colnams<-c("MP","MP type","Feasibility",ind+Current_Year)
     names(Tab1)<-colnams
+    
+    URLs <- sapply(Tab1$MP, MPurl) %>% unlist()
+    MPwithurl <- !is.na(URLs) 
+    Tab1$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab1$MP[MPwithurl],"</a>")
+    
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption, extensions = 'Buttons',
+    datatable(Tab1,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
               options=list(buttons = 
                              list('copy', list(
                                extend = 'collection',
@@ -803,7 +814,7 @@ FeaseLabs<-function(MPs,dat=NA){
   Tab_title[[1]] <- "Table 1. Biomass relative to 50% BMSY"
   Tab_text[[1]] <-"The biomass projection for the interim years that an MP has been in use."
 
-  Tabs[[1]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1),res=5,rnd=1){
+  Tabs[[1]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1,YIU=5),res=5,rnd=1){
     
     nMPs<-MSEobj_reb@nMPs
     proyears<-MSEobj_reb@proyears
@@ -811,11 +822,19 @@ FeaseLabs<-function(MPs,dat=NA){
     
     LRP<-matrix(round(apply(MSEobj@B_BMSY[,,1:options$YIU,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
     Tab1<-as.data.frame(cbind(MSEobj@MPs,LRP))
+   
     colnams<-c("MP",Current_Year-((options$YIU-1):0))
     names(Tab1)<-colnams
+    Tab1$MP<-as.character(Tab1$MP)
+    
+    URLs <- MPurl(as.character(Tab1$MP))
+    MPwithurl <- !is.na(URLs) 
+    Tab1$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab1$MP[MPwithurl],"</a>")
+    
+    
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption,extensions = 'Buttons',
+    datatable(Tab1,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
               options=list(buttons = 
                              list('copy', list(
                                extend = 'collection',
@@ -843,9 +862,15 @@ FeaseLabs<-function(MPs,dat=NA){
     Tab2<-as.data.frame(cbind(MSEobj@MPs,TRP))
     colnams<-c("MP",Current_Year-((options$YIU-1):0))
     names(Tab2)<-colnams
+    Tab2$MP<-as.character(Tab2$MP)
+    
+    URLs <- sapply(Tab2$MP, MPurl) %>% unlist()
+    MPwithurl <- !is.na(URLs) 
+    Tab2$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab2$MP[MPwithurl],"</a>")
+    
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab2,caption=caption,
+    datatable(Tab2,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                    options=list(buttons = 
                                   list('copy', list(
                                       extend = 'collection',
@@ -873,9 +898,15 @@ FeaseLabs<-function(MPs,dat=NA){
     Tab3<-as.data.frame(cbind(MSEobj@MPs,RP))
     colnams<-c("MP",Current_Year-((options$YIU-1):0))
     names(Tab3)<-colnams
+    Tab3$MP<-as.character(Tab3$MP)
+    
+    URLs <- sapply(Tab3$MP, MPurl) %>% unlist()
+    MPwithurl <- !is.na(URLs) 
+    Tab3$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab3$MP[MPwithurl],"</a>")
+    
     Bdeps<-MSEobj_reb@OM$D#MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% of unfished SSB" )
-    datatable(Tab3,caption=caption,
+    datatable(Tab3,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                 options=list(buttons = 
                                list('copy', list(
                                  extend = 'collection',
@@ -902,9 +933,15 @@ FeaseLabs<-function(MPs,dat=NA){
     Tab3<-as.data.frame(cbind(MSEobj_reb@MPs,TRP))
     colnams<-c("MP",Current_Year+proyears-options$YIU-(9:0))
     names(Tab3)<-colnams
+    Tab3$MP<-as.character(Tab3$MP)
+    
+    URLs <- sapply(Tab3$MP, MPurl) %>% unlist()
+    MPwithurl <- !is.na(URLs) 
+    Tab3$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab3$MP[MPwithurl],"</a>")
+    
     Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab3,caption=caption,
+    datatable(Tab3,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                 options=list(buttons = 
                                list('copy', list(
                                  extend = 'collection',
@@ -937,9 +974,15 @@ FeaseLabs<-function(MPs,dat=NA){
     Tab4<-as.data.frame(cbind(MSEobj_reb@MPs,TRP))
     colnams<-c("MP",Current_Year+(1:20)-options$YIU)
     names(Tab4)<-colnams
+    Tab4$MP<-as.character(Tab4$MP)
+    
+    URLs <- sapply(Tab4$MP, MPurl) %>% unlist()
+    MPwithurl <- !is.na(URLs) 
+    Tab4$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab4$MP[MPwithurl],"</a>")
+    
     Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab4,caption=caption,
+    datatable(Tab4,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                 options=list(buttons = 
                                list('copy', list(
                                  extend = 'collection',

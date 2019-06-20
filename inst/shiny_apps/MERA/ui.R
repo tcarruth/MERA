@@ -91,11 +91,16 @@ shinyUI(
              fluidRow(
 
                column(7,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
-               column(5,tags$a(img(src = "MSC4.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank'))
-
+               conditionalPanel(condition="output.SkinNo==2",column(5,tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank'))),
+               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "FAO.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')))
+               
             )
       ),
-      column(1,selectInput("Skin", label = "", choices=c("None"),selected="None"))
+      column(1,
+             div(id="SkinArea",style="width:105px;height:50px",
+                   selectInput("Skin", label = "", choices=c("None"),selected="None")
+                )
+             )
     ),
     hr(),
 
@@ -107,36 +112,15 @@ shinyUI(
 
     fluidRow(
 
-      HTML("<br>"),
-      column(12,
-             h4("MODE"),
-             hr()
-             ),
-      column(1),
-      column(11,
-
-         column(4,
-
-           radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Planning","Evaluation"),selected="Risk Assessment")),
-
-           column(8,
-                  h5("MERA contains three modes of varying complexity",style = "color:grey"),
-                  h5(" - Risk Assessment mode: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
-                  h5(" - Planning mode: calculate the expected future performance of many candidate management options (multiple MPs)",style = "color:grey"),
-                  h5(" - Evaluation mode: given an MP is in use, analyse new data and monitor performance (single MP)", style = "color:grey")
-           )
-
-      ),
+     
 
 
       column(12,HTML("<br>")),
 
       column(12,style="height:60px",
 
-        conditionalPanel(condition="output.Quest==0&input.Mode=='Risk Assessment'",h4("CHARACTERIZE FISHERY")),
-        conditionalPanel(condition="output.Quest==1&input.Mode=='Risk Assessment'",h4("CHARACTERIZE FISHERY",style="color:green")),
-        conditionalPanel(condition="output.Quest==0&input.Mode!='Risk Assessment'",h4("STEP A: CHARACTERIZE FISHERY SYSTEM")),
-        conditionalPanel(condition="output.Quest==1&input.Mode!='Risk Assessment'",h4("STEP A: CHARACTERIZE FISHERY SYSTEM",style="color:green")),
+        conditionalPanel(condition="output.Quest==0",h4("STEP A: CHARACTERIZE FISHERY SYSTEM")),
+        conditionalPanel(condition="output.Quest==1",h4("STEP A: CHARACTERIZE FISHERY SYSTEM",style="color:green")),
 
         hr()
       ),
@@ -823,12 +807,35 @@ shinyUI(
         )
        ), # end of Step 1 fluid row
 
-       column(12,style="height:25px"),
+       
+    HTML("<br>"),
+    column(12,
+           h4("STEP B: SELECT MODE"),
+           hr()
+    ),
+    column(1),
+    column(11,
+           
+           column(4,
+                  
+                  radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Planning","Evaluation"),selected="Risk Assessment")),
+           
+           column(8,
+                  h5("MERA contains three modes of varying complexity",style = "color:grey"),
+                  h5(" - Risk Assessment mode: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
+                  h5(" - Planning mode: calculate the expected future performance of many candidate management options (multiple MPs)",style = "color:grey"),
+                  h5(" - Evaluation mode: given an MP is in use, analyse new data and monitor performance (single MP)", style = "color:grey")
+           )
+           
+    ),
+    
+    
+    column(12,style="height:25px"),
 
        conditionalPanel(condition="input.Mode!='Risk Assessment'",
 
-         conditionalPanel(condition="output.CondOM==0",h4("STEP B: LOAD AVAILABLE DATA (OPTIONAL)")),
-         conditionalPanel(condition="output.CondOM==1",h4("STEP B: LOAD AVAILABLE DATA (OPTIONAL)",style="color:green")),
+         conditionalPanel(condition="output.CondOM==0",h4("STEP C: LOAD AVAILABLE DATA (OPTIONAL)")),
+         conditionalPanel(condition="output.CondOM==1",h4("STEP C: LOAD AVAILABLE DATA (OPTIONAL)",style="color:green")),
 
          hr(),
 
@@ -871,8 +878,8 @@ shinyUI(
 
         column(12,style="height:45px"),
 
-        conditionalPanel(condition="output.MadeOM==0&input.Mode!='Risk Assessment'",h4("STEP C: BUILD OPERATING MODELS")),
-        conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Assessment'",h4("STEP C: BUILD OPERATING MODELS",style="color:green")),
+        conditionalPanel(condition="output.MadeOM==0&input.Mode!='Risk Assessment'",h4("STEP D: BUILD OPERATING MODELS")),
+        conditionalPanel(condition="output.MadeOM==1&input.Mode!='Risk Assessment'",h4("STEP D: BUILD OPERATING MODELS",style="color:green")),
 
         conditionalPanel(condition="input.Mode!='Risk Assessment'",
           hr(),
@@ -951,8 +958,8 @@ shinyUI(
         
         # =============== Risk Assessment ================================================================================================================================================
         conditionalPanel(condition="input.Mode=='Risk Assessment'",
-           conditionalPanel(condition="output.Plan==0",h4("CALCULATE RISK")),
-           conditionalPanel(condition="output.Plan==1",h4("CALCULATE RISK",style="color:green")),
+           conditionalPanel(condition="output.Plan==0",h4("STEP C: CALCULATE RISK")),
+           conditionalPanel(condition="output.Plan==1",h4("STEP C: CALCULATE RISK",style="color:green")),
            hr(),
            column(12,style="height:45px"),
            
@@ -1002,8 +1009,8 @@ shinyUI(
         # =============== Planning =======================================================================================================================================================          
         conditionalPanel(condition="input.Mode=='Planning'",
            
-           conditionalPanel(condition="output.Plan==0",h4("STEP D: CALCULATE PROJECTIONS")),
-           conditionalPanel(condition="output.Plan==1",h4("STEP D: CALCULATE PROJECTIONS",style="color:green")),
+           conditionalPanel(condition="output.Plan==0",h4("STEP E: CALCULATE PROJECTIONS")),
+           conditionalPanel(condition="output.Plan==1",h4("STEP E: CALCULATE PROJECTIONS",style="color:green")),
            hr(),
            column(12,style="height:45px"),
            
@@ -1092,8 +1099,8 @@ shinyUI(
     
         conditionalPanel(condition="input.Mode=='Evaluation'",
           column(12,style="height:15px"),          
-          conditionalPanel(condition="output.Plan==0",h4("STEP D: STATUS DETERMINATION")),
-          conditionalPanel(condition="output.Plan==1",h4("STEP D: STATUS DETERMINATION",style="color:green")),
+          conditionalPanel(condition="output.Plan==0",h4("STEP E: STATUS DETERMINATION")),
+          conditionalPanel(condition="output.Plan==1",h4("STEP E: STATUS DETERMINATION",style="color:green")),
        
           hr(),
 
@@ -1157,8 +1164,8 @@ shinyUI(
           
           column(12,style="height:15px"),
           
-          conditionalPanel(condition="output.Ind==0",h4("STEP E: AUXILIARY INDICATORS")),
-          conditionalPanel(condition="output.Ind==1",h4("STEP E: AUXILIARY INDICATORS",style="color:green")),
+          conditionalPanel(condition="output.Ind==0",h4("STEP F: AUXILIARY INDICATORS")),
+          conditionalPanel(condition="output.Ind==1",h4("STEP F: AUXILIARY INDICATORS",style="color:green")),
           
           hr(),
           
@@ -1215,6 +1222,7 @@ shinyUI(
         h4("RESULTS"),
         hr(),
 
+    
         fluidRow(
           column(1),
           column(11,
@@ -1254,9 +1262,9 @@ shinyUI(
                 )
 
               ),
-
-
-              column(10,
+              column(9,
+              div(style='height:500px; overflow-y: scroll', 
+             
               
                  conditionalPanel(condition="output.Plan==0&input.Mode=='Planning'",
                                   h5("Planning MSE not run yet (Step C)", style = "color:grey")
@@ -1391,13 +1399,12 @@ shinyUI(
                       ) # column
                     ) # fluid row
                   ) # conditional panel
-              )# column
+              )# end of scrollable window
+              )# 9 column
             ) # fluid row
           ) # column
       ), # end of Results
-
-    
-    
+     
      conditionalPanel(condition="input.Mode!='Risk Assessment'",
                       column(12,style="height:15px"),
       h4("HELP"),

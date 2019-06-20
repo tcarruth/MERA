@@ -86,6 +86,7 @@ shinyServer(function(input, output, session) {
   Ind<-reactiveVal(0)  # Have run Indicator (single MP)
   AdCalc<-reactiveVal(0) # Has advice been calculated
   Tweak<-reactiveVal(0)  # Have things affecting performance metrics been tweaked?
+  SkinNo<-reactiveVal(0)   # Skin selection
  
   output$Fpanel <- reactive({ Fpanel()})
   output$Mpanel <- reactive({ Mpanel()})
@@ -105,6 +106,8 @@ shinyServer(function(input, output, session) {
 
   output$AdCalc   <- reactive({ AdCalc()})
   output$Tweak    <- reactive({Tweak()})
+  
+  output$SkinNo     <- reactive({SkinNo()})
   
   outputOptions(output,"Fpanel",suspendWhenHidden=FALSE)
   outputOptions(output,"Mpanel",suspendWhenHidden=FALSE)
@@ -126,12 +129,14 @@ shinyServer(function(input, output, session) {
   outputOptions(output,"AdCalc",suspendWhenHidden=FALSE)
   outputOptions(output,"Tweak",suspendWhenHidden=FALSE)
   
+  outputOptions(output,"SkinNo",suspendWhenHidden=FALSE)
+  
   output$Fpanelout <- renderText({ paste("Fishery",Fpanel(),"/ 19")})
   output$Mpanelout <- renderText({ paste("Management",Mpanel(),"/ 7")})
   output$Dpanelout <- renderText({ paste("Data",Dpanel(),"/ 4")})
 
   # Update UI
-  output$Version<-renderText(paste0("method evaluation and risk assessment    MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
+  output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
   
   # Skins
   #Skins<<-new('list')
@@ -143,11 +148,12 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Skin,{
     temp<-input$Skin
     Skin<<-get(temp) 
+    SkinNo(match(temp,Skin_nams))
     updateTextAreaInput(session,"Debug1",value=temp)
   })# update MP selection in Evaluation
-  shinyjs::disable("Skin")
-  onevent("mouseenter", "Skin", shinyjs::enable("Skin"))
-  onevent("mouseleave", "Skin", shinyjs::disable("Skin"))
+  shinyjs::hide("Skin")
+  onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+  onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
  
   
   # Some useful things
