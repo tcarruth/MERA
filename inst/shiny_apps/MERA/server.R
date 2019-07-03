@@ -1095,7 +1095,14 @@ shinyServer(function(input, output, session) {
                      ntop=input$ntop,
                      inputnames=inputnames,
                      SessionID=SessionID,
-                     copyright=paste(Copyright,CurrentYr)
+                     copyright=paste(Copyright,CurrentYr),
+                     tabs=TRUE, 
+                     Pars=OM,
+                     plotPars=list(),
+                     its=NULL,
+                     nyears=OM@nyears,
+                     proyears=OM@proyears
+                       
       )
       incProgress(0.1)
       knitr::knit_meta(class=NULL, clean = TRUE) 
