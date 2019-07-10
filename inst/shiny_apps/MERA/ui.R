@@ -16,6 +16,14 @@ shinyUI(
     extendShinyjs(text = js_code, functions = 'browseURL'),
     useShinyalert(),
     tags$head(
+      # this should make the progress bar appear in the center of screen
+      # rather than bottom 
+      tags$style(".shiny-notification {position: fixed; 
+                                             opacity: 1 ;
+                       top: 35% ;
+                       left: 40% ;
+                       height: 50px;
+                       width: 300px}"),
       tags$style(type="text/css", ".recalculating {opacity: 1.0;}"),
       tags$style(HTML("hr {border-top: 1.4px solid #E3E1DE;}
                       h4 { font-size:15px;}
