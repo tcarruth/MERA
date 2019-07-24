@@ -16,14 +16,6 @@ shinyUI(
     extendShinyjs(text = js_code, functions = 'browseURL'),
     useShinyalert(),
     tags$head(
-      # this should make the progress bar appear in the center of screen
-      # rather than bottom 
-      tags$style(".shiny-notification {position: fixed; 
-                                             opacity: 1 ;
-                       top: 35% ;
-                       left: 40% ;
-                       height: 50px;
-                       width: 300px}"),
       tags$style(type="text/css", ".recalculating {opacity: 1.0;}"),
       tags$style(HTML("hr {border-top: 1.4px solid #E3E1DE;}
                       h4 { font-size:15px;}
@@ -1329,7 +1321,7 @@ shinyUI(
 
               ),
               column(9,
-              div(style='height:500px; overflow-y: scroll', 
+              div(style='height:1000px; overflow-y: scroll; width: 110%', 
              
               
                  conditionalPanel(condition="output.Plan==0&input.Mode=='Management Planning'",
@@ -1346,12 +1338,12 @@ shinyUI(
                         HTML("<br>"),
                        
                         h4(htmlOutput("P_Intro_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Intro_text")),
+                        htmlOutput("P_Intro_text"),
                        
-                        HTML("<br>"),
+                        # HTML("<br>"),
                         
                         h4(htmlOutput("P_Tab_1_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_1_text")),
+                        htmlOutput("P_Tab_1_text"),
                         DT::dataTableOutput('P_Tab_1'),
                         
                         #HTML("<br>"),
@@ -1363,7 +1355,7 @@ shinyUI(
                         #HTML("<br>"),
                        
                         h4(htmlOutput("P_Tab_2_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_2_text")),
+                        htmlOutput("P_Tab_2_text"),
                         DT::dataTableOutput('P_Tab_2'),
                         
                         #HTML("<br>"),
