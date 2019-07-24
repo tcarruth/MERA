@@ -100,7 +100,7 @@ if (pckVer >=5.4) {
 
 
 ```{r, echo=FALSE, results="asis"}
-if (packageVersion("DLMtool") >'5.3.1') {
+if (pckVer >=5.4) {
   cat(out)
 }
 ```
