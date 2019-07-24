@@ -147,7 +147,7 @@ shinyServer(function(input, output, session) {
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected="MSC")
   #for(i in 1:length(Skin_nams))Skins[[i]]<-get(Skin_nams[i])
   #Skin<- Skins[[1]] # MSC FAO
-  Skin<-MSC
+  # Skin<-MSC
   
   observe({
     query <- parseQueryString(session$clientData$url_search)
