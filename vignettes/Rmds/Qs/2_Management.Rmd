@@ -1,0 +1,54 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Management Questions 
+
+The Management panel is a set of questions about what fishery management options are available and how well management advice is followed.These questions: 
+
+* identify what management procedures are feasible given the types of management measures.
+* determine the relative success of various management procedures that provide different types of advice.
+
+### Types of fishery management that are possible
+
+Here you indicate which MPs are feasible given the management options that are available.
+Management procedures can provide management advice in terms of:
+
+* Total Allowable Catch limits (TACs, e.g. 20,000 metric tonnes).
+* Total Allowable Effort (TAE, e.g. 800 trap days per year).
+* Size limits (e.g. minimum size of 45cm).
+* Time-area closures (e.g. closing an area to fishing, an MPA or a Winter closure.
+
+For more information see the UN FAO [guide to fishery management types](http://www.fao.org/docrep/005/y3427e/y3427e06.htm). 
+
+Or alternatively, Steffanson and Rosenberg describe and discuss fishery managment types in their [2005 paper](https://drive.google.com/open?id=1V5aMNf3raitNC515qyFfITDivgbXkU4X). 
+
+### Implementation uncertainty: consistent overages/underages
+
+What is the possible extent to which fishing operations may exceed (overages) or fall short (underages) with respect to the specified Total Allowable Catch (TAC)and Effort (TAE)? For example, given a TAC of 1000 tonnes and a TAE of 2000 boat-days of fishing a 10% overage would on average lead to 1100 tonnes of fish taken and 2200 boat days of effort.
+
+The FAO provides a cursory introduction to uncertainties in fisheries management including implementation error [here](http://www.fao.org/docrep/003/v8400e/V8400E03.htm). 
+
+Fulton et al. provide a discussion of implementation error in their [2011 paper](https://drive.google.com/open?id=1gzTMnk3Cg3PzgxDdKAyV52T9IIptUK7h). 
+
+
+### Implementation uncertainty: variability
+
+In management question #2 you specified the range of possible overages/underages with respect to management recommendations. In this question you now also add the variability (V) in the implementation (TACs and TAEs) among years. For example if on average there are no overages or underages, V = 10% leads to overages/underages within 20% of the recommendation (the black line in the figure opposite) for 95% of cases. The colored lines show the minimum and maximum variability superimposed on the lowest (dashed line) and highest (solid line) levels of overages/underages specified in management question #2.
+
+The FAO provides a cursory introduction to uncertainties in fisheries management including implementation error [here](http://www.fao.org/docrep/003/v8400e/V8400E03.htm). 
+

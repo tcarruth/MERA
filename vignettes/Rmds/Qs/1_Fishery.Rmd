@@ -1,0 +1,105 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Fishery Questions 
+
+The Fishery panel is a set of questions about the characteristics of the fish population and its fishery.
+
+### Fishery description
+
+Describe the fishery you are modelling and identify yourself and the relevant management agency.
+
+### Longevity
+
+How long lived is the fish species? This is a critical input determining stock productivity. The parameter M is the instantaneous natural mortality rate. For a review of data-limited methods of estimating M see [Kenchington (2014)](http://onlinelibrary.wiley.com/doi/10.1111/faf.12027/abstract). 
+
+
+### Stock depletion
+
+Depletion D, refers to current spawning stock biomass relative to unfished.
+
+Since depletion is a data-rich quantity it may not be readily quantified and it may be necessary to specify a wide range of uncertainty for this input to identify MPs that are suitably robust.
+
+In a data-limited situation, coarse information regarding depletion may be obtained from examining length compositions, historical versus current catch rates, or by use of so-called Robin-Hood approaches.
+
+For further information see [Carruthers et al. (2014)](http://www.sciencedirect.com/science/article/pii/S0165783613003081) and [Punt et al (2011)](https://academic.oup.com/icesjms/article/68/5/972/653125/Among-stock-comparisons-for-improving-stock) 
+
+### Resilience
+
+How resilient to exploitation is the stock? This question controls recruitment compensation - the extent to which recruitment is reduced from unfished levels (R0) as the spawning stock becomes increasingly depleted below unfishe levels (SSB0). Here resilence is expressed in terms of steepness (h): the fraction of unfished recruitment at 1/5 unfished spawning biomass.
+
+For a useful review of compensatory density dependence in fish populations see [Rose et al. (2001)](http://hqczhzkgch48vzcc4czubj6v.wpengine.netdna-cdn.com/files/2012/07/Rose_etal_FishFisheries.pdf). 
+
+
+### Trend of historical exploitation
+
+What temporal pattern best describes the trend in historical exploitation rates (aka fishing mortality rates or F)? If more than one answer is given, historical fishing will be simulated subject to all trends in equal frequency. If it can be assumed that fishing effort is proportional to exploitation rate this can be summarized as historical patterns in fishing effort (e.g. boat-days per year, number of trips per year). This set of answers specified the possible range of mean trends, you will have an opportunity to adjust the extent of interannual variability in the following question.
+Here is a basic introduction to fishing effort and the assumption of proportionality courtesy of the [UN FAO](http://www.fao.org/docrep/x5685e/x5685e04.htm). 
+
+
+### Variability in historical exploitation
+
+The extent of interannual variability in historical exploitation rates around the mean trend(s) specified in Fishery question #5.
+Again, here is the introduction to effort and exploitation rate by the [UN FAO](http://www.fao.org/docrep/x5685e/x5685e04.htm).
+
+### Selectivity relative to length at maturity
+
+Fishing gear selectivity relative to size at maturity (S). For example, if 50% of 40cm fish are caught by the gear and length at 50% maturity is 50cm, S = 4/5.
+
+The UN FAO explain something of fishing gear selectivity and how it may be quantified in an [introductory document](http://www.fao.org/docrep/w5449e/w5449e08.htm). For a more involved discussion on selectivity see the [IATTC CAPAM workshop report](https://swfsc.noaa.gov/publications/CR/2013/2013Crone.pdf).
+
+
+### Selectivity of large fish
+
+Fishing gear selectivity of the largest individuals (SL). For example, if only 20% of the longest fish are caught by the gear SL = 0.2.
+Again here is the [FAO introductory document](http://www.fao.org/docrep/w5449e/w5449e08.htm) and the [IATTC CAPAM workshop report](https://swfsc.noaa.gov/publications/CR/2013/2013Crone.pdf).
+
+### Discard rate
+
+Discard rate (DR). What fraction of fish that are caught are discarded (includes fish that are dead and alive)?
+
+The US National Marine Fisheries Service have a [general guide to Understanding Fish Bycatch Discard and Escapee Mortality](https://www.afsc.noaa.gov/quarterly/jfm03/featurejfm03.pdf) and one of the authors of that guide, Michael Davis also has a useful article: [Key principles for understanding fish bycatch discard mortality](https://swfsc.noaa.gov/publications/CR/2013/2013Crone.pdf). 
+
+### Post-release mortality rate
+Post-release mortality rate (PRM). What fraction of discarded fish die after release?
+
+Again here is NOAA's [general guide to Understanding Fish Bycatch Discard and Escapee Mortality](https://www.afsc.noaa.gov/quarterly/jfm03/featurejfm03.pdf) and one of the authors and the article fo Michael Davis: [Key principles for understanding fish bycatch discard mortality](https://swfsc.noaa.gov/publications/CR/2013/2013Crone.pdf).  
+
+### Recruitment variability
+
+Interannual variability in recruitment (the coefficient of variation in log-normal recruitment deviations, sigma R). Recruitment is expected to change among years in response to changing spawning biomass levels. On top of this is additional variability that may be driven by many factors including varying ocean conditions, amount of spawning habitat, food availability and predation. Sigma R controls the extent of this additional variability in annual recruitments. For example, a sigma R of 10% means that 95% of recruitments will fall in approximately 80-120% of the mean recruitment predicted from spawning biomass.
+
+Edward Houde authored a [Comprehensive Review of Recruitment and Sources of Variability](https://drive.google.com/open?id=19q_ct4Xd954H2jjotX3YKy0BJ-v53bt2) and if that isn't sufficient there is [Chambers and Trippel (1997)](https://drive.google.com/open?id=1KhwP5URGPzW6ViJPiwprfY2tE2uucpDR). 
+
+### Changing fishing efficiency
+
+The annual % increase/decrease in fishing efficiency (q). In targetted fisheries gear efficiency may improve over time given techological improvements in the gear, bait, fish location, sharing of information etc. Conversely, non-target or bycatch species may be subject to declining fishing efficiency due to regulations or avoidance behaviors. The catchability q is the fraction of available fish caught per unit of effort. For example, a 2% per annum increase in fishing efficiency means that after 35 years twice as many fish will be caught for the same effort as today.
+
+The introduction to fishing efficiency by the FAO provides a [basic summary](http://www.fao.org/docrep/008/y6982e/y6982e06.htm). Alternatively there is a more comprehensive review by [Arrenguin-Sanchez](https://drive.google.com/open?id=1ZrHbhotCJ5Vjw4JNloUSY94BVoM0iyfI). 
+
+### Size of potential / existing marine reserve
+
+The size of a potential or existing spatial closure (Marine Reserve). The size A is the % of habitat that is protected.
+
+The FAO provides a [comprehensive review of Marine Protected Areas](http://www.fao.org/docrep/015/i2090e/i2090e.pdf). 
+
+### Spatial mixing (movement)
+
+The degree of stock mixing. The probability P of a fish leaving area 1 (ie. the MPA) between years
+
+The FAO provides a [comprehensive review of Marine Protected Areas](http://www.fao.org/docrep/015/i2090e/i2090e.pdf). 

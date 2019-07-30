@@ -30,7 +30,7 @@ BMSYproj<-function(MSEobj,MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.
   Blims <- c(0,quantile(B_BMSY,0.95))
 
   for(i in 1:nMPs){
-    plot(range(yrs),Blims,col="white")
+    plot(range(yrs),Blims,col="white",yaxs="i")
     plotquant(B_BMSY[,i,],p=quants,yrs,qcol,lcol,ablines=c(0.5,1))
     mtext(MSEobj@MPs[i],3,line=0.2,font=2,col=MPcols[i])
     

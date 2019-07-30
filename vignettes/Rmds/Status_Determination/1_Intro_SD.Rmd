@@ -1,0 +1,22 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Background to risk assessment  
+
+The risk assessment use-case is the simplest of the four options and directly takes the operating model generated from the questionnaire to project four management scenarios: status quo catches (e.g. tonnes of fish), status quo fishing effort (e.g. days of fishing), ‘optimal’ fishing mortality rate commensurate with maximum sustainable yield (FMSY) and zero catches. The output from this analysis is a summary of biological risk (Figure 3) over projected years.  
+
