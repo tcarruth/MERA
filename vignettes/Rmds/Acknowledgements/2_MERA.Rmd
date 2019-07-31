@@ -1,0 +1,22 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## MERA
+
+MERA benefits from the ongoing support of the Packard Foundation, the Marine Stewardship Council, the Natural Resources Defense Council and the United Nations Food and Agricultural Organization. 
+

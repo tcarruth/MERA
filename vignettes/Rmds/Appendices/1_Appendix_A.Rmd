@@ -1,0 +1,64 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Appendix A
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+SecInd<-"App"
+FigInd<-0
+TabInd<-0
+```
+
+
+This Appendix details the parameter mappings of the various answers of the MERA questionnaire.
+
+```{r, include=FALSE}
+TabInd<-TabInd+1
+```
+
+Table `r paste(SecInd,TabInd,sep=".")`. The operating model parameter mapping of the answers for the various fishery questions.
+
+<img src="./Images/Fishery_Qs.jpg" width="550">
+
+<br />
+
+
+```{r, include=FALSE}
+TabInd<-TabInd+1
+```
+
+Table `r paste(SecInd,TabInd,sep=".")`. The operating model parameter mapping of the answers for the various management questions.
+
+<img src="./Images/Management_Qs.jpg" width="550">
+
+
+<br />
+
+```{r, include=FALSE}
+TabInd<-TabInd+1
+```
+
+Table `r paste(SecInd,TabInd,sep=".")`. The operating model parameter mapping of the answers for the various data questions.
+
+<img src="./Images/Data_Qs.jpg" width="550">
+
+
+
+<br />
+

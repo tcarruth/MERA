@@ -560,7 +560,7 @@ shinyUI(
                           column(7,plotOutput("plotIB",height=280)),
                           column(5,
                                  h5("What is the possible extent to which fishing operations may exceed (overages) or fall short (underages)
-                                     of the specified Total Allowable Catch (TAC). For example, given a TAC of 1000 tonnes a 10% offset (overage) would on average lead to 1100 tonnes of fish taken.",style = "color:grey"),
+                                     of the specified Total Allowable Catch (TAC)? For example, given a TAC of 1000 tonnes a 10% offset (overage) would on average lead to 1100 tonnes of fish taken.",style = "color:grey"),
                                  h5(""),
                                  h5("The FAO provides a cursory introduction to uncertainties in fisheries management including implementation error ",a("here.", href="http://www.fao.org/docrep/003/v8400e/V8400E03.htm", target="_blank"),style = "color:grey"),
                                  h5(""),
@@ -617,7 +617,7 @@ shinyUI(
                          column(7,plotOutput("plotIV_SL",height=280)),
                          column(5,
                                 h5("In the previous question you specified the range of possible mean violations of a minimum size limit.
-                                   In this question you add variability (V) in size limit implementation among years. For example a size limit of 90cm is exceeded by an average of 10cm, a value of 5% leads to minimum catch sizes of between 90cm and 110cm (the black line in the figure opposite)
+                                   In this question you add variability (V) in size limit implementation among years. For example, a size limit of 90cm is exceeded by an average of 10cm, a value of 5% leads to minimum catch sizes of between 90cm and 110cm (the black line in the figure opposite)
                                    for 95% of cases. The colored lines show the minimum and maximum variability superimposed on the lowest (dashed line) and highest
                                    (solid line) offset in size limit specified in the previous question.",style = "color:grey"),
                                               h5(""),

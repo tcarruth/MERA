@@ -18,7 +18,7 @@ output:
 
 ## How to use MERA 
 
-MERA has two inputs: a mandatory quantitative questionnaire and optionally, a standardized format for fishery data (Figure 1). The questionnaire contains a total of 30 questions, 19 regarding the fishery dynamics, 7 questions about the management system and a further 4 about the types and quality of data that are available (see Section 2 for details on all questions). 
+MERA has two inputs: a mandatory quantitative questionnaire and optionally, a standardized format for fishery data (Figure `r paste(SecInd,FigInd+1,sep=".")`). The questionnaire contains a total of 30 questions, 19 regarding the fishery dynamics, 7 questions about the management system and a further 4 about the types and quality of data that are available (see Section 2 for details on all questions). 
 
 Once completing the questionnaire users must select from four use cases: 
 
@@ -34,7 +34,7 @@ The first three use the quantitative questionnaire to construct an operating mod
 
 <br />
 
-<img src="./Images/MERA Diagram.jpg" width="650">
+<img src="./Images/MERA Diagram.jpg" width="580">
 
 ```{r figplus, include=FALSE}
 

@@ -23,6 +23,8 @@ The Management panel is a set of questions about what fishery management options
 * identify what management procedures are feasible given the types of management measures.
 * determine the relative success of various management procedures that provide different types of advice.
 
+The operating model parameter mappings of each answer are provided in Appendix Table A.2.
+
 ### Types of fishery management that are possible
 
 Here you indicate which MPs are feasible given the management options that are available.
@@ -37,18 +39,112 @@ For more information see the UN FAO [guide to fishery management types](http://w
 
 Or alternatively, Steffanson and Rosenberg describe and discuss fishery managment types in their [2005 paper](https://drive.google.com/open?id=1V5aMNf3raitNC515qyFfITDivgbXkU4X). 
 
-### Implementation uncertainty: consistent overages/underages
 
-What is the possible extent to which fishing operations may exceed (overages) or fall short (underages) with respect to the specified Total Allowable Catch (TAC)and Effort (TAE)? For example, given a TAC of 1000 tonnes and a TAE of 2000 boat-days of fishing a 10% overage would on average lead to 1100 tonnes of fish taken and 2200 boat days of effort.
+### TAC offset 
+
+The possible extent to which fishing operations may exceed (overages) or fall short (underages) of the specified Total Allowable Catch (TAC)? For example, given a TAC of 1000 tonnes a 10% offset (overage) would on average lead to 1100 tonnes of fish taken.,
 
 The FAO provides a cursory introduction to uncertainties in fisheries management including implementation error [here](http://www.fao.org/docrep/003/v8400e/V8400E03.htm). 
 
 Fulton et al. provide a discussion of implementation error in their [2011 paper](https://drive.google.com/open?id=1gzTMnk3Cg3PzgxDdKAyV52T9IIptUK7h). 
 
 
-### Implementation uncertainty: variability
+```{r Qs_M2, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotIB()
 
-In management question #2 you specified the range of possible overages/underages with respect to management recommendations. In this question you now also add the variability (V) in the implementation (TACs and TAEs) among years. For example if on average there are no overages or underages, V = 10% leads to overages/underages within 20% of the recommendation (the black line in the figure opposite) for 95% of cases. The colored lines show the minimum and maximum variability superimposed on the lowest (dashed line) and highest (solid line) levels of overages/underages specified in management question #2.
+```
 
-The FAO provides a cursory introduction to uncertainties in fisheries management including implementation error [here](http://www.fao.org/docrep/003/v8400e/V8400E03.htm). 
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified TAC offset.  
+
+
+### TAC implementation variability
+
+In the previous question you specified the range of the possible TAC offset (mean overage or underage).In this question you add the variability (V) in the implementation of TACs among years. 
+
+For example, if on average thereis no TAC offset, a V of 10% leads to annual overages/underages within 20% of the annual TAC recommendation (the black line in the figure opposite) for 95% of cases. 
+
+The colored lines show the minimum and maximum variability superimposed on the lowest (dashed line) and highest (solid line) levels of overages/underages specified in the previous question.
+
+```{r Qs_M3, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotIV()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified TAC implementation variability.   
+
+
+### TAE offset
+
+What is the possible extent to which fishing operations may exceed (overages) or fall short (underages) of the specified Total Allowable Effort (TAE)? 
+
+For example, given a TAE of 2000 boat-days of fishing a 10% overage would on average lead to 2200 boat days of effort.
+
+Note: you have the option of selecting MATCH TAC IMPLEMENTATION and mimicking the TAC offset (e.g. assuming that if more than the TAC is taken due to lack of enforcement there would be a similar discrepancy between recommended and implemented TAE)
+
+```{r Qs_M4, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotIV_E()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified TAE offset.   
+
+
+### TAE implementation variability
+
+In the previous question you specified the range of possible TAE offset (mean overages/underages). In this question you add the variability (V) in the implementation of TAEs among years. 
+
+For example, if on average there is no TAE offset, a V of 20% leads to annual TAE overages/underages within 40% of the annual TAE recommendation (the black line in the figure opposite) for 95% of cases. 
+
+The colored lines show the minimum and maximum variability superimposed on the lowest (dashed line) and highest (solid line) levels of overages/underages specified in the previous question.
+
+As with the offset, you have the option of matching the TAC implementation variability.
+
+```{r Qs_M5, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotIV_E()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified TAE implementation variability   
+
+
+### Size limit offset
+
+What is the possible extent to which fishing operations may exceed (catch larger) or fall short (catch smaller) fish than the specified minimum size limit? For example, given a size limit of 20cm (e.g. escape hole size of a trap), a value of 20% would lead to a mean minimum size in the catch of 24cm.
+
+Note that if you match TAC implementation variability this will be inverted for size limits (going under the minimum size limit is assumed equivalent to going over the TAC).
+
+
+```{r Qs_M6, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotIB_SL()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified size-limit offset  
+
+
+
+### Size limit implementation variability
+
+In the previous question you specified the range of possible mean violations of a minimum size limit. In this question you add variability (V) in size limit implementation among years. 
+
+For example, a size limit of 90cm is exceeded by an average of 10cm, a value of 5% leads to minimum catch sizes of between 90cm and 110cm (the black line in the figure opposite) for 95% of cases. The colored lines show the minimum and maximum variability superimposed on the lowest (dashed line) and highest (solid line) offset in size limit specified in the previous question.
+
+
+```{r Qs_M7, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotIV_SL()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified size-limit implementation variability   
+
+
+
+
+
 

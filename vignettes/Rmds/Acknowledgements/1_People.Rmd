@@ -1,0 +1,23 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Collaborators
+
+MERA has benefitted greatly by the feedback and oversight of many people. Particular thanks to Katie Longo, Keith Sainsbury, Tony Smith, Sandy Morison, Kevin Stokes and Dave Newman for their careful feedback and guidance throughout software testing. 
+
+Thanks to Carlos Montero, Ricky Amoroso, Abdul ben Hasan, Roberto Licandeo and Brett van Poorten for their feedback during the testing phase. 

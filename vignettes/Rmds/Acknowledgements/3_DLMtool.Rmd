@@ -1,0 +1,22 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## DLMtool and MSEtool
+
+Many thanks for the ongoing support of the Natural Resources Defense Council, and in particular DLMtool team members David Newman and Lisa Suatoni who have provided input at every stage. The development of DLMtool has been funded by the Gordon and Betty Moore Foundation, the Packard Foundation, Fisheries and Oceans Canada, the Walton Foundation, Resources Legacy Fund, the Natural Resources Defense Council, the United Nations Food and Agricultural Organization and the California Department of Fish and Wildlife. 
+

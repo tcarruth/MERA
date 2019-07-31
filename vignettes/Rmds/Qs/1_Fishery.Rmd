@@ -18,7 +18,7 @@ output:
 
 ## Fishery Questions 
 
-The Fishery panel is a set of questions about the characteristics of the fish population and its fishery.
+The Fishery panel is a set of questions about the characteristics of the fish population and its fishery. The operating model parameter mappings of each answer are provided in Appendix Table A.1
 
 ### Fishery description
 
@@ -30,9 +30,18 @@ The text input box provides a place for you to document important qualitative as
 
 1. The history and current status of the fishery, including fleets, sectors, vessel types and practices/gear by vessel type, landing ports, economics/markets, whether targeted/bycatch, other stocks caught in the fishery.
 
-2. The stockâs ecosystem functions, dependencies, and habitat types.
+2. The stock's ecosystem functions, dependencies, and habitat types.
 
 3. Any relevant reference materials and supporting documents, such as stocks assessments, research, and other analyses.
+
+
+```{r, include=FALSE}
+FigInd<-FigInd+1
+```
+
+<img src="./Images/Fishery_Q1.jpg" width="350">
+
+Figure `r paste(SecInd,FigInd,sep=".")`. The fields of the fishery description question.
 
 
 
@@ -47,8 +56,7 @@ plotM()
 
 ```
 
-Figure `r paste(SecInd,FigInd,sep=".")`. Longevity expressed as 'maximum age' and the instantaneous natural mortality rate M.  
-
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified longevity expressed as 'maximum age' and the instantaneous natural mortality rate M.  
 
 
 
@@ -70,7 +78,7 @@ plotD()
 
 ```
 
-Figure `r paste(SecInd,FigInd,sep=".")`. Stock depletion - current spawnign stock biomass relative to 'unfished' levels.  
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified stock depletion - current spawnign stock biomass relative to 'unfished' levels.  
 
 
 ### Resilience
@@ -86,35 +94,108 @@ ploth()
 
 ```
 
-Figure `r paste(SecInd,FigInd,sep=".")`. Stock resilience expressed as steepness: the fraction of unfished recruitment expected to occur at 1/5 unfishned spawning stock levels.
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified recruitment compensation (resilience) expressed as steepness: the fraction of unfished recruitment expected to occur at 1/5 unfishned spawning stock levels.
 
 
-### Trend of historical exploitation
+### Historical effort pattern
 
-What temporal pattern best describes the trend in historical exploitation rates (aka fishing mortality rates or F)? If more than one answer is given, historical fishing will be simulated subject to all trends in equal frequency. If it can be assumed that fishing effort is proportional to exploitation rate this can be summarized as historical patterns in fishing effort (e.g. boat-days per year, number of trips per year). This set of answers specified the possible range of mean trends, you will have an opportunity to adjust the extent of interannual variability in the following question.
-Here is a basic introduction to fishing effort and the assumption of proportionality courtesy of the [UN FAO](http://www.fao.org/docrep/x5685e/x5685e04.htm). 
+What temporal pattern best describes the trend in historical annual fishing effort (e.g. boat-days per year, number of trips per year)?
+
+If more than one answer is given, historical fishing will be simulated subject to all trends in equal frequency
+
+If a very specific pattern of effort is required, you can use the sliders to warp the effort patterns.
+
+This question specifies the possible range of mean trends, you will have an opportunity to adjust the extent of inter-annual variability and changes in fishing efficiency (catchability) in the following questions.
+
+Here is an introduction to fishing effort courtesy of the [UN FAO.](http://www.fao.org/docrep/x5685e/x5685e04.htm)
+            
 
 
 ```{r Qs_F5, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotFP()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified historical trend in fishing effort. 
+
+
+### Inter-annual variability in historical effort
+
+The extent of interannual variability in historical exploitation rates around the mean trend(s) specified in Fishery question #5. Again, here is the introduction to effort and exploitation rate by the [UN FAO.](http://www.fao.org/docrep/x5685e/x5685e04.htm).
+
+```{r Qs_F6, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
 FigInd<-FigInd+1
 plotF()
 
 ```
 
-Figure `r paste(SecInd,FigInd,sep=".")`. Historical trend in fishery exploitation rate. 
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified historical trend in fishing effort rate subject to additional inter-annual variability. 
 
 
+### Historical fishing efficiency changes
 
-### Variability in historical exploitation
+The annual percentage increase or decrease in historical fishing efficiency. In targeted fisheries gear efficiency may improve over time given techological improvements in the gear, changes in fishing behavior, fish distribution and information sharing among fishers, among other things. Conversely, non-target or bycatch species may be subject to declining fishing efficiency due to regulations or avoidance behaviors. The catchability (q) is the fraction of available fish caught per unit of effort. For example, a 2% per annum increase in fishing efficiency means that after 35 years twice as many fish will be caught for the same effort as today.
 
-The extent of interannual variability in historical exploitation rates around the mean trend(s) specified in Fishery question #5.
-Again, here is the introduction to effort and exploitation rate by the [UN FAO](http://www.fao.org/docrep/x5685e/x5685e04.htm).
+The introduction to fishing efficiency by the FAO provides a [basic summary](http://www.fao.org/docrep/008/y6982e/y6982e06.htm) and [Arrenguin-Sanchez](https://drive.google.com/open?id=1ZrHbhotCJ5Vjw4JNloUSY94BVoM0iyfI) provide a more comprehensive review of catchability.
+           
 
-### Selectivity relative to length at maturity
+```{r Qs_F7, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotqh()
 
-Fishing gear selectivity relative to size at maturity (S). For example, if 50% of 40cm fish are caught by the gear and length at 50% maturity is 50cm, S = 4/5.
+```
 
-The UN FAO explain something of fishing gear selectivity and how it may be quantified in an [introductory document](http://www.fao.org/docrep/w5449e/w5449e08.htm). For a more involved discussion on selectivity see the [IATTC CAPAM workshop report](https://swfsc.noaa.gov/publications/CR/2013/2013Crone.pdf).
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified historical fishing efficiency changes. 
+
+### Future fishing efficiency changes
+
+This is similar to the previous question but determines the future relationship between fishing mortality rate and effort. This is a principal driver determining the performance differential of management procedures that set catch (TAC) versus effort advice (TAE). 
+                            
+
+```{r Qs_F8, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotq()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified future fishing efficiency changes. 
+
+
+### Length at maturity
+
+Size a maturity relative to asymptotic length (LM).
+
+Note 1: 'maturity' as used by this model (and most fish population dynamics models) is not really whether a fish has fully developed gonads, but rather the fraction of maximum spawning potential per weight. For example, some fishes mature early, but at small sizes they spawn infrequently and their recruits have poor survival (low spawning fraction).
+
+Note 2: asymptotic length is not the maximum length observed but rather the mean expected size of fish at their maximum age under unfished conditions
+
+An ICES workshop report provides [an overview of maturity estimation](http://www.ices.dk/sites/pub/Publication%20Reports/Expert%20Group%20Report/acom/2008/WKMOG/WKMOG08.pdf)
+  
+
+
+```{r Qs_F9, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotLM()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified maturity at length, relative to asymptotic length. 
+
+
+### Selectivity of small fish
+
+Fishing gear selectivity relative to asymptotic length (S) (ascending limb selectivity). For example, if 50% of 40cm fish are caught and maximum length is 100cm, S = 0.4.
+
+The UN FAO provides an [introduction to gear selectivity and how it may be quantified](http://www.fao.org/docrep/w5449e/w5449e08.htm). For a more involved discussion on selectivity see the  [IATTC CAPAM workshop report](https://swfsc.noaa.gov/publications/CR/2013/2013Crone.pdf)
+
+```{r Qs_F10, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotsel()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified selectivity at length (relative to asymptotic length) for the ascending (smaller fish) limb of the curve. 
 
 
 ### Selectivity of large fish
@@ -122,16 +203,48 @@ The UN FAO explain something of fishing gear selectivity and how it may be quant
 Fishing gear selectivity of the largest individuals (SL). For example, if only 20% of the longest fish are caught by the gear SL = 0.2.
 Again here is the [FAO introductory document](http://www.fao.org/docrep/w5449e/w5449e08.htm) and the [IATTC CAPAM workshop report](https://swfsc.noaa.gov/publications/CR/2013/2013Crone.pdf).
 
+
+```{r Qs_F11, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotdome()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified selectivity at length (relative to asymptotic length) for the descending (larger fish) limb of the curve. 
+
+
 ### Discard rate
 
-Discard rate (DR). What fraction of fish that are caught are discarded (includes fish that are dead and alive)?
+Discard rate: what fraction of fish that are caught are discarded (includes fish that are dead and alive)?
 
 The US National Marine Fisheries Service have a [general guide to Understanding Fish Bycatch Discard and Escapee Mortality](https://www.afsc.noaa.gov/quarterly/jfm03/featurejfm03.pdf) and one of the authors of that guide, Michael Davis also has a useful article: [Key principles for understanding fish bycatch discard mortality](https://swfsc.noaa.gov/publications/CR/2013/2013Crone.pdf). 
+
+
+
+```{r Qs_F12, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotDR()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified discarding rate (fraction of fish caught that are released). 
+
+
 
 ### Post-release mortality rate
 Post-release mortality rate (PRM). What fraction of discarded fish die after release?
 
 Again here is NOAA's [general guide to Understanding Fish Bycatch Discard and Escapee Mortality](https://www.afsc.noaa.gov/quarterly/jfm03/featurejfm03.pdf) and one of the authors and the article fo Michael Davis: [Key principles for understanding fish bycatch discard mortality](https://swfsc.noaa.gov/publications/CR/2013/2013Crone.pdf).  
+
+
+```{r Qs_F13, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotPRM()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified post-release mortality rate (fraction of fish that are discarded that subsequently die due to capture). 
+
 
 ### Recruitment variability
 
@@ -139,20 +252,93 @@ Interannual variability in recruitment (the coefficient of variation in log-norm
 
 Edward Houde authored a [Comprehensive Review of Recruitment and Sources of Variability](https://drive.google.com/open?id=19q_ct4Xd954H2jjotX3YKy0BJ-v53bt2) and if that isn't sufficient there is [Chambers and Trippel (1997)](https://drive.google.com/open?id=1KhwP5URGPzW6ViJPiwprfY2tE2uucpDR). 
 
-### Changing fishing efficiency
 
-The annual % increase/decrease in fishing efficiency (q). In targetted fisheries gear efficiency may improve over time given techological improvements in the gear, bait, fish location, sharing of information etc. Conversely, non-target or bycatch species may be subject to declining fishing efficiency due to regulations or avoidance behaviors. The catchability q is the fraction of available fish caught per unit of effort. For example, a 2% per annum increase in fishing efficiency means that after 35 years twice as many fish will be caught for the same effort as today.
+```{r Qs_F14, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotsigR()
 
-The introduction to fishing efficiency by the FAO provides a [basic summary](http://www.fao.org/docrep/008/y6982e/y6982e06.htm). Alternatively there is a more comprehensive review by [Arrenguin-Sanchez](https://drive.google.com/open?id=1ZrHbhotCJ5Vjw4JNloUSY94BVoM0iyfI). 
+```
 
-### Size of potential / existing marine reserve
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified annual recruitment variability expressed as a log-normal standard deviation.  
 
-The size of a potential or existing spatial closure (Marine Reserve). The size A is the % of habitat that is protected.
 
-The FAO provides a [comprehensive review of Marine Protected Areas](http://www.fao.org/docrep/015/i2090e/i2090e.pdf). 
+### Size of existing spatial closures
 
-### Spatial mixing (movement)
-
-The degree of stock mixing. The probability P of a fish leaving area 1 (ie. the MPA) between years
+The size of a existing spatial closure (e.g. Marine Protected Area, MPA). The size A, is the % of habitat that is protected (the same fraction closed is applied to the habitats of all life stages, for example spawning and rearing grounds.
 
 The FAO provides a [comprehensive review of Marine Protected Areas](http://www.fao.org/docrep/015/i2090e/i2090e.pdf). 
+
+
+```{r Qs_F15, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotAh()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified historical spatial closure.  
+
+
+### Spatial mixing in/out of existing spatial closures 
+
+The degree of stock mixing in/out of existing spatial closure. The degree of the spatial mixing of the fish stock is represented as the probability (P) of a fish leaving the spatial closure (i.e. the marine protected area, MPA) between years
+                     
+
+```{r Qs_F16, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotVh()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified mixing among existing open/closed areas.  
+
+### Size of existing spatial closures
+
+The size of a hypothetical future spatial closure (e.g. Marine Protected Area, MPA). The size A, is the % of habitat that is protected (the same fraction closed is applied to the habitats of all life stages, for example spawning and rearing grounds. This question addresses a possible future MPA allowing for the testing of MPs that use this closed area. 
+
+
+```{r Qs_F17, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotA()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified hypothetical future spatial closure.  
+
+
+### Spatial mixing in/out of existing spatial closures 
+
+The degree of stock mixing in/out of the future hypothetical spatial closure. The degree of the spatial mixing of the fish stock is represented as the probability (P) of a fish leaving the spatial closure (i.e. the marine protected area, MPA) between years
+                     
+
+```{r Qs_F18, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotV()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified mixing among future hypothetical open/closed areas.  
+
+### Initial stock depletion
+
+Initial depletion of the stock relative to asymptotic unfished levels (D1: spawning stock biomass in year 1 relative to equilibrium unfished conditions).
+
+Many fisheries undertake large fluctuations in productivity. In some of these cases, a fishery may have began at a time when the stock was naturally low. This question provides an opportunity to specify this initial depletion. The default however is that the stock was at asymptotic unfished levels in the first year of the fishery
+
+
+```{r Qs_F19, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotDh()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified initial stock depletion (spawning stock biomass relative to unfished levels at the start of the historical simulated time period)       
+
+
+
+
+
+
+
+
+
+

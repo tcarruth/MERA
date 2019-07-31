@@ -78,7 +78,11 @@ rmd.files <- c("Rmds/Introductory/Intro_M.Rmd",
                "Rmds/Risk_Assessment/Risk_Assessment_M.Rmd",
                "Rmds/Management_Planning/Management_Planning_M.Rmd",
                "Rmds/Management_Performance/Management_Performance_M.Rmd",
-               "Rmds/Status_Determination/Status_Determination_M.Rmd")
+               "Rmds/Status_Determination/Status_Determination_M.Rmd",
+               "Rmds/Support/Support_M.Rmd",
+               "Rmds/Acknowledgements/Acknowledgements_M.Rmd",
+               "Rmds/References/References_M.Rmd",
+               "Rmds/Appendices/Appendices_M.Rmd")
 
 out <- NULL
 for (rmd in rmd.files) {

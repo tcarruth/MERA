@@ -16,7 +16,7 @@ output:
 
 <br />
 
-## The scientific background to MERA 
+## Background to MERA 
 
 
 ### The need for informed management

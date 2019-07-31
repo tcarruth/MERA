@@ -298,7 +298,11 @@ plotFP <-function(dummy=1){
   FP_nams<-unlist(FP_list)#c("FP_s", "FP_gr","FP_bb","FP_gi","FP_ri","FP_rd")
 
   suppressWarnings({ny<-as.numeric(input$nyears)})
-  if(is.na(ny))ny<-68
+  if(length(ny)==0){
+    ny<-68
+  }else if(is.na(ny)){
+    ny<-68
+  }
   yrs<-Current_Year-(ny:1)
 
   trends<-array(NA,c(6,ny))
@@ -427,7 +431,11 @@ plotqh <- function(dummy=1){
   if(sum(cond)>0){
 
     suppressWarnings({ny<-as.numeric(input$nyears)})
-    if(is.na(ny))ny<-68
+    if(length(ny)==0){
+      ny<-68
+    }else if(is.na(ny)){
+      ny<-68
+    }
     #ny<-50
     yrs<-Current_Year-(ny:1)
     #yrs<-2018-(ny:1)
@@ -1077,7 +1085,11 @@ plotDh <- function(dummy=1){
   condh<-Dh_nams%in%input$Dh
 
   suppressWarnings({ny<-as.numeric(input$nyears)})
-  if(is.na(ny))ny<-68
+  if(length(ny)==0){
+    ny<-68
+  }else if(is.na(ny)){
+    ny<-68
+  }
 
   if(sum(cond)>0){
     par(mfrow=c(1,2),mai=c(0.3,0.5,0.01,0.01), omi=c(0.4,0.18,0.55,0.1),cex.main = 1.5, cex.lab=1.35 )
@@ -1093,12 +1105,9 @@ plotDh <- function(dummy=1){
     ts1<-ts1/mean(ts1[1:5])
     ts1<-ts1*seq(1/ts1[1],1/ts1[ny],length.out=ny)
 
-
     ts2<-(2+(cos(((ny)+(1:ny))/(ny/16))/3))*exp(rnorm(ny,0,0.1))
     ts2<-ts2/mean(ts2[1:5])
     ts2<-ts2*seq(1/ts2[1],1/ts2[ny],length.out=ny)
-
-
 
     # plot TS1
     yrs<-Current_Year-(ny:1)
@@ -1138,9 +1147,6 @@ plotDh <- function(dummy=1){
     polygon(c(yrs,yrs[ny:1]),c(LB,UB[ny:1]),border=fcol,col=fcol)
 
     mtext("Example 2",3,line=0.8)
-    #text(mina+(maxa-mina)/2,0.95," Range max age ",col='orange')
-    #text(mina+(maxa-mina)/2,0.88,paste(round(mina,1), "-",round(maxa,1)),col='orange')
-    #text(mina+(maxa-mina)/2,0.81,paste(M_max, "> M >",M_min),col='orange')
     mtext("Historical Year",1,line=1,outer=T)
     mtext("Spawn. bio. relative to unfished",2,line=0,outer=T)
 

@@ -1,0 +1,62 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+Agnew D.J., Pearce J., Pramod G., Peatman T., Watson R., Beddington J.R., et al. 2009 Estimating the Worldwide Extent of Illegal Fishing. PLoS ONE 4(2): e4570. https://doi.org/10.1371/journal.pone.0004570
+
+Anon. 2018. Report of the 2018 joint tuna RFMO management strategy evaluation working group meeting. Seattle. 24 pp. Available at http://www.tuna-org.org/Documents/tRFMO_MSE_2018_TEXT_final.pdf [accessed June 2019]
+
+Butterworth, D. S., & Punt, A. E. 1999. Experiences in the evaluation and implementation of management procedures. ICES Journal of Marine Science, 56(6), 985–998. https://doi.org/10.1006/jmsc.1999.0532
+
+EDF. 2019. FISHE: Framework for Integrated Stock and Habitat Evaluation. Environmental Defense Fund. Available at: http://fishe.edf.org/ [accessed June 2019]
+
+Fletcher WJ. The application of qualitative risk assessment methodology to prioritize issues for fisheries management. ICES J Mar Sci. 2005;62(8):1576–87.
+
+Hobday AJ, Smith A, Webb H, Daley R, Wayte S, Bulman C, et al. 2007. Ecological Risk Assessment for Effects of Fishing: Methodology. Australian Fisheries Management Authority R04/1072. Canberra.
+
+Hobday AJ, Smith ADM, Stobutzki IC, Bulman C, Daley R, Dambacher JM, et al. 2011. Ecological risk assessment for the effects of fishing. Fish Res.108(2–3):372–84.
+
+Holling, C.S. 1978. Adaptive Environmental Assessment and Management. John Wiley and Sons, Chichester, UK.
+
+Kronlund, A.R., Holt, K.R., Cleary, J.S., Shelton, P.A. 2013. Current approaches for the provision of scientific advice on the precautionary approach for Canadian fish stocks: Sections 8 – Management Strategy Evaluation. Canadian Science Advisory Secretariat. Research Document - 2013/081. Available at: http://www.dfo-mpo.gc.ca/csas-sccs/publications/resdocs-docrech/2013/2013_081-eng.html [accessed July 2019]
+
+CDFW. 2018. Master plan for fisheries: a guide for implementation of the Marine Life Management Act. California Department of Fish & Wildlife. Available from: https://nrm.dfg.ca.gov/FileHandler.ashx?DocumentID=159222&inline [accessed July 2019]
+
+MERA. 2019. Version XXX. Available at: MERA.netlify.xxx [accessed July 2019]
+
+NOAA. 2019. Integrated Ecosystem Assessment, U.S. National Oceanic and Atmospheric Administration. Available at: https://www.integratedecosystemassessment.noaa.gov/publications [accessed June 2019]
+
+Pitcher, T.J.  1999. Rapfish, A Rapid Appraisal Technique For Fisheries, And Its Application To The Code Of Conduct For Responsible Fisheries. FAO Fisheries Circular No. FIRM/C: No. 947: 47pp
+
+Punt, A.E., Butterworth, D.S., de Moor, C.L., De Oliveira, J.A.A. & Haddon, M. 2016. Management strategy evaluation: best practices. Fish and Fisheries, 17, 303–334, http://dx.doi.org/10.1111/faf.12104.
+
+Rochet, M-J. & Rice, J.C. 2009. Simulation-based management strategy evaluation: ignorance disguised as mathematics? ICES Journal of Marine Science. 66:754-762.
+
+Rouyer, T., Fromentin, J.-M., Ménard, F., Cazelles, B., Briand, K., Pianet, R., et al. 2008. Complex interplays among population dynamics, environmental forcing, and exploitation in fisheries. Proc. Natl. Acad. Sci. U.S.A. 105, 5420–5425. doi: 10.1073/pnas.0709034105
+
+SeaFood Watch. 2016. Seafood Watch Standard for Fisheries [Internet]. Monterey Bay Aquarium Seafood Watch. Available from: https://www.seafoodwatch.org/seafood-recommendations/our-standards [accessed July 2019]
+
+Sugihara, G., Beddington, J., Hsieh, C.-H., Deyle, E., Fogarty, M., Slaser, S. M., et al. 2011. Are exploited fish populations stable? Proc. Natl. Acad. Sci. U.S.A. 108, E1224–E1225. doi: 10.1073/pnas.1112033108
+
+Thorson, J.T., Munch, S.B., Cope, J.M., Gao, J. 2017. Predicting life history parameters for all fishes worldwide. Ecological Applications. 27(8): 2262-2276. Doi: 10.1002/eap.1606.Walters, C. 2002. Adaptive management of renewable resources. Macmillan Publishing Co. New York. 347 pp. 
+
+Vert-pre, K. A., Amoroso, R. O., Jensen, O. P., and Hilborn, R. 2013. The frequency and intensity of productivity regime shifts in marine fish stocks. Proc. Natl. Acad. Sci. U.S.A. 110, 1779–1784. doi: 10.1073/pnas.1214879110
+
+Walters, C.J. 2007. Is adaptive management helping to solve fisheries problems? Ambio, 36, 304-307.
+
+Walters, C.J., Martell, S.J.D. 2004. Fisheries Ecology and Management. Princeton University Press. 448 pp. 
+
+Westgate, M.J., Likens, G.E. & Lindenmayer, D.B. 2013. Adaptive management of biological systems: A review. Biological Conservation, 158, 128-139.

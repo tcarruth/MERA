@@ -112,7 +112,7 @@ plotBeta <- function(){
     tUB<-tUB/mean(tUB)
     ny<-length(ts1)
 
-    yrs<-CurrentYr-(ny:1)
+    yrs<-Current_Year-(ny:1)
     plot(yrs,ts1,lwd=2,type="l",ylim=range(c(ts1,tLB,tUB)),xlab="",ylab="")
     mtext("Year",1,line=2.2)
     mtext("Relative abundance",2,line=2.2)

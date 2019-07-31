@@ -43,10 +43,20 @@ Size and age composition data are samples of size and ages in the catch going ba
 
 ### Catch reporting bias
 
-Under reporting of catches
 In some data-limited fisheries, incomplete monitoring of fishing operations may lead to under-reporting (and to a lesser extent over reporting) of annual catches.
 
 For further discussion of catch under reporting see [Agnew et al. (2009)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2646833/). 
+
+
+```{r Qs_D2, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotCB()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified catch reporting bias   
+
+
 
 ### Hyperstability in indices
 
@@ -58,6 +68,15 @@ It may be generally assumed that a well designed fishery-independent survey is p
 
 See [Erisman et al. (1992)](https://drive.google.com/open?id=1jwhIGfTmXewKWGSTNyyjoo4TefW2JiNR) or [Maunder et al. (2006)](https://drive.google.com/open?id=1chNF72tCB_fjTjbbhZk7EyxtRU810EIc). 
 
+
+```{r Qs_D3, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotBeta()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified non-linearity among indices and stock biomass
+
 ### Overall data quality
 
 What is the overall quality of data that are available?
@@ -68,4 +87,5 @@ What is the overall quality of data that are available?
 * Data poor: annual catches and abundance indices are imprecisely observed (<50% CV) and length/age composition data are sparse (~15 independent samples per year).
 
 A description of the observation error model is included in [Carruthers et al (2013)](https://drive.google.com/open?id=1EX6mu9HOb4jwlQF-Co6DQ-FJzwTcO7JP) and a similar model was used by [Carruthers et al. (2015)](https://drive.google.com/open?id=1xvNxp_3oUOhSaLARY_mI2cAiG2qFAgqN). 
+
 
