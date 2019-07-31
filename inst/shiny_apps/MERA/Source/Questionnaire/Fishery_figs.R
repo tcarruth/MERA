@@ -45,8 +45,12 @@ plotD <- function(dummy=1){
   cond<-D_nams%in%input$D
 
   suppressWarnings({ny<-as.numeric(input$nyears)})
-  if(is.na(ny))ny<-68
-
+  if(length(ny)==0){
+    ny<-68
+  }else if(is.na(ny)){
+    ny<-68
+  }
+  
   if(sum(cond)>0){
     par(mfrow=c(1,2),mai=c(0.3,0.5,0.01,0.01), omi=c(0.4,0.18,0.55,0.1),cex.main = 1.5, cex.lab=1.35 )
     D_max<-max(D_maxes[cond])
@@ -332,7 +336,11 @@ plotF <- function(dummy=1){
   FP_nams<-unlist(FP_list)#c("FP_s", "FP_gr","FP_bb","FP_gi","FP_ri","FP_rd")
 
   suppressWarnings({ny<-as.numeric(input$nyears)})
-  if(is.na(ny))ny<-68
+  if(length(ny)==0){
+    ny<-68
+  }else if(is.na(ny)){
+    ny<-68
+  }
   yrs<-Current_Year-(ny:1)
 
   trends<-array(NA,c(6,ny))

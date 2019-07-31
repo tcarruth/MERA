@@ -24,9 +24,33 @@ The Fishery panel is a set of questions about the characteristics of the fish po
 
 Describe the fishery you are modelling and identify yourself and the relevant management agency.
 
+The 'number of years' is important and will be used to simulate your historical fishery. It is the total number of years that substantive fishing (that could impact the stock) has been operating for. So for example, if it is 2020 this year, and the fishery began in 1981, this would be 40. 
+
+The text input box provides a place for you to document important qualitative aspects of the fishery that provide necessary context for the questionnaire including 
+
+1. The history and current status of the fishery, including fleets, sectors, vessel types and practices/gear by vessel type, landing ports, economics/markets, whether targeted/bycatch, other stocks caught in the fishery.
+
+2. The stockâs ecosystem functions, dependencies, and habitat types.
+
+3. Any relevant reference materials and supporting documents, such as stocks assessments, research, and other analyses.
+
+
+
 ### Longevity
 
 How long lived is the fish species? This is a critical input determining stock productivity. The parameter M is the instantaneous natural mortality rate. For a review of data-limited methods of estimating M see [Kenchington (2014)](http://onlinelibrary.wiley.com/doi/10.1111/faf.12027/abstract). 
+
+
+```{r Qs_F2, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotM()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Longevity expressed as 'maximum age' and the instantaneous natural mortality rate M.  
+
+
+
 
 
 ### Stock depletion
@@ -39,6 +63,16 @@ In a data-limited situation, coarse information regarding depletion may be obtai
 
 For further information see [Carruthers et al. (2014)](http://www.sciencedirect.com/science/article/pii/S0165783613003081) and [Punt et al (2011)](https://academic.oup.com/icesjms/article/68/5/972/653125/Among-stock-comparisons-for-improving-stock) 
 
+
+```{r Qs_F3, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotD()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Stock depletion - current spawnign stock biomass relative to 'unfished' levels.  
+
+
 ### Resilience
 
 How resilient to exploitation is the stock? This question controls recruitment compensation - the extent to which recruitment is reduced from unfished levels (R0) as the spawning stock becomes increasingly depleted below unfishe levels (SSB0). Here resilence is expressed in terms of steepness (h): the fraction of unfished recruitment at 1/5 unfished spawning biomass.
@@ -46,10 +80,29 @@ How resilient to exploitation is the stock? This question controls recruitment c
 For a useful review of compensatory density dependence in fish populations see [Rose et al. (2001)](http://hqczhzkgch48vzcc4czubj6v.wpengine.netdna-cdn.com/files/2012/07/Rose_etal_FishFisheries.pdf). 
 
 
+```{r Qs_F4, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+ploth()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Stock resilience expressed as steepness: the fraction of unfished recruitment expected to occur at 1/5 unfishned spawning stock levels.
+
+
 ### Trend of historical exploitation
 
 What temporal pattern best describes the trend in historical exploitation rates (aka fishing mortality rates or F)? If more than one answer is given, historical fishing will be simulated subject to all trends in equal frequency. If it can be assumed that fishing effort is proportional to exploitation rate this can be summarized as historical patterns in fishing effort (e.g. boat-days per year, number of trips per year). This set of answers specified the possible range of mean trends, you will have an opportunity to adjust the extent of interannual variability in the following question.
 Here is a basic introduction to fishing effort and the assumption of proportionality courtesy of the [UN FAO](http://www.fao.org/docrep/x5685e/x5685e04.htm). 
+
+
+```{r Qs_F5, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
+FigInd<-FigInd+1
+plotF()
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Historical trend in fishery exploitation rate. 
+
 
 
 ### Variability in historical exploitation

@@ -9,7 +9,10 @@ output:
     toc_float: true
     number_sections: true
 ---
-<img src="./Images/DLMtool.png" width="120" align="left">
+<img src="./Images/DLMtool.png" width="150" align="left">
+
+
+<br><br><br>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -30,6 +33,9 @@ library('rmarkdown')
 
 source("./R/MSC4paper.R")
 
+tosource<-list.files("../inst/shiny_apps/MERA/Source/Questionnaire/",full.names = T)
+for(i in 1:length(tosource))source(tosource[i]) # all fishery, management and data plots
+
 load("./dat/MSEobj")
 load("./dat/MSEobj2")
 load("./dat/MSEobj_reb")
@@ -37,6 +43,26 @@ load("./dat/MSEobj_reb2")
 
 FigInd<-0
 TabInd<-1
+SecInd<-0
+
+#for making the question figures
+source("./R/global4UG.R") # sources the list objects for the various questions
+source("./R/Q_setup.R")
+fcol = rgb(0.4,0.8,0.95)#"#0299f"
+fcol2 = "dark grey"
+icol <- "dodgerblue4"
+maxcol="cadetblue"
+mincol="dark grey"
+
+Qwidth=5
+Qheight=3.5
+Qretina=2
+Qout.width='300px'
+Qout.height='180px'
+
+nFish<-19    # number of fishery questions
+nManage<-7   # number of management questions
+nDat<-4      # number of data questions
 
 ```
 

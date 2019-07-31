@@ -16,9 +16,13 @@ output:
     toc_float: true
 ---
 
+***
+
 # Risk Assessment Use Case
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+SecInd<-SecInd+1
+FigInd<-0
 ```
 
 ```{r echo=FALSE, include=FALSE}

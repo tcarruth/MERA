@@ -16,15 +16,36 @@ output:
 
 
 
-### How to use MERA 
+## How to use MERA 
 
-MERA has two inputs: a mandatory quantitative questionnaire and optionally, a standardized format for fishery data (Figure 1). The questionnaire contains a total of 30 questions, 19 regarding the fishery dynamics, 7 questions about the management system and a further 4 about the types and quality of data that are available (see Appendix A for details on all questions). 
+MERA has two inputs: a mandatory quantitative questionnaire and optionally, a standardized format for fishery data (Figure 1). The questionnaire contains a total of 30 questions, 19 regarding the fishery dynamics, 7 questions about the management system and a further 4 about the types and quality of data that are available (see Section 2 for details on all questions). 
 
 Once completing the questionnaire users must select from four use cases: 
-(1)	Risk Assessment – quantifying future biological risk of status quo management,
-(2)	Management Planning – determining a suitable management mode,
-(3)	Management Performance – evaluating current management mode,
-(4)	Status Determination – calculating stock status. 
+
+1.	Risk Assessment – quantifying future biological risk of status quo management
+
+2.	Management Planning – determining a suitable management mode
+
+3.	Management Performance – evaluating current management mode
+
+4.	Status Determination – calculating stock status. 
 
 The first three use the quantitative questionnaire to construct an operating model while the status determination mode requires additional user data to estimate stock status. Any operating model can be further conditioned (‘fitted’) using fishery data. Where operating model features are required that are not included in the quantitative questionnaire it may be exported into the R statistical environment, modified and imported back into the MERA software. The R packages DLMtool (Carruthers and Hordyk 2018) and MSEtool (Huynh et al. 2019) are compatible with MERA operating models and include a wide range of tools for modifying  these to include custom dynamics such as ontogenetic habitat shifts, fine-scale movement dynamics, time varying movement, temporal changes in growth and natural mortality rate, shifting fleet size selectivity and economic constraints. 
+
+<br />
+
+<img src="./Images/MERA Diagram.jpg" width="650">
+
+```{r figplus, include=FALSE}
+
+FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. MERA components and workflow. 
+
+
+
+
+
 
