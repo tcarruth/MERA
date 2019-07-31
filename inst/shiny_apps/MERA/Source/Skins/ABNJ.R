@@ -170,15 +170,26 @@ Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- opt
 #             years in projection,  year resolution of reporting  rounding of digits
 options<-list()
 
-Intro_title[[1]] <- "Introduction"
-Intro_text[[1]] <- "Status quo fishing effort and catches are projected to evaluate biological risk. Zero catch and FMSY fishing are also projected to frame performance."
+Intro_title[[1]] <- HTML("Introduction")
+Intro_text[[1]] <- HTML(paste("Status quo fishing effort and catches are projected to evaluate biological risk. Zero catch and FMSY fishing are also projected to frame performance.",
+                               tags$h4(tags$b('Risk Assessment Results')),
+                               tags$p("This report provides a quick assessment of biological risk to 
+the fishery under status quo management by comparing the performance of four 
+Reference Management Procedures over 50 years into the future:",
+                               tags$ol(
+                                 tags$li('Current Catch'),
+                                 tags$li('Current Effort'),
+                                 tags$li('Fishing at FMSY'),                                       
+                                 tags$li('No Fishing')
+                               ))))
+                               
 
 # --- Figures ----
 
 Fig_title <- rep(list(""), 9)
 
 # Trade-Off Plot 
-Fig_title[[2]] <- "Figure 1. Probability B > 0.5BMSY and average long-term Yield Trade-Off Plot"
+Fig_title[[2]] <- HTML(paste0("Figure 1. Probability B > 0.5B", tags$sub('MSY'), " and average long-term Yield Trade-Off Plot"))
 Fig_text[[2]] <-  "The probability spawning biomass is above 0.5BMSY from mean generation time (MGT) through last projection year and the last 10-years of the 
 projection period against the average long-term yield. MPs in the grey shaded area have failed to meet the minimum performance limit." 
 
@@ -196,7 +207,7 @@ Fig_dim[[2]]<-function(dims)list(height=400,width=1200)
 
 
 # Projection Plot 
-Fig_title[[3]] <- "Figure 2. Risk Assessment. B/BMSY projection plots"
+Fig_title[[3]] <- HTML(paste0("Figure 2. Risk Assessment. B/B", tags$sub('MSY'), " projection plots"))
 Fig_text[[3]] <-  "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points." 
 
 Figs[[3]]<-function(MSEobj,MSEobj_reb,options=list()){
@@ -210,35 +221,34 @@ Fig_dim[[3]]<-function(dims)list(height=400,width=1200)
 # --- Tables ----
 Tab_title <- rep(list(""), 9)
 # Probability of rebuilding
-Tab_title[[1]] <- "Risk Assessment Results"
-Tab_text[[1]] <- "This report provides a quick assessment of biological risk to 
-the fishery under status quo management by comparing the performance of four 
-Reference Management Procedures over 50 years into the future: 
-(1) Current Catch
-(2) Current Effort
-(3) Fishing at FMSY
-(4) No Fishing
-"
+# Tab_title[[1]] <- "Risk Assessment Results"
+# Tab_text[[1]] <- "This report provides a quick assessment of biological risk to 
+# the fishery under status quo management by comparing the performance of four 
+# Reference Management Procedures over 50 years into the future: 
+# (1) Current Catch
+# (2) Current Effort
+# (3) Fishing at FMSY
+# (4) No Fishing
+# "
 
 Tabs[[1]]<- function(MSE, MSEobj_reb,options=list(res=5),rnd=1) {
 }
 
-Tab_title[[2]] <- "Minimum Sustainability Limits"
-Tab_text[[2]] <- "
-The reference management procedures are tested against the following two minimum performance limits:
 
-(1) 80% probability of B > 0.5 BMSY for the time period starting at the mean generation time (MGT)
-through year 50 of the simulation, and (2)
-80% probability of B > 0.5 BMSY for years 41-50 of the simulation.
-"
+Tab_title[[1]] <- "Minimum Sustainability Limits"
+Tab_text[[1]] <-  HTML(paste0("The reference management procedures are tested against the following two minimum performance limits:",
+                             tags$ol(
+                               tags$li('80% probability of B > 0.5 BMSY for the time period starting at the mean generation time (MGT) through year 50 of the simulation'),
+                               tags$li('80% probability of B > 0.5 BMSY for years 41-50 of the simulation.')
+                             )))
 
 Tabs[[2]]<- function(MSE, MSEobj_reb,options=list(res=5),rnd=1) {
 }
 
 
-
-Tab_title[[4]] <- "Table 1. Probability of B > 0.5BMSY"
-Tab_text[[4]] <- "The probability spawning biomass is above 0.5BMSY in years mean generation time through year 50 and the last 10 years of the projection period." 
+Tab_title[[4]] <- HTML(paste0("Table 1. Probability of B > 0.5B", tags$sub('MSY')))
+Tab_text[[4]] <- HTML(paste0("The probability spawning biomass is above 0.5B", tags$sub('MSY'), 
+                            " in years mean generation time through year 50 and the last 10 years of the projection period.")) 
 
 Tabs[[4]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
   nMPs<-MSEobj@nMPs
@@ -352,7 +362,28 @@ Fig_title <- rep(list(""), 9)
 Tab_title <- rep(list(""), 9)
 
 Intro_title[[1]] <- "Introduction"
-Intro_text[[1]] <- "Planning mode projects multiple MPs to evaluate their absolute and relative performance with respect to target and limit reference points."
+Intro_text[[1]] <- HTML(paste(tags$p("Planning mode projects multiple MPs to evaluate their absolute and relative performance with respect to target and limit reference points."),
+                              tags$h4(tags$b("Planning Results")),
+tags$p('The Planning mode projects the management procedures tested in the management 
+strategy evaluation against their absolute and relative performance with respect 
+to Minimum Sustainability Limits and Management Objectives.'),
+tags$p('The intended purpose is to provide fishery managers and stakeholders a 
+quantitive analytical framework with which to identify management procedures 
+that will enable the fishery to be managed sustainably and best meet desired objectives. 
+Such well-performing management procedures can then be further analyzed in the Evaluation
+mode to further scrutinize projected performance, conduct sensitivity analyses, 
+prioritize future data collection protocols, and to determine what data shall be 
+collected to conduct future auxiliary indicator analysis testing whether the 
+management procedure is working as expected.'),
+tags$h4(tags$b('Minimum Sustainability Limits')),
+                              tags$p("The user-selected group of management procedures are tested against the following 
+two minimum performance limits (MPs that fail to meet at least one of the sustainability limits are colored red; 
+MPs are considered feasible based on the user-specified fishery data types available in question F1):"),
+                              tags$ol(
+                                tags$li('80% probability of B > 0.5 BMSY for the time period starting at the mean generation time (MGT) through year 50 of the simulation'),
+                                tags$li('80% probability of B > 0.5 BMSY for years 41-50 of the simulation.')
+                              )
+                              ))
 
 # --- Figures ----
 
@@ -471,38 +502,6 @@ Fig_dim[[7]]<-function(dims) list(height=400,width=1200)
 
 
 # --- Tables ----
-
-Tab_title[[1]] <- "Planning Results"
-Tab_text[[1]] <- "
-The Planning mode projects the management procedures tested in the management 
-strategy evaluation against their absolute and relative performance with respect 
-to Minimum Sustainability Limits and Management Objectives.  
-The intended purpose is to provide fishery managers and stakeholders a 
-quantitive analytical framework with which to identify management procedures 
-that will enable the fishery to be managed sustainably and best meet desired objectives. 
-Such well-performing management procedures can then be further analyzed in the Evaluation
-mode to further scrutinize projected performance, conduct sensitivity analyses, 
-prioritize future data collection protocols, and to determine what data shall be 
-collected to conduct future auxiliary indicator analysis testing whether the 
-management procedure is working as expected.   
-"
-
-Tabs[[1]]<- function(MSE, MSEobj_reb,options=list(res=5),rnd=1) { }
-
-
-Tab_title[[2]] <- "Minimum Sustainability Limits"
-Tab_text[[2]] <- "
-The user-selected group of management procedures are tested against the following 
-two minimum performance limits (MPs that fail to meet at least one of the sustainability limits are colored red; 
-MPs are considered feasible based on the user-specified fishery data types available in question F1):
-
-(1) 80% probability of B > 0.5 BMSY for the time period starting at the mean generation time (MGT)
-through year 50 of the simulation, 
-and (2) 80% probability of B > 0.5 BMSY for years 41-50 of the simulation.
-"
-
-Tabs[[2]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {}
-
 FeaseLabs<-function(MPs,dat=NA){
   
   nMPs<-length(MPs) 
@@ -595,11 +594,11 @@ FeaseLabs<-function(MPs,dat=NA){
 }
 
 
-Tab_title[[3]] <- "Table 1. Minimum Sustainability Limits"
-Tab_text[[3]] <-"Management Procedures must have at least an 0.8 probability of meeting all Performance Limits to be considered Acceptable. 
+Tab_title[[1]] <- "Table 1. Minimum Sustainability Limits"
+Tab_text[[1]] <-"Management Procedures must have at least an 0.8 probability of meeting all Performance Limits to be considered Acceptable. 
 MPs that fail to meet at least one of the performance limits are colored red."
 
-Tabs[[3]]<- function(MSEobj, MSEobj_reb, options=list(),rnd=1) {
+Tabs[[1]]<- function(MSEobj, MSEobj_reb, options=list(),rnd=1) {
   nMPs<-MSEobj@nMPs
   Labels <- NULL # list(curE="Current Effort", curC="Current Catch", FMSYref="FMSY Fishing", NFref="No Fishing")
   PMlist <- c('P50_1', 'P50_2')
@@ -693,7 +692,7 @@ Tabs[[3]]<- function(MSEobj, MSEobj_reb, options=list(),rnd=1) {
                     )),
                   dom = 'Blfrtip',
                   autoWidth = TRUE,
-                  columnDefs = list(list(width = '200px', targets = "_all"),
+                  columnDefs = list(list(width = '150px', targets = "_all"),
                                     list(searchable  = FALSE, targets = 0))
                   )) %>%
     DT::formatStyle(colnames(TabDF), color = DT::styleInterval(cuts=c(-1, Prob*0.999), values=c("black", "red", "green"))) 
@@ -701,23 +700,20 @@ Tabs[[3]]<- function(MSEobj, MSEobj_reb, options=list(),rnd=1) {
 }
 
 
-Tab_title[[4]] <- "Management Objectives"
-Tab_text[[4]] <- "
-Management procedures that pass the minimum sustainability limits are then analyzed 
-for how well they meet different management objectives.  Managers and fishery 
-stakeholders can determine which objectives are most valuable in order to identify
-a suitable management procedure for further evaluation and adoption.  
+Tab_title[[2]] <- "Management Objectives"
+Tab_text[[2]] <- HTML(
+  paste0(tags$p("Management procedures that pass the minimum sustainability limits are then analyzed for how well they meet different management objectives.  Managers and fishery 
+stakeholders can determine which objectives are most valuable in order to identify a suitable management procedure for further evaluation and adoption."),
+         tags$p('The management objectives presented include:'),
+         tags$ol(
+           tags$li('Biomass Target - probability of B > BMSY over projected years 11-50'),
+           tags$li('Short-Term Yield - average yield over projected years 1-10 relative to average yield under optimized FMSY fishing'),
+           tags$li('Long-Term Yield - average yield over last 10 projected years relative to average yield under optimized FMSY fishing'),
+           tags$li('Average Annual Variability in Yield - probability average inter-annual variability in yield is less than 20%'),
+           tags$li('Average Annual Variability in Effort - probability average inter-annual variability in effort is less than 20%')
+         )))
 
-The management objectives presented include:
-
-(1) Biomass Target - probability of B > BMSY over projected years 11-50
-(2) Short-Term Yield - average yield over projected years 1-10 relative to average yield under optimized FMSY fishing
-(3) Long-Term Yield - average yield over last 10 projected years relative to average yield under optimized FMSY fishing
-(4) Average Annual Variability in Yield - probability average inter-annual variability in yield is less than 20%
-(5) Average Annual Variability in Effort - probability average inter-annual variability in effort is less than 20%
-"
-
-Tabs[[4]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
+Tabs[[2]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
   Labels <- NULL
   if (length(PassMPs)==0) {
     TabDF <- data.frame(MP="No Feasible MPs met all performance limits")
@@ -725,7 +721,9 @@ Tabs[[4]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
                   class = 'display',
                   options = list(
                     dom = 't',
-                    autoWidth = TRUE))
+                    autoWidth = TRUE,
+                    columnDefs = list(list(width = '150px', targets = "_all"),
+                                      )))
   } else {
     MSEobj2 <- Sub(MSEobj, MPs=PassMPs)
     nMPs <- MSEobj2@nMPs
@@ -823,15 +821,15 @@ Tabs[[4]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
                       )),
                     dom = 'Blfrtip',
                     autoWidth = TRUE,
-                    columnDefs=list(list(searchable  = FALSE, targets = 0))))
-                    #columnDefs = list(list(width = '200px', targets = "_all"))))
+                    columnDefs=list(list(searchable  = FALSE, targets = 0),
+                                    list(width = '150px', targets = "_all"))))
+
   }
 }
 
 
-Tab_title[[6]] <- "Rebuilding Analysis"
-Tab_text[[6]] <- "
-Due to the inherent uncertainties around the current depletion level of data-limited fisheries, 
+Tab_title[[3]] <- HTML(paste0(tags$h4(tags$b("Rebuilding Analysis"))))
+Tab_text[[3]] <- HTML(paste0(tags$p("Due to the inherent uncertainties around the current depletion level of data-limited fisheries, 
 the rebuilding analysis provides an additional test to determine whether MPs that perform 
 well under the user-specified assumed level of current depletion are robust to the 
 possibility that the stock is actually more depleted than assumed. 
@@ -839,9 +837,9 @@ The rebuilding analysis assumes the fishery is currently at an overfished level
 (starting depletion set in Step D above) to test the probability the the stock would 
 rebuild to BMSY within a time period calculated as the number of years rebuilding 
 would be projected to occur in the absence of fishing (Tmin) plus a mean generation time for the fish species.  
-"
+")))
 
-Tabs[[6]]<- function(MSE, MSEobj_reb,options=list(res=5),rnd=1) {
+Tabs[[3]]<- function(MSE, MSEobj_reb,options=list(res=5),rnd=1) {
 
 }
 
@@ -945,7 +943,10 @@ Tabs[[8]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
                       )),
                     dom = 'Blfrtip',
                     autoWidth = TRUE,
-                    columnDefs=list(list(searchable  = FALSE, targets = 0)))) 
+                    columnDefs=list(list(searchable  = FALSE, targets = 0),
+                                    list(width = '150px', targets = "_all")))) 
+    
+    
   }
   
   

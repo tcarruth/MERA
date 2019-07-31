@@ -1,0 +1,66 @@
+---
+title: "MERA User Guide (v4.4)"
+subtitle: "Method Evaluation and Risk Assessment"
+author: "T. Carruthers (UBC)"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library('corpcor')
+library('DLMtool')
+library('dplyr')
+library('formattable')
+library('kableExtra')
+library('knitr')
+library('shiny')
+library('shinyjs')
+library('shinyalert')
+library('MSEtool')
+library('tinytex')
+library('DT')
+library('rmarkdown')
+
+source("./R/MSC4paper.R")
+
+load("./dat/MSEobj")
+load("./dat/MSEobj2")
+load("./dat/MSEobj_reb")
+load("./dat/MSEobj_reb2")
+
+FigInd<-0
+TabInd<-1
+
+```
+
+```{r echo=FALSE, include=FALSE}
+#library(knitr); library(dplyr)
+```
+
+
+```{r echo=FALSE, include=FALSE}
+library(knitr)
+rmd.files <- c("Rmds/Introductory/Intro_M.Rmd",
+               "Rmds/Qs/Qs_M.Rmd",
+               "Rmds/Risk_Assessment/Risk_Assessment_M.Rmd",
+               "Rmds/Management_Planning/Management_Planning_M.Rmd",
+               "Rmds/Management_Performance/Management_Performance_M.Rmd",
+               "Rmds/Status_Determination/Status_Determination_M.Rmd")
+
+out <- NULL
+for (rmd in rmd.files) {
+  out <- c(out, knitr::knit_child(rmd))
+}
+```
+
+
+```{r, echo=FALSE, results="asis"}
+cat(paste(out, collapse = '\n'))
+```
+

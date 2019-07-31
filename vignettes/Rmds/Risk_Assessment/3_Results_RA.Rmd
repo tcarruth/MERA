@@ -1,0 +1,50 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Interpreting results of risk assessment
+
+### Projection plots
+
+The risk assessment use case provides a projection plot showing the 90% (light blue) and 50% (dark blue) probability intervals, the median estimate (white line) and two example simulations (dark blue lines).
+
+```{r RA_Chunk1, echo=F,warning=F,error=F,message=F,results='asis', fig.width=10, fig.height=5}
+
+
+MSEobj@MPs<-MSEobj_reb@MPs<-c("Current effort", "Current catches", "FMSY fishing", "Zero fishing")
+BMSYproj(MSEobj,MSEobj_reb,maxcol=4)
+FigInd<-FigInd+1
+  
+```
+
+Figure `r FigInd`. Risk assessment projection plots for current effort (CurE), current catches (CurC), FMSY fishing (FMSYref) and zero fishing (NFref). 
+
+
+### Risk assessment table
+
+The results of the projection are also tabulated. 
+
+Table `r TabInd`. The probability that biomass is greater than half BMSY in future years. 
+
+```{r RA_Chunk2, echo=F,warning=F,error=F,message=F,results='asis'}
+
+Risk_Assessment$Tabs[[1]](MSEobj,MSEobj_reb,options=list(res=5,YIU=30),rnd=1) 
+TabInd<-TabInd+1
+```
+
+
+

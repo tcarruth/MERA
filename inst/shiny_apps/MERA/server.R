@@ -147,7 +147,15 @@ shinyServer(function(input, output, session) {
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected="MSC")
   #for(i in 1:length(Skin_nams))Skins[[i]]<-get(Skin_nams[i])
   #Skin<- Skins[[1]] # MSC FAO
-  Skin<-MSC
+  # Skin<-MSC
+  
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    if (!is.null(query[['skin']])) {
+      updateSelectInput(session, "Skin", label = "", choices = NULL,
+                        selected = query[['skin']])
+    }
+  })
   
   observeEvent(input$Skin,{
     temp<-input$Skin
@@ -1087,7 +1095,14 @@ shinyServer(function(input, output, session) {
                      ntop=input$ntop,
                      inputnames=inputnames,
                      SessionID=SessionID,
-                     copyright=paste(Copyright,CurrentYr)
+                     copyright=paste(Copyright,CurrentYr),
+                     tabs=TRUE, 
+                     Pars=OM,
+                     plotPars=list(),
+                     its=NULL,
+                     nyears=OM@nyears,
+                     proyears=OM@proyears
+                       
       )
       incProgress(0.1)
       knitr::knit_meta(class=NULL, clean = TRUE) 

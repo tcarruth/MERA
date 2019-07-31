@@ -1,0 +1,35 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Optional extras  
+
+Some text on OM conditioning, feasibility, shortlived extensions and feasibility
+
+
+### OM conditioning
+
+Methods of OM conditioning 
+
+
+### Econonmic modelling
+
+Economic modelling
+
+### Short-lived extensions
+
+How to convert annual model to a model with finer time-steps

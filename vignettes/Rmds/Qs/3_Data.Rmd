@@ -1,0 +1,71 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Data Questions 
+
+The Data panel is a set of questions about what types of data are available and quality of the data that are available.
+These questions: 
+* identify what management procedures are feasible given the types of data available.
+* determine the relative success of the various management types that rely on differing types of data.
+
+
+### Types of data that are available
+
+Management procedures require various data. Where data types are unavailable some MPs may not be feasible.
+
+Annual catches are yearly reporting landings (e.g. 135 tonnes in 1998, 159 tonnes in 1999, etc).
+
+Relative abundance indices may be fishery-dependent such as catch-per-unit-effort data or fishery-independent such as an annual abundance survey.
+
+In the context of annual catches and relative abundance indices, 'historical' refers to data going back to 'unfished conditions' (pre industrial fishing) such that catches may be used to reconstruct stock trajectory and indices may infer current stock depletion. In contrast, 'recent' refers to data available for least 5 years from today.
+
+Effort data are annual observations of fishing effort such as boat days in 2002.
+
+Growth data refers to parameter estimates for growth parameters such as von Bertalanffy growth parameter K and mean asymptotic length, L-infinity.
+
+Size and age composition data are samples of size and ages in the catch going back at least 2 years from today.
+
+
+### Catch reporting bias
+
+Under reporting of catches
+In some data-limited fisheries, incomplete monitoring of fishing operations may lead to under-reporting (and to a lesser extent over reporting) of annual catches.
+
+For further discussion of catch under reporting see [Agnew et al. (2009)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2646833/). 
+
+### Hyperstability in indices
+
+Is the primary index of relative abundance proportional to real biomass? Indices of relative abundance derived from fishery catch-per-unit effort may decline faster than real abundance (hyperdepletion) in cases where, for example, the species is being avoided or there has been attrition of high-density sub-population structure during early commericial fishing. 
+
+Conversely catch per unit effort data may respond slower than real biomass changes if the species is being targetted, there is range contraction of fishing toward high density areas as the stock declines or the population naturally forms aggregations. For example purse-seine fisheries are often strongly hyperstable since the fish per aggregation may remain high even at low stock sizes. 
+
+It may be generally assumed that a well designed fishery-independent survey is proportational to abundance but there are notable exceptions.
+
+See [Erisman et al. (1992)](https://drive.google.com/open?id=1jwhIGfTmXewKWGSTNyyjoo4TefW2JiNR) or [Maunder et al. (2006)](https://drive.google.com/open?id=1chNF72tCB_fjTjbbhZk7EyxtRU810EIc). 
+
+### Overall data quality
+
+What is the overall quality of data that are available?
+
+* Perfect Information: An unrealistic and idealized observation model for testing the theoretical performance of MPs.
+* Good quality: annual catches and abundance indices are observed with low error (<20% CV) and length/age composition data are numerous (~100 independent observations per year).
+* Data moderate: annual catches and abundance indices are observed with greater error (<30% CV) and length/age composition data are fewer (~40 independent samples per year).
+* Data poor: annual catches and abundance indices are imprecisely observed (<50% CV) and length/age composition data are sparse (~15 independent samples per year).
+
+A description of the observation error model is included in [Carruthers et al (2013)](https://drive.google.com/open?id=1EX6mu9HOb4jwlQF-Co6DQ-FJzwTcO7JP) and a similar model was used by [Carruthers et al. (2015)](https://drive.google.com/open?id=1xvNxp_3oUOhSaLARY_mI2cAiG2qFAgqN). 
+

@@ -56,10 +56,55 @@ This is a prototype of an automatic report that documents all dynamical features
 <br clear="both"/>
 
 ```{r labs,echo=F,warning=F,error=F,results='asis',fig.width=9,fig.height=9}
-
-plot(params$OM,rmd=T,silent=T) # rmd = T
+pckVer <- packageVersion("DLMtool")
+pckVer <- as.numeric(substr(pckVer, 1, 3))
+if (pckVer <5.4)
+  plot(params$OM,rmd=T,silent=T) # rmd = T
 
 ```
+
+```{r echo=FALSE, include=FALSE}
+if (pckVer >=5.4) {
+  nsim <- params$OM@nsim 
+  nyears <- params$OM@nyears
+  proyears <- params$OM@proyears
+  SampCpars <- if(length(params$OM@cpars)>0) SampCpars <- SampleCpars(params$OM@cpars, nsim, msg=FALSE)
+  set.seed(params$OM@seed)
+  
+  StockPars <- SampleStockPars(SubOM(params$OM, "Stock"), nsim, nyears, proyears, SampCpars, msg=FALSE)
+  FleetPars <- SampleFleetPars(SubOM(params$OM, "Fleet"), StockPars, nsim, nyears, proyears, SampCpars, msg=FALSE)
+  ObsPars <- SampleObsPars(params$OM, nsim, cpars=SampCpars)
+  BMSY_B0bias <- array(rlnorm(nsim, 
+                              mconv(1, params$OM@BMSY_B0biascv), sdconv(1, params$OM@BMSY_B0biascv)), 
+                       dim = c(nsim))  # trial samples of BMSY relative to unfished  
+  
+  ObsPars$BMSY_B0bias <- BMSY_B0bias
+  ImpPars <- SampleImpPars(SubOM(params$OM, "Imp"), nsim, cpars=SampCpars)
+  Pars <- c(StockPars, FleetPars, ObsPars, ImpPars)
+  Pars$CurrentYr <- params$OM@CurrentYr
+  Pars$MPA <- params$OM@MPA
+  # if (nsim>=48 & parallel) dopar <- TRUE
+  # if (nsim<48& parallel) dopar <- FALSE
+  message("Running Historical Simulations")
+  Hist <- runMSE(params$OM, Hist=TRUE, silent=TRUE, parallel = FALSE)
+  Pars$Hist <- Hist
+  Pars$Name <- "OM"
+  params$Pars <- Pars
+  params$its <- sample(1:params$OM@nsim, 3)
+  params$plotPars <- list(breaks=10, col="darkgray", axes=FALSE, 
+                                          cex.main=1, lwd=2)
+  input <- file.path(system.file(package = 'DLMtool'),'Rmd/OM/OM.Rmd')  
+   out <- knitr::knit_child(input)
+}
+```
+
+
+```{r, echo=FALSE, results="asis"}
+if (pckVer >=5.4) {
+  cat(out)
+}
+```
+
 
 <br clear="both"/>
 
