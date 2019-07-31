@@ -1,4 +1,4 @@
-quick <- TRUE # switch to use 3 sims for quick test runs in RA mode
+quick <- FALSE # switch to use 3 sims for quick test runs in RA mode
 
 library(shiny)
 library(DLMtool)

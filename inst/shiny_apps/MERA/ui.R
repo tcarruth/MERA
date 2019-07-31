@@ -197,7 +197,7 @@ shinyUI(
                                 #HTML("<br>"),
                                 div(style="height: 97px;",sliderInput("loc",label=h5("Skew"),min=0.2,max=1.8,value=1,step=0.05)),
                                 div(style="height: 97px;",sliderInput("stmag",label=h5("Magnitude of recent change"),min=0.2,max=1.8,value=1,step=0.05)),
-                                div(style="height: 97px;",sliderInput("co",label=h5("Cut-off"),min=0.2,max=1,value=1,step=0.025)))
+                                div(style="height: 97px;",sliderInput("co",label=h5("Truncation"),min=0.2,max=1,value=1,step=0.025)))
                               ),
 
                             conditionalPanel(width=4,condition="output.Fpanel==6",

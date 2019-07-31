@@ -102,7 +102,7 @@ PRM_mins<- c(  0,     0.05,    0.25,      0.5,      0.75,  0.95)
 PRM_maxes<-c(  0.05,  0.25,     0.5,      0.75,      0.95, 1)
 
 #F14
-sigR_list<<-list("Very low (less than 10% inter-annual changes (IAC))"="sigR_10","Low (max IAC of between 20% and 60%)"="sigR_10_30",
+sigR_list<<-list("Very low (less than 20% inter-annual changes (IAC))"="sigR_10","Low (max IAC of between 20% and 60%)"="sigR_10_30",
                  "Moderate (max IAC of between 60% and 120%)"="sigR_30_60", "High (max IAC of between 120% and 180%)"="sigR_60_90",
                  "Very high (max IAC greater than 180%)"="sigR_90")
 
@@ -201,7 +201,7 @@ D1_list<<-list("Historical annual catches (from unfished)" = "ann_cat","Recent a
                "Fishing effort" = "fis_eff","Size composition (length samples)" = "siz_com","Age composition (age samples)" = "age_com", "Growth (growth parameters)" = "growth",
                "Absolute biomass survey"="cur_bio_sur")
 
-CB_list<<-list("Strong under-reporting (30% - 50%)" = "CB_n50_n30", "Under-reporting (10% - 30%)" = "CB_n30_n10","Slight under-reporting (less than 10%)" = "CB_n10_0",
+CB_list<<-list("Strong under-reporting (30% - 50%)" = "CB_n50_n30", "Under-reporting (10% - 30%)" = "CB_n30_n10","Slight under-reporting (0% - 10%)" = "CB_n10_0",
                "Reported accurately (+/- 5%)" = "CB_n5_5","Slight over-reporting (less than 10%)" = "CB_0_10")
 
 CB_mins<- c( 0.5,   0.7,      0.9,     0.95,      1)

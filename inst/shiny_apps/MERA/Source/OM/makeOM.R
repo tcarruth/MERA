@@ -13,7 +13,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
 
-  OM<-LowSlopes(testOM)
+  OM<-LowSlopes(DLMtool::testOM)
 
   OM@R0<-100000
   OM@nsim<-nsim
@@ -72,7 +72,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
     OM@maxage=maxage
   }
 
-  OM<-LH2OM(OM, dist='norm')                                                               
+  OM<-LH2OM(OM, dist='norm',plot=F)                                                               
   OM@K<-quantile(OM@cpars$K,c(0.05,0.95))
   OM@L50<-quantile(OM@cpars$L50,c(0.05,0.95))
   OM@L50_95<-c(10,10)
