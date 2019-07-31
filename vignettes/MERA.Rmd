@@ -9,6 +9,7 @@ output:
     toc_float: true
     number_sections: true
 ---
+<img src="./Images/DLMtool.png" width="120" align="left">
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
