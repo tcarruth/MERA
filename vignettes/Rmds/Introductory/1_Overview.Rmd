@@ -14,6 +14,11 @@ output:
   html_document
 ---
 
+## MERA is under development!
+
+Please note that MERA is currently under development. MERA is beta software and subject to ongoing testing. 
+
+If you find a bug or have a suggestion please contact <t.carruthers@oceans.ubc.ca>  
 
 
 ## Overview
@@ -22,7 +27,7 @@ Fisheries managers are in need of tools to inform decision making often in the f
 
 MERA is intended to better account for uncertainty in the fishery system, prioritizing robust management options and identifying value in alternative data collection and research programs. By focusing on operational modelling, MERA can provide quantitative outputs that are central to fishery legal frameworks and eco-certification standards, for example probabilistic estimates of stock status relative to reference levels. MERA lessens the reliance on subjective, qualitative scoring systems, increasing transparency and accountability in decision making. 
 
-Furthermore since App is compatible with the R statistical software operating models, management procedures and diagnostics are all customizable allowing for bespoke state-of-the art closed-loop simulation including MSE. 
+Furthermore since the App is compatible with the R statistical software operating models, management procedures and diagnostics are all customizable allowing for bespoke state-of-the art closed-loop simulation including MSE. 
 
 
 <br />

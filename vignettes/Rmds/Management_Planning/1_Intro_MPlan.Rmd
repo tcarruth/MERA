@@ -16,7 +16,18 @@ output:
 
 
 
-## Background to risk assessment  
+## Background to management planning  
 
-The risk assessment use-case is the simplest of the four options and directly takes the operating model generated from the questionnaire to project four management scenarios: status quo catches (e.g. tonnes of fish), status quo fishing effort (e.g. days of fishing), ‘optimal’ fishing mortality rate commensurate with maximum sustainable yield (FMSY) and zero catches. The output from this analysis is a summary of biological risk (Figure 3) over projected years.  
+Given what is currently known (and not known) about a stock, its fishery and research program:
+
+* what management approach is likely to best achieve management objectives (MP selection)? 
+* what data collection processes are most important in determining management performance (Value of information)?
+* which current uncertainties have the greatest influence of management performance (Cost of current uncertainties)?
+
+Management Planning is the most complex use-case of MERA and provides closed-loop simulation testing of numerous management procedures and diagnostics to help managers identify research priorities. 
+
+
+
+
+
 

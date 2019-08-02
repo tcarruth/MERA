@@ -1,0 +1,43 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Running a closed-loop simulation 
+
+Closed-loop simulation iteratively projects the stock and fishery forwards in time, simulating data, generating management advice from MPs and then calculating the impact of this advice on the stock. 
+
+It follows that the user must select both a management interval (the duration before new management advice is calculated) and the MPs that should be tested. 
+
+The default settings for the management planning mode (Figure `r paste(SecInd,FigInd+1,sep=".")`) are deliberately intended to be computationally less demanding for demonstration purposes. An Management interval of 8 years is selected which is relatively long for most fisheries and the 'Demo' MP set is a small subset of 5 MPs that run quickly (curE75 is 75% of current fishing effort, DCAC is depletion-corrected average catch (MacCall 2009), IT10 is an index target management procedure that allows for increases/decreases in TAC of 10%, matlenlim is a minimum size limit at the size at 50% maturity, MRreal is a marine reserved in area 1 with reallocation of fishing effort to the open areas). 
+
+
+
+<img src="./Images/Mplan_controls.jpg" width="350">
+
+```{r figplus_MPlan, include=FALSE}
+
+FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. The controls for the management planning use-case.  
+
+
+Users can choose appropriate management interval and a larger range of MPs. The 'All' MP set includes the 80+ data-poor and data-moderate MPs included in the DLMtool package including a few simple data-rich assessments. The 'Top 20' MP set is a subset of these that includes 20 MPs that are generally among the best performing across a varied set of operating models. The user can select 'No ref. MPs' to exclude reference MPs (e.g. FMSY fishing and zero catches) that are included to frame MP performance. Alternatively the user can choose 'Data-rich MPs' to include in the analysis, 8 data rich state-space stock assessment based MPs from the MSEtool package. For operating models with more than 48 simulations, the user can select 'Parallel comp.' to distribute calculation over numerous processors (note that although it will generally run faster, this breaks the progress bar).
+
+The management-planning mode runs two closed-loop simulations. The first (base) is for the depletion specified by the questionnaire (and optionally informed by operating model conditioning). The second set of simulations (rebuilding) quantifies hypothetical rebuilding performance and starts the forward projections at a user-specified depletion range. This is controlled by a slider 'Start % BMSY from which to evaluate rebuilding' and the default starting level is 50% BMSY levels. 
+

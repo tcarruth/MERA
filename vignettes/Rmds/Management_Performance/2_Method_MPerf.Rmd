@@ -1,0 +1,29 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Running a management performance evaluation
+
+In the options panel of the MERA questionnaire there is the option to load fishery data. These data can include time series of relative abundance indices, mean length and catch data. 
+
+This data file follows the standard Data format of DLMtool (Carruthers and Hordyk 2018) and includes a slot 'LHYear'. LHyear is the last historical year of data prior to MP adoption. After this reference year, all observed data can be compared to simulated data using the multivariate auxiliary indicators included in MERA to detect departures in system dynamics. 
+
+If a suitably formatted data file is uploaded to MERA, the option to calculate auxilliary indicators becomes available. 
+
+
+
+

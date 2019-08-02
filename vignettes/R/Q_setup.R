@@ -14,6 +14,9 @@ PanelState<-list(Fpanel=lapply(Fpanel_names, makeState),
                  Dpanel=lapply(Dpanel_names, makeState),
                  Slider=lapply(Slider_names, makeState))
 
+PanelState[[2]][[1]][c(3)]<-FALSE # no size limits allowed
+PanelState[[3]][[1]][c(6,7,9)]<-FALSE # no comp or absolute biomass
+
 PanelState[[1]][[18]]<-c(F,F,F,F,T) # Exception is the final fishery initial depletion
 PanelState[[3]][[4]]<-c(F,F,F,T) # Exception is the final selection of the data menu - quality is a radio button default to data-poor
 

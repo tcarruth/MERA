@@ -357,7 +357,9 @@ shinyUI(
                                                   radioButtons("Err", label = h5("4. Overall data quality",style="color:black"),
                                                                      choices = Err_list, selected = "Err_bad"),
                                                   actionLink("All_Err","DEFAULT")),
-                                 value=3)
+                                 value=3),
+                        
+                        tabPanel(h4("Options",style = "color:grey"),value=4)
 
                       )
 
@@ -808,7 +810,7 @@ shinyUI(
            
            column(4,
                   
-                  radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Status Determination","Management Planning","Management Evaluation"),selected="Risk Assessment")),
+                  radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Status Determination","Management Planning","Management Performance"),selected="Risk Assessment")),
            
            column(8,
                   h5("MERA contains four modes of varying complexity and objectives",style = "color:grey"),

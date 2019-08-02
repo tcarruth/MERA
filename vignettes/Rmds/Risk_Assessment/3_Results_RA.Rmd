@@ -18,31 +18,41 @@ output:
 
 ## Interpreting results of risk assessment
 
+Since it is intended to quantify biological risk, the Risk Assessment use case only provides outputs with respect to projected stock biomass. 
+
+Here risk is determined relative to biomass commensurate with maximum sustainable yield (BMSY) and half of BMSY - a reference biomass level that is commonly used in fisheries management to determine rebuilding thresholds (e.g. US federal fisheries) and certfication standards to evaluate stock status (e.g. the Marine Stewardship Council). 
+
 ### Projection plots
 
-The risk assessment use case provides a projection plot showing the 90% (light blue) and 50% (dark blue) probability intervals, the median estimate (white line) and two example simulations (dark blue lines).
+The risk assessment use case provides a projection plot (Figure `r paste(SecInd,FigInd+1,sep=".")`)
+showing the 90% (light blue) and 50% (dark blue) probability intervals, the median estimate (white line) and two example simulations (dark blue lines). The two horizontal grey lines represent BMSY and half of BMSY. 
+
+In this example current effort and catches have similar biomass projections with the current catches somewhat less aggressive, resulting in higher median biomass levels and a fractionally higher probability of being above the limit reference level of 50% BMSY. 
 
 ```{r RA_Chunk1, echo=F,warning=F,error=F,message=F,results='asis', fig.width=10, fig.height=5}
 
-
-MSEobj@MPs<-MSEobj_reb@MPs<-c("Current effort", "Current catches", "FMSY fishing", "Zero fishing")
-BMSYproj(MSEobj,MSEobj_reb,maxcol=4)
+MSEobjRA<-MSEobj
+MSEobj_rebRA<-MSEobj_reb
+MSEobjRA@MPs<-MSEobj_rebRA@MPs<-c("Current effort", "Current catches", "FMSY fishing", "Zero fishing")
+BMSYproj(MSEobjRA,MSEobj_rebRA,maxcol=4)
 FigInd<-FigInd+1
   
 ```
 
-Figure `r FigInd`. Risk assessment projection plots for current effort (CurE), current catches (CurC), FMSY fishing (FMSYref) and zero fishing (NFref). 
+Figure `r paste(SecInd,FigInd+1,sep=".")`. Risk assessment projection plots for current effort (CurE), current catches (CurC), FMSY fishing (FMSYref) and zero fishing (NFref). 
 
 
 ### Risk assessment table
 
-The results of the projection are also tabulated. 
+The results of the projection are also tabulated (Table `r paste(SecInd,TabInd,sep=".")`), and phrased in terms of the probability (the fraction of simulations) that biomass is below half of BMSY in future years. 
 
-Table `r TabInd`. The probability that biomass is greater than half BMSY in future years. 
+The zero fishing scenario frames the maximum rebuilding potential, FMSY fishing represents 'perfect management' highlighting that even then, there is some probability of biomass dropping below the limit reference level (half BMSY) due to natural fluctuations in stock productivity. 
+
+Table `r paste(SecInd,TabInd,sep=".")`. The probability that biomass is greater than half BMSY in future years. 
 
 ```{r RA_Chunk2, echo=F,warning=F,error=F,message=F,results='asis'}
 
-Risk_Assessment$Tabs[[1]](MSEobj,MSEobj_reb,options=list(res=5,YIU=30),rnd=1) 
+MSC$Risk_Assessment$Tabs[[1]](MSEobjRA,MSEobj_rebRA,options=list(res=5,YIU=30),rnd=1) 
 TabInd<-TabInd+1
 ```
 

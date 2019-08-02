@@ -14,9 +14,19 @@ output:
   html_document
 ---
 
+***
+
+## Background to Management Performance and Auxilliary Indicators
+
+In situations where an MP has been adopted and used for management, it is possible to develop indicators that can detect whether the real fishery conditions have departed substantially from those that were simulated (and used to select the MP).
+
+Often referred to as 'Exceptional Circumstances' protocols, these compare the posterior predicted data from the operating model with those that have been observed since MP adoption. 
+
+In most MSE settings, quite simple exceptional circumstances protocols are established that compare the posterior predicted probability intervals of operating model indices of abundance with those indices as they are gathered. 
+
+MERA uses a somewhat more advanced multivariate approach in which multiple types of data can be observed and compared with operating model predictions (Carruthers and Hordyk 2018) under a more general umbrella term 'Auxilliary Indicators'.
 
 
-## Background to risk assessment  
 
-The risk assessment use-case is the simplest of the four options and directly takes the operating model generated from the questionnaire to project four management scenarios: status quo catches (e.g. tonnes of fish), status quo fishing effort (e.g. days of fishing), ‘optimal’ fishing mortality rate commensurate with maximum sustainable yield (FMSY) and zero catches. The output from this analysis is a summary of biological risk (Figure 3) over projected years.  
+
 

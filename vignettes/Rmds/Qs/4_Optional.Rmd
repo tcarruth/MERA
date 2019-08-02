@@ -15,21 +15,27 @@ output:
 ---
 
 
+## Optional  
 
-## Optional extras  
+In addition to the mandatory questions of the Fishery, Management and Data panels, users have the option of further specifying their operating models. The 'Optional' tab includes features to load fishery data, condition operating models, add economic features and extend the model for short-lived species. 
 
-Some text on OM conditioning, feasibility, shortlived extensions and feasibility
+### Fishery data uploading and OM conditioning
 
+By uploading their fishery data, the user unlocks a number of MERA features: 
 
-### OM conditioning
-
-Methods of OM conditioning 
-
+1. Conditioning of operating models (management planning and management performance)
+2. Realistic MP feasibility analysis to identify MPs that will run with the exact configuration of data that you have (management planning) 
+3. Quantification of auxilliary indicators (management performance)
+3. Status determination
 
 ### Econonmic modelling
 
-Economic modelling
+Simple economic models have been added to the DLMtool and MSEtool operating models and are currently subject to beta testing. 
+
+The current options are for demonstration purposes. This feature is currently under development. 
 
 ### Short-lived extensions
 
-How to convert annual model to a model with finer time-steps
+DLMtool now includes functionality to shorten the time-step of the default operating models (annual) to allow for the better approximation of the dynamics of short-lived speies. 
+
+The current options are for demonstration and beta testing purposes, This feature is currently under development. 

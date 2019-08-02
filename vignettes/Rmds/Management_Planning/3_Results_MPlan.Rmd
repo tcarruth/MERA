@@ -1,0 +1,206 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Interpreting results of Management Planning 
+
+
+### Biomass projection table for base operating model relative to limit reference point
+
+The biomass trajectories are tabulated (Table `r paste(SecInd,TabInd,sep=".")`), and phrased in terms of the probability (the fraction of simulations) that biomass is above half of BMSY in future years (half of BMSY is the limit reference point).
+
+Table `r paste(SecInd,TabInd,sep=".")` shows an example projection for 20 MPs. In general projections of all MPs achieved relatively high probabilities of being over the limit reference level. The exceptions were delay-difference MPs providing effort advice (DDe and DDe75) that could drop to a 30-35% probability of being over the limit reference point.  
+
+Table `r paste(SecInd,TabInd,sep=".")`. The probability that biomass is greater than half BMSY in future years for the base operating model. Probabilities of 50% or less are color-coded red, those above 90% are color coded green. MP type denotes the class of MP according to the type of advice it provides be it Total Allowable Catch (TAC), Total Allowable Effort (TAE), a Size Limit (SzLim) or spatial closure (MPA). The feasibility column indicates whether an MP can be applied in practice. When an MP is not available due to data-deficiencies the feasibilty column includes a 'D'. When an MP cannot be applied due to restrictions on the type of advice management can provide (e.g. a size limit isn't an option) then the feasibility column includes an 'M'. 
+
+```{r MPlan_Chunk1, echo=F,warning=F,error=F,message=F,results='asis'}
+
+MSC$Planning$Tabs[[1]](MSEobj2,MSEobj_reb2,options=list(res=5,YIU=5,burnin=50),rnd=1) 
+TabInd<-TabInd+1
+```
+
+
+### Biomass projection table for base operating model relative to target reference point
+
+In addition to biomass relative to the limit reference point, biomass trajectories are tabulated (Table `r paste(SecInd,TabInd,sep=".")`), and phrased in terms of the probability that biomass is above BMSY in future years (BMSY is the target reference point).
+
+
+Table `r paste(SecInd,TabInd,sep=".")`. The probability that biomass is greater than BMSY in future years for the base operating model. 
+
+```{r MPlan_Chunk2, echo=F,warning=F,error=F,message=F,results='asis'}
+
+MSC$Planning$Tabs[[2]](MSEobj=MSEobj2,MSEobj_reb=MSEobj_reb2,options=list(res=5,YIU=5,burnin=50),rnd=1) 
+TabInd<-TabInd+1
+```
+
+
+### Projection plot for base operating model
+
+Accompanying Tables `r paste(SecInd,TabInd-2,sep=".")` and `r paste(SecInd,TabInd-1,sep=".")` is Figure `r paste(SecInd,FigInd+1,sep=".")` which shows a graphical representation of projected biomass for each MP. These plots include 90% (light blue) and 50% (dark blue) probability intervals, the median estimate (white line) and two example simulations (dark blue lines). The two horizontal grey lines represent BMSY and half of BMSY (target and limit reference points, respectively).
+
+
+```{r MPlan_Chunk3, echo=F,warning=F,error=F,message=F, results='asis',fig.width=Pwidth, fig.height=Pheight,             fig.retina=Pretina,out.height=Pout.height, out.width=Pout.width}
+
+MSC$Planning$Figs[[2]](MSEobj2,MSEobj_reb2)
+FigInd<-FigInd+1
+  
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Biomass projection plots for eight management procedures given the base operating model. 
+
+
+### Projection table for rebuilding operating model
+
+Similarly to the base operating model, tables and figures are provided for the rebuilding scenario (the second closed-loop simulation starting from user-specified status)  (Table `r paste(SecInd,TabInd,sep=".")`), and phrased in terms of the probability (the fraction of simulations) that biomass is below half of BMSY in future years. 
+
+Again the DDe and DDe75 MPs provided poor biomass performance. The remaining MPs can be expected to rebuild the stock to some extent for most of the simulations. 
+
+Table `r paste(SecInd,TabInd,sep=".")`. The probability that biomass is greater than half BMSY in future years for the rebuilding operating model. 
+
+```{r MPlan_Chunk4, echo=F,warning=F,error=F,message=F,results='asis'}
+
+
+MSC$Planning$Tabs[[1]](MSEobj_reb2,MSEobj_reb2,options=list(res=5,YIU=5,burnin=50),rnd=1) 
+TabInd<-TabInd+1
+```
+
+
+### Projection plot for rebuilding operating model
+
+Accompanying Table `r paste(SecInd,TabInd-1,sep=".")` are a pair of projection plots (Figures `r paste(SecInd,FigInd+1,sep=".")` and `r paste(SecInd,FigInd+2,sep=".")`, respectively) showing the long- and short-term biomass outcomes for each MP under the rebuilding scenario.   
+
+```{r MPlan_Chunk5, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Pwidth, fig.height=Pheight,             fig.retina=Pretina,out.height=Pout.height, out.width=Pout.width}
+
+MSC$Planning$Figs[[3]](MSEobj_reb2,MSEobj_reb2)
+FigInd<-FigInd+1
+  
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Long-term biomass projection plots for eight management procedures given the rebuilding operating model. 
+
+
+
+```{r MPlan_Chunk6, echo=F,warning=F,error=F,message=F,results='asis',  fig.width=Pwidth, fig.height=Pheight,             fig.retina=Pretina,out.height=Pout.height, out.width=Pout.width}
+
+MSC$Planning$Figs[[4]](MSEobj_reb2,MSEobj_reb2)
+FigInd<-FigInd+1
+  
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Short-term Biomass projection plots for eight management procedures given the rebuilding operating model. 
+
+
+
+### Cost of current uncertainties
+
+For each type of operating model uncertainty (that is specified in the answers of the MERA questionnaire), a range of values are sampled. After the closed-loop simulation is run, it is possible to evaluate how yield performance varied across the range in these answers, identifying those uncertainties that carry the highest yield differential (are potentially the most costly).
+
+Cost of current uncertainties is illustrated in Figure `r paste(SecInd,FigInd+1,sep=".")`. On the x-axis are the top-7  most contributory sources of uncertainty. The left-most questions are the most influencial with larger bars indicating the degree of impact on yields. The uncertainties on the x-axis are labelled according to their question number in the MERA questionnaire. For example, for the DBSRA MP (second from left panel, top row) the most important uncertainty was fishery question 10 (F10) selectivity. Across the range of sampled values for this parameter there was a different of 37% in long-term yield. 
+
+
+
+```{r MPlan_Chunk7, echo=F,warning=F,error=F,message=F,results='asis',  fig.width=Pwidth, fig.height=23,             fig.retina=Pretina,out.height='2000px', out.width=Pout.width}
+
+MSC$Planning$Figs[[5]](MSEobj_reb2,MSEobj_reb2)
+FigInd<-FigInd+1
+  
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Cost of current uncertainties analysis. Each panel represents the closed-loop simulation testing of a single MP using the base operating model. The variability in long-term yield (expressed as a %) is evaluated across the uncertainty specified for each MERA question. Questions numbered F, M and D correspond to those in the Fishery, Management and Data panels. 
+
+
+
+### Value of Information
+
+Similarly to the cost of current uncertainties analysis, it is possible to evaluate the impact of observation processes on MP performance (Figure `r paste(SecInd,FigInd+1,sep=".")`). The degree of observation error and bias was specified in the Data questions of the MERA questionnaire. 
+
+Perhaps not surprisingly, for the DBSRA MP (that takes stock depletion as an input) depletion bias was the most important process determining long-term fishery yields. 
+
+
+```{r MPlan_Chunk8, echo=F,warning=F,error=F,message=F,results='asis',  fig.width=Pwidth, fig.height=Pheight,             fig.retina=Pretina,out.height=Pout.height, out.width=Pout.width}
+
+MSC$Planning$Figs[[6]](MSEobj_reb2,MSEobj_reb2)
+FigInd<-FigInd+1
+  
+```
+
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Each panel represents the closed-loop simulation testing of a single MP using the base operating model. The variability in long-term yield (expressed as a %) is evaluated across the uncertainty specified for various observation processes. Biases are long-term persistent over / under estimation of quantities. Errors are generally log-normal annual errors in quantities.   
+
+
+
+### Yield projection
+
+So far the Management Planning results have focused solely on biomass performance. However in most fishery management settings there is a well-established trade-off between yields and biomass outcomes. The yield projections (Figure `r paste(SecInd,FigInd+1,sep=".")`) show future trajectories in fishery yield for each MP. 
+
+
+```{r MPlan_Chunk9, echo=F,warning=F,error=F,message=F,results='asis',  fig.width=Pwidth, fig.height=Pheight,             fig.retina=Pretina,out.height=Pout.height, out.width=Pout.width}
+
+MSC$Planning$Figs[[7]](MSEobj_reb2,MSEobj_reb2)
+FigInd<-FigInd+1
+  
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Yield projections phrased as a fraction of current yield for the base operating model. 
+
+
+ 
+### Fishing mortality rate projection
+
+In addition to biomass and yield projections, fishing mortality rate projections relative to FMSY are included in Figure `r paste(SecInd,FigInd+1,sep=".")`to illustrate chronic over or under exploitation.
+
+```{r MPlan_Chunk10, echo=F,warning=F,error=F,message=F,results='asis',  fig.width=Pwidth, fig.height=Pheight,             fig.retina=Pretina,out.height=Pout.height, out.width=Pout.width}
+
+MSC$Planning$Figs[[8]](MSEobj_reb2,MSEobj_reb2)
+FigInd<-FigInd+1
+  
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Fishing mortality rate projections relative to FMSY fishing, for the base operating model. . 
+
+ 
+ 
+### Yield - Biomass trade-offs
+
+Higher yields may be expected to be inversely related to biological status: a prevailing performance trade-off that fishery managers must navigate. The yield-biomass trade-off plots (Figure `r paste(SecInd,FigInd+1,sep=".")`) provide a summary of the probability of achieving target and limit biomass levels whilst obtaining reasonably high yields over the long-term.  
+
+Figure `r paste(SecInd,FigInd+1,sep=".")` plots these probabilities for each MP, color coded according to the type of advice they provide. The top-right represents better performance, the bottom-left, worse performance. 
+
+In this example, output control (TAC) MPs are generally outperforming input controls. Among the best performing MPs are 'DCAC', 'DD4010', 'DD', and 'HDAAC'. There is a relatively steep reduction in expected yield to obtain the better biomass outcomes obtained by the MP 'MCD4010'.  
+
+```{r MPlan_Chunk11, echo=F,warning=F,error=F,message=F,results='asis',  fig.width=Pwidth, fig.height=Pheight,             fig.retina=Pretina,out.height=Pout.height, out.width=Pout.width}
+
+MSC$Planning$Figs[[9]](MSEobj_reb2,MSEobj_reb2)
+FigInd<-FigInd+1
+  
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Long-term biomass-yield performance trade-offs. The probability of exceeding the limit reference point (half BMSY, lefthand panel) and target reference points (BMSY, righthand panel) plotted against the probability of obtaining more than half reference yield (MSY). The legend refers to the class of MP according to the type of advice they provide. 'Input' are input controls such as size limits, effort controls or spatial closures. 'Output' MPs provide TAC advice. 'Reference' MPs are those that show theoretical performance of reference MPs as a yardstick for what is possible or desirable under idealised management situations.  
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+

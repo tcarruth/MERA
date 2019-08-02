@@ -18,6 +18,7 @@ library('rmarkdown')
 
 
 setwd("C:/Users/tcar_/Dropbox/MERA paper/Figures")
+setwd("C:/Users/tcarruth/Dropbox/MERA paper/Figures")
 source("MSC4paper.R")
 res<-600
 
@@ -32,8 +33,14 @@ save(MSEobj_reb,file="MSEobj_reb")
 
 California_Halibut_CA_CDFW@D<-c(0.1,0.7)
 California_Halibut_CA_CDFW@nsim<-98
-MSEobj2<-MSEobj_reb2<-runMSE(California_Halibut_CA_CDFW,MPs=c("matlenlim","DD","FMSYref","MCD","DCAC","MRnoreal","LstepCE1","slotlim"))
-save(MSEobj2,file="MSEobj2")
+OM<-California_Halibut_CA_CDFW
+load(file="MSEobj2")
+#MSEobj2<-runMSE(OM,MPs=c("matlenlim","DD","FMSYref","MCD","DCAC","MRnoreal","LstepCE1","slotlim"))
+OM_reb<-OM
+OM_reb@cpars$D<-(50/100)*MSEobj2@OM$SSBMSY_SSB0 
+MSEobj_reb2<-runMSE(OM_reb,MPs=c("matlenlim","DD","FMSYref","MCD","DCAC","MRnoreal","LstepCE1","slotlim"))
+
+#save(MSEobj2,file="MSEobj2")
 save(MSEobj_reb2,file="MSEobj_reb2")
 
 # Figure 1 - MERA schematic --------------------------------------------------------
@@ -223,6 +230,8 @@ dosegs<-function(ys,x,y,cols=c('#00ff0040','#00ff0080','#ff000040','#ff000080'))
   polygon(c(xall[1],xall,xall[length(xall)]),c(0,fitall,0),col=cols[3],border=NA)
 
 }
+
+
 
 
 

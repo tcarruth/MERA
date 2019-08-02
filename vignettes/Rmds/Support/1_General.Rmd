@@ -15,8 +15,43 @@ output:
 ---
 
 
+## MERA webpage
 
-## General
+Under development
 
-Some text on where to download mera questionnaires etc. 
+## About DLMtool
 
+For more information about DLMtool and MSEtool see [Carruthers and Hordyk 2018](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.13081)
+
+## Other operating models
+
+A range of operating models can be loaded into MERA from the DLMtool [fishery library](http://www.datalimitedtoolkit.org/fishery_library/)
+
+## More information on Management Procedures
+
+You can view further documentation on any of the MPs featured in MERA by clicking on the following links:
+
+```{r MPlist, echo=F,warning=F,error=F,message=F,results='asis'}
+
+MPs<-avail('MP')
+dat<-data.frame(MPs=MPs)
+URLs <- sapply(MPs, MPurl) %>% unlist()
+MPwithurl <- !is.na(URLs) 
+
+
+
+MPs <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", MPs[MPwithurl],"</a>")
+ncol<-8
+nrow<-ceiling(length(MPs)/ncol)
+MPs<-c(MPs,rep("",(nrow*ncol)-length(MPs)))
+
+mat<-matrix(MPs,ncol=8)
+colnames(mat)<-rep(" ",ncol)
+dat<-data.frame(mat)
+
+
+caption=paste0("Links to MPs" )
+datatable(mat,caption=caption, class = 'display',rownames=FALSE,escape=FALSE)
+
+
+```

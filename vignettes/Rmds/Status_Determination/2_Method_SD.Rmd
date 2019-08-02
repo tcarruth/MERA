@@ -1,0 +1,28 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Running a Status Determination
+
+In the options panel of the MERA questionnaire there is the option to load fishery data. These data can include time series of relative abundance indices, mean length and catch data. 
+
+Once loaded status determination can be run - this automatically detects which status determination methods are possible given the uploaded data and conducts a simulation test to evaluate their potential accuracy and precision over a range of simulated depletion levels. 
+
+
+
+
+

@@ -18,7 +18,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"4.3.2"
+  Version<<-"4.4.1"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -792,6 +792,9 @@ shinyServer(function(input, output, session) {
         })
         MSEobj_reb@Misc[[4]]<<-SampList
 
+        #saveRDS(MSEobj,file="C:/temp/MSEobj2.Rdata")
+        #saveRDS(MSEobj_reb,file="C:/temp/MSEobj_reb2.Rdata")
+        
         # ==== Types of reporting ==========================================================
           
         if(input$Debug)message("preredoPlan")

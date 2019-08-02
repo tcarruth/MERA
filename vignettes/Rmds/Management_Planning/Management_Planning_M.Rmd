@@ -16,9 +16,15 @@ output:
     toc_float: true
 ---
 
+
+***
+
 # Management Planning Use Case
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+SecInd<-SecInd+1
+FigInd<-0
+TabInd<-1
 ```
 
 ```{r echo=FALSE, include=FALSE}

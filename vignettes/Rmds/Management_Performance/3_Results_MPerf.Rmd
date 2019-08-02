@@ -1,0 +1,69 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+
+## Interpreting results of Management Performance 
+
+
+### Posterior versus observed data
+
+When an MP was tested using closed-loop simulation, for every simulation, in every year of the projection simulated data were generated. These multiple simulated data sets provides a basis for comparison with a single observed data from the real fishery system whilst an MP was in use. 
+
+Since an MP is codified, the only explanations for the observation of data that differ from those of the simulation is that either the operating model is misspecfied (either historically and/or in the future) or the operating model is correct and by chance atypical data have been collected. 
+
+
+```{r MPerf_Chunk1, echo=F,warning=F,error=F,message=F,results='asis',fig.width=10,fig.height=10}
+
+
+  styr=100
+  PPD<-MSEobj2@Misc$Data[[1]]
+
+  # Standardization
+  PPD@Cat<-PPD@Cat/PPD@Cat[,styr]
+  PPD@Ind<-PPD@Ind/PPD@Ind[,styr]
+  PPD@ML<-PPD@ML/PPD@ML[,styr]
+
+  tsd= c("Cat","Cat","Cat","Ind","Ind","ML")
+  stat=c("slp","AAV","mu","slp","mu", "slp")
+ 
+  indPPD<-indData<-getinds(PPD,styr=styr,res=5,tsd=tsd,stat=stat)
+
+  CC(indPPD,indData,pp=1,res=res)
+
+  FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Posterior predicted (blue) data cross-correlation plots (48 simulations) for the base operating model over the first 5 years of a projection compared with observed (orange) data over the same time period during which the DCAC MP was in use. The data codes include a data type and quantity. 'C', 'I' and 'ML' refer to catch, relative abundance index and mean length, respectively. 'M', 'S' and 'V' refer to the mean, slope and variance respectively. Hence CV is the variance in catches, MLS is the slope in mean length of fish caught. 
+
+
+### Multivariate distance
+
+The blue simulated data points of Figure `r paste(SecInd,FigInd,sep=".")` have a mean in multivariate space. It is possible to quantify the distance over all dimensions (data types) and simplify the problem into a univariate test of similarity. This is the basis for common methods of multivariate outlier detection and relies on a calculation of Mahalanobis distance which is similar to standard Euclidean distance but accounts for correlations among variables (observed data types). It sounds more complicated than it is - for more information see Carruthers and Hordyk (2018). 
+
+```{r MPerf_Chunk2, echo=F,warning=F,error=F,message=F,results='asis',fig.width=8,fig.height=7}
+
+plot_mdist(indPPD,indData,alpha=0.05)
+
+FigInd<-FigInd+1
+
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Multivariate distance (Mahalanobis distance) of the simulated data (blue density) versus the observed data (orange line) collected over the first 5 years that the MP DCAC was in use. A type-I error rate of 5% (alpha) corresponds with a distance of 13.79. With a distance of 14.14, the observed data are inconsistent with those simulated, an outlier is detected and there may be considered sufficient evidence to initiate exceptional circumstances protocols. 
+
+

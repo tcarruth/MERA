@@ -45,6 +45,13 @@ FigInd<-FigInd+1
 Figure `r paste(SecInd,FigInd,sep=".")`. MERA components and workflow. 
 
 
+## A note on skins
+
+MERA includes considerable flexibility on how results of the four use-cases are presented. This is to allow various user groups to obtain results that are pertinent to their application and setting. 
+
+For the purpose of this documentation results are presented for a prelminary beta version of the the Marine Stewardship Council skin. 
+
+
 
 
 

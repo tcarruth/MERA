@@ -31,23 +31,28 @@ library('tinytex')
 library('DT')
 library('rmarkdown')
 
-source("./R/MSC4paper.R")
+source("./R/MSC4vig.R")
 
 tosource<-list.files("../inst/shiny_apps/MERA/Source/Questionnaire/",full.names = T)
 for(i in 1:length(tosource))source(tosource[i]) # all fishery, management and data plots
+source("./R/global4UG.R") # sources the list objects for the various questions
+source("./R/Q_setup.R")
+source("../inst/shiny_apps/MERA/Source/AI/AI_results.r")
 
 load("./dat/MSEobj")
-load("./dat/MSEobj2")
+MSEobj2<-readRDS("./dat/MSEobj_2.Rdata")
 load("./dat/MSEobj_reb")
-load("./dat/MSEobj_reb2")
+#load("./dat/MSEobj_reb2")
+MSEobj_reb2<-readRDS("./dat/MSEobj_reb_2.Rdata")
+FT<-FeaseLabs(MPs=MSEobj2@MPs) # uses panel state
+MPcols<-FT$MPcols  # needed for planning color coding
 
 FigInd<-0
 TabInd<-1
 SecInd<-0
 
 #for making the question figures
-source("./R/global4UG.R") # sources the list objects for the various questions
-source("./R/Q_setup.R")
+
 fcol = rgb(0.4,0.8,0.95)#"#0299f"
 fcol2 = "dark grey"
 icol <- "dodgerblue4"
@@ -59,6 +64,14 @@ Qheight=3.5
 Qretina=2
 Qout.width='300px'
 Qout.height='180px'
+
+#for making planning figures
+
+Pwidth=13
+Pheight=13
+Pretina=2
+Pout.width='1000px'
+Pout.height='1000px'
 
 nFish<-19    # number of fishery questions
 nManage<-7   # number of management questions
