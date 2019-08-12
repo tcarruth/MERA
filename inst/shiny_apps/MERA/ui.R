@@ -84,7 +84,7 @@ shinyUI(
              h1("MERA")
       ),
       column(5,style="height:65px",
-             h5(textOutput("Version") ,style="padding:19px;")
+             h5(textOutput("Version") ,style="padding:22px;")
       ),
       column(2),
       column(3,style="padding:14px;height:65px",
