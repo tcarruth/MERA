@@ -9,15 +9,53 @@ getminmax<-function(panel,parameter,PanelState){
   
 }
 
-makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
+
+trimOM<-function(OM,newsim=8,silent=T){
+  
+  if(newsim > OM@nsim)stop("You asked for more simulations than are available in the OM object")
+  
+  if(length(OM@cpars)==0){
+    
+    if(!silent) message("There is no cpars slot in this OM object, only the nsim slot has been modified")
+  }else{
+    
+    for(i in 1:length(OM@cpars)){
+      
+      dims<-dim(OM@cpars[[i]])
+      ndim<-length(dims)
+      
+      if(ndim==0){
+        OM@cpars[[i]]<-OM@cpars[[i]][1:newsim]
+      }else if(ndim==2){
+        OM@cpars[[i]]<-matrix(OM@cpars[[i]][1:newsim,],nrow=newsim)
+      }else if(ndim==3){
+        OM@cpars[[i]]<-array(OM@cpars[[i]][1:newsim,,],c(newsim,dims[2:3]))
+      }else if(ndim==4){
+        OM@cpars[[i]]<-array(OM@cpars[[i]][1:newsim,,,],c(newsim,dims[2:4]))
+      }else if(ndim==5){  
+        OM@cpars[[i]]<-array(OM@cpars[[i]][1:newsim,,,,],c(newsim,dims[2:5]))
+      }
+      
+    }
+    
+  }
+  
+  OM@nsim<-newsim
+  
+  OM
+}
+
+makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
 
   OM<-LowSlopes(DLMtool::testOM)
-
+  if(!is.na(nsim)){
+    OM@nsim<-nsim
+  }else{
+    OM<-trimOM(OM,input$nsim)
+  }
   OM@R0<-100000
-  OM@nsim<-nsim
-
   OM@Linf<-c(100,100)
   OM@L50<-NaN
   OM@K<-NaN
@@ -40,7 +78,7 @@ makeOM<-function(PanelState,nsim=48,nyears=NA,maxage=NA){
 
   OM@Source<-input$Author
   OM@interval<-input$interval
-  OM@proyears<-proyears<-50#input$proyears
+  OM@proyears<-proyears<-50 #input$proyears
 
   #save(OM,file="OM.Rdata")  # debug
 

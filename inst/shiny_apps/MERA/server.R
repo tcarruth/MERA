@@ -74,6 +74,7 @@ shinyServer(function(input, output, session) {
   Fpanel<-reactiveVal(0)
   Mpanel<-reactiveVal(0)
   Dpanel<-reactiveVal(0)
+  Opanel<-reactiveVal(0)
   Started<-reactiveVal(0)
   Quest<-reactiveVal(0)
   Data<-reactiveVal(0)
@@ -92,6 +93,7 @@ shinyServer(function(input, output, session) {
   output$Fpanel <- reactive({ Fpanel()})
   output$Mpanel <- reactive({ Mpanel()})
   output$Dpanel <- reactive({ Dpanel()})
+  output$Opanel <- reactive({ Opanel()})
 
   output$Started  <- reactive({ Started()})
   output$Quest    <- reactive({ Quest()})
@@ -114,6 +116,7 @@ shinyServer(function(input, output, session) {
   outputOptions(output,"Fpanel",suspendWhenHidden=FALSE)
   outputOptions(output,"Mpanel",suspendWhenHidden=FALSE)
   outputOptions(output,"Dpanel",suspendWhenHidden=FALSE)
+  outputOptions(output,"Opanel",suspendWhenHidden=FALSE)
 
   outputOptions(output,"Started",suspendWhenHidden=FALSE)
   outputOptions(output,"Data",suspendWhenHidden=FALSE)
@@ -333,7 +336,7 @@ shinyServer(function(input, output, session) {
           updateTextInput(session, "Species",  value= MSClog[[3]]$Species)
           updateTextInput(session, "Region",   value= MSClog[[3]]$Region)
           updateTextInput(session, "Agency",   value= MSClog[[3]]$Agency)
-          updateTextInput(session, "nyears",   value= MSClog[[3]]$nyears)
+          updateNumericInput(session, "nyears",   value= MSClog[[3]]$nyears)
           updateTextInput(session, "Author",   value= MSClog[[3]]$Author)
           updateTextInput(session, "Justification",value=Just[[1]][1])
           updateTabsetPanel(session,"tabs1",selected="1")
@@ -420,28 +423,21 @@ shinyServer(function(input, output, session) {
         noInd<-sum(!is.na(dat@Ind))==0
         noML5<-sum(is.na(dat@ML[1,length(dat@ML[1,])-(0:4)]))==5
 
-        Cond_op<-"None"
+        Cond_op<-"None available"
         if(!noML5) Cond_op<-c(Cond_op,"MERA SRA ML (DLMtool)")
         if(!((noCAA & noCAL)|incompC))  Cond_op<-c(Cond_op,"Stochastic SRA (Walters et al. 2006)")
-        updateSelectInput(session,"Cond_ops",choices=Cond_op,selected="None")
+        if(length(Cond_op)>1)Cond_op<-Cond_op[Cond_op!="None available"]
+        updateSelectInput(session,"Cond_ops",choices=Cond_op,selected=Cond_op[1])
         Data(1)
         MadeOM(0)
         Plan(0)
         Eval(0)
         Ind(0)
         AdCalc(0)
-        MPs<-getMPs(All=TRUE)
-        MPs<-MPs[!grepl("FMSYref",MPs)] # remove reference FMSY MPs
-        if(length(MPs)<3)MPs<-c("curC","curC75","MCD") # just an error catch in case, for some reason getMPs returns less than three MPs
-        updateSelectInput(session,"Advice_MP1",choices=MPs,selected=MPs[1])
-        updateSelectInput(session,"Advice_MP2",choices=MPs,selected=MPs[2])
-        updateSelectInput(session,"Advice_MP3",choices=MPs,selected=MPs[3])
-
-        #Calc_Advice(Advice_MPs=MPs[1:3])
-
+       
       },
       error = function(e){
-        shinyalert("Advice calculation error", "Check data formatting", type = "error")
+        shinyalert("Data load error", "Check data formatting", type = "error")
         AdCalc(0)
       }
     )
@@ -1319,14 +1315,15 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$Fback,{
 
-    if(input$tabs1==1 && Fpanel() >1){
+    if(input$tabs1==1 && Fpanel() >0){
       Fpanel(Fpanel()-1)
-    }else if(input$tabs1==2 && Mpanel() >1){
+    }else if(input$tabs1==2 && Mpanel() >0){
       Mpanel(Mpanel()-1)
-    }else if(input$tabs1==3 && Dpanel() >1){
+    }else if(input$tabs1==3 && Dpanel() >0){
       Dpanel(Dpanel()-1)
-    }
-
+    }else if(input$tabs1==4 && Opanel() >0){
+      Opanel(Opanel()-1)
+    }  
     UpJust()
 
     Des<<-list(Name=input$Name,Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
@@ -1342,6 +1339,8 @@ shinyServer(function(input, output, session) {
       Mpanel(Mpanel()+1)
     }else if(input$tabs1==3 && Dpanel() < 4){
       Dpanel(Dpanel()+1)
+    }else if(input$tabs1==4 && Opanel() < 6){
+      Opanel(Opanel()+1)
     }
 
     # Write old values
