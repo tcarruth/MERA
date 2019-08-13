@@ -144,13 +144,8 @@ shinyServer(function(input, output, session) {
   # Update UI
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
   
-  # Skins
-  #Skins<<-new('list')
   Skin_nams<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected="MSC")
-  #for(i in 1:length(Skin_nams))Skins[[i]]<-get(Skin_nams[i])
-  #Skin<- Skins[[1]] # MSC FAO
-  # Skin<-MSC
   
   observe({
     query <- parseQueryString(session$clientData$url_search)
@@ -167,7 +162,7 @@ shinyServer(function(input, output, session) {
     RA(0)
     Plan(0)
     Eval(0)
-    updateTextAreaInput(session,"Debug1",value=temp)
+    AM(paste0("Skin selected: ",temp))
     
   })# update MP selection in Evaluation
   
@@ -184,6 +179,8 @@ shinyServer(function(input, output, session) {
 
   CurrentYr<-as.integer(substr(as.character(Sys.time()),1,4))
   Copyright<-"Open Source, GPL-2"
+  
+  
   
   Just<-list(
     c(
@@ -273,6 +270,7 @@ shinyServer(function(input, output, session) {
     Eval(0)
     
     Update_Options()
+    AM(paste0("Mode selected: ", input$Mode))
  
   })
 
@@ -614,7 +612,7 @@ shinyServer(function(input, output, session) {
    tryCatch(
       {
         filey<-input$Load_anything
-        updateTextInput(session,"Debug1",value=filey$datapath)
+        AM(paste0("Source file loaded: ",filey$datapath))
         source(file=filey$datapath)
         updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Application
 
@@ -647,7 +645,7 @@ shinyServer(function(input, output, session) {
 
         OM<-makeOM(PanelState,nsim=nsim,nyears=ncol(dat@Cat),maxage=dat@MaxAge)
 
-        updateTextAreaInput(session,"Debug1",value=paste(OM@nyears,ncol(dat@Cat)))
+        #updateTextAreaInput(session,"Debug1",value=paste(OM@nyears,ncol(dat@Cat)))
         withProgress(message = "Building OM from Questionnaire & S-SRA", value = 0, {
           SRAout<<-SSRA_wrap(OM,dat)
           OM<<-SRAout$OM
@@ -1636,9 +1634,9 @@ shinyServer(function(input, output, session) {
   output$plotBeta <- renderPlot(plotBeta())
   output$plotCB <- renderPlot(plotCB())
 
-  observeEvent(input$debug,
-              updateTextAreaInput(session,"Debug1",value=MadeOM())
-  )
+  #observeEvent(input$debug,
+  #            updateTextAreaInput(session,"Debug1",value=MadeOM())
+  #)
   
   
 

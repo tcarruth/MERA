@@ -48,7 +48,9 @@ trimOM<-function(OM,newsim=8,silent=T){
 makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
-
+  
+  if(input$Co)
+   
   OM<-LowSlopes(DLMtool::testOM)
   if(!is.na(nsim)){
     OM@nsim<-nsim

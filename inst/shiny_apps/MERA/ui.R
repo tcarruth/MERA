@@ -468,18 +468,17 @@ shinyUI(
                                    h5("5. Bio-economic dynamics",style="color:grey"),
                                    selectInput("EC_Model","Economic Model",choices=c("None","Simple response","SR with inertia","SR with efficiency - depletion"),selected="None"),
                                    conditionalPanel(condition="EC_Model!='None'",
-                                     column(6,sliderInput("EC_Cost",label="Cost of current fishing effort",min=0,max=10,value=c(1,1))),
-                                     column(6,sliderInput("EC_Revenue",label="Revenue of current catches",min=0,max=10,value=c(1,1))),   
-                                     column(6,sliderInput("EC_Response",label="Response rate of current catches",min=0,max=10,value=c(1,1))) 
+                                     column(4,numericInput("EC_Cost",label="Cost of current fishing effort",min=0,value=1)),
+                                     column(4,numericInput("EC_Rev",label="Revenue of current catches",min=0,value=1)),   
+                                     column(4,numericInput("EC_Response",label="Expected % change in effort given todays profit",value=0)),
+                                     column(4,numericInput("EC_Cost_Inc",label="Expected % annual increase in costs per unit of effort",value=0)), 
+                                     column(4,numericInput("EC_Rev_Inc",label="Expected % annual increase in revenue per unit of catch",value=0)) 
                                    )
                                 ),
                                 
                                 value=4)
-
                       )
-
                ),
-
 
                column(width = 7,style="height:360px",
 
@@ -804,9 +803,7 @@ shinyUI(
                                 h5(" and a similar model was used by ",a("Carruthers et al. (2015).", href="https://drive.google.com/open?id=1xvNxp_3oUOhSaLARY_mI2cAiG2qFAgqN", target="_blank"),style = "color:grey")
                          )
                       ),
-
-                      
-                      
+        
                       # ----- Optional panel guides
                       
                       conditionalPanel(condition="input.tabs1==4&output.Opanel==0",
@@ -862,7 +859,7 @@ shinyUI(
                                 HTML("<br>"),
                                 HTML("<br>"),
                                 h5("Users have the option to specify bio-economic models that control the response of fishing effort in addition to management advice set by MPs", style = "color:grey"),
-                                h5("The Simple Response model is relatively simple and models fishing effort increases according to expected profit (effort next year = (1+response) * (revenue catch) - (cost effort)", style = "color:grey")
+                                h5("The Simple Response model is relatively simple and models fishing effort increases according to expected profit: effort next year = (effort this year) * (1+response) * (revenue catch) - (cost effort)", style = "color:grey")
                         )
                       ),
                       
@@ -1055,7 +1052,8 @@ shinyUI(
     
  
     # =============== Status Determination ===========================================================================================================
-     conditionalPanel(condition="input.Mode=='Status Determination'",
+    
+    conditionalPanel(condition="input.Mode=='Status Determination'",
                      
        conditionalPanel(condition="output.Status==0",h4("STEP C: CALCULATE POPULATION STATUS")),
        conditionalPanel(condition="output.Status==1",h4("STEP C: CALCULATE POPULATION STATUS",style="color:green")),
@@ -1123,6 +1121,7 @@ shinyUI(
 
   
     # =============== Planning =======================================================================================================================================================          
+    
     conditionalPanel(condition="input.Mode=='Management Planning'",
        column(12,style="height:15px"), 
        conditionalPanel(condition="output.Plan==0",h4("STEP C: USE CLOSED-LOOP SIMULATION TO TEST MANAGEMENT OPTIONS")),
@@ -1136,10 +1135,8 @@ shinyUI(
                 fluidRow(
                   column(4,
                                             
-                         # column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
-                          
-                          
-                          #column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
+                          # column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
+                          # column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
                           column(12,radioButtons('MPset',label="MP set",choices=c("Top 20","All","Demo","Custom"),selected="Demo",inline=T)),
                           conditionalPanel(condition="input.MPset=='Custom'",selectInput("ManPlanMPsel","Custom MPs",  choices=c("DCAC","DBSRA"),selected="DCAC", multiple = TRUE)),
                           column(9,sliderInput("Dep_reb",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
@@ -1147,12 +1144,8 @@ shinyUI(
                           column(12,h5("Additional options",style="font-weight:bold"),style="height:22px"),
                           column(4,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),style="padding-top:0px"),
                           column(4,checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),style="padding-top:0px"),
-                          
-                          
                           column(12,actionButton("Calculate_Plan",h5("      CALCULATE     ",style="color:red")))
-                          
-                  
-                  
+                             
                   ),
                   
                   column(6,
@@ -1163,7 +1156,7 @@ shinyUI(
                          h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
                          h5("Users may wish not to include reference MPs (No ref. MPs) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
                          h5("In situations where operating models are built with more than 48 simulations it can be much faster to use parallel computing ('Parallel comp.)
-                      although the progress bar will not longer work ",style="color:grey"),
+                             although the progress bar will not longer work ",style="color:grey"),
                          h5("Documentation of the various MPs can be found as links in the results tables, below in the help section or online ",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
                          
                   )
@@ -1271,8 +1264,8 @@ shinyUI(
       
       column(12,style="height:15px"),
       
-      conditionalPanel(condition="output.Ind==0",h4("STEP F: AUXILIARY INDICATORS")),
-      conditionalPanel(condition="output.Ind==1",h4("STEP F: AUXILIARY INDICATORS",style="color:green")),
+      conditionalPanel(condition="output.Ind==0",h4("STEP C: MANAGEMENT PERFORMANCE")),
+      conditionalPanel(condition="output.Ind==1",h4("STEP C: MANAGEMENT PERFORMANCE",style="color:green")),
       
       hr(),
       
@@ -1574,11 +1567,11 @@ shinyUI(
       column(2,style="height:40px; padding:9px",textOutput("SessionID")),
       column(2,style="height:40px", h6("Open Source, GPL-2, 2019")),
 
-        #column(12,style="height:100px"),
-      #column(12, actionButton("debug", "Debug")),
-      conditionalPanel(condition="input.Debug",
-        column(12, textInput("Debug1", "Debug window", ""))
-      )
+      #conditionalPanel(condition="input.Debug",
+        column(1),
+        column(9, textAreaInput("Log", "Log",height="120px"))
+        
+      #)
 
      #) # end of fluid row
     ) # end of fluid page

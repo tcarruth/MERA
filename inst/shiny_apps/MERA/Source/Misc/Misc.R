@@ -1,3 +1,7 @@
+AM<-function(newtext){
+  updateTextAreaInput(session, "Log", value=paste(newtext,input$Log, sep = "\n"))
+}
+
 doprogress<-function(message,duration=1,n=20){
   withProgress(message = message, value = 0, {
     inc<-duration/n
