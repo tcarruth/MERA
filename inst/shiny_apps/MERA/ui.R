@@ -466,9 +466,12 @@ shinyUI(
                                                  
                                    HTML("<br>"),
                                    h5("5. Bio-economic dynamics",style="color:grey"),
-                                   HTML("<br>")
-                                  
-                                                 
+                                   selectInput("EC_Model","Economic Model",choices=c("None","Simple response","SR with inertia","SR with efficiency - depletion"),selected="None"),
+                                   conditionalPanel(condition="EC_Model!='None'",
+                                     column(6,sliderInput("EC_Cost",label="Cost of current fishing effort",min=0,max=10,value=c(1,1))),
+                                     column(6,sliderInput("EC_Revenue",label="Revenue of current catches",min=0,max=10,value=c(1,1))),   
+                                     column(6,sliderInput("EC_Response",label="Response rate of current catches",min=0,max=10,value=c(1,1))) 
+                                   )
                                 ),
                                 
                                 value=4)
@@ -837,10 +840,10 @@ shinyUI(
                              HTML("<br>"),
                              HTML("<br>"),
                              h5("When formatted into a DLMtool/MSEtool csv data file, fishery data can be used to:",style = "color:grey"),
-                             h5(" - condition operating models",style = "color:grey"),
-                             h5(" - determine feasible MPs", style = "color:grey"),
-                             h5(" - assess the fishery status", style = "color:grey"),
-                             h5(" - test for exceptional circumstances.",style = "color:grey"),
+                             h5(" - condition operating models (the next panel in the Optional tab)",style = "color:grey"),
+                             h5(" - determine feasible MPs (Management Planning mode)", style = "color:grey"),
+                             h5(" - assess the fishery status (Status Determination mode)", style = "color:grey"),
+                             h5(" - test for exceptional circumstances (Management Performance mode).",style = "color:grey"),
                              h5("A description of the data object can be found ",a("here", href="https://dlmtool.github.io/DLMtool/cheat_sheets/Data", target="_blank"),style = "color:grey")
                          )
                       ),
@@ -849,14 +852,21 @@ shinyUI(
                         column(12, 
                             HTML("<br>"),
                             HTML("<br>"),
-                            h5("Operating models are specified from the responses in the questionnaire (Step A)", style = "color:grey"),
-                            h5("Alternatively, in MSE mode, users can use upload their data and condition models using
-                            stochastic SRA ",a("(Walters et al. 2006)", href="https://drive.google.com/open?id=10kpQwOsvsDCojN2MyUYgRj9-IUQMQmAB", target="_blank"),style = "color:grey"),
-                            h5("For demonstration purposes a small number of simulations (e.g. n = 24) is enough. For MP comparisons in 'Evaluation' mode,
-                            100 simulations is generally sufficient to get convergence in performance rankings. In more detailed Application or Indicator
-                            steps where specific MPs are tested, a larger number is recommended (e.g. n = 200) to get stable absolute performance", style = "color:grey")
+                            h5("Operating models are specified from the responses in the questionnaire", style = "color:grey"),
+                            h5("Alternatively, users can use upload their data and condition models", style = "color:grey")
                         )
                       ),
+                      
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==5",
+                         column(12, 
+                                HTML("<br>"),
+                                HTML("<br>"),
+                                h5("Users have the option to specify bio-economic models that control the response of fishing effort in addition to management advice set by MPs", style = "color:grey"),
+                                h5("The Simple Response model is relatively simple and models fishing effort increases according to expected profit (effort next year = (1+response) * (revenue catch) - (cost effort)", style = "color:grey")
+                        )
+                      ),
+                      
+                      
                       
                       # ---- Other panel guides
 
@@ -998,8 +1008,8 @@ shinyUI(
     # =============== Risk Assessment ================================================================================================================================================
     conditionalPanel(condition="input.Mode=='Risk Assessment'",
                      
-                     conditionalPanel(condition="output.Plan==0",h4("STEP C: CALCULATE RISK")),
-                     conditionalPanel(condition="output.Plan==1",h4("STEP C: CALCULATE RISK",style="color:green")),
+                     conditionalPanel(condition="output.Plan==0",h4("STEP C: CALCULATE RISK OF STATUS QUO MANAGEMENT")),
+                     conditionalPanel(condition="output.Plan==1",h4("STEP C: CALCULATE RISK OF STATUS QUO MANAGEMENT",style="color:green")),
                      hr(),
                      column(12,style="height:45px"),
                      
@@ -1047,8 +1057,8 @@ shinyUI(
     # =============== Status Determination ===========================================================================================================
      conditionalPanel(condition="input.Mode=='Status Determination'",
                      
-       conditionalPanel(condition="output.Status==0",h4("STEP D: CALCULATE POPULATION STATUS")),
-       conditionalPanel(condition="output.Status==1",h4("STEP D: CALCULATE POPULATION STATUS",style="color:green")),
+       conditionalPanel(condition="output.Status==0",h4("STEP C: CALCULATE POPULATION STATUS")),
+       conditionalPanel(condition="output.Status==1",h4("STEP C: CALCULATE POPULATION STATUS",style="color:green")),
        
        
        hr(),
@@ -1130,8 +1140,8 @@ shinyUI(
                           
                           
                           #column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
-                          column(12,radioButtons('MPset',label="MP set",choices=c("Top 20","All","Demo","Custom selection"),selected="Demo",inline=T)),
-                          conditionalPanel(condition="input.MPset=='Custom selection'",selectInput("ManPlanMPsel","Custom MPs",  choices=NULL, multiple = TRUE)),
+                          column(12,radioButtons('MPset',label="MP set",choices=c("Top 20","All","Demo","Custom"),selected="Demo",inline=T)),
+                          conditionalPanel(condition="input.MPset=='Custom'",selectInput("ManPlanMPsel","Custom MPs",  choices=c("DCAC","DBSRA"),selected="DCAC", multiple = TRUE)),
                           column(9,sliderInput("Dep_reb",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
                           column(2,HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey"))),
                           column(12,h5("Additional options",style="font-weight:bold"),style="height:22px"),

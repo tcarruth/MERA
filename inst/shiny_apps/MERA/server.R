@@ -250,7 +250,6 @@ shinyServer(function(input, output, session) {
                     Slider=lapply(Slider_names,getinputnames))
 
   inputtabs<-as.vector(unlist(inputnames))
-  updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs()) 
   
   # Record all changes to tabs
   observeEvent(sapply(inputtabs, function(x) input[[x]]),{
@@ -268,7 +267,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Mode,{
     
     updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Evaluation
-    
+    updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
     RA(0)
     Plan(0)
     Eval(0)
@@ -484,6 +483,7 @@ shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$MPset,{
+    
     getMPs()
   })
 
@@ -752,10 +752,15 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$Calculate_Plan,{
 
+    
+    doprogress("Building OM from Questionnaire",1)
+    OM<<-makeOM(PanelState,nsim=input$nsim)
     Fpanel(1)
     MPs<<-getMPs()
+    
     nsim<<-input$nsim
     parallel=F
+    
     if(input$Parallel){
 
       if(nsim>47){

@@ -36,8 +36,9 @@ getMPs<-function(All=FALSE){
 
   if(input$MPset=="Demo"){
     MPs<-c("DCAC","matlenlim","MRreal","curE75","IT10")
-  }else if(input$MPset=="Risk Assessment"){
-    MPs<-c("NFref","AvC","curE","curE75","FMSYref75","curC","curC75")
+  }else if(input$MPset=="Custom"){
+    MPs<-input$ManPlanMPsel
+    #updateTextAreaInput(session,"Debug1",value=unlist(input$ManPlanMPsel))
   }else if(input$MPset=="Top 20"){
     MPs<-c("DCAC","DBSRA","DD","DDe","DDe75",  "DD4010","MCD","MCD4010","IT10","IT5",  "MRreal","MRnoreal","matlenlim","matlenlim2","DCAC_40", "DBSRA_40","Fratio","HDAAC","ITe10")
   }else{
