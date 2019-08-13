@@ -250,7 +250,8 @@ shinyServer(function(input, output, session) {
                     Slider=lapply(Slider_names,getinputnames))
 
   inputtabs<-as.vector(unlist(inputnames))
-
+  updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs()) 
+  
   # Record all changes to tabs
   observeEvent(sapply(inputtabs, function(x) input[[x]]),{
 
