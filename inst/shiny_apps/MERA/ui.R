@@ -393,22 +393,27 @@ shinyUI(
                                   h5("2. Detailed operating model controls",style="color:grey"),
                                   column(12,
                                     column(4,
-                                           h5("Use a custom OM",style="font-weight:bold"),
-                                           checkboxInput("Custom_OM","",value=FALSE),
-                                           style="height:55px"
+                                           fileInput("Load_OM","Load  (.OM)"),
+                                                  style="height:55px"
                                     ),
-                                    column(8,conditionalPanel(condition="input.Custom_OM",fileInput("Load_OM","Load  (.OM)")),style="height:55px; padding:6px")
+                                    column(8,conditionalPanel(condition="output.LoadOM==1",
+                                                              h5("Use Loaded operating model",style="font-weight:bold"),
+                                                              checkboxInput("OM_L","",value=FALSE)),
+                                                              style="height:55px; padding:6px"
+                                    )       
                                     
                                   ),
                                   HTML("<br>"),  
                                   column(12,style="padding-left:27px",
-                                    HTML("<br>"),    
+                                    
+                                         HTML("<br>"),    
                                     h5("Save OM",style="font-weight:bold"),
                                     downloadButton("Save_OM","",width=70),
                                  
                                     HTML("<br>"),      
                                     h5("Detailed OM Report",style="font-weight:bold"),
                                     downloadButton("Build_full_OM","")
+                                    
                                   )  
                                                    
                                 ),
@@ -444,7 +449,7 @@ shinyUI(
                                         
                                       column(4,
                                              h5("Use a conditioned OM",style="font-weight:bold"),
-                                             checkboxInput("Cond_OM",label="",value=FALSE), 
+                                             checkboxInput("OM_C",label="",value=FALSE), 
                                              style="height:55px"
                                       ),
                                       column(8,conditionalPanel(condition="input.Cond_OM",
