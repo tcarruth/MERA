@@ -556,16 +556,20 @@ FeaseLabs<-function(MPs,dat=NA){
 
 # ============= Risk Assessment ==================
 
-  Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
-  
+  Tabs<- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
+  Tab_title<-Fig_title<-Tab_text<-Fig_text<-rep(list(""),9)
+  Tabs<-Figs<-rep(list(function(MSE, MSEobj_reb,options=list(res=5),rnd=1){}),9)
+
+
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
   options<-list(res=5)
-  
   Intro_title[[1]] <- "Introduction"
   Intro_text[[1]] <- "Status quo fishing effort and catches are projected to evaluate biological risk. Zero catch and FMSY fishing are also projected to frame performance."
+
   
   # --- Tables --- 
+
   Tab_title[[1]] <- "Table 1. Projected biomass relative 50% BMSY"
   Tab_text[[1]] <-"The probability that projected biomass exceeds 50% BMSY. "
   
@@ -614,7 +618,7 @@ FeaseLabs<-function(MPs,dat=NA){
     names(Tab1)<-colnams
     Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab1,caption=caption,
+    DT::datatable(Tab1,caption=caption,
               extensions = 'Buttons',
               options=list(buttons = 
                              list('copy', list(
@@ -629,6 +633,8 @@ FeaseLabs<-function(MPs,dat=NA){
   
   #Tab_title[[3]] <- Tab_title[[4]] <- Tab_title[[5]] <- Tab_title[[6]] <- Tab_title[[7]] <- Tab_title[[8]] <- Tab_title[[9]] <- "" # make extras empty
 
+  Fig_title<-rep(list(""),9)
+  Fig_dim<-rep(list(function(dims)list(height=5,width=5)),9)
   
   Fig_title[[2]] <- "Figure 1. Risk Assessment. B/BMSY and Yield (relative to today) projection plots"
   Fig_text[[2]] <-  "Figure 1. Risk assessment text. Projections of biomass and yield relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points." 
