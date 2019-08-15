@@ -62,7 +62,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
   
-  if(input$OM_L){
+  if(input$OM_L==TRUE){
     OM<-OM_L
     SampList<<-NULL
     AM("Using loaded operating model")
