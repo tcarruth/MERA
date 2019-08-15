@@ -49,7 +49,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
   
-  if(input$Co)
+  #if(input$Co)
    
   OM<-LowSlopes(DLMtool::testOM)
   if(!is.na(nsim)){
