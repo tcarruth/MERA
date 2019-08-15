@@ -78,11 +78,10 @@ shinyServer(function(input, output, session) {
   Started<-reactiveVal(0)
   Quest<-reactiveVal(0)
   Data<-reactiveVal(0)
-  LoadOM<-reactiveVal(0)
   CondOM<-reactiveVal(0)
   MadeOM<-reactiveVal(0)
   RA<-reactiveVal(0) # Have run risk assessment (multi MP)
-  SD<-reactiveVal(0) # Has a status determination been run yet?
+  Status<-reactiveVal(0) # Has a status determination been run yet?
   Plan<-reactiveVal(0) # Have run Planning (multi MP)
   Eval<-reactiveVal(0)  # Have run Evaluation (single MP)
   DataInd<-reactiveVal(0) # Indicator data loaded
@@ -100,11 +99,10 @@ shinyServer(function(input, output, session) {
   output$Quest    <- reactive({ Quest()})
   output$Data     <- reactive({ Data()})
   output$CondOM   <- reactive({ CondOM()})
-  output$LoadOM   <- reactive({ LoadOM()})
   output$MadeOM   <- reactive({ MadeOM()})
 
   output$RA       <- reactive({ RA()})
-  output$SD       <- reactive({ SD()})
+  output$Status   <- reactive({ Status()})
   output$Plan     <- reactive({ Plan()})
   output$Eval     <- reactive({ Eval()})
   output$DataInd  <- reactive({ DataInd()})
@@ -125,11 +123,10 @@ shinyServer(function(input, output, session) {
   outputOptions(output,"Quest",suspendWhenHidden=FALSE)
 
   outputOptions(output,"CondOM",suspendWhenHidden=FALSE)
-  outputOptions(output,"LoadOM",suspendWhenHidden=FALSE)
   outputOptions(output,"MadeOM",suspendWhenHidden=FALSE)
 
   outputOptions(output,"RA",suspendWhenHidden=FALSE)
-  outputOptions(output,"SD",suspendWhenHidden=FALSE)
+  outputOptions(output,"Status",suspendWhenHidden=FALSE)
   outputOptions(output,"Plan",suspendWhenHidden=FALSE)
   outputOptions(output,"Eval",suspendWhenHidden=FALSE)
   outputOptions(output,"DataInd",suspendWhenHidden=FALSE)
@@ -162,7 +159,9 @@ shinyServer(function(input, output, session) {
     temp<-input$Skin
     Skin<<-get(temp) 
     SkinNo(match(temp,Skin_nams))
-    smartRedo() # allow for direct skin change if same mode
+    RA(0)
+    Plan(0)
+    Eval(0)
     AM(paste0("Skin selected: ",temp))
     
   })# update MP selection in Evaluation
@@ -463,7 +462,7 @@ shinyServer(function(input, output, session) {
       filey<-input$Load_OM
 
       tryCatch({
-        OM_L<<-readRDS(file=filey$datapath)
+        OM<<-readRDS(file=filey$datapath)
       },
       error = function(e){
         shinyalert("File read error", "This does not appear to be a DLMtool OM object, saved by saveRDS()", type = "error")
@@ -473,10 +472,8 @@ shinyServer(function(input, output, session) {
       if(class(OM)=='OM'){
         MPs<<-getMPs()
         MadeOM(1)
-        LoadOM(1)
         CondOM(0)
         Quest(0)
-        updateCheckboxInput(session,"OM_L",value=TRUE)
       }else{
         shinyalert("Incorrect class of object", "This file should be an object of DLMtool class 'OM'", type = "error")
       }
@@ -698,10 +695,8 @@ shinyServer(function(input, output, session) {
     
     Fpanel(1)
     MPs<-c('curE','curC','FMSYref','NFref')
-    nsim <- ifelse(quick, 8, input$nsim)
-    withProgress(message = whatOMmess() , value = 0, {
-      OM<<-makeOM(PanelState,nsim=nsim)
-    })
+    nsim <- ifelse(quick, 8, 96)
+    OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
     
     OM@interval<<-12
@@ -720,7 +715,7 @@ shinyServer(function(input, output, session) {
      
     Update_Options()
     
-    tryCatch({
+    #tryCatch({
       
       withProgress(message = "Running Risk Assessment", value = 0, {
         silent=T
@@ -739,21 +734,23 @@ shinyServer(function(input, output, session) {
       Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
       
-    },
-    error = function(e){
-      shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible. 
-                  For example, a short lived stock, a low stock depletion combined with recently declining effort.
-                  Try revising operating model parameters.", type = "info")
-      return(0)
-    }
+    #},
+    #error = function(e){
+    #  shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+    #               For example a short lived stock a low stock depletion with recently declining effort.
+    #              Try revising operating model parameters.", type = "info")
+    #  return(0)
+    #}
     
-    )
+    #)
     
-  }) # press risk assessment calculate
-
+  }) # press calculate
+  
+  
   
   observeEvent(input$Calculate_Plan,{
 
+    
     doprogress("Building OM from Questionnaire",1)
     OM<<-makeOM(PanelState,nsim=input$nsim)
     Fpanel(1)

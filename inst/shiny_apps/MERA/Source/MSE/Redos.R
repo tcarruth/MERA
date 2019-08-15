@@ -1,23 +1,6 @@
 
 # Redo Results functions
 
-smartRedo<-function(){
-  if(input$Mode=="Risk Assessment" & RA()==1){
-    redoRA()
-  }else if(input$Mode=="Status Determination" & SD()==1){
-    redoSD()
-  }else if(input$Mode=="Management Planning" & Plan()==1){
-    redoPlan()
-  }else if(input$Mode=="Management Performance" & Eval()==1){
-    redoEval()
-  }else{
-    RA(0)
-    SD(0)
-    Plan(0)
-    Eval(0)
-  }  
-}
-
 
 redoRA<-function(fease=F){
   withProgress(message = "Calculating Risk Assessment results", value = 0, {
@@ -181,10 +164,6 @@ redoPlan<-function(fease=F){
   })
 }
 
-
-redoSD<-function(){
-  
-}
 
 redoEval<-function(fease=F){
   
