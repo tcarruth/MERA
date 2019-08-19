@@ -38,7 +38,8 @@ shinyServer(function(input, output, session) {
   # OM construction / translation
   source("./Source/OM/makeOM.R",local=TRUE)
   source("./Source/OM/ML2D.R",local=TRUE)
-  source('./Source/OM/Backwards.R',local=TRUE ) # Stochastic SRA until progress bar update comes to DLMtool
+  source('./Source/OM/Backwards.R',local=TRUE) # Stochastic SRA until progress bar update comes to DLMtool
+  source('./Source/OM/Scoping.R',local=TRUE)
   
   # Reporting
   source("./Source/Reports/OM_report.R",local=TRUE)
