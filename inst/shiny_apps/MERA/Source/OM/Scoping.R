@@ -29,7 +29,7 @@ DataStrip<-function(dat,eff,code,simno=1){
   }
 
   if(grepl("E",code)){
-    outlist[['Ehist']]<-eff
+    outlist[['Ehist']]<-eff[simno,]
     outlist[['condition']]<-"effort"
   }else{
     if(!grepl("C",code)){
@@ -180,4 +180,72 @@ Detect_scope<-function(dat,eff=NA,simno=1,minndat=20){
 
   DataCode
 
+}
+
+
+
+getOMsim<-function(OM,simno=1,silent=T){
+  
+  
+  if(length(OM@cpars)==0){
+    
+    if(!silent) message("There is no cpars slot in this OM object, only the nsim slot has been modified")
+  }else{
+    
+    for(i in 1:length(OM@cpars)){
+      
+      dims<-dim(OM@cpars[[i]])
+      ndim<-length(dims)
+      
+      if(ndim==0){
+        OM@cpars[[i]]<-OM@cpars[[i]][simno]
+      }else if(ndim==2){
+        OM@cpars[[i]]<-matrix(OM@cpars[[i]][simno,],nrow=1)
+      }else if(ndim==3){
+        OM@cpars[[i]]<-array(OM@cpars[[i]][simno,,],c(1,dims[2:3]))
+      }else if(ndim==4){
+        OM@cpars[[i]]<-array(OM@cpars[[i]][simno,,,],c(1,dims[2:4]))
+      }else if(ndim==5){  
+        OM@cpars[[i]]<-array(OM@cpars[[i]][simno,,,,],c(1,dims[2:5]))
+      }
+      
+    }
+    
+  }
+  
+  OM@nsim<-1
+  
+  OM
+}
+
+
+Scoping_parallel<-function(x,OM,dat,code){
+  
+  outlist<-DataStrip(dat,eff,code,simno=x)
+  
+  OMp<-getOMsim(OM,simno=x)
+  
+  out<-SRA_scope(OM=OMp,
+                 Chist = outlist$Chist,
+                 Ehist = outlist$Ehist,
+                 condition = outlist$condition,
+                 Index= outlist$Index,
+                 CAA = outlist$CAA,
+                 CAL = outlist$CAL,
+                 ML = outlist$ML,
+                 length_bin = outlist$length_bin,
+                 report=F,
+                 cores=1)
+  out[[1]]
+  
+}
+
+
+SimSam<-function(OM,dat,code){
+  
+  sfExport('DataStrip','getOMsim')
+  scoped<-sfSapply(1:OM@nsim,Scoping_parallel,OM=OM,dat=dat,code=code)
+  deps<-lapply(scoped, function(x)x@cpars$D)
+  list(Sim=OM@cpars$D, Sam=unlist(deps))
+  
 }

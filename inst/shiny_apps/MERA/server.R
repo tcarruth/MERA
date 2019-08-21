@@ -10,6 +10,7 @@ library(dplyr)
 library(httpuv)
 library(shinyalert)
 library(DT)
+library(mvtnorm)
 
 options(shiny.maxRequestSize=1000*1024^2)
 
