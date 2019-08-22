@@ -1,4 +1,114 @@
 
+
+
+SimTest<-function(OM,code, ndeps=20, DepLB=0.05, DepUB=0.8){
+  
+  ndeps<-min(ndeps,OM@nsim)
+  OMc<-makesimsamOM(OM,ndeps=ndeps,DepLB=DepLB,DepUB=DepUB)  # Convert Operating model to simsam OM (depletion range in cpars)
+  SimMSE<-runMSE(OMc,MPs="curE",PPD=TRUE)                    # Simulate historical data for each depletion level
+  dat<-SimMSE@Misc[[4]][[1]]                                 # Extract the posterior predicted data
+  SimSam(OMc,dat,code)                                       # Get the depletion from the conditioned operating model
+  
+}
+
+fitdep<-function(out,dEst=0.5,plot=T){
+  
+  fitdat<-data.frame(Sim=out$Sim,Sam=out$Sam)      # Summarize these data (simulated versus assessed)
+  opt<-optim(par=  c(0,0,0), fitdep_int,
+             #method="L-BFGS-B",
+             #lower=c(-1, -20, -2),
+             #upper=c(1,   2,  2),
+             method="Nelder-Mead",
+             x=fitdat$Sam,y=fitdat$Sim,
+             hessian=T,
+             control=list(trace=6,REPORT=1,maxit=20))
+  
+  
+  fitted<-fitdep_int(opt$par,x=fitdat$Sam,y=fitdat$Sim,mode=2)
+  ord<-order(-fitdat$Sam)
+  # dEst<-rlnorm(10,log(0.3),0.1)
+  
+  nsim<-length(dEst)
+  varcov<-solve(opt$hessian)
+  
+  totsamp<-nsim*2
+  samps<-rmvnorm(totsamp,mean=opt$par,sigma=varcov)
+  
+  nobs<-nrow(fitdat)
+  stoch<-array(NA,c(totsamp,nobs))
+ 
+  
+  for(i in 1:totsamp)   stoch[i,]<-fitdep_int(samps[i,],x=fitdat$Sam,y=fitdat$Sim,mode=2)
+ 
+  sums<-apply(stoch,1,function(x,sim=fitdat$Sim)sum((x-sim)<0))
+  tokeep<-((1:totsamp)[sums>(nobs*0.15)&sums<(nobs*0.85)])[1:nsim]
+  samps<-samps[tokeep,]
+  stoch<-stoch[tokeep,]
+  
+  biascor<-rep(NA,nsim)
+  
+  for(i in 1:nsim)biascor[i]<-fitdep_int(samps[i,],x=dEst[i],y=dEst[i],mode=2)
+  #fitout= 
+  list(biascor=biascor,samps=samps,stoch=stoch,opt=opt,dEst=dEst,Sam=fitdat$Sam,Sim=fitdat$Sim,fitted=fitted)
+  
+}
+
+
+fitdep_int<-function(par,x,y,mode=1){
+  # par<-c(0,0,0); x = fitdat$Sam; y=fitdat$Sim # inverted because you wish to predict 'real' / simulated depletion
+  print(par)
+  yest<-par[1]+(exp(par[2])*x)^exp(par[3])   # exponential model
+  sdEmp<-sd(yest/y)
+  print(yest)
+  print("----")
+  
+  nLLdat<-(-dnorm(yest,y,sd=yest*sdEmp,log=TRUE))
+  nLLprior<-(-dnorm(par,0,sd=c(1,1,1),log=TRUE))
+  #sdEmp<-0.2# empirical sd from fit
+  #sum(-dnorm(yest,y,sd=sdEmp,log=TRUE)) # return sum of neg LL
+  if(mode==1){
+    return(sum(c(nLLdat,nLLprior))) #return(sum((yest-y)^2))
+  }else{
+    return(yest)
+  }
+  
+}
+
+
+
+biasplot<-function(fitout,lab=""){
+  
+  dEst<-fitout$dEst
+  biascor<-fitout$biascor
+  
+  xlim<-c(0,max(c(fitout$dEst,1)))
+  ylim<-c(0,max(c(fitout$biascor,1)))
+  plot(fitout$Sam,fitout$Sim,xlab="Assessed status",ylab="Simulated (bias corrected) status",xlim=xlim,ylim=ylim)
+  lines(c(-1,10),c(-1,10),col="#99999950",lwd=2)
+  ord<-order(-fitout$Sam)
+  lines(fitout$Sam[ord],fitout$fitted[ord],col='red',lwd=2)
+  nsim<-length(fitout$dEst)
+   
+  for(i in 1:nsim){
+    
+    lines(fitout$Sam[ord],fitout$stoch[i,ord],col="#ff000050")
+    lines(c(fitout$dEst[i],fitout$dEst[i]),c(0,fitout$biascor[i]),col="#0000ff50")
+    lines(c(0,fitout$dEst[i]),c(fitout$biascor[i],fitout$biascor[i]),col="#00ff0050")
+    
+  }
+  
+  dAss<-density(fitout$dEst,adjust=1.5,from=0)
+  dBC<-density(fitout$biascor,adjust=1.5,from=0)
+  
+  polygon(dAss$x,dAss$y/max(dAss$y)*0.1,col="#0000ff50",border="#0000ff50")
+  polygon(dBC$y/max(dBC$y)*0.08,dBC$x,col="#00ff0050",border="#00ff0050")
+  mtext(lab,side=3,line=0.4)
+
+}
+
+
+
+
 getCodes<-function(dat,maxtest=6){
   
   codes<-Detect_scope(dat,eff=NA)                            # what scoping methods are possible?
