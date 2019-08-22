@@ -1,4 +1,11 @@
 
+getCodes<-function(dat,maxtest=6){
+  
+  codes<-Detect_scope(dat,eff=NA)                            # what scoping methods are possible?
+  ord<-order(nchar(codes),decreasing = T)
+  codes[ord][1:min(maxtest,length(codes))]
+  
+}
 
 DataStrip<-function(dat,eff,code,simno=1){
 
@@ -33,7 +40,7 @@ DataStrip<-function(dat,eff,code,simno=1){
     outlist[['condition']]<-"effort"
   }else{
     if(!grepl("C",code)){
-      eff<-rep(1,length(dat@Year))
+      outlist[['Ehist']]<-rep(1,length(dat@Year))
       outlist[['condition']]<-"effort"
     }else{
       outlist[['condition']]<-"catch"
@@ -54,6 +61,8 @@ DataStrip<-function(dat,eff,code,simno=1){
 makesimsamOM<-function(OM,ndeps=20,DepLB=0.05, DepUB=0.8){
   OM_s<-trimOM(OM,ndeps)
   OM_s@cpars$D<-seq(DepLB,DepUB,length.out=ndeps)
+  OM_s@proyears<-5
+  OM_s@interval<-5
   OM_s
 }
 
@@ -219,7 +228,7 @@ getOMsim<-function(OM,simno=1,silent=T){
 }
 
 
-Scoping_parallel<-function(x,OM,dat,code){
+Scoping_parallel<-function(x,OM,dat,eff,code){
   
   outlist<-DataStrip(dat,eff,code,simno=x)
   
@@ -249,3 +258,35 @@ SimSam<-function(OM,dat,code){
   list(Sim=OM@cpars$D, Sam=unlist(deps))
   
 }
+
+
+GetDep<-function(OM,dat,eff=NA,code,cores=4){
+  if(is.na(eff[1])){
+    eff<-dat@Cat/dat@Ind
+  }  
+  
+  eff<-eff/apply(eff,1,mean)
+  outlist<-DataStrip(dat,eff,code,simno=1)
+  
+  out<-SRA_scope(OM=OM,
+                 Chist = outlist$Chist,
+                 Ehist = outlist$Ehist,
+                 condition = outlist$condition,
+                 Index= outlist$Index,
+                 CAA = outlist$CAA,
+                 CAL = outlist$CAL,
+                 ML = outlist$ML,
+                 length_bin = outlist$length_bin,
+                 report=F,
+                 cores=cores)
+  
+  #saveRDS(OM,"C:/temp/OM.Rdata")
+  #saveRDS(outlist,"C:/temp/outlist.Rdata")
+  
+  out[[1]]@cpars$D[out$output$conv]
+  
+}
+
+
+
+
