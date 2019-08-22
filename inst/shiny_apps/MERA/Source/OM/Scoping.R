@@ -287,6 +287,13 @@ GetDep<-function(OM,dat,eff=NA,code,cores=4){
   
 }
 
+getCodes<-function(dat,maxtest=6){
+  
+  codes<-Detect_scope(dat,eff=NA)                            # what scoping methods are possible?
+  ord<-order(nchar(codes),decreasing = T)
+  codes[ord][1:min(maxtest,length(codes))]
+  
+}
 
 
 
