@@ -289,11 +289,11 @@ Detect_scope<-function(dat,simno=1,minndat=20){
   Acond<-Acond[!(Acond$E & apply(Acond,1,sum)==1),] # remove only effort 
 
   nA<-nrow(Acond)
-  DataCode<-rep(NA,nA)
+  DataCode<-rep(NA,nA-1)
   for(i in 1:(nA-1)){
     DataCode[i]<-paste(datTypes[unlist(Acond[i,])],collapse="_")
   }
-  DataCode[nA]<-"None"
+  #DataCode[nA]<-"None"
 
   DataCode
 
