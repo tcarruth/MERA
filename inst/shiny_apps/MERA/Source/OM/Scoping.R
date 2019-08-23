@@ -111,17 +111,17 @@ biasplot<-function(fitout,lab=""){
 
 getCodes<-function(dat,maxtest=6){
   
-  codes<-Detect_scope(dat,eff=NA)                            # what scoping methods are possible?
+  codes<-Detect_scope(dat)                             # what scoping methods are possible?
   ord<-order(nchar(codes),decreasing = T)
   codes[ord][1:min(maxtest,length(codes))]
   
 }
 
-DataStrip<-function(dat,eff,code,simno=1){
+DataStrip<-function(dat,code,simno=1){
 
-  datTypes<-c("C","I","A","L","M")
-  slotnams<-c("Cat","Ind","CAA","CAL","ML")
-  listnams<-c("Chist","Index","CAA","CAL","ML")
+  datTypes<-c("C","E","I","A","L","M")
+  slotnams<-c("Cat","Effort","Ind","CAA","CAL","ML")
+  listnams<-c("Chist","Ehist","Index","CAA","CAL","ML")
   nD<-length(datTypes)
   outlist<-list()
 
@@ -146,8 +146,7 @@ DataStrip<-function(dat,eff,code,simno=1){
   }
 
   if(grepl("E",code)){
-    outlist[['Ehist']]<-eff[simno,]
-    outlist[['condition']]<-"effort"
+     outlist[['condition']]<-"effort"
   }else{
     if(!grepl("C",code)){
       outlist[['Ehist']]<-rep(1,length(dat@Year))
@@ -187,9 +186,8 @@ goodslot<-function(x,LHy){
 
 }
 
-Detect_scope<-function(dat,eff=NA,simno=1,minndat=20){
+Detect_scope<-function(dat,simno=1,minndat=20){
 
-  eff<-matrix(eff,nrow=1)
   ny<-ncol(dat@Cat)
 
   if(length(dat@LHYear)>0){
@@ -215,7 +213,7 @@ Detect_scope<-function(dat,eff=NA,simno=1,minndat=20){
 
   if(goodslot(dat@Cat,LHy)) Cat<-dat@Cat[simno,yind]
   if(goodslot(dat@Ind,LHy)) Ind <-dat@Ind[simno,yind]
-  if(goodslot(eff,LHy))     Eff<-eff[yind]
+  if(goodslot(dat@Effort,LHy))     Eff<-dat@Effort[simno,yind]
 
   # need to make sure CAL data is the right dimensions
   CAL<-array(0,c(1,ny,nL))
@@ -288,7 +286,7 @@ Detect_scope<-function(dat,eff=NA,simno=1,minndat=20){
 
   Acond<-expand.grid(Alist)
   names(Acond)<-datTypes
-  Acond<-Acond[!((Acond$C|Acond$E) & apply(Acond,1,sum)==1),] # remove only Catch and only Effort
+  Acond<-Acond[!(Acond$E & apply(Acond,1,sum)==1),] # remove only effort 
 
   nA<-nrow(Acond)
   DataCode<-rep(NA,nA)
@@ -370,13 +368,10 @@ SimSam<-function(OM,dat,code){
 }
 
 
-GetDep<-function(OM,dat,eff=NA,code,cores=4){
-  if(is.na(eff[1])){
-    eff<-dat@Cat/dat@Ind
-  }  
+GetDep<-function(OM,dat,code,cores=4){
   
-  eff<-eff/apply(eff,1,mean)
-  outlist<-DataStrip(dat,eff,code,simno=1)
+  
+  outlist<-DataStrip(dat,code,simno=1)
   
   out<-SRA_scope(OM=OM,
                  Chist = outlist$Chist,
@@ -399,7 +394,7 @@ GetDep<-function(OM,dat,eff=NA,code,cores=4){
 
 getCodes<-function(dat,maxtest=6){
   
-  codes<-Detect_scope(dat,eff=NA)                            # what scoping methods are possible?
+  codes<-Detect_scope(dat)                            # what scoping methods are possible?
   ord<-order(nchar(codes),decreasing = T)
   codes[ord][1:min(maxtest,length(codes))]
   
