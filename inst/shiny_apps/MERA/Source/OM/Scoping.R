@@ -157,7 +157,10 @@ DataStrip<-function(dat,code,simno=1){
 
   }
   
-  if(code=="C") outlist[['condition']]<-"effort" # exception for catch only methods
+  if(code=="C"){
+    outlist[['Ehist']]<-rep(1,length(dat@Year))
+    outlist[['condition']]<-"effort" # exception for catch only methods
+  } 
 
   if(length(dat@CAL_bins)>1){
     NL<-length(dat@CAL_bins)
