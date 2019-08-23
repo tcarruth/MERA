@@ -382,7 +382,7 @@ shinyUI(
                                   h5("1. Closed loop simulation controls",style="color:grey"),
                                   HTML("<br>"),
                                   column(12,    column(4,numericInput("interval", label = "Management interval", value=8,min=2,max=10))),
-                                  column(12,    column(4,numericInput("nsim", label = "No. simulations", value=48,min=2,max=256))),
+                                  column(12,    column(4,numericInput("nsim", label = "No. simulations", value=8,min=2,max=256))),
                                   column(12,    column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"))
                                   
                                 ),
@@ -1004,7 +1004,7 @@ shinyUI(
     
     # =============== Risk Assessment ================================================================================================================================================
     conditionalPanel(condition="input.Mode=='Risk Assessment'",
-                     
+                     column(12,style="height:15px"),  
                      conditionalPanel(condition="output.Plan==0",h4("STEP C: CALCULATE RISK OF STATUS QUO MANAGEMENT")),
                      conditionalPanel(condition="output.Plan==1",h4("STEP C: CALCULATE RISK OF STATUS QUO MANAGEMENT",style="color:green")),
                      hr(),
@@ -1054,9 +1054,9 @@ shinyUI(
     # =============== Status Determination ===========================================================================================================
     
     conditionalPanel(condition="input.Mode=='Status Determination'",
-                     
-       conditionalPanel(condition="output.Status==0",h4("STEP C: CALCULATE POPULATION STATUS")),
-       conditionalPanel(condition="output.Status==1",h4("STEP C: CALCULATE POPULATION STATUS",style="color:green")),
+       column(12,style="height:15px"),                
+       conditionalPanel(condition="output.SD==0",h4("STEP C: CALCULATE POPULATION STATUS")),
+       conditionalPanel(condition="output.SD==1",h4("STEP C: CALCULATE POPULATION STATUS",style="color:green")),
        
        
        hr(),
@@ -1067,14 +1067,22 @@ shinyUI(
          column(11,
                 fluidRow(
                   column(4,conditionalPanel(condition="output.Data==1",
-                                            
-                         column(12,actionButton("Calculate_Status",h5("      CALCULATE     ",style="color:red")))
-                                            
+                      fluidRow(
+                          column(7,radioButtons('SDset',label="Status Determination Methods",choices=c("All","Top 6","Top 3","Custom"),selected="Top 3",inline=T)),
+                          column(5,conditionalPanel(condition="input.SDset=='Custom'",selectInput("SDsel","",  choices=c("C"),selected="C", multiple = TRUE))),
+                          column(6,checkboxInput("SD_simtest", label = "Include simulation test", value = FALSE)),
+                          column(6,checkboxInput("SD_parallel", label = "Parallel", value = TRUE)),
+                          column(12,actionButton("Calculate_status",h5("      CALCULATE     ",style="color:red")))
+                      )
                   ),
                   conditionalPanel(condition="output.Data==0",
-                                   
-                          h5("Data not loaded yet model not built yet (Step C)", style = "color:grey")
-                                   
+                         HTML("<br>"),
+                         fileInput("Load_Data_SD","Load available data  (.csv)")
+                        
+                  ),
+                  conditionalPanel(width=4,condition="output.Data==1",
+                         h5("Data Report",style="font-weight:bold"),
+                         downloadButton("Build_Data_SD"," ")
                   )
                   ),
                   
@@ -1137,14 +1145,16 @@ shinyUI(
                                             
                           # column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
                           # column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
-                          column(12,radioButtons('MPset',label="MP set",choices=c("Top 20","All","Demo","Custom"),selected="Demo",inline=T)),
-                          conditionalPanel(condition="input.MPset=='Custom'",selectInput("ManPlanMPsel","Custom MPs",  choices=c("DCAC","DBSRA"),selected="DCAC", multiple = TRUE)),
-                          column(9,sliderInput("Dep_reb",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
-                          column(2,HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey"))),
-                          column(12,h5("Additional options",style="font-weight:bold"),style="height:22px"),
-                          column(4,checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),style="padding-top:0px"),
-                          column(4,checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),style="padding-top:0px"),
-                          column(12,actionButton("Calculate_Plan",h5("      CALCULATE     ",style="color:red")))
+                      fluidRow( 
+                          column(7, radioButtons('MPset',label="MP set",choices=c("Top 20","All","Demo","Custom"),selected="Demo",inline=T)),
+                          column(5, conditionalPanel(condition="input.MPset=='Custom'",selectInput("ManPlanMPsel","",  choices=c("DCAC","DBSRA"),selected="DCAC", multiple = TRUE))),
+                          column(9, sliderInput("Dep_reb",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
+                          column(2, HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey"))),
+                          column(12, h5("Additional options",style="font-weight:bold"),style="height:22px"),
+                          column(4, checkboxInput("Ex_Ref_MPs", label = "No ref. MPs", value = FALSE),style="padding-top:0px"),
+                          column(4, checkboxInput("Data_Rich", label = "Data-rich MPs", value = FALSE),style="padding-top:0px"),
+                          column(12, actionButton("Calculate_Plan",h5("      CALCULATE     ",style="color:red")))
+                      )
                              
                   ),
                   
@@ -1197,10 +1207,10 @@ shinyUI(
 
     # ====================== Evaluation ========================================================================
 
-    conditionalPanel(condition="input.Mode=='Management Evaluation'",
+    conditionalPanel(condition="input.Mode=='Management Performance'",
       column(12,style="height:15px"),          
-      conditionalPanel(condition="output.Plan==0",h4("STEP E: MP EVALUATION")),
-      conditionalPanel(condition="output.Plan==1",h4("STEP E: MP EVALUATION",style="color:green")),
+      conditionalPanel(condition="output.Plan==0",h4("STEP C: EVALUATE THE PERFORMANCE OF AN MP IN USE")),
+      conditionalPanel(condition="output.Plan==1",h4("STEP C: EVALUATE THE PERFORMANCE OF AN MP IN USE",style="color:green")),
    
       hr(),
 
@@ -1210,15 +1220,11 @@ shinyUI(
                fluidRow(
                  column(4,
                    conditionalPanel(condition="output.MadeOM>0",
-                    #column(6,numericInput("proyears_app", label = "Years in use", value=5,min=2,max=20)),
-                    column(6,numericInput("interval_app", label = "Management interval", value=2,min=2,max=10)),
-                    column(9,sliderInput("Dep_reb_app",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
-                    column(2,HTML("<br><br>"),actionButton("Dep_reb_def_app",h5("DEFAULT",style="color:grey"))),
+                    column(6,numericInput("proyears_eval", label = "Years in use", value=5,min=2,max=20)),
                     column(6,selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0)),style="padding:10px"),
-                    column(6,checkboxInput("Parallel_app", label = "Parallel comp.", value = FALSE)),
-                     
+                   
                     column(12,
-                           actionButton("Calculate_Eval",h5("      CALCULATE     ",style="color:red"))
+                        actionButton("Calculate_Eval",h5("      CALCULATE     ",style="color:red"))
                     )
 
                    ),
@@ -1356,15 +1362,8 @@ shinyUI(
               ),
               column(9,
               div(style='height:1000px; overflow-y: scroll; width: 110%', 
-             
               
-                 conditionalPanel(condition="output.Plan==0&input.Mode=='Management Planning'",
-                                  h5("Planning MSE not run yet (Step C)", style = "color:grey")
-                 ),
-                 conditionalPanel(condition="output.Eval==0&input.Mode=='Management Evaluation'",
-                                  h5("Evaluation MSE not run yet (Step C1)", style = "color:grey")
-                 ),
-                 conditionalPanel(condition="output.Plan==1|output.Eval==1|output.RA==1",
+                 conditionalPanel(condition="output.Plan==1|output.Eval==1|output.RA==1|output.SD==1",
 
                     fluidRow(
                       column(width = 12,

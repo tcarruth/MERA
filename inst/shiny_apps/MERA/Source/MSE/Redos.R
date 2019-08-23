@@ -99,7 +99,85 @@ redoRA<-function(fease=F){
 }
 
 
-redoSD<-function(){}
+redoSD<-function(){
+  
+  withProgress(message = "Calculating Status Determination results", value = 0, {
+    
+    nres<-length(Skin$SD$Tab_title)
+    incrate<-1/nres
+    
+    # option code
+    #options <- list(burnin = input$burnin, res=input$res)
+    #options <- list( res=1)
+    
+    if(Skin$SD$Intro_title[[1]]==""){
+      output[["P_Intro_title"]]<-renderText(NULL)
+      output[["P_Intro_text"]]<-renderText(NULL)
+    }else{
+      output[["P_Intro_title"]]<-renderText(Skin$SD$Intro_title[[1]])
+      output[["P_Intro_text"]]<-renderText(Skin$SD$Intro_text[[1]])
+    } 
+    
+    for(res in 1:nres){
+      
+      local({
+        
+        res2<-res
+        
+        if(Skin$SD$Tab_title[[res2]]==""){
+          output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
+          output[[paste0("P_Tab_",res2,"_text")]]<-renderText(NULL)
+          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(NULL) 
+        }else{
+          output[[paste0("P_Tab_",res2,"_title")]]<-renderText(Skin$SD$Tab_title[[res2]])
+          output[[paste0("P_Tab_",res2,"_text")]]<-renderText(Skin$SD$Tab_text[[res2]])
+          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(Skin$SD$Tabs[[res2]](Status)) 
+        }
+        
+        if(Skin$SD$Fig_title[[res2]]==""){
+          output[[paste0("P_Fig_",res2,"_title")]]<-renderText(NULL)
+          output[[paste0("P_Fig_",res2,"_text")]]<-renderText(NULL)
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(NULL) 
+        }else{ 
+          output[[paste0("P_Fig_",res2,"_title")]]<-renderText(Skin$SD$Fig_title[[res2]])
+          output[[paste0("P_Fig_",res2,"_text")]]<-renderText(Skin$SD$Fig_text[[res2]])
+          height=Skin$SD$Fig_dim[[res2]]()$height
+          width=Skin$SD$Fig_dim[[res2]]()$width
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$SD$Figs[[res2]](Status), height =ceiling(height) , width = ceiling(width)) 
+        }
+        
+      })
+      
+      incProgress(incrate)
+      
+    }
+    
+    # Blank additional non-specified Figs / Tabs
+    
+    if(nres<9){
+      
+      for(res in (nres+1):9){
+        local({
+          res2<-res
+          output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
+          output[[paste0("P_Tab_",res2,"_text")]]<-renderText(NULL)
+          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(NULL)
+          
+          output[[paste0("P_Fig_",res2,"_title")]]<-renderText(NULL)
+          output[[paste0("P_Fig_",res2,"_text")]]<-renderText(NULL)
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(NULL)
+          
+        })
+      }
+      
+    }
+    
+    incProgress(incrate)
+    
+  })
+  
+
+}
 
 
 redoPlan<-function(fease=F){

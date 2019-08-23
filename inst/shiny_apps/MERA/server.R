@@ -106,7 +106,7 @@ shinyServer(function(input, output, session) {
   output$MadeOM   <- reactive({ MadeOM()})
 
   output$RA       <- reactive({ RA()})
-  output$SD   <- reactive({ SD()})
+  output$SD       <- reactive({ SD()})
   output$Plan     <- reactive({ Plan()})
   output$Eval     <- reactive({ Eval()})
   output$DataInd  <- reactive({ DataInd()})
@@ -300,7 +300,7 @@ shinyServer(function(input, output, session) {
 
       MSClog<-list(PanelState, Just, Des)
       doprogress("Saving Questionnaire")
-      #saveRDS(MSClog,file)
+      saveRDS(MSClog,file)
 
     }
 
@@ -456,6 +456,65 @@ shinyServer(function(input, output, session) {
 
   })
 
+  # Data load Status determination
+  observeEvent(input$Load_Data_SD,{
+    
+    filey<-input$Load_Data_SD
+    
+    if(grepl(".csv",filey$datapath)){ # if it is a .csv file
+      
+      tryCatch(
+        {
+          dat<<-new('Data',filey$datapath)
+          Data(1)
+          
+        },
+        error = function(e){
+          shinyalert("Not a properly formatted DLMtool Data .csv file", "Trying to load as an object of class 'Data'", type = "error")
+          Data(0)
+          loaded=F
+        }
+      )
+      
+    }else{
+      
+      tryCatch(
+        {
+          dat<<-readRDS(filey$datapath)
+          Data(1)
+        },
+        error = function(e){
+          shinyalert("Could not load object", "Failed to load this file as a formatted data object", type = "error")
+          Data(0)
+        }
+      )
+      
+      if(class(dat)!="Data"){
+        shinyalert("Data load error!", "Failed to load this file as either a formatted .csv datafile or a DLMtool object of class 'Data'", type = "error")
+        stop()
+      }
+    }
+    
+    
+    
+    # Trims data to LHYear 
+    dat_test<-Data_trimer(dat)
+    
+    if(class(dat_test)!='Data'){
+      DataInd(0)  # If it returns an NA
+      
+    }else{  # if a data object is trimmable
+      dat_ind<<-dat  # the ancilliary index data are the original dataset
+      dat<<-dat_test # data for conditioning is the trimmed dataset
+      DataInd(1)     # we have EC data
+    }
+    
+    SD_codes<-getCodes(dat,maxtest=Inf)
+    updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
+  
+  })
+  
+  
   # OM save
   output$Save_OM<- downloadHandler(
 
@@ -763,9 +822,81 @@ shinyServer(function(input, output, session) {
   
   
   
-  observeEvent(input$Calculate_Plan,{
-
+  
+  observeEvent(input$Calculate_status,{
     
+    Status<-new('list')
+    nsim<-input$nsim
+    OM<-makeOM(PanelState,nsim=nsim)
+    setup()
+    
+    if(input$SDset=="Custom"){
+      codes<-input$SDsel
+    }else{
+      if(input$SDset=="All"){
+        nSD=Inf
+      }else if(input$SDset=="Top 6"){
+        nSD=6
+      }else if(input$SDset=="Top 3"){
+        nSD=3
+      }
+      codes<-getCodes(dat,maxtest=nSD)
+    }
+    
+    ncode<-length(codes)
+    Est<-Sim<-Fit<-list()
+    saveRDS(OM,"C:/temp/OM3")
+    saveRDS(dat,"C:/temp/dat3")
+    saveRDS(codes,"C:/temp/codes3")
+    #tryCatch({
+      
+      withProgress(message = "Running Status Determination", value = 0, {
+        
+        for(cc in 1:ncode){
+          Est[[cc]]<-GetDep(OM,dat,code=codes[cc],cores=parallel::detectCores())
+          AM(paste(cc,codes[cc],"Did not return depletion"))
+          incProgress(1/ncode, detail = round(cc*100/ncode))
+        }  
+    
+      })
+      
+      if(input$SD_simtest){
+        simOM<-makeOM(PanelState,nsim=nsim)
+        simOM@proyears=5
+        simOM@interval=10
+        MSEout<-runMSE(simOM,MPs="curE",PPD=TRUE)
+        dat<-MSEout@Misc[[4]][[1]]
+        Effort<-dat@Cat/dat@Ind
+        dat@Effort<-Effort/apply(Effort,1,mean) # standardized
+      }
+      
+      
+      # ==== Types of reporting ==========================================================
+      
+      if(input$Debug)message("preredoSD")
+      redoSD()
+      if(input$Debug)message("postredoSD")
+      SD(1)
+      Tweak(0)
+      #updateTabsetPanel(session,"Res_Tab",selected="1")
+       
+      Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim)
+      
+   # },
+    #error = function(e){
+     # shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods.", type = "info")
+      #return(0)
+    #}
+    
+    #)
+    
+  }) # press calculate
+  
+  
+  
+  
+  observeEvent(input$Calculate_Plan,{
+  
     doprogress("Building OM from Questionnaire",1)
     OM<<-makeOM(PanelState,nsim=input$nsim)
     Fpanel(1)
@@ -1038,6 +1169,48 @@ shinyServer(function(input, output, session) {
     }
   )
 
+  # Data report for SD mode
+  output$Build_Data_SD <- downloadHandler(
+    # For PDF output, change this to "report.pdf"
+    filename = function(){paste0(namconv(input$Name),"_data.html")}, #"report.html",
+    
+    content = function(file) {
+      withProgress(message = "Building data report", value = 0, {
+        nsim<<-input$nsim
+        OM<<-makeOM(PanelState,nsim=nsim)
+        src <- normalizePath('Source/Markdown/DataRep.Rmd')
+        src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+        
+        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+        MSClog<-list(PanelState, Just, Des)
+        
+        owd <- setwd(tempdir())
+        on.exit(setwd(owd))
+        file.copy(src, 'DataRep.Rmd', overwrite = TRUE)
+        file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
+        
+        library(rmarkdown)
+        params <- list(test = input$Name,
+                       set_title=paste0("Data report for ",input$Name),
+                       set_type=paste0("Demonstration Data description"," (MERA version ",Version,")"),
+                       dat=dat,
+                       author=input$Author,
+                       ntop=input$ntop,
+                       inputnames=inputnames,
+                       SessionID=SessionID,
+                       copyright=paste(Copyright,CurrentYr)
+        )
+        incProgress(0.2)
+        knitr::knit_meta(class=NULL, clean = TRUE) 
+        output<-render(input="DataRep.Rmd",output_format="html_document", params = params)
+        incProgress(0.7)
+        file.copy(output, file)
+        incProgress(0.1)
+      }) # end of progress
+    }
+  )
+ 
+  
   # Conditioning report
   output$Build_Cond <- downloadHandler(
     # For PDF output, change this to "report.pdf"

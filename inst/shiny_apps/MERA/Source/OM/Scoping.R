@@ -291,7 +291,9 @@ Detect_scope<-function(dat,simno=1,minndat=20){
 
   Acond<-expand.grid(Alist)
   names(Acond)<-datTypes
-  Acond<-Acond[!(Acond$E & apply(Acond,1,sum)==1),] # remove only effort 
+  Acond<-Acond[!(Acond$E & apply(Acond,1,sum)==1),]    # remove only effort 
+  Acond<-Acond[!(Acond$A&Acond$L),]                    # remove age + length conditioning
+  Acond<-Acond[!(Acond$L&Acond$M),]                    # remove length + mean length conditioning
 
   nA<-nrow(Acond)
   DataCode<-rep(NA,nA-1)
@@ -377,7 +379,9 @@ GetDep<-function(OM,dat,code,cores=4){
   
   
   outlist<-DataStrip(dat,code,simno=1)
-  
+  saveRDS(code,"C:/temp/code")
+  saveRDS(outlist,"C:/temp/outlist_whaat")
+    
   out<-SRA_scope(OM=OM,
                  Chist = outlist$Chist,
                  Ehist = outlist$Ehist,
@@ -385,13 +389,10 @@ GetDep<-function(OM,dat,code,cores=4){
                  Index= outlist$Index,
                  CAA = outlist$CAA,
                  CAL = outlist$CAL,
-                 ML = outlist$ML,
+                 ML = outlist$ML/dat@vbLinf[1]*100,
                  length_bin = outlist$length_bin,
                  report=F,
                  cores=cores)
-  
-  #saveRDS(OM,"C:/temp/OM.Rdata")
-  #saveRDS(outlist,"C:/temp/outlist.Rdata")
   
   out[[1]]@cpars$D[out$output$conv]
   
@@ -405,5 +406,29 @@ getCodes<-function(dat,maxtest=6){
   
 }
 
+
+DataTrim<-function(dat,startyr=1,endyr=NA){
+  
+  if(is.na(endyr)){
+    stop("You need to specify an endyr to cut the data")
+  }else if(endyr > length(dat@Year)){
+    stop("You specified an end yr that is greater than the length of the Year slot")
+  }else{
+    yind<-1:SimOM@nyears
+    dat@Year<-dat@Year[yind]
+    dat@Cat<-dat@Cat[,yind]
+    dat@Effort<-dat@Effort[,yind]
+    dat@Ind<-dat@Ind[,yind]
+    dat@ML<-dat@ML[,yind]
+    dat@Rec<-dat@Rec[,yind]
+    dat@Lc<-dat@Lc[,yind]
+    dat@Lbar<-dat@Lbar[,yind]
+    dat@CAL<-dat@CAL[,yind,]
+    dat@CAA<-dat@CAA[,yind,]
+  }
+  
+  dat
+  
+}
 
 
