@@ -556,7 +556,7 @@ FeaseLabs<-function(MPs,dat=NA){
 # ============= Risk Assessment ==================
 
   Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
-  
+  for(i in 1:9) Fig_dim[[i]]<-function()list(height=1,width=1)
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
   options<-list(res=5)
@@ -634,7 +634,7 @@ FeaseLabs<-function(MPs,dat=NA){
   
   Figs[[2]]<-function(MSEobj,MSEobj_reb,options=list()){
     MSEobj@MPs<-c("Current effort", "Current catches", "FMSY fishing", "Zero fishing")
-    BMSYproj(MSEobj,MSEobj_reb,options,maxcol=4)
+    BMSYproj(MSEobj,MSEobj,options,maxcol=4)
   } 
   Fig_dim[[2]]<-function(dims)list(height=400,width=1200)
   
@@ -650,6 +650,8 @@ FeaseLabs<-function(MPs,dat=NA){
   
   Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
   
+  for(i in 1:9) Fig_dim[[i]]<-function()list(height=1,width=1)
+ 
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
   options<-list()
@@ -690,9 +692,10 @@ FeaseLabs<-function(MPs,dat=NA){
     
   }
   
-  # --- Tables --- 
+  # --- Figures --- 
   Fig_title[[1]] <- "Figure 1. Depletion estimates"
   Fig_text[[1]] <-"The median and 80% quantiles. "
+  
   Figs[[1]]<-function(Status,options=list()){
  
     keep<-unlist(lapply(Status$Est,length))>2
@@ -704,12 +707,15 @@ FeaseLabs<-function(MPs,dat=NA){
     
     ymax<-max(unlist(lapply(dens,function(x)max(x$y))))
     xmax<-max(unlist(lapply(dens,function(x)max(x$x))))
-    plot(dens[[1]],type='l',xlim=c(0,xmax),ylim=c(0,ymax),main="",xlab="Depletion estimate (% unfished SSB)",ylab="Rel. Freq.")
-    for(i in 2:nEst)lines(dens[[i]],col=cols[i])
+    plot(dens[[1]],type='l',xlim=c(0,100),ylim=c(0,ymax),main="",xlab="Depletion estimate (% unfished SSB)",ylab="Rel. Freq.")
+    if(nEst>1)for(i in 2:nEst)lines(dens[[i]],col=cols[i])
     legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
     
   }
   Fig_dim[[1]]<-function()list(height=600,width=600)
+
+  
+  
   
   SD<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                         Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)

@@ -10,12 +10,12 @@ smartRedo<-function(){
     redoPlan()
   }else if(input$Mode=="Management Performance" & Eval()==1){
     redoEval()
-  }else{
-    RA(0)
-    SD(0)
-    Plan(0)
-    Eval(0)
-  }
+  }  #else{
+  #  RA(0)
+  #  SD(0)
+  #  Plan(0)
+  #  Eval(0)
+  #}
   
 }
 
@@ -25,12 +25,9 @@ redoRA<-function(fease=F){
     dims<-list()
     incrate<-1/nres
     if(input$Debug)message(paste0("Max number of RA plots = ",nres))
-    # option code
+    
     options <- list(res=5)
-    # print("Here")
-    # print(Skin$Risk_Assessment$Intro_title)
-    # print(Skin$Risk_Assessment$Intro_title[[1]])
-    # print("Done")
+    
     if(Skin$Risk_Assessment$Intro_title[[1]]==""){
       output[["P_Intro_title"]]<-renderText(NULL)
       output[["P_Intro_text"]]<-renderText(NULL)
@@ -44,8 +41,7 @@ redoRA<-function(fease=F){
       local({
         
         res2<-res
-        
-         
+          
         if(Skin$Risk_Assessment$Tab_title[[res2]]==""){
           output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
           output[[paste0("P_Tab_",res2,"_text")]]<-renderText(NULL)
@@ -53,7 +49,7 @@ redoRA<-function(fease=F){
         }else{
           output[[paste0("P_Tab_",res2,"_title")]]<-renderUI(Skin$Risk_Assessment$Tab_title[[res2]])
           output[[paste0("P_Tab_",res2,"_text")]]<-renderUI(Skin$Risk_Assessment$Tab_text[[res2]])
-          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(Skin$Risk_Assessment$Tabs[[res2]](MSEobj,MSEobj_reb,options)) 
+          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(Skin$Risk_Assessment$Tabs[[res2]](RAobj,options)) 
         }
         
         if(Skin$Risk_Assessment$Fig_title[[res2]]==""){
@@ -65,7 +61,7 @@ redoRA<-function(fease=F){
           output[[paste0("P_Fig_",res2,"_text")]]<-renderUI(Skin$Risk_Assessment$Fig_text[[res2]])
           height=Skin$Risk_Assessment$Fig_dim[[res2]](dims)$height
           width =Skin$Risk_Assessment$Fig_dim[[res2]](dims)$width
-          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Risk_Assessment$Figs[[res2]](MSEobj,MSEobj_reb,options),  height =ceiling(height) , width = ceiling(width)) 
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Risk_Assessment$Figs[[res2]](RAobj,RAobj,options),  height =ceiling(height) , width = ceiling(width)) 
         }
         
       })
@@ -73,7 +69,6 @@ redoRA<-function(fease=F){
       incProgress(incrate)
       
     }
-    
     
     if(nres<9){
       

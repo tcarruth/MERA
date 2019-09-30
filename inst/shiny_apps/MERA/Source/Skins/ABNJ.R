@@ -354,6 +354,80 @@ Risk_Assessment<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_te
 
 
 
+# ============= Status Determination ==================
+
+Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
+
+for(i in 1:9) Fig_dim[[i]]<-function()list(height=1,width=1)
+
+# These are the names of widgets and their values to display in this skin / mode
+#             years in projection,  year resolution of reporting  rounding of digits
+options<-list()
+
+Intro_title[[1]] <- "Introduction"
+Intro_text[[1]] <- "Status determination provides estimates of spawning stock biomass relative to asymptotic unfished conditions for various combinations of data types."
+
+# --- Tables --- 
+Tab_title[[1]] <- "Table 1. Depletion estimates"
+Tab_text[[1]] <-"The median and 80% quantiles. "
+
+Tabs[[1]]<-function(Status,options=list()){
+  
+  ncode<-length(Status$codes)
+  qs<-matrix(NA,nrow=ncode,ncol=3)
+  for(i in 1:ncode){
+    if(length(Status$Est[[i]])>2){
+      qs[i,]<-round(quantile(Status$Est[[i]]*100,c(0.1,0.5,0.9)),2)
+      
+    }else{
+      qs[i,]<-NA
+    }
+  }
+  
+  conv<-round(unlist(lapply(Status$Est,length))/Status$nsim*100,2)
+  tab<-as.data.frame(cbind(Status$codes,qs,conv))
+  names(tab)<-c("Method","10%","Median","90%","Conv %")
+  datatable(tab,caption="Stock status estimates",
+            extensions = 'Buttons',
+            options=list(buttons = 
+                           list('copy', list(
+                             extend = 'collection',
+                             buttons = c('csv', 'excel', 'pdf'),
+                             text = 'Download'
+                           )),
+                         dom = 'Brti')
+  )
+  
+}
+
+# --- Figures --- 
+Fig_title[[1]] <- "Figure 1. Depletion estimates"
+Fig_text[[1]] <-"The median and 80% quantiles. "
+
+Figs[[1]]<-function(Status,options=list()){
+  
+  keep<-unlist(lapply(Status$Est,length))>2
+  Est<-Status$Est[keep]
+  nEst<-sum(keep)
+  
+  cols<-c('black','grey',rainbow(nEst-1))
+  dens<-lapply(Est,function(x)density(x*100,from=0))
+  
+  ymax<-max(unlist(lapply(dens,function(x)max(x$y))))
+  xmax<-max(unlist(lapply(dens,function(x)max(x$x))))
+  plot(dens[[1]],type='l',xlim=c(0,xmax),ylim=c(0,ymax),main="",xlab="Depletion estimate (% unfished SSB)",ylab="Rel. Freq.")
+  if(nEst>1)for(i in 2:nEst)lines(dens[[i]],col=cols[i])
+  legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
+  
+}
+Fig_dim[[1]]<-function()list(height=600,width=600)
+
+SD<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
+         Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
+
+
+
+
 # ============= Planning =========================
 
 Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
@@ -964,4 +1038,4 @@ Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, F
 
 # ========== Build ============================= 
 
-ABNJ <- list(Risk_Assessment=Risk_Assessment,Planning=Planning,Evaluation=Evaluation) 
+ABNJ <- list(Risk_Assessment=Risk_Assessment,SD=SD,Planning=Planning,Evaluation=Evaluation) 

@@ -105,7 +105,7 @@ shinyUI(
     hr(),
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
-    h5("MERA links a straightforward graphical questionaire to the powerful OMx operating model of DLMtool and MSEtool to conduct rapid closed-loop simulation testing of multiple management procedures (MPs). ",style = "color:grey"),
+    h5("MERA links a straightforward graphical questionaire to the powerful DLMtool and MSEtool libraries to calculate stock status and management performance. ",style = "color:grey"),
     h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_4_4.html", target="_blank"),style = "color:grey"),
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
@@ -115,9 +115,8 @@ shinyUI(
       column(12,HTML("<br>")),
 
       column(12,style="height:60px",
-
-        conditionalPanel(condition="output.Quest==0",h4("STEP A: CHARACTERIZE FISHERY SYSTEM")),
-        conditionalPanel(condition="output.Quest==1",h4("STEP A: CHARACTERIZE FISHERY SYSTEM",style="color:green")),
+ 
+        h4("CHARACTERIZE FISHERY SYSTEM"),
 
         hr()
       ),
@@ -359,7 +358,7 @@ shinyUI(
                                                   actionLink("All_Err","DEFAULT")),
                                  value=3),
                         
-                        tabPanel(h4("Optional",style = "color:grey"),
+                        tabPanel(h4("Extra",style = "color:grey"),
                                  
                                 conditionalPanel(width=4,condition="output.Opanel==undefined|output.Opanel==0",
                                  
@@ -376,21 +375,39 @@ shinyUI(
                                 ),
                          
                                 conditionalPanel(width=4,condition="output.Opanel==1",
-                                                  
-                                  
-                                  HTML("<br>"),
-                                  h5("1. Closed loop simulation controls",style="color:grey"),
-                                  HTML("<br>"),
-                                  column(12,    column(4,numericInput("interval", label = "Management interval", value=8,min=2,max=10))),
-                                  column(12,    column(4,numericInput("nsim", label = "No. simulations", value=8,min=2,max=256))),
-                                  column(12,    column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"))
-                                  
+                                   
+                                   HTML("<br>"),
+                                   h5("1. Load fishery data",style="color:grey"),
+                                   column(12,style="padding-left:27px",
+                                          
+                                          HTML("<br>"),
+                                          fileInput("Load_Data","Load available data  (.csv)"),
+                                          conditionalPanel(width=4,condition="output.Data==1",
+                                                           h5("Data Report",style="font-weight:bold"),
+                                                           downloadButton("Build_Data"," ")
+                                          )
+                                   )
+                                                 
                                 ),
+                                
                                 
                                 conditionalPanel(width=4,condition="output.Opanel==2",
                                                  
+                                                 
+                                   HTML("<br>"),
+                                   h5("2. Closed loop simulation controls",style="color:grey"),
+                                   HTML("<br>"),
+                                   column(12,    column(4,numericInput("interval", label = "Management interval", value=8,min=2,max=10))),
+                                   column(12,    column(4,numericInput("nsim", label = "No. simulations", value=8,min=2,max=256))),
+                                   column(12,    column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"))
+                                                 
+                                ),
+                                
+                                
+                                conditionalPanel(width=4,condition="output.Opanel==3",
+                                                 
                                   HTML("<br>"),
-                                  h5("2. Detailed operating model controls",style="color:grey"),
+                                  h5("3. Detailed operating model controls",style="color:grey"),
                                   column(12,
                                     column(7,
                                            fileInput("Load_OM","Load  (.OM)"),
@@ -412,22 +429,6 @@ shinyUI(
                                   )  
                                                    
                                 ),
-                                 
-                                conditionalPanel(width=4,condition="output.Opanel==3",
-                                                  
-                                  HTML("<br>"),
-                                  h5("3. Load fishery data",style="color:grey"),
-                                  column(12,style="padding-left:27px",
-                                    
-                                    HTML("<br>"),
-                                    fileInput("Load_Data","Load available data  (.csv)"),
-                                    conditionalPanel(width=4,condition="output.Data==1",
-                                      h5("Data Report",style="font-weight:bold"),
-                                      downloadButton("Build_Data"," ")
-                                    )
-                                  )
-                                                 
-                                ),
                                 
                                 conditionalPanel(width=4,condition="output.Opanel==4",
                                                  
@@ -437,7 +438,7 @@ shinyUI(
                                    column(12,style="padding-left:27px",
                                           
                                      conditionalPanel(condition="output.Data==0",
-                                         h5("You must first load data (previous optional panel) before conditioning operating models",style="color:grey")
+                                         h5("You must first load data (first 'Extra' panel) before conditioning operating models",style="color:grey")
                                      ),
                                      
                                      conditionalPanel(condition="output.Data==1",
@@ -810,7 +811,7 @@ shinyUI(
                           h5("",style = "color:grey")
                       ),
                       
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==1",
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==2",
                          column(12,
                             HTML("<br>"),
                             HTML("<br>"),
@@ -822,7 +823,7 @@ shinyUI(
                          )
                       ),
                       
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==2",
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==3",
                           column(12,
                               HTML("<br>"),
                               HTML("<br>"),
@@ -832,7 +833,7 @@ shinyUI(
                           )
                       ),
                       
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==3",
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==1",
                          column(12,
                              HTML("<br>"),
                              HTML("<br>"),
@@ -980,7 +981,7 @@ shinyUI(
     HTML("<br>"),
     
     #column(12,
-           h4("STEP B: SELECT MODE"),
+           h4("SELECT MODE"),
            hr(),
     #),
     column(1),
@@ -1005,8 +1006,8 @@ shinyUI(
     # =============== Risk Assessment ================================================================================================================================================
     conditionalPanel(condition="input.Mode=='Risk Assessment'",
                      column(12,style="height:15px"),  
-                     conditionalPanel(condition="output.Plan==0",h4("STEP C: CALCULATE RISK OF STATUS QUO MANAGEMENT")),
-                     conditionalPanel(condition="output.Plan==1",h4("STEP C: CALCULATE RISK OF STATUS QUO MANAGEMENT",style="color:green")),
+                     h4("CALCULATE RISK OF STATUS QUO MANAGEMENT"),
+                     
                      hr(),
                      column(12,style="height:45px"),
                      
@@ -1055,9 +1056,7 @@ shinyUI(
     
     conditionalPanel(condition="input.Mode=='Status Determination'",
        column(12,style="height:15px"),                
-       conditionalPanel(condition="output.SD==0",h4("STEP C: CALCULATE POPULATION STATUS")),
-       conditionalPanel(condition="output.SD==1",h4("STEP C: CALCULATE POPULATION STATUS",style="color:green")),
-       
+       h4("CALCULATE POPULATION STATUS"),
        
        hr(),
        column(12,style="height:45px"),
@@ -1077,7 +1076,7 @@ shinyUI(
                   ),
                   conditionalPanel(condition="output.Data==0",
                          HTML("<br>"),
-                         fileInput("Load_Data_SD","Load available data  (.csv)")
+                         h5("To calculate stock status you must first load data (Extra panel 1)", style = "color:grey")
                         
                   ),
                   conditionalPanel(width=4,condition="output.Data==1",
@@ -1088,8 +1087,19 @@ shinyUI(
                   
                   column(6,
                          
-                         h5("Status determination bla bla ", style = "color:grey"),
-                         h5("bla", style = "color:grey")
+                         h5("Status determination mode automatically detects what data types are available and identifies those 
+                            status estimation methods approaches that are compatible. Each modelling approach for estimating 
+                            status relies on a varying 
+                            combination of data types that are coded according to the data used: ", style = "color:grey"),
+                         h5("C: catch data (annual)", style = "color:grey"),
+                         h5("I: index of relative abundance (annual)", style = "color:grey"),
+                         h5("M: mean length of fish in the catch (annual)", style = "color:grey"),
+                         h5("L: length composition data (year by length class)", style = "color:grey"),
+                         h5("A: age composition data (year by age)", style = "color:grey"),
+                         h5("Approaches that use only catch data or length compositions assume a pattern in annual 
+                             fishing mortality rate defined by the annual fishing effort of Fishery
+                             Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey")
+                         
                                  
                   )
                 )
@@ -1132,8 +1142,8 @@ shinyUI(
     
     conditionalPanel(condition="input.Mode=='Management Planning'",
        column(12,style="height:15px"), 
-       conditionalPanel(condition="output.Plan==0",h4("STEP C: USE CLOSED-LOOP SIMULATION TO TEST MANAGEMENT OPTIONS")),
-       conditionalPanel(condition="output.Plan==1",h4("STEP C: USE CLOSED-LOOP SIMULATION TO TEST MANAGEMENT OPTIONS",style="color:green")),
+       h4("CALCULATE PERFORMANCE OF MANAGEMENT OPTIONS"),
+       
        hr(),
        column(12,style="height:45px"),
        
@@ -1209,69 +1219,8 @@ shinyUI(
 
     conditionalPanel(condition="input.Mode=='Management Performance'",
       column(12,style="height:15px"),          
-      conditionalPanel(condition="output.Plan==0",h4("STEP C: EVALUATE THE PERFORMANCE OF AN MP IN USE")),
-      conditionalPanel(condition="output.Plan==1",h4("STEP C: EVALUATE THE PERFORMANCE OF AN MP IN USE",style="color:green")),
-   
-      hr(),
-
-      fluidRow(
-        column(1),
-        column(11,
-               fluidRow(
-                 column(4,
-                   conditionalPanel(condition="output.MadeOM>0",
-                    column(6,numericInput("proyears_eval", label = "Years in use", value=5,min=2,max=20)),
-                    column(6,selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0)),style="padding:10px"),
-                   
-                    column(12,
-                        actionButton("Calculate_Eval",h5("      CALCULATE     ",style="color:red"))
-                    )
-
-                   ),
-                   conditionalPanel(condition="output.MadeOM==0",
-                        h5("Operating model not built yet (Step C)", style = "color:grey")
-                  )
-                 ),
-                 column(6,
-                     h5("In the Evaluation mode, a single MP is tested over a greater number of simulations.", style = "color:grey")
-                 )
-               )
-        )
-      ),
-
-      fluidRow(
-        column(1),
-        column(6),
-        column(4,
-               column(6,style="padding:10px",
-                      fileInput("Load_Eval","Load  (.Eval)")
-               ),
-
-               column(2,
-                      conditionalPanel(condition="output.Eval==1",
-                             h5("Save",style="font-weight:bold"),
-                             downloadButton("Save_Eval","",width=70)
-                      )
-
-               ),
-               column(4,
-
-                      conditionalPanel(condition="output.Eval==1",
-                             column(12,style="height:50px",
-                                    h5("Evaluation Report",style="font-weight:bold"),
-                                    downloadButton("Build_Eval","")
-
-                             )
-                      )
-
-               )
-        )
-      ),
-      
-      column(12,style="height:15px"),
-      
-      conditionalPanel(condition="output.Ind==0",h4("STEP C: MANAGEMENT PERFORMANCE")),
-      conditionalPanel(condition="output.Ind==1",h4("STEP C: MANAGEMENT PERFORMANCE",style="color:green")),
+ 
+      h4("MANAGEMENT PERFORMANCE"),
       
       hr(),
       
@@ -1284,21 +1233,19 @@ shinyUI(
                  column(3,style="padding:7px;padding-left:14px",
       
                         conditionalPanel(condition="output.DataInd==0",
-      
-                          h5("Compatible data file not loaded (at least three more years of data than the last historical year 'LHYear')", style = "color:grey")
+                              h5("Data file must be loaded (Extra panel 1)", style = "color:grey")
       
                         ),
-                        conditionalPanel(condition="output.Eval==0",
-                          h5("Evaluation not run yet (Step D)", style = "color:grey")
-                        ),
-                        conditionalPanel(condition="output.DataInd==1&output.Eval==1",
+                        
+                        conditionalPanel(condition="output.DataInd==1",
+                            selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0)),
                             actionButton("Calculate_Ind",h5(" DETECT EXCEPTIONAL CIRCUMSTANCES  ",style="color:red"))
                         )
       
                  ),
                  column(1),
                  column(6,style="padding:19px",
-                      h5("A similar data file to step A2 can be loaded here with extended data for years after operating model conditioning",style = "color:grey"),
+                      h5("A data file can be loaded with extended data for years after operating model conditioning",style = "color:grey"),
                       h5("These data can be compared against the predicted data of the Evaluation operating model and used to detect exceptional
                            circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://drive.google.com/open?id=1Liif_ugfDbzIKZMBusHNemgfi3cohvtr", target="_blank"),style = "color:grey"),
                       h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
@@ -1323,7 +1270,7 @@ shinyUI(
     ),
 
 
-        column(12,style="height:15px"),
+   column(12,style="height:15px"),
 
         h4("RESULTS"),
         hr(),
@@ -1363,7 +1310,7 @@ shinyUI(
               column(9,
               div(style='height:1000px; overflow-y: scroll; width: 110%', 
               
-                 conditionalPanel(condition="output.Plan==1|output.Eval==1|output.RA==1|output.SD==1",
+                 conditionalPanel(condition="(input.Mode=='Management Planning' & output.Plan==1)|(input.Mode=='Management Performance'&output.Eval==1)|(input.Mode=='Risk Assessment'&output.RA==1)|(input.Mode=='Status Determination'&output.SD==1)",
 
                     fluidRow(
                       column(width = 12,
@@ -1373,7 +1320,7 @@ shinyUI(
                         h4(htmlOutput("P_Intro_title"),style="font-weight:bold"),
                         htmlOutput("P_Intro_text"),
                        
-                        # HTML("<br>"),
+                        HTML("<br>"),
                         
                         h4(htmlOutput("P_Tab_1_title"),style="font-weight:bold"),
                         htmlOutput("P_Tab_1_text"),

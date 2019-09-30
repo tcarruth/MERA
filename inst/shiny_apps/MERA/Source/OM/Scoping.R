@@ -122,8 +122,19 @@ DataStrip<-function(dat,code,simno=1){
   datTypes<-c("C","E","I","A","L","M")
   slotnams<-c("Cat","Effort","Ind","CAA","CAL","ML")
   listnams<-c("Chist","Ehist","Index","CAA","CAL","ML")
+  slotnams2<-c("Cat","Effort","Ind","CAA","ML","ML")  # hack for current SRAscope limitation
+  listnams2<-c("Chist","Ehist","Index","CAA","ML","ML") # hack for current SRAscope limitation
+  
   nD<-length(datTypes)
   outlist<-list()
+  
+  dat@ML<-dat@ML/dat@vbLinf*100 # ML conversion
+
+  for(i in 1:nD){
+    
+    outlist[[listnams[i]]]<-NULL
+    
+  }
 
   for(i in 1:nD){
 
@@ -133,13 +144,21 @@ DataStrip<-function(dat,code,simno=1){
 
       if(length(dim(temp))==2){
         outlist[[listnams[i]]]<-slot(dat,slotnams[i])[simno,]
+        
       }else{
         outlist[[listnams[i]]]<-slot(dat,slotnams[i])[simno,,]
+       
       }
-
-    }else{
-
-      outlist[[listnams[i]]]<-NULL
+      
+      #temp<-slot(dat,slotnams2[i])
+      
+      #if(length(dim(temp))==2){
+        
+       # outlist[[listnams2[i]]]<-slot(dat,slotnams2[i])[simno,]
+      #}else{
+       
+      #  outlist[[listnams2[i]]]<-slot(dat,slotnams2[i])[simno,,]
+      #}
 
     }
 
@@ -377,10 +396,9 @@ SimSam<-function(OM,dat,code){
 
 GetDep<-function(OM,dat,code,cores=4){
   
-  
   outlist<-DataStrip(dat,code,simno=1)
-  saveRDS(code,"C:/temp/code")
-  saveRDS(outlist,"C:/temp/outlist_whaat")
+  #saveRDS(code,"C:/temp/code")
+  #saveRDS(outlist,"C:/temp/outlist_whaat")
     
   out<-SRA_scope(OM=OM,
                  Chist = outlist$Chist,
@@ -389,12 +407,12 @@ GetDep<-function(OM,dat,code,cores=4){
                  Index= outlist$Index,
                  CAA = outlist$CAA,
                  CAL = outlist$CAL,
-                 ML = outlist$ML/dat@vbLinf[1]*100,
+                 ML = outlist$ML,
                  length_bin = outlist$length_bin,
                  report=F,
                  cores=cores)
   
-  out[[1]]@cpars$D[out$output$conv]
+  out@OM@cpars$D[out@conv]
   
 }
 

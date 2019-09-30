@@ -19,7 +19,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"4.4.1"
+  Version<<-"5.1.0"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -149,7 +149,7 @@ shinyServer(function(input, output, session) {
   # Update UI
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
   
-  Skin_nams<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
+  Skin_nams<<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected="MSC")
   
   observe({
@@ -269,12 +269,9 @@ shinyServer(function(input, output, session) {
     
     updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Evaluation
     updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
-    RA(0)
-    Plan(0)
-    Eval(0)
-    
     Update_Options()
     AM(paste0("Mode selected: ", input$Mode))
+    smartRedo()
  
   })
 
@@ -386,7 +383,7 @@ shinyServer(function(input, output, session) {
       tryCatch(
         {
          dat<<-new('Data',filey$datapath)
-
+         Data(1)
         },
         error = function(e){
           shinyalert("Not a properly formatted DLMtool Data .csv file", "Trying to load as an object of class 'Data'", type = "error")
@@ -400,6 +397,7 @@ shinyServer(function(input, output, session) {
       tryCatch(
         {
           dat<<-load(filey$datapath)
+          Data(1)
         },
         error = function(e){
           shinyalert("Could not load object", "Failed to load this file as a formatted data object", type = "error")
@@ -422,38 +420,12 @@ shinyServer(function(input, output, session) {
       dat_ind<<-dat
       dat<<-dat_test
 
-
       DataInd(1)
     }
 
-    tryCatch(
-      {
-        noCAA<-is.na(sum(dat@CAA))|sum(dat@CAA)==0
-        noCAL<-is.na(sum(dat@CAL))|sum(dat@CAL)==0
-        incompC<-sum(is.na(dat@Cat))>0
-        noML<-sum(!is.na(dat@ML))==0
-        noInd<-sum(!is.na(dat@Ind))==0
-        noML5<-sum(is.na(dat@ML[1,length(dat@ML[1,])-(0:4)]))==5
-
-        Cond_op<-"None available"
-        if(!noML5) Cond_op<-c(Cond_op,"MERA SRA ML (DLMtool)")
-        if(!((noCAA & noCAL)|incompC))  Cond_op<-c(Cond_op,"Stochastic SRA (Walters et al. 2006)")
-        if(length(Cond_op)>1)Cond_op<-Cond_op[Cond_op!="None available"]
-        updateSelectInput(session,"Cond_ops",choices=Cond_op,selected=Cond_op[1])
-        Data(1)
-        MadeOM(0)
-        Plan(0)
-        Eval(0)
-        Ind(0)
-        AdCalc(0)
-       
-      },
-      error = function(e){
-        shinyalert("Data load error", "Check data formatting", type = "error")
-        AdCalc(0)
-      }
-    )
-
+    SD_codes<-getCodes(dat,maxtest=Inf)
+    updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
+    
   })
 
   # Data load Status determination
@@ -595,11 +567,8 @@ shinyServer(function(input, output, session) {
       MSEobj<<-listy[[1]]
       MSEobj_reb<<-listy[[2]]
       Plan(1)
-      Eval(0)
       MadeOM(0)
       CondOM(0)
-      Ind(0)
-      Quest(0)
       redoPlan()
       updateTabsetPanel(session,"Res_Tab",selected="1")
     }else{
@@ -641,7 +610,6 @@ shinyServer(function(input, output, session) {
       MSEobj<<-listy[[1]]
       MSEobj_reb<<-listy[[2]]
       Eval(1)
-      Plan(0)
       MadeOM(0)
       CondOM(0)
       Quest(0)
@@ -754,6 +722,7 @@ shinyServer(function(input, output, session) {
     Plan(0)
     Eval(0)
     Ind(0)
+    RA(0)
 
     MPs<<-getMPs()
     selectedMP<<-MPs[2]
@@ -793,11 +762,10 @@ shinyServer(function(input, output, session) {
       
       withProgress(message = "Running Risk Assessment", value = 0, {
         silent=T
-        MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
+        RAobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
       })
       
-      MSEobj@Misc[[4]]<<-SampList
-      MSEobj_reb<<-MSEobj
+      RAobj@Misc[[4]]<<-SampList
      
       # ==== Types of reporting ==========================================================
       
@@ -805,7 +773,7 @@ shinyServer(function(input, output, session) {
       redoRA()
       if(input$Debug)message("postredoRA")
       RA(1)
-      Tweak(0)
+      #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
       
     },
@@ -819,8 +787,6 @@ shinyServer(function(input, output, session) {
     )
     
   }) # press calculate
-  
-  
   
   
   observeEvent(input$Calculate_status,{
@@ -877,7 +843,7 @@ shinyServer(function(input, output, session) {
       redoSD()
       if(input$Debug)message("postredoSD")
       SD(1)
-      Tweak(0)
+      #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
        
       Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim)
@@ -947,7 +913,7 @@ shinyServer(function(input, output, session) {
         redoPlan()
         if(input$Debug)message("postredoPlan")
         Plan(1)
-        Tweak(0)
+        #Tweak(0)
         #updateTabsetPanel(session,"Res_Tab",selected="1")
 
      #},
@@ -1017,7 +983,7 @@ shinyServer(function(input, output, session) {
         MSEobj_reb@Misc[[4]]<-SampList
 
         Eval(1)
-        Tweak(0)
+        #Tweak(0)
         redoEval()
         #updateTabsetPanel(session,"Res_Tab",selected="2")
       #},
@@ -1068,7 +1034,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Redo,{
     if(input$Mode=='Planning')  redoPlan()
     if(input$Mode=='Evaluation')  redoEval()
-    Tweak(0)
+    #Tweak(0)
   })
 
 
