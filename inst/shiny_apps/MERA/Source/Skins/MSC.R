@@ -1058,7 +1058,7 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
   Fig_dim[[3]] <- function(dims)list(height=420,width=600)
   
   Fig_title[[4]] <- "Figure 3. Posterior predicted data"
-  Fig_text[[4]] <- "Data correlation text"
+  Fig_text[[4]] <- "Data correlations"
   
   Figs[[4]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,CC=TRUE)
   Fig_dim[[4]] <- function(dims)list(height=700,width=700)
