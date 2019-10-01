@@ -1,5 +1,5 @@
 ---
-title: "MERA User Guide (v4.4)"
+title: "MERA User Guide (v5.1)"
 subtitle: "Method Evaluation and Risk Assessment"
 author: "T. Carruthers (UBC)"
 date: "`r Sys.Date()`"

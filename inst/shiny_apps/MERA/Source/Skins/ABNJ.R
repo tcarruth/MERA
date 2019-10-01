@@ -165,7 +165,7 @@ class(AAVE1) <<- "PM"
 # ============= Risk Assessment ==================
 
 Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
-
+Fig_title <- Tab_title <- rep(list(""), 10)
 # These are the names of widgets and their values to display in this skin / mode
 #             years in projection,  year resolution of reporting  rounding of digits
 options<-list()
@@ -185,8 +185,6 @@ Reference Management Procedures over 50 years into the future:",
                                
 
 # --- Figures ----
-
-Fig_title <- rep(list(""), 9)
 
 # Trade-Off Plot 
 Fig_title[[2]] <- HTML(paste0("Figure 1. Probability B > 0.5B", tags$sub('MSY'), " and average long-term Yield Trade-Off Plot"))
@@ -219,7 +217,7 @@ Fig_dim[[3]]<-function(dims)list(height=400,width=1200)
 
 
 # --- Tables ----
-Tab_title <- rep(list(""), 9)
+Tab_title <- rep(list(""), 10)
 # Probability of rebuilding
 # Tab_title[[1]] <- "Risk Assessment Results"
 # Tab_text[[1]] <- "This report provides a quick assessment of biological risk to 
@@ -357,9 +355,7 @@ Risk_Assessment<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_te
 # ============= Status Determination ==================
 
 Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
-
-for(i in 1:9) Fig_dim[[i]]<-function()list(height=1,width=1)
-
+Fig_title <- Tab_title <- rep(list(""), 10)
 # These are the names of widgets and their values to display in this skin / mode
 #             years in projection,  year resolution of reporting  rounding of digits
 options<-list()
@@ -431,9 +427,7 @@ SD<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title
 # ============= Planning =========================
 
 Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
-
-Fig_title <- rep(list(""), 9)
-Tab_title <- rep(list(""), 9)
+Fig_title <- Tab_title <- rep(list(""), 10)
 
 Intro_title[[1]] <- "Introduction"
 Intro_text[[1]] <- HTML(paste(tags$p("Planning mode projects multiple MPs to evaluate their absolute and relative performance with respect to target and limit reference points."),
@@ -1033,8 +1027,168 @@ Planning<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig
 
 # ========== Evaluation ========================
 
+
+
+# ============= Evaluation =======================
+
+Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
+Fig_title <- Tab_title <- rep(list(""), 10)
+#for(i in 1:10)Fig_dim[[i]]<-function(dims)list(height=1,width=1)
+# These are the names of widgets and their values to display in this skin / mode
+#             years in projection,  year resolution of reporting  rounding of digits
+options<-list()
+
+Intro_title[[1]] <- "Introduction"
+Intro_text[[1]] <- "A single MP is projected to infer future stock status and determine whether the data observed are consistent with those that were projected"
+
+
+# --- Tables --- 
+Tab_title[[1]] <- "Table 1. Biomass relative to 50% BMSY"
+Tab_text[[1]] <-"The biomass projection for the interim years that an MP has been in use."
+
+Tabs[[1]]<-function(MSEobj_Eval,dat,dat_ind,options=list(res=1),res=5,rnd=1){
+  
+  YIU<-length(dat_ind@Year)-length(dat@Year)
+  nMPs<-MSEobj_Eval@nMPs
+  proyears<-MSEobj_Eval@proyears
+  ind<-1:min(5,proyears)
+  
+  LRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,1:YIU,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
+  Tab1<-as.data.frame(cbind(MSEobj_Eval@MPs,LRP))
+  
+  colnams<-c("MP",Current_Year-((YIU-1):0))
+  names(Tab1)<-colnams
+  Tab1$MP<-as.character(Tab1$MP)
+  
+  URLs <- MPurl(as.character(Tab1$MP))
+  MPwithurl <- !is.na(URLs) 
+  Tab1$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab1$MP[MPwithurl],"</a>")
+  
+  
+  Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+  caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+  datatable(Tab1,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
+            options=list(buttons = 
+                           list('copy', list(
+                             extend = 'collection',
+                             buttons = c('csv', 'excel', 'pdf'),
+                             text = 'Download'
+                           )),
+                         dom = 'Brti', 
+                         ordering=F
+            )
+  )%>%
+    formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
+  
+}
+
+Tab_title[[2]] <- "Table 2. Biomass relative to BMSY"
+Tab_text[[2]] <-"The biomass projection for the interim years that an MP has been in use."
+
+Tabs[[2]]<-function(MSEobj_Eval, dat,dat_ind,options=list(burnin=10,res=1),rnd=1){
+  
+  YIU<-length(dat_ind@Year)-length(dat@Year)
+  nMPs<-MSEobj_Eval@nMPs
+  proyears<-MSEobj_Eval@proyears
+  ind<-1:min(YIU,proyears)
+  
+  TRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
+  Tab2<-as.data.frame(cbind(MSEobj_Eval@MPs,TRP))
+  colnams<-c("MP",Current_Year-((YIU-1):0))
+  names(Tab2)<-colnams
+  Tab2$MP<-as.character(Tab2$MP)
+  
+  URLs <- sapply(Tab2$MP, MPurl) %>% unlist()
+  MPwithurl <- !is.na(URLs) 
+  Tab2$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab2$MP[MPwithurl],"</a>")
+  
+  Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+  caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+  datatable(Tab2,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
+            options=list(buttons = 
+                           list('copy', list(
+                             extend = 'collection',
+                             buttons = c('csv', 'excel', 'pdf'),
+                             text = 'Download'
+                           )),
+                         dom = 'Brti', 
+                         ordering=F
+            )
+  )%>%
+    formatStyle(columns = 2:ncol(Tab2), valueColumns = 2:ncol(Tab2), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
+  
+}
+
+Tab_title[[3]] <- "Table 3. Spawning biomass relative to 20% of SSB unfished"
+Tab_text[[3]] <-"Probability of biomass exceeding 20% unfished levels in the years since MP adoption."
+
+Tabs[[3]]<-function(MSEobj_Eval,dat,dat_ind,options=list(burnin=10,res=1),rnd=1){
+  
+  YIU<-length(dat_ind@Year)-length(dat@Year)
+  B_B0<-MSEobj_Eval@SSB/MSEobj_Eval@OM$SSB0
+  nMPs<-MSEobj_Eval@nMPs
+  proyears<-MSEobj_Eval@proyears
+  ind<-1:min(YIU,proyears)
+  RP<-matrix(round(apply(B_B0[,,ind,drop=F]>0.2,2:3,mean)*100,rnd),nrow=nMPs)
+  Tab3<-as.data.frame(cbind(MSEobj_Eval@MPs,RP))
+  colnams<-c("MP",Current_Year-((YIU-1):0))
+  names(Tab3)<-colnams
+  Tab3$MP<-as.character(Tab3$MP)
+  
+  URLs <- sapply(Tab3$MP, MPurl) %>% unlist()
+  MPwithurl <- !is.na(URLs) 
+  Tab3$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab3$MP[MPwithurl],"</a>")
+  
+  Bdeps<-MSEobj_reb@OM$D#MSEobj_reb@B_BMSY[,1,1]#
+  caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% of unfished SSB" )
+  datatable(Tab3,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
+            options=list(buttons = 
+                           list('copy', list(
+                             extend = 'collection',
+                             buttons = c('csv', 'excel', 'pdf'),
+                             text = 'Download'
+                           )),
+                         dom = 'Brti', 
+                         ordering=F
+            )
+  )%>%
+    formatStyle(columns = 2:ncol(Tab3), valueColumns = 2:ncol(Tab3), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
+  
+}
+
+
+
+
+# --- Figures ---
+
+
+Fig_title[[2]] <- "Figure 1. Biomass projected since MP adoption"
+Fig_text[[2]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
+
+Figs[[2]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) BMSYproj(MSEobj_Eval,MSEobj_Eval,options,maxcol=1)
+Fig_dim[[2]] <- function(dims)list(height=420,width=600)
+
+Fig_title[[3]] <- "Figure 2. Biomass projected since MP adoption relative to unfished SSB"
+Fig_text[[3]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
+
+Figs[[3]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) B0proj(MSEobj_Eval,MSEobj_Eval,options,maxcol=1)
+Fig_dim[[3]] <- function(dims)list(height=420,width=600)
+
+Fig_title[[4]] <- "Figure 3. Posterior predicted data"
+Fig_text[[4]] <- "Data correlation text"
+
+Figs[[4]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,CC=TRUE)
+Fig_dim[[4]] <- function(dims)list(height=700,width=700)
+
+Fig_title[[5]] <- "Figure 4. MIdist"
+Fig_text[[5]] <- "MI text"
+
+Figs[[5]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,CC=FALSE)
+Fig_dim[[5]] <- function(dims)list(height=550,width=550)
+
 Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                  Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
+
 
 # ========== Build ============================= 
 

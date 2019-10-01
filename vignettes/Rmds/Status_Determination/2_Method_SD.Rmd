@@ -20,8 +20,17 @@ output:
 
 In the options panel of the MERA questionnaire there is the option to load fishery data. These data can include time series of relative abundance indices, mean length and catch data. 
 
-Once loaded status determination can be run - this automatically detects which status determination methods are possible given the uploaded data and conducts a simulation test to evaluate their potential accuracy and precision over a range of simulated depletion levels. 
+Once loaded status determination can be run - it automatically detects what data types are available and identifies those status estimation methods approaches that are compatible. 
 
+Each modelling approach for estimating status relies on a varying combination of data types that are coded according to the data used: 
+
+* C: catch data (annual)
+* I: index of relative abundance (annual)
+* M: mean length of fish in the catch (annual)
+* L: length composition data (year by length class)
+* A: age composition data (year by age)
+                         
+Approaches that use only catch data or length compositions assume a pattern in annual fishing mortality rate defined by the annual fishing effort of Fishery Question 5 and the catchability changes of Fishery Question 7.
 
 
 

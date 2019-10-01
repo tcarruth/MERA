@@ -106,7 +106,7 @@ shinyUI(
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
     h5("MERA links a straightforward graphical questionaire to the powerful DLMtool and MSEtool libraries to calculate stock status and management performance. ",style = "color:grey"),
-    h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_4_4.html", target="_blank"),style = "color:grey"),
+    h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
 
@@ -139,7 +139,7 @@ shinyUI(
                                  h5(" - vulnerability to fishing of various size classes",style="color:grey"),
                                  h5(""),
                                  h5("More detailed help on the Fishery questions can be found in the
-                                         MERA User Guide: ", a("Section 2.1.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_4_4.html#21_fishery_questions", target="_blank"),style="color:grey")),
+                                         MERA User Guide: ", a("Section 2.1.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#21_fishery_questions", target="_blank"),style="color:grey")),
 
                             conditionalPanel(width=4,condition="output.Fpanel==1",#|output.Fpanel==undefined",
                                 fluidRow(
@@ -283,7 +283,7 @@ shinyUI(
                                       h5(" - determine the relative success of management procedures that provide various types of advice.",style="color:grey"),
                                       h5(""),
                                       h5("More detailed help on the Management questions can be found in the MERA manual
-                                         : ", a("Section 2.2.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_4_4.html#22_management_questions", target="_blank"),style="color:grey")),
+                                         : ", a("Section 2.2.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#22_management_questions", target="_blank"),style="color:grey")),
 
 
                                  conditionalPanel(width=4,condition="output.Mpanel==1",
@@ -335,7 +335,7 @@ shinyUI(
                                   h5(" - determine the relative success of the management approaches that rely on differing types of data.",style="color:grey"),
                                   h5(""),
                                   h5("More detailed help on the data questions can be found in the MERA manual
-                                         : ", a("Section 2.3.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_4_4.html#23_data_questions", target="_blank"),style="color:grey")),
+                                         : ", a("Section 2.3.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#23_data_questions", target="_blank"),style="color:grey")),
 
                                  conditionalPanel(width=4,condition="output.Dpanel==1",
                                                   checkboxGroupInput("D1", label = h5("1. Types of data that are available",style="color:black"),
@@ -370,7 +370,7 @@ shinyUI(
                                   h5(" - specifying bio-economic model parameters.",style="color:grey"),
                                   h5(""),
                                   h5("More detailed help on Options questions can be found in the MERA manual
-                                      : ", a("Section 2.4.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_4_4.html#24_optional", target="_blank"),style="color:grey")
+                                      : ", a("Section 2.4.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#24_optional", target="_blank"),style="color:grey")
                                   
                                 ),
                          
@@ -433,7 +433,7 @@ shinyUI(
                                 conditionalPanel(width=4,condition="output.Opanel==4",
                                                  
                                    HTML("<br>"),
-                                   h5("4. Condition operating models",style="color:grey"),
+                                   h5("4. Condition operating models <alpha>",style="color:grey"),
                                    HTML("<br>"),
                                    column(12,style="padding-left:27px",
                                           
@@ -466,7 +466,7 @@ shinyUI(
                                 conditionalPanel(width=4,condition="output.Opanel==5",
                                                  
                                    HTML("<br>"),
-                                   h5("5. Bio-economic dynamics",style="color:grey"),
+                                   h5("5. Bio-economic dynamics <alpha>",style="color:grey"),
                                    selectInput("EC_Model","Economic Model",choices=c("None","Simple response","SR with inertia","SR with efficiency - depletion"),selected="None"),
                                    conditionalPanel(condition="EC_Model!='None'",
                                      column(4,numericInput("EC_Cost",label="Cost of current fishing effort",min=0,value=1)),
@@ -805,7 +805,7 @@ shinyUI(
                          )
                       ),
         
-                      # ----- Optional panel guides
+                      # ----- Extra panel guides
                       
                       conditionalPanel(condition="input.tabs1==4&output.Opanel==0",
                           h5("",style = "color:grey")
@@ -842,7 +842,9 @@ shinyUI(
                              h5(" - determine feasible MPs (Management Planning mode)", style = "color:grey"),
                              h5(" - assess the fishery status (Status Determination mode)", style = "color:grey"),
                              h5(" - test for exceptional circumstances (Management Performance mode).",style = "color:grey"),
-                             h5("A description of the data object can be found ",a("here", href="https://dlmtool.github.io/DLMtool/cheat_sheets/Data", target="_blank"),style = "color:grey")
+                             h5("A description of the data object can be found ",a("here", href="https://dlmtool.github.io/DLMtool/cheat_sheets/Data", target="_blank"),style = "color:grey"),
+                             h5("A comprehensive guide to data formatting for MERA is avaialble ",a("here", href="https://dlmtool.github.io/DLMtool/Data/Data.html", target="_blank"),style = "color:grey")
+                             
                          )
                       ),
                       
@@ -989,7 +991,8 @@ shinyUI(
            
            column(4,
                   
-                  radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Status Determination","Management Planning","Management Performance"),selected="Risk Assessment")),
+                  radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Status Determination","Management Planning","Management Performance"),selected="Risk Assessment"),
+                  style="padding-left:0px"),
            
            column(8,
                   h5("MERA contains four modes of varying complexity and objectives",style = "color:grey"),
@@ -1239,7 +1242,7 @@ shinyUI(
                         
                         conditionalPanel(condition="output.DataInd==1",
                             selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0)),
-                            actionButton("Calculate_Ind",h5(" DETECT EXCEPTIONAL CIRCUMSTANCES  ",style="color:red"))
+                            actionButton("Calculate_Eval",h5(" CALCULATE  ",style="color:red"))
                         )
       
                  ),
@@ -1286,8 +1289,8 @@ shinyUI(
                   column(12,HTML("<br>")),
                   h4("Options",style="font-weight:bold"),
                   column(12,HTML("<br>")),
-                  column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
-                  column(12,HTML("<br>","<br>")),
+                  #column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
+                  #column(12,HTML("<br>","<br>")),
                   
                   # --- Reporting Options ---------------------------------------------
                   numericInput("burnin", label = "Burn-in years", value=10,min=5,max=20), # burnin- some initial spool up time period
@@ -1296,7 +1299,7 @@ shinyUI(
                   # sliderInput("minProb", label = "Minimum Probability Limit", value=0.8,min=0, max=1, step=0.05), # minimum prob. limit to be considered acceptable (planning)
                   #numericInput("ntop", label = "Number of top MPs to display", value=10,min=1,max=80),
                   #checkboxInput("LTL", label = "Low Trophic Level PIs", value = FALSE),
-                  column(12,conditionalPanel(condition="output.Data==1",checkboxInput("Fease", label = "Advanced data feasibility", value = FALSE))),
+                  #column(12,conditionalPanel(condition="output.Data==1",checkboxInput("Fease", label = "Advanced data feasibility", value = FALSE))),
                   column(12,HTML("<br>","<br>"))
         
                 ), # end of app or eval control panel
@@ -1304,12 +1307,27 @@ shinyUI(
                 conditionalPanel(width=4,condition="output.Ind==1&input.Res_Tab==3",
                   #sliderInput("Ind_Res","Resolution (yrs)",min=3,max=15,value=3,step=1),
                   sliderInput("Ind_Alpha","Type I error (Prob false positive rejection, alpha)",min=0.01,max=0.25,value=0.05,step=0.01)
-                )# end of indicator control panel
+                ),# end of indicator control panel
 
+                conditionalPanel(condition="input.Mode=='Risk Assessment' & output.RA==0",
+                                 h5("Risk Assessment calculations have not been run yet",style = "color:grey")              
+                ),  
+                conditionalPanel(condition="input.Mode=='Status Determination' & output.SD==0",
+                                 h5("Status Determination calculation have not been run yet",style = "color:grey")              
+                ),   
+                conditionalPanel(condition="input.Mode=='Management Planning' & output.Plan==0",
+                                 h5("Management Planning calculations have not been run yet",style = "color:grey")              
+                ),   
+                conditionalPanel(condition="input.Mode=='Management Performance' & output.Eval==0",
+                                 h5("Management Performance calculations have not been run yet",style = "color:grey")              
+                )   
+                
+                
               ),
               column(9,
               div(style='height:1000px; overflow-y: scroll; width: 110%', 
-              
+                
+                  
                  conditionalPanel(condition="(input.Mode=='Management Planning' & output.Plan==1)|(input.Mode=='Management Performance'&output.Eval==1)|(input.Mode=='Risk Assessment'&output.RA==1)|(input.Mode=='Status Determination'&output.SD==1)",
 
                     fluidRow(
@@ -1429,11 +1447,19 @@ shinyUI(
                         plotOutput("P_Fig_9",height="auto"),
                         
                         
-                        column(12,style="height:15px"),
-                        plotOutput("CC",height="auto"),
-                        plotOutput("mdist",height="auto")
+                        #HTML("<br>"),
+                        
+                        h4(htmlOutput("P_Tab_10_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Tab_10_text")),
+                        DT::dataTableOutput('P_Tab_10'),
+                        
+                        #HTML("<br>"),
+                        
+                        h4(htmlOutput("P_Fig_10_title"),style="font-weight:bold"),
+                        h5(htmlOutput("P_Fig_10_text")),
+                        plotOutput("P_Fig_10",height="auto")
+                        
          
-                             
                       ) # column
                     ) # fluid row
                   ) # conditional panel
@@ -1506,18 +1532,22 @@ shinyUI(
                      )
             ))
       ),
-      column(12,style="height:100px"),
-      hr(),
-
-      column(8,style="height:40px"),
-      column(2,style="height:40px; padding:9px",textOutput("SessionID")),
-      column(2,style="height:40px", h6("Open Source, GPL-2, 2019")),
-
-      #conditionalPanel(condition="input.Debug",
-        column(1),
-        column(9, textAreaInput("Log", "Log",height="120px"))
-        
-      #)
+     
+   column(12,style="height:10px"),
+  
+     
+   conditionalPanel(condition="input.Debug",
+      column(1),
+      column(9, textAreaInput("Log", "Log",height="120px"))
+   ),
+   
+   column(12,style="height:100px"),
+   hr(),
+   
+   column(6,style="height:40px"),
+   column(2,style="height:40px; padding:9px",textOutput("Dependencies")),
+   column(2,style="height:40px; padding:9px",textOutput("SessionID")),
+   column(2,style="height:40px", h6("Open Source, GPL-2, 2019"))
 
      #) # end of fluid row
     ) # end of fluid page
