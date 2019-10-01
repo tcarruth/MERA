@@ -148,7 +148,8 @@ shinyServer(function(input, output, session) {
 
   # Update UI
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
-  
+  output$Dependencies<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
+
   Skin_nams<<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected="MSC")
   
@@ -423,70 +424,15 @@ shinyServer(function(input, output, session) {
       DataInd(1)
     }
 
+    saveRDS(dat_ind,"C:/temp/dat_ind.rda")
+    saveRDS(dat,"C:/temp/dat.rda")
+    
     SD_codes<-getCodes(dat,maxtest=Inf)
     updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
     
   })
 
-  # Data load Status determination
-  observeEvent(input$Load_Data_SD,{
-    
-    filey<-input$Load_Data_SD
-    
-    if(grepl(".csv",filey$datapath)){ # if it is a .csv file
-      
-      tryCatch(
-        {
-          dat<<-new('Data',filey$datapath)
-          Data(1)
-          
-        },
-        error = function(e){
-          shinyalert("Not a properly formatted DLMtool Data .csv file", "Trying to load as an object of class 'Data'", type = "error")
-          Data(0)
-          loaded=F
-        }
-      )
-      
-    }else{
-      
-      tryCatch(
-        {
-          dat<<-readRDS(filey$datapath)
-          Data(1)
-        },
-        error = function(e){
-          shinyalert("Could not load object", "Failed to load this file as a formatted data object", type = "error")
-          Data(0)
-        }
-      )
-      
-      if(class(dat)!="Data"){
-        shinyalert("Data load error!", "Failed to load this file as either a formatted .csv datafile or a DLMtool object of class 'Data'", type = "error")
-        stop()
-      }
-    }
-    
-    
-    
-    # Trims data to LHYear 
-    dat_test<-Data_trimer(dat)
-    
-    if(class(dat_test)!='Data'){
-      DataInd(0)  # If it returns an NA
-      
-    }else{  # if a data object is trimmable
-      dat_ind<<-dat  # the ancilliary index data are the original dataset
-      dat<<-dat_test # data for conditioning is the trimmed dataset
-      DataInd(1)     # we have EC data
-    }
-    
-    SD_codes<-getCodes(dat,maxtest=Inf)
-    updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
-  
-  })
-  
-  
+ 
   # OM save
   output$Save_OM<- downloadHandler(
 
@@ -910,9 +856,10 @@ shinyServer(function(input, output, session) {
         # ==== Types of reporting ==========================================================
           
         if(input$Debug)message("preredoPlan")
+        Plan(1)
         redoPlan()
         if(input$Debug)message("postredoPlan")
-        Plan(1)
+        
         #Tweak(0)
         #updateTabsetPanel(session,"Res_Tab",selected="1")
 
@@ -933,59 +880,52 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$Calculate_Eval,{
 
+    doprogress("Building OM from Questionnaire",1)
+    OM_Eval<<-makeOM(PanelState,nsim=input$nsim)
+   # OM_Eval@proyears<-10
+    
     Fpanel(1)
-
-    selectedMP<<-input$sel_MP
-
+    EvalMPs<-input$sel_MP
+    
     nsim<<-input$nsim
     parallel=F
+    
     if(input$Parallel){
-
+      
       if(nsim>47){
+        
         parallel=T
         setup()
+        
       }
+      
     }
     
+    MSClog<<-list(PanelState, Just, Des)
     Update_Options()
-    
-    #YIU<-input$proyears_app # Years in use
-    OM_eval<-OM
-    #OM_eval@proyears<-YIU
-    OM_eval@interval<-input$interval_app
-    #OM_eval@cpars$mov<-OM_eval@cpars$mov[,,,,1:OM@nyears+YIU]
-    
+   
     #tryCatch({
-        withProgress(message = "Running Evaluation", value = 0, {
-          EvalMPs<-input$sel_MP
-          MSEobj<<-runMSE(OM_eval,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
-
-        })
+    
+      withProgress(message = "Running Evaluation", value = 0, {
+        saveRDS(OM_Eval,file="C:/temp/OM_Eval.Rdata")
+        saveRDS(EvalMPs,file="C:/temp/EvalMPs.Rdata")
         
-        MSEobj@Misc[[4]]<<-SampList
-
-        MGT2<-ceiling(MSEobj@OM$MGT*2)
-        MGT2[MGT2<5]<-5
-        MGT2[MGT2>20]<-20
-
-        OM_reb<-OM_eval
-        #OM_reb@proyears<-max(MGT2)+2 # only have to compute to this year
-        OM_reb@cpars$D<-MSEobj@OM$SSBMSY_SSB0/2#apply(MSEobj@SSB_hist[,,MSEobj@nyears,],1, sum)/(MSEobj@OM$SSB0*2) # start from half BMSY
+        EvalMPs<-input$sel_MP
+        MSEobj_Eval<<-runMSE(OM_Eval,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
         
-        Dep_reb<-runif(OM@nsim,input$Dep_reb_app[1],input$Dep_reb_app[2]) # is a %
-        OM_reb<-OM_eval
-        OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0 
-        
-        withProgress(message = "Rebuilding Analysis", value = 0, {
-          MSEobj_reb<<-runMSE(OM_reb,MPs=EvalMPs,silent=T,control=list(progress=T),parallel=parallel)
-        })
-        
-        MSEobj_reb@Misc[[4]]<-SampList
-
-        Eval(1)
-        #Tweak(0)
-        redoEval()
-        #updateTabsetPanel(session,"Res_Tab",selected="2")
+      })
+      
+      if(input$Debug)message("preredoEval")
+      redoEval()
+      if(input$Debug)message("postredoEval")
+      Eval(1)
+      Ind(1)
+     
+      saveRDS(MSEobj_Eval,file="C:/temp/MSEobj_Eval.Rdata")
+      saveRDS(dat,file="C:/temp/dat.Rdata")
+      saveRDS(dat_ind,file="C:/temp/dat_ind.Rdata")
+    
+   
       #},
       #error = function(e){
       #  shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
@@ -997,20 +937,20 @@ shinyServer(function(input, output, session) {
 
   }) # calculate MSE app
 
-  observeEvent(input$Calculate_Ind,{
-    tryCatch({
+  #observeEvent(input$Calculate_Ind,{
+    #tryCatch({
 
-      redoInd()
+     # redoInd()
       #updateTabsetPanel(session,"Res_Tab",selected="3")
-      Ind(1)
-    },
-    error = function(e){
-      shinyalert("Computational error", "Could not calculate Ancillary indicators, check file format.", type = "info")
-      return(0)
-    }
-    ) # try catch
+    #  Ind(1)
+    #},
+    #error = function(e){
+    #  shinyalert("Computational error", "Could not calculate Ancillary indicators, check file format.", type = "info")
+    #  return(0)
+    #}
+    #) # try catch
 
-  })
+  #})
 
  
   CheckJust<-function(){

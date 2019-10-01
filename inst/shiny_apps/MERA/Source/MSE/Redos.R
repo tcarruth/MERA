@@ -70,9 +70,9 @@ redoRA<-function(fease=F){
       
     }
     
-    if(nres<9){
+    if(nres<10){
       
-      for(res in (nres+1):9){
+      for(res in (nres+1):10){
         local({
           res2<-res
           output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
@@ -149,9 +149,9 @@ redoSD<-function(){
     
     # Blank additional non-specified Figs / Tabs
     
-    if(nres<9){
+    if(nres<10){
       
-      for(res in (nres+1):9){
+      for(res in (nres+1):10){
         local({
           res2<-res
           output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
@@ -177,7 +177,7 @@ redoSD<-function(){
 
 redoPlan<-function(fease=F){
 
-  withProgress(message = "Calculating Evaluation results", value = 0, {
+  withProgress(message = "Calculating Management Planning results", value = 0, {
 
     nres<-length(Skin$Planning$Tab_title)
     dims<-list(nMPs=MSEobj@nMPs)
@@ -211,6 +211,8 @@ redoPlan<-function(fease=F){
           output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(Skin$Planning$Tabs[[res2]](MSEobj,MSEobj_reb,options)) 
         }
         
+        
+        
         if(Skin$Planning$Fig_title[[res2]]==""){
           output[[paste0("P_Fig_",res2,"_title")]]<-renderText(NULL)
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(NULL)
@@ -231,9 +233,9 @@ redoPlan<-function(fease=F){
     
     # Blank additional non-specified Figs / Tabs
     
-    if(nres<9){
+    if(nres<10){
       
-      for(res in (nres+1):9){
+      for(res in (nres+1):10){
         local({
           res2<-res
           output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
@@ -257,10 +259,10 @@ redoPlan<-function(fease=F){
 
 redoEval<-function(fease=F){
   
-  withProgress(message = "Calculating Evaluation results", value = 0, {
+  withProgress(message = "Calculating Management Performance results", value = 0, {
     
     nres<-length(Skin$Evaluation$Tab_title)
-    dims<-list(nMPs=MSEobj@nMPs)
+    dims<-list(nMPs=MSEobj_Eval@nMPs)
     incrate<-1/nres
     
     # option code
@@ -288,7 +290,7 @@ redoEval<-function(fease=F){
         }else{
           output[[paste0("P_Tab_",res2,"_title")]]<-renderText(Skin$Evaluation$Tab_title[[res2]])
           output[[paste0("P_Tab_",res2,"_text")]]<-renderText(Skin$Evaluation$Tab_text[[res2]])
-          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(Skin$Evaluation$Tabs[[res2]](MSEobj,MSEobj_reb,options)) 
+          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(Skin$Evaluation$Tabs[[res2]](MSEobj_Eval,dat,dat_ind,options)) 
         }
         
         if(Skin$Evaluation$Fig_title[[res2]]==""){
@@ -300,7 +302,7 @@ redoEval<-function(fease=F){
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(Skin$Evaluation$Fig_text[[res2]])
           height=Skin$Evaluation$Fig_dim[[res2]](dims)$height
           width=Skin$Evaluation$Fig_dim[[res2]](dims)$width
-          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Evaluation$Figs[[res2]](MSEobj,MSEobj_reb,options), height =ceiling(height) , width = ceiling(width)) 
+          output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$Evaluation$Figs[[res2]](MSEobj_Eval,dat,dat_ind,options), height =ceiling(height) , width = ceiling(width)) 
         }
         
       })
@@ -310,9 +312,9 @@ redoEval<-function(fease=F){
     }
     
     
-    if(nres<9){
+    if(nres<10){
       
-      for(res in (nres+1):9){
+      for(res in (nres+1):10){
         local({
           res2<-res
           output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
@@ -333,33 +335,3 @@ redoEval<-function(fease=F){
   })
 }
 
-
-
-redoInd<-function(){
-
-  styr=max(dat@Year)-min(dat@Year)+1
-  PPD<-MSEobj@Misc$Data[[1]]
-
-  # Standardization
-  PPD@Cat<-PPD@Cat/PPD@Cat[,styr]
-  PPD@Ind<-PPD@Ind/PPD@Ind[,styr]
-  PPD@ML<-PPD@ML/PPD@ML[,styr]
-
-  tsd= c("Cat","Cat","Cat","Ind","Ind","ML")
-  stat=c("slp","AAV","mu","slp","mu", "slp")
-  res<-max(dat_ind@Year-max(dat@Year))
-  datayears<-dim(dat_ind@Cat)[2]
-
-  indPPD<-getinds(PPD,styr=styr,res=res,tsd=tsd,stat=stat)
-
-  # Standardization
-  dat_ind@Cat<-dat_ind@Cat/dat_ind@Cat[,styr]
-  dat_ind@Ind<-dat_ind@Ind/dat_ind@Ind[,styr]
-  dat_ind@ML<-dat_ind@ML/dat_ind@ML[,styr]
-
-  indData<-getinds(dat_ind,styr=styr,res=res,tsd=tsd,stat=stat)
-
-  output$CC<-renderPlot( CC(indPPD,indData,pp=1,res=res),height =700 ,width=700)
-  output$mdist<-renderPlot(plot_mdist(indPPD,indData,alpha=0.05),height =550 ,width=550)
-
-}

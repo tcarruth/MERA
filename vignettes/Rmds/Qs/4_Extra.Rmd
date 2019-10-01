@@ -1,0 +1,69 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+
+## Extra  
+
+In addition to the mandatory questions of the Fishery, Management and Data panels, users have the option of further specifying their operating models. The 'Extra' tab includes features to load fishery data, condition operating models, add economic features and extend the model for short-lived species. 
+
+### Fishery data uploading and OM conditioning
+
+By uploading their fishery data, the user unlocks a number of MERA features: 
+
+1. Conditioning of operating models (management planning and management performance)
+2. Realistic MP feasibility analysis to identify MPs that will run with the exact configuration of data that you have (management planning) 
+3. Quantification of auxilliary indicators (management performance)
+3. Status determination
+
+A comprehensive guide to data formatting for MERA can be found [here](https://dlmtool.github.io/DLMtool/Data/Data.html)
+
+
+### Closed loop simulation controls
+
+Management interval controls how frequently new management advice is calculated. For example, given a management interval of 4 years a new Total Allowable Catch may be set in 2020, 2024, 2028 (and so on) that is kept constant in the interval between these updates.
+
+You can control the number of simulated realizations of your fishery using 'No. simulations'. Each simulation takes a draw of model parameters from the ranges specified by the MERA questionnaire. This also controls the number of simulations generated if you condition your operating model on data. Generally you can obtain meaningful early results with just 48 simulations, stable MP performance ranking with 96 simulations and stable absolute MP performance with 192. In general 192 or greater simulations are required to quantify value of information and cost of current uncertainties.
+
+If greater than 48 simulations are specified, the user has the option to distribute calculations over a cluster using parallel computation. Note however that you will lose the progress bar.
+
+
+### Detailed operating model controls
+
+It is possible to save MERA operating models, modify these and then loadt them back into the software. This allows for fully customizable operating models including, for example, correlated parameters, complex spatial dynamics including ontogyny and age-base mortality. 
+
+The ability to load OMs also allows for the importing of externally derived operating models that are DLMtool and MSEtool compatible e.g. those in the [DLMtool fishery library](http://www.datalimitedtoolkit.org/fishery_library/)
+
+The detailed operating model controls also allow for a comprehensive documentation of all OM features (whether derived by MERA or otherwise) using the 'Detailed OM Report' function. 
+
+### Condition operating models
+
+If compatible data are loaded in 'Extra' panel 1, it is possible to condition operating models using the same population dynamics models as those used in Status Determination Mode. 
+
+### Bio-economic dynamics
+
+< Under construction >
+
+Simple economic models have been added to the DLMtool and MSEtool operating models and are currently subject to beta testing. 
+
+The current options are for demonstration purposes. This feature is currently under development. 
+
+### Short-lived extensions
+
+< Under construction >
+
+DLMtool now includes functionality to shorten the time-step of the default operating models (annual) to allow for the better approximation of the dynamics of short-lived speies. 
+
+The current options are for demonstration and beta testing purposes, This feature is currently under development. 

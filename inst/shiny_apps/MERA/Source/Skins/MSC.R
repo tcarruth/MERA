@@ -553,10 +553,45 @@ FeaseLabs<-function(MPs,dat=NA){
 }
 
 
+
+
+plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
+  
+  styr=max(dat@Year)-min(dat@Year)+1
+  PPD<-MSEobj_Eval@Misc$Data[[1]]
+  
+  # Standardization
+  PPD@Cat<-PPD@Cat/PPD@Cat[,styr]
+  PPD@Ind<-PPD@Ind/PPD@Ind[,styr]
+  PPD@ML<-PPD@ML/PPD@ML[,styr]
+  
+  tsd= c("Cat","Cat","Cat","Ind","Ind","ML")
+  stat=c("slp","AAV","mu","slp","mu", "slp")
+  res<-max(dat_ind@Year-max(dat@Year))
+  datayears<-dim(dat_ind@Cat)[2]
+  
+  indPPD<-getinds(PPD,styr=styr,res=res,tsd=tsd,stat=stat)
+  
+  # Standardization
+  dat_ind@Cat<-dat_ind@Cat/dat_ind@Cat[,styr]
+  dat_ind@Ind<-dat_ind@Ind/dat_ind@Ind[,styr]
+  dat_ind@ML<-dat_ind@ML/dat_ind@ML[,styr]
+  
+  indData<-getinds(dat_ind,styr=styr,res=res,tsd=tsd,stat=stat)
+  
+  if(CC)CC(indPPD,indData,pp=1,res=res)
+  if(!CC)plot_mdist(indPPD,indData,alpha=0.05)
+  
+}
+
+
+
+
 # ============= Risk Assessment ==================
 
   Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
-  for(i in 1:9) Fig_dim[[i]]<-function()list(height=1,width=1)
+  Fig_title <- Tab_title <- rep(list(""), 10)
+  #for(i in 1:10)Fig_dim[[i]]<-function(dims)list(height=1,width=1)
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
   options<-list(res=5)
@@ -638,7 +673,6 @@ FeaseLabs<-function(MPs,dat=NA){
   } 
   Fig_dim[[2]]<-function(dims)list(height=400,width=1200)
   
-  Fig_title[[1]] <- ""#<- Fig_title[[3]] <- Fig_title[[4]] <- Fig_title[[5]]<- Fig_title[[7]] <- Fig_title[[8]] <- Fig_title[[9]] <- "" # make extras empty
   
   Risk_Assessment<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                         Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
@@ -649,8 +683,8 @@ FeaseLabs<-function(MPs,dat=NA){
 # ============= Status Determination ==================
   
   Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
-  
-  for(i in 1:9) Fig_dim[[i]]<-function()list(height=1,width=1)
+  Fig_title <- Tab_title <- rep(list(""), 10)
+  #for(i in 1:10)Fig_dim[[i]]<-function(dims)list(height=1,width=1)
  
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
@@ -715,8 +749,6 @@ FeaseLabs<-function(MPs,dat=NA){
   Fig_dim[[1]]<-function()list(height=600,width=600)
 
   
-  
-  
   SD<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                         Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
   
@@ -727,7 +759,8 @@ FeaseLabs<-function(MPs,dat=NA){
 # ============= Planning =========================
   
   Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
-  
+  Fig_title <- Tab_title <- rep(list(""), 10)
+  #for(i in 1:10)Fig_dim[[i]]<-function(dims)list(height=1,width=1)
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
   options<-list(burnin=10,            res=1)
@@ -821,12 +854,8 @@ FeaseLabs<-function(MPs,dat=NA){
       formatStyle(columns=3, valueColumns=3, color = styleEqual(c("","M","D"),c("black","red","red")))       
   }
   
-  Tab_title[[3]] <- Tab_title[[4]] <- Tab_title[[5]] <- Tab_title[[6]] <- Tab_title[[7]] <- Tab_title[[8]] <- Tab_title[[9]] <- "" # make extras empty
-
-
-  # --- Figures ---
   
-  Fig_title[[1]]<-""
+  # --- Figures ---
   
   Fig_title[[2]] <- "Figure 1. Biomass projection relative to the Target and Limit Reference Points"
   Fig_text[[2]] <- "Projections of biomass and yield relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, 
@@ -872,36 +901,45 @@ FeaseLabs<-function(MPs,dat=NA){
   Figs[[9]] <- function(MSEobj,MSEobj_reb,options=list()) Tplot(MSEobj,MSEobj_reb,options)
   Fig_dim[[9]]<-function(dims)list(height=650,width=1300)
   
+ 
   Planning<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                  Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
+  
+  
+ 
+  
+  
+  
   
 
 # ============= Evaluation =======================
 
   Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
-  
+  Fig_title <- Tab_title <- rep(list(""), 10)
+  #for(i in 1:10)Fig_dim[[i]]<-function(dims)list(height=1,width=1)
   # These are the names of widgets and their values to display in this skin / mode
   #             years in projection,  year resolution of reporting  rounding of digits
-  options<-list(YIU = 5)
+  options<-list()
 
   Intro_title[[1]] <- "Introduction"
-  Intro_text[[1]] <- "A single MP is projected to evaluate implied stock status and develop auxiliary indicators."
+  Intro_text[[1]] <- "A single MP is projected to infer future stock status and determine whether the data observed are consistent with those that were projected"
   
   
   # --- Tables --- 
   Tab_title[[1]] <- "Table 1. Biomass relative to 50% BMSY"
   Tab_text[[1]] <-"The biomass projection for the interim years that an MP has been in use."
 
-  Tabs[[1]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1,YIU=5),res=5,rnd=1){
+  Tabs[[1]]<-function(MSEobj_Eval,dat,dat_ind,options=list(res=1),res=5,rnd=1){
     
-    nMPs<-MSEobj_reb@nMPs
-    proyears<-MSEobj_reb@proyears
-    ind<-1:min(options$YIU,proyears)
+    YIU<-length(dat_ind@Year)-length(dat@Year)
+    nMPs<-MSEobj_Eval@nMPs
+    proyears<-MSEobj_Eval@proyears
+    ind<-1:min(5,proyears)
     
-    LRP<-matrix(round(apply(MSEobj@B_BMSY[,,1:options$YIU,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
-    Tab1<-as.data.frame(cbind(MSEobj@MPs,LRP))
+    LRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,1:YIU,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
+    Tab1<-as.data.frame(cbind(MSEobj_Eval@MPs,LRP))
    
-    colnams<-c("MP",Current_Year-((options$YIU-1):0))
+    colnams<-c("MP",Current_Year-((YIU-1):0))
     names(Tab1)<-colnams
     Tab1$MP<-as.character(Tab1$MP)
     
@@ -910,7 +948,7 @@ FeaseLabs<-function(MPs,dat=NA){
     Tab1$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab1$MP[MPwithurl],"</a>")
     
     
-    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
     datatable(Tab1,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
               options=list(buttons = 
@@ -930,15 +968,16 @@ FeaseLabs<-function(MPs,dat=NA){
   Tab_title[[2]] <- "Table 2. Biomass relative to BMSY"
   Tab_text[[2]] <-"The biomass projection for the interim years that an MP has been in use."
   
-  Tabs[[2]]<-function(MSEobj,MSEobj_reb, options=list(burnin=10,res=1),rnd=1){
+  Tabs[[2]]<-function(MSEobj_Eval, dat,dat_ind,options=list(burnin=10,res=1),rnd=1){
     
-    nMPs<-MSEobj_reb@nMPs
-    proyears<-MSEobj_reb@proyears
-    ind<-1:min(options$YIU,proyears)
+    YIU<-length(dat_ind@Year)-length(dat@Year)
+    nMPs<-MSEobj_Eval@nMPs
+    proyears<-MSEobj_Eval@proyears
+    ind<-1:min(YIU,proyears)
     
-    TRP<-matrix(round(apply(MSEobj@B_BMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
-    Tab2<-as.data.frame(cbind(MSEobj@MPs,TRP))
-    colnams<-c("MP",Current_Year-((options$YIU-1):0))
+    TRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
+    Tab2<-as.data.frame(cbind(MSEobj_Eval@MPs,TRP))
+    colnams<-c("MP",Current_Year-((YIU-1):0))
     names(Tab2)<-colnams
     Tab2$MP<-as.character(Tab2$MP)
     
@@ -946,7 +985,7 @@ FeaseLabs<-function(MPs,dat=NA){
     MPwithurl <- !is.na(URLs) 
     Tab2$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab2$MP[MPwithurl],"</a>")
     
-    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
     datatable(Tab2,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                    options=list(buttons = 
@@ -966,15 +1005,16 @@ FeaseLabs<-function(MPs,dat=NA){
   Tab_title[[3]] <- "Table 3. Spawning biomass relative to 20% of SSB unfished"
   Tab_text[[3]] <-"Probability of biomass exceeding 20% unfished levels in the years since MP adoption."
   
-  Tabs[[3]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1),rnd=1){
+  Tabs[[3]]<-function(MSEobj_Eval,dat,dat_ind,options=list(burnin=10,res=1),rnd=1){
     
-    B_B0<-MSEobj@SSB/MSEobj@OM$SSB0
-    nMPs<-MSEobj_reb@nMPs
-    proyears<-MSEobj_reb@proyears
-    ind<-1:min(options$YIU,proyears)
+    YIU<-length(dat_ind@Year)-length(dat@Year)
+    B_B0<-MSEobj_Eval@SSB/MSEobj_Eval@OM$SSB0
+    nMPs<-MSEobj_Eval@nMPs
+    proyears<-MSEobj_Eval@proyears
+    ind<-1:min(YIU,proyears)
     RP<-matrix(round(apply(B_B0[,,ind,drop=F]>0.2,2:3,mean)*100,rnd),nrow=nMPs)
-    Tab3<-as.data.frame(cbind(MSEobj@MPs,RP))
-    colnams<-c("MP",Current_Year-((options$YIU-1):0))
+    Tab3<-as.data.frame(cbind(MSEobj_Eval@MPs,RP))
+    colnams<-c("MP",Current_Year-((YIU-1):0))
     names(Tab3)<-colnams
     Tab3$MP<-as.character(Tab3$MP)
     
@@ -999,128 +1039,36 @@ FeaseLabs<-function(MPs,dat=NA){
     
   }
 
-  Tab_title[[4]] <- "Table 4. Long term HCR"
-  Tab_text[[4]] <-"Probability of biomass exceeding the target reference point in the years since MP adoption."
-  
-  Tabs[[4]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1),rnd=1){
-    
-    nMPs<-MSEobj_reb@nMPs
-    proyears<-MSEobj_reb@proyears
-    ind<-proyears-(9:0)
-    TRP<-matrix(round(apply(MSEobj_reb@B_BMSY[,,ind,drop=F]>1,2:3,mean)*100,rnd),nrow=nMPs)
-    Tab3<-as.data.frame(cbind(MSEobj_reb@MPs,TRP))
-    colnams<-c("MP",Current_Year+proyears-options$YIU-(9:0))
-    names(Tab3)<-colnams
-    Tab3$MP<-as.character(Tab3$MP)
-    
-    URLs <- sapply(Tab3$MP, MPurl) %>% unlist()
-    MPwithurl <- !is.na(URLs) 
-    Tab3$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab3$MP[MPwithurl],"</a>")
-    
-    Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
-    caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab3,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
-                options=list(buttons = 
-                               list('copy', list(
-                                 extend = 'collection',
-                                 buttons = c('csv', 'excel', 'pdf'),
-                                 text = 'Download'
-                               )),
-                             dom = 'Brti', 
-                             ordering=F
-                )
-      )%>%
-      formatStyle(columns = 2:ncol(Tab3), valueColumns = 2:ncol(Tab3), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
 
-  }
-  
-  Tab_title[[5]] <- "Table 5. Short term HCR"
-  Tab_text[[5]] <-"Probability of biomass exceeding the target reference point in the years since MP adoption"
-  
-  Tabs[[5]]<-function(MSEobj, MSEobj_reb,options=list(),rnd=1){
-    
-    nMPs<-MSEobj_reb@nMPs
-    proyears<-MSEobj_reb@proyears
-    
-    MGT2<-2* MSEobj_reb@OM$MGT
-    ind<-1:20
-    TRP<-matrix(round(apply(MSEobj_reb@B_BMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
-    
-    shaderng=range(ceiling(MGT2))
-    shaderng[2]<-min(20,shaderng[2])
-    
-    Tab4<-as.data.frame(cbind(MSEobj_reb@MPs,TRP))
-    colnams<-c("MP",Current_Year+(1:20)-options$YIU)
-    names(Tab4)<-colnams
-    Tab4$MP<-as.character(Tab4$MP)
-    
-    URLs <- sapply(Tab4$MP, MPurl) %>% unlist()
-    MPwithurl <- !is.na(URLs) 
-    Tab4$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab4$MP[MPwithurl],"</a>")
-    
-    Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
-    caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
-    datatable(Tab4,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
-                options=list(buttons = 
-                               list('copy', list(
-                                 extend = 'collection',
-                                 buttons = c('csv', 'excel', 'pdf'),
-                                 text = 'Download'
-                               )),
-                             dom = 'Brti', 
-                             ordering=F
-                )
-      )%>%
-      formatStyle(columns = 2:ncol(Tab4), valueColumns = 2:ncol(Tab4), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))%>%
-      formatStyle(colnams[1+shaderng[1]:shaderng[2]],backgroundColor='lightgrey')
-    
-  }
  
-  Tab_title[[6]] <- Tab_title[[7]] <- Tab_title[[8]] <- Tab_title[[9]] <- "" # make extras empty
   
   # --- Figures ---
  
-  Fig_title[[1]]<-""
-  
+
   Fig_title[[2]] <- "Figure 1. Biomass projected since MP adoption"
   Fig_text[[2]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
   
-  Figs[[2]]<-function(MSEobj,MSEobj_reb,options=list()) BMSYproj(MSEobj,MSEobj_reb,options,maxcol=1)
+  Figs[[2]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) BMSYproj(MSEobj_Eval,MSEobj_Eval,options,maxcol=1)
   Fig_dim[[2]] <- function(dims)list(height=420,width=600)
   
   Fig_title[[3]] <- "Figure 2. Biomass projected since MP adoption relative to unfished SSB"
   Fig_text[[3]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
   
-  Figs[[3]]<-function(MSEobj,MSEobj_reb,options=list()) B0proj(MSEobj,MSEobj_reb,options,maxcol=1)
+  Figs[[3]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) B0proj(MSEobj_Eval,MSEobj_Eval,options,maxcol=1)
   Fig_dim[[3]] <- function(dims)list(height=420,width=600)
   
-  Fig_title[[4]] <- "Figure 3. Long-term HCR"
-  Fig_text[[4]] <- "Projections of biomass relative to MSY and unfished (B0) levels given a starting depletion of half BMSY. The rebuilding analysis simulates the fishery currently in a depleted state even if the user-specified depletion in the operating model is higher.
-  In these cases, the rebuilding analysis provides added assurance whether a particular management procedure would be likely to rebuild the stock if the user-specified depletion level is overly optimistic and in need of rebuilding.
-  The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the limit and target reference points. The bold black vertical line is the current year, the black vertical line denotes the last 10 years of the projection over which results are tabulated." 
-
-  Figs[[4]]<-function(MSEobj,MSEobj_reb,options=list()) LT_HCR(MSEobj,MSEobj_reb,options,maxcol=1,vline=41)
-  Fig_dim[[4]] <- function(dims)list(height=420,width=600)
+  Fig_title[[4]] <- "Figure 3. Posterior predicted data"
+  Fig_text[[4]] <- "Data correlation text"
   
-  Fig_title[[5]] <- "Figure 4. Short-term HCR"
-  Fig_text[[5]] <- "As Figure 2 but over a 20 year projection. The shaded grey region is the period between the minimum and maximum values of two mean generation times." 
+  Figs[[4]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,CC=TRUE)
+  Fig_dim[[4]] <- function(dims)list(height=700,width=700)
+ 
+  Fig_title[[5]] <- "Figure 4. MIdist"
+  Fig_text[[5]] <- "MI text"
   
-  Figs[[5]]<-function(MSEobj,MSEobj_reb,options=list()) ST_HCR(MSEobj,MSEobj_reb,options,plotMGT=T,maxcol=1)
-  Fig_dim[[5]] <- function(dims)list(height=420,width=600)
-  
-  Fig_title[[6]] <- "Figure 5. Evaluation of current uncertainties"
-  Fig_text[[6]] <- "This figure identifies those questions across which there is the highest variability in long term yield (average yield over last 10 years of the projection). This figures identifies which elements of the questionnaire (Step A) are the most consequential uncertainties." 
-  Figs[[6]] <- function(MSEobj,MSEobj_reb,options=list()) CCU_plot(MSEobj,MSEobj_reb,options,maxcol=1)
-  Fig_dim[[6]]<-function(dims)list(height=420,width=600)
-  
-  Fig_title[[7]] <- "Figure 6. Value of information"
-  Fig_text[[7]] <- "This figure identifies the key observation uncertainties (biases and errors) in determing the long-term yield performance of MPs (average yield over last 10 years of the projection)." 
-  Figs[[7]] <- function(MSEobj,MSEobj_reb,options=list()) VOI_plot(MSEobj,MSEobj_reb,options,maxcol=1)
-  Fig_dim[[7]]<-function(dims)list(height=420,width=600)
-  
-  
-  Fig_title[[8]] <- Fig_title[[9]] <- "" # make extras empty
-  
+  Figs[[5]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,CC=FALSE)
+  Fig_dim[[5]] <- function(dims)list(height=550,width=550)
+ 
   Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                    Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
  
