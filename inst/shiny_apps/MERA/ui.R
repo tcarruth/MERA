@@ -43,6 +43,7 @@ shinyUI(
                       #Fpanelout{font-size: 13px;}
                       #Dpanelout{font-size: 13px;}
                       #Mpanelout{font-size: 13px;}
+                      #Opanelout{font-size: 13px;}
                       #email{font-size: 13px;}
                       #emailsend{font-size: 13px;}
                       #calculate{font-size: 13px;}
@@ -58,6 +59,7 @@ shinyUI(
                       #Load{font-size: 13px; height:10px;}
                       #Justification{font-size: 13px;}
                       #SessionID{font-size:11px;}
+                      #Dependencies{font-size:11px;}
 
 
                       ")),
@@ -105,7 +107,7 @@ shinyUI(
     hr(),
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
-    h5("MERA links a straightforward graphical questionaire to the powerful DLMtool and MSEtool libraries to calculate stock status and management performance. ",style = "color:grey"),
+    h5("MERA links a graphical questionaire to the powerful DLMtool and MSEtool libraries to calculate stock status and management performance. ",style = "color:grey"),
     h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
@@ -363,14 +365,14 @@ shinyUI(
                                 conditionalPanel(width=4,condition="output.Opanel==undefined|output.Opanel==0",
                                  
                                   HTML("<br>"),
-                                  h5("The Options panel contains a number of optional features for characterising your fishery system.",style="color:grey"),
+                                  h5("The Extra panel contains a number of optional features for characterising your fishery system.",style="color:grey"),
                                   h5("These include: ",style="color:grey"),
                                   h5(" - loading real fishery data.",style="color:grey"),
                                   h5(" - conditioning operating models.",style="color:grey"),
                                   h5(" - specifying bio-economic model parameters.",style="color:grey"),
                                   h5(""),
-                                  h5("More detailed help on Options questions can be found in the MERA manual
-                                      : ", a("Section 2.4.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#24_optional", target="_blank"),style="color:grey")
+                                  h5("More detailed help on Extra features can be found in the MERA manual
+                                      : ", a("Section 2.4.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#24_extra", target="_blank"),style="color:grey")
                                   
                                 ),
                          
@@ -838,7 +840,7 @@ shinyUI(
                              HTML("<br>"),
                              HTML("<br>"),
                              h5("When formatted into a DLMtool/MSEtool csv data file, fishery data can be used to:",style = "color:grey"),
-                             h5(" - condition operating models (the next panel in the Optional tab)",style = "color:grey"),
+                             h5(" - condition operating models (Extra panel 4)",style = "color:grey"),
                              h5(" - determine feasible MPs (Management Planning mode)", style = "color:grey"),
                              h5(" - assess the fishery status (Status Determination mode)", style = "color:grey"),
                              h5(" - test for exceptional circumstances (Management Performance mode).",style = "color:grey"),
@@ -876,7 +878,7 @@ shinyUI(
                                               h5("The questions are presented in order of general importance and default to maxmum uncertainty.",style = "color:grey"),
                                               h5("At any stage you can select an analysis type and press 'CALCULATE'.",style = "color:grey"),
                                               h5("As you work through the questions in the Fishery, Management and Data panels, you can narrow the range of simulated fisheries but you should provide justification for each selection in the justification box.",style = "color:grey"),
-                                              h5("The Optional panel includes extensions to the questionnaire that allow for operating model customization where necessary.",style = "color:grey")
+                                              h5("The Extra panel includes extensions to the questionnaire that allow for operating model customization where necessary.",style = "color:grey")
                                         )
                       ),
                       
@@ -885,7 +887,7 @@ shinyUI(
 
                              h5("Users can also determine the total number of simulations, the number of projected years and the management update interval (years between management recommendations in the projection).
                                  The burn-in is intended to represent a duration over which an MP has already been used. Burn-in is also the number of initial projected years correponding to some stock status performance indicators. ",style = "color:grey"),
-                             h5("Users can also choose to exclude reference management procdures (e.g. zero catches, fishing at FMSY), activate parallel computation if more than 48 simulations are specified (which is much faster but there is no MSE progress bar).",style = "color:grey"),
+                             h5("Users can also choose to exclude reference management procedures (e.g. zero catches, fishing at FMSY), activate parallel computation if more than 48 simulations are specified (which is much faster but there is no MSE progress bar).",style = "color:grey"),
                              h5("The Application step requires the selection of a single MP. Other options include the loading of custom DLMtool/MSEtool code (MPs, performance metrics and MSE controls)",style = "color:grey"),
                              h5(""),
                              h5("A more detailed guide to these options can be found in the MERA manual ",a("Section 7.", href="www.datalimitedtoolkit.org", target="_blank"),style = "color:grey"),
@@ -944,18 +946,25 @@ shinyUI(
 
                  ),
 
-                 column(width=4,#style="height:180px",
+                 column(width=3,#style="height:180px",
                         conditionalPanel(condition="output.Fpanel>0|output.Ppanel>0|output.Dpanel>0|output.Fpanel!=undefined|output.Mpanel!=undefined|output.Dpanel!=undefined",
                                textOutput("Fpanelout"),
                                textOutput("Mpanelout"),
                                textOutput("Dpanelout")
                         )
+                 ),
+                 
+                 column(width=3,#style="height:180px",
+                        conditionalPanel(condition="output.Fpanel>0|output.Ppanel>0|output.Dpanel>0|output.Fpanel!=undefined|output.Mpanel!=undefined|output.Dpanel!=undefined",
+                               textOutput("Opanelout")
+                        )
                  )
+                 
                    
               )
            ),
 
-           column(2),
+           #column(2),
 
            column(4,style="height:50px",
 
@@ -1073,7 +1082,6 @@ shinyUI(
                           column(7,radioButtons('SDset',label="Status Determination Methods",choices=c("All","Top 6","Top 3","Custom"),selected="Top 3",inline=T)),
                           column(5,conditionalPanel(condition="input.SDset=='Custom'",selectInput("SDsel","",  choices=c("C"),selected="C", multiple = TRUE))),
                           column(6,checkboxInput("SD_simtest", label = "Include simulation test", value = FALSE)),
-                          column(6,checkboxInput("SD_parallel", label = "Parallel", value = TRUE)),
                           column(12,actionButton("Calculate_status",h5("      CALCULATE     ",style="color:red")))
                       )
                   ),
@@ -1081,11 +1089,8 @@ shinyUI(
                          HTML("<br>"),
                          h5("To calculate stock status you must first load data (Extra panel 1)", style = "color:grey")
                         
-                  ),
-                  conditionalPanel(width=4,condition="output.Data==1",
-                         h5("Data Report",style="font-weight:bold"),
-                         downloadButton("Build_Data_SD"," ")
                   )
+                  
                   ),
                   
                   column(6,
@@ -1121,7 +1126,7 @@ shinyUI(
                 ),
                 
                 column(2,
-                       conditionalPanel(condition="output.Status==1",
+                       conditionalPanel(condition="output.SD==1",
                                         h5("Save",style="font-weight:bold"),
                                         downloadButton("Save_Status","",width=70)
                        )
@@ -1129,7 +1134,7 @@ shinyUI(
                 ),
                 column(4,
                        
-                       conditionalPanel(condition="output.Status==1",
+                       conditionalPanel(condition="output.SD==1",
                                         h5("Status Report",style="font-weight:bold"),
                                         downloadButton("Build_Status","")
                        )
@@ -1264,8 +1269,8 @@ shinyUI(
              column(8),
              column(4,
                     conditionalPanel(width=4,condition="output.DataInd==1",
-                            h5("Indicator Report",style="font-weight:bold"),
-                            downloadButton("Build_AI"," ")
+                            h5("Performance Evaluation Report",style="font-weight:bold"),
+                            downloadButton("Build_Eval"," ")
                     )
              )
        )

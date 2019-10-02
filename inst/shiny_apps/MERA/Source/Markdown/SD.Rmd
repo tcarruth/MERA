@@ -1,0 +1,663 @@
+---
+title: "`r params$set_title`"#
+subtitle: "`r params$set_type` "
+author: "`r params$Source`"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false    
+runtime: shiny   
+---
+
+
+<style type="text/css">
+
+body{ /* Normal  */
+   font-size: 16px;
+}
+td {  /* Table  */
+   font-size: 16px;
+}
+title { /* title */
+ font-size: 26px;
+}
+h1 { /* Header 1 */
+ font-size: 24px;
+ color: DarkBlue;
+}
+h2 { /* Header 2 */
+ font-size: 21px;
+ color: DarkBlue;
+}
+h3 { /* Header 3 */
+ font-size: 19px;
+ color: DarkBlue;
+}
+code.r{ /* Code block */
+  font-size: 16px;
+}
+pre { /* Code block */
+  font-size: 16px
+}
+</style>
+
+
+<img src="logo.png" width="120" align="left">
+
+
+
+```{r set options, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(dpi=85)
+
+#options(width = 650)
+```
+
+
+<br>
+
+```{r progresssetup,echo=F}
+
+incrate<-1/10
+incProgress(incrate)
+
+library(DT)
+dims<-list(nMPs=1)
+
+
+```
+
+
+
+```{r Intro, echo=F,warning=F,error=F,message=F,results='asis'}
+
+  cat("\\newpage")
+  cat('\n')
+  cat(paste0("# ",params$Skin$SD$Intro_title[[1]]))
+  cat('\n')
+  cat(params$Skin$SD$Intro_text[[1]])    
+  cat('\n')
+
+```
+
+
+
+
+```{r Chunk1t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-1
+  
+  cat("\\newpage")
+  if(length(params$Skin$SD$Tab_title)>=i){
+  if(params$Skin$SD$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Tab_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+      params$Skin$SD$Tabs[[i]](params$Status)
+    }
+  }
+  }
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+  
+  width=params$Skin$SD$Fig_dim[[i]]()$width/100
+  height=params$Skin$SD$Fig_dim[[i]]()$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+``` 
+
+```{r Chunk1f, echo=F,warning=F,error=F,message=F,results='asis',fig.height=height, fig.width=width}
+
+   cat("\\newpage")
+  if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Fig_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Figs[[i]]))>1){
+      params$Skin$SD$Figs[[i]](params$Status)
+    }
+  }
+  }
+
+  incProgress(incrate)
+```
+
+
+
+```{r Chunk2t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-2
+  
+  cat("\\newpage")
+  if(length(params$Skin$SD$Tab_title)>=i){
+  if(params$Skin$SD$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Tab_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+      params$Skin$SD$Tabs[[i]](params$Status)
+    }
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+  
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk2f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Fig_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Figs[[i]]))>1){
+      params$Skin$SD$Figs[[i]](params$Status)
+    }
+  }
+  }
+
+```
+
+
+
+```{r Chunk3t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-3
+  
+  cat("\\newpage")
+  if(length(params$Skin$SD$Tab_title)>=i){
+  if(params$Skin$SD$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Tab_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+      params$Skin$SD$Tabs[[i]](params$Status)
+    }
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+  
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk3f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Fig_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Figs[[i]]))>1){
+      params$Skin$SD$Figs[[i]](params$Status)
+    }
+  }
+  }
+
+```
+
+
+
+```{r Chunk4t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-4
+  
+  cat("\\newpage")
+  if(length(params$Skin$SD$Tab_title)>=i){
+  if(params$Skin$SD$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Tab_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+      params$Skin$SD$Tabs[[i]](params$Status)
+    }
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+  
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk4f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Fig_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Figs[[i]]))>1){
+      params$Skin$SD$Figs[[i]](params$Status)
+    }
+  }
+  }
+
+```
+
+
+
+
+
+```{r Chunk5t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-5
+  
+  cat("\\newpage")
+  if(length(params$Skin$SD$Tab_title)>=i){
+  if(params$Skin$SD$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Tab_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+      params$Skin$SD$Tabs[[i]](params$Status)
+    }
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+  
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk5f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Fig_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Figs[[i]]))>1){
+      params$Skin$SD$Figs[[i]](params$Status)
+    }
+  }
+  }
+
+```
+
+
+
+
+```{r Chunk6t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-6
+  
+  cat("\\newpage")
+  if(length(params$Skin$SD$Tab_title)>=i){
+  if(params$Skin$SD$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Tab_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+      params$Skin$SD$Tabs[[i]](params$Status)
+    }
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+  
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk6f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Fig_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Figs[[i]]))>1){
+      params$Skin$SD$Figs[[i]](params$Status)
+    }
+  }
+  }
+
+```
+
+
+
+
+```{r Chunk7t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-7
+  
+  cat("\\newpage")
+  if(length(params$Skin$SD$Tab_title)>=i){
+  if(params$Skin$SD$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Tab_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+      params$Skin$SD$Tabs[[i]](params$Status)
+    }
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+  
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk7f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Fig_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Figs[[i]]))>1){
+      params$Skin$SD$Figs[[i]](params$Status)
+    }
+  }
+  }
+
+```
+
+
+
+
+```{r Chunk8t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-8
+  
+  cat("\\newpage")
+  if(length(params$Skin$SD$Tab_title)>=i){
+  if(params$Skin$SD$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Tab_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+      params$Skin$SD$Tabs[[i]](params$Status)
+    }
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+  
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk8f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Fig_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Figs[[i]]))>1){
+      params$Skin$SD$Figs[[i]](params$Status)
+    }
+  }
+  }
+
+```
+
+
+
+
+```{r Chunk9t, echo=F,warning=F,error=F,message=F,results='asis'}
+  i<-9
+  
+  cat("\\newpage")
+  if(length(params$Skin$SD$Tab_title)>=i){
+  if(params$Skin$SD$Tab_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Tab_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+      params$Skin$SD$Tabs[[i]](params$Status)
+    }
+  }
+  } 
+
+```
+
+```{r,echo=FALSE}
+
+if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+  
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  
+  }else{
+    width=3
+    height=4
+  }
+}else{
+  width=3
+  height=4
+  
+}  
+
+
+```
+
+```{r Chunk9f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
+
+  knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
+  cat("\\newpage")
+  if(length(params$Skin$SD$Fig_title)>=i){
+  if(params$Skin$SD$Fig_title[[i]]!=""){
+    cat('\n')
+    cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
+    cat('\n')
+    cat(params$Skin$SD$Fig_text[[i]])    
+    cat('\n')
+    if(length(body(params$Skin$SD$Figs[[i]]))>1){
+      params$Skin$SD$Figs[[i]](params$Status)
+    }
+  }
+  }
+
+```
+
+
+
+# Version Notes
+
+The package is subject to ongoing testing. If you find a bug or a problem please send a report to <t.carruthers@oceans.ubc.ca> so that it can be fixed!  
+
+<br clear="both"/>
+<br clear="both"/>
+<br clear="both"/>
+
+<hr />
+```{r copyright, results='asis',echo=FALSE, size="tiny"}
+
+  
+  cat(params$SessionID)
+  cat("\n\n")
+  cat(params$copyright)
+ 
+
+```
+<hr />
+
+

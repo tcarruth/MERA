@@ -267,7 +267,7 @@ redoEval<-function(fease=F){
     
     # option code
     #options <- list(burnin = input$burnin, res=input$res)
-    options <- list(YIU = input$YIU, res=1)
+    options <- list(res=1)
     
     if(Skin$Evaluation$Intro_title[[1]]==""){
       output[["P_Intro_title"]]<-renderText(NULL)
