@@ -424,8 +424,8 @@ shinyServer(function(input, output, session) {
       DataInd(1)
     }
 
-    saveRDS(dat_ind,"C:/temp/dat_ind.rda")
-    saveRDS(dat,"C:/temp/dat.rda")
+    #saveRDS(dat_ind,"C:/temp/dat_ind.rda")
+    #saveRDS(dat,"C:/temp/dat.rda")
     
     SD_codes<-getCodes(dat,maxtest=Inf)
     updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
@@ -441,7 +441,7 @@ shinyServer(function(input, output, session) {
     content=function(file){
 
       doprogress("Saving Operating Model")
-      saveRDS(OM,file)
+      #saveRDS(OM,file)
 
     }
 
@@ -757,9 +757,9 @@ shinyServer(function(input, output, session) {
     
     ncode<-length(codes)
     Est<-Sim<-Fit<-list()
-    saveRDS(OM,"C:/temp/OM3")
-    saveRDS(dat,"C:/temp/dat3")
-    saveRDS(codes,"C:/temp/codes3")
+    #saveRDS(OM,"C:/temp/OM3")
+    #saveRDS(dat,"C:/temp/dat3")
+    #saveRDS(codes,"C:/temp/codes3")
     #tryCatch({
       
       withProgress(message = "Running Status Determination", value = 0, {
@@ -907,8 +907,8 @@ shinyServer(function(input, output, session) {
     #tryCatch({
     
       withProgress(message = "Running Evaluation", value = 0, {
-        saveRDS(OM_Eval,file="C:/temp/OM_Eval.Rdata")
-        saveRDS(EvalMPs,file="C:/temp/EvalMPs.Rdata")
+        #saveRDS(OM_Eval,file="C:/temp/OM_Eval.Rdata")
+        #saveRDS(EvalMPs,file="C:/temp/EvalMPs.Rdata")
         
         EvalMPs<-input$sel_MP
         MSEobj_Eval<<-runMSE(OM_Eval,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
@@ -921,9 +921,9 @@ shinyServer(function(input, output, session) {
       Eval(1)
       Ind(1)
      
-      saveRDS(MSEobj_Eval,file="C:/temp/MSEobj_Eval.Rdata")
-      saveRDS(dat,file="C:/temp/dat.Rdata")
-      saveRDS(dat_ind,file="C:/temp/dat_ind.Rdata")
+      #saveRDS(MSEobj_Eval,file="C:/temp/MSEobj_Eval.Rdata")
+      #saveRDS(dat,file="C:/temp/dat.Rdata")
+      #saveRDS(dat_ind,file="C:/temp/dat_ind.Rdata")
     
    
       #},
