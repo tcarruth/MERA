@@ -19,7 +19,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.1.1"
+  Version<<-"5.1.2"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -145,7 +145,7 @@ shinyServer(function(input, output, session) {
   output$Fpanelout <- renderText({ paste("Fishery",Fpanel(),"/ 19")})
   output$Mpanelout <- renderText({ paste("Management",Mpanel(),"/ 7")})
   output$Dpanelout <- renderText({ paste("Data",Dpanel(),"/ 4")})
-  output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 5")})
+  output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 6")})
 
   # Update UI
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
@@ -300,6 +300,7 @@ shinyServer(function(input, output, session) {
       MSClog<-list(PanelState, Just, Des)
       doprogress("Saving Questionnaire")
       saveRDS(MSClog,file)
+      AM(paste0("Questionnaire saved:", file))
 
     }
 
@@ -313,7 +314,8 @@ shinyServer(function(input, output, session) {
 
         MSClog<-readRDS(file=filey$datapath)
         cond<-length(MSClog)==3 & sum(names(MSClog[[1]])==c("Fpanel","Mpanel","Dpanel","Slider"))==4
-
+        AM(paste0("Questionnaire loaded:", filey$datapath))
+        
         if(cond){
           PanelState<<-MSClog[[1]]
           Just<<-MSClog[[2]]
@@ -364,11 +366,13 @@ shinyServer(function(input, output, session) {
           Opanel(1)
           Plan(0)
         }else{
+          AM(paste0("Questionnaire failed to load:", filey$datapath))
           shinyalert("File read error", "This does not appear to be a MERA questionnaire file", type = "error")
         }
 
       },
       error = function(e){
+        AM(paste0("Questionnaire failed to load:", filey$datapath))
         shinyalert("File read error", "This does not appear to be a MERA questionnaire file", type = "error")
         return(0)
       }
@@ -606,6 +610,7 @@ shinyServer(function(input, output, session) {
         AM(paste0("Source file loaded: ",filey$datapath))
         source(file=filey$datapath)
         updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Application
+        updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
 
     },
       error = function(e){
@@ -707,7 +712,7 @@ shinyServer(function(input, output, session) {
      
     Update_Options()
     
-    tryCatch({
+   # tryCatch({
       
       withProgress(message = "Running Risk Assessment", value = 0, {
         silent=T
@@ -718,22 +723,22 @@ shinyServer(function(input, output, session) {
      
       # ==== Types of reporting ==========================================================
       
-      if(input$Debug)message("preredoRA")
+      message("preredoRA")
       redoRA()
-      if(input$Debug)message("postredoRA")
+      message("postredoRA")
       RA(1)
       #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
       
-    },
-    error = function(e){
-     shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-                   For example a short lived stock a low stock depletion with recently declining effort.
-                  Try revising operating model parameters.", type = "info")
-      return(0)
-    }
+   # },
+    #error = function(e){
+     #shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+    #               For example a short lived stock a low stock depletion with recently declining effort.
+     #             Try revising operating model parameters.", type = "info")
+    #  return(0)
+    #}
     
-    )
+    #)
     
   }) # press calculate
   
@@ -790,9 +795,9 @@ shinyServer(function(input, output, session) {
       # ==== Types of reporting ==========================================================
       Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim)
       
-      if(input$Debug)message("preredoSD")
+      message("preredoSD")
       redoSD()
-      if(input$Debug)message("postredoSD")
+      message("postredoSD")
       SD(1)
       #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
@@ -860,10 +865,10 @@ shinyServer(function(input, output, session) {
         
         # ==== Types of reporting ==========================================================
           
-        if(input$Debug)message("preredoPlan")
+        message("preredoPlan")
         Plan(1)
         redoPlan()
-        if(input$Debug)message("postredoPlan")
+        message("postredoPlan")
         
         #Tweak(0)
         #updateTabsetPanel(session,"Res_Tab",selected="1")
@@ -920,9 +925,9 @@ shinyServer(function(input, output, session) {
         
       })
       
-      if(input$Debug)message("preredoEval")
+      message("preredoEval")
       redoEval()
-      if(input$Debug)message("postredoEval")
+      message("postredoEval")
       Eval(1)
       Ind(1)
      

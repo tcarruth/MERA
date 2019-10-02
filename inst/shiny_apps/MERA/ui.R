@@ -479,6 +479,14 @@ shinyUI(
                                    )
                                 ),
                                 
+                                
+                                conditionalPanel(width=4,condition="output.Opanel==6",
+                                                 
+                                  HTML("<br>"),
+                                  h5("6. Load Source Code",style="color:grey"),
+                                  fileInput("Load_anything","Load DLMtool and MSEtool source code for MPs and PMs")
+                                ),  
+                                
                                 value=4)
                       )
                ),
@@ -868,6 +876,15 @@ shinyUI(
                         )
                       ),
                       
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==6",
+                                       column(12, 
+                                              HTML("<br>"),
+                                              HTML("<br>"),
+                                              h5("Any R source code that is compatible with DLMtool and MSEtool can be loaded here including custom:", style = "color:grey"),
+                                              h5(" - Management procedures", style = "color:grey"),
+                                              h5(" - Performance Metrics", style = "color:grey"),
+                                              h5(" - Figures and Tables", style = "color:grey")                                 )
+                      ),
                       
                       
                       # ---- Other panel guides
@@ -1514,45 +1531,28 @@ shinyUI(
         )
       )),
 
-      column(12,style="height:45px"),
+      column(12),
 
-      conditionalPanel(condition="input.Mode!='Risk Assessment'",
-            h4("ADVANCED"),
-            hr(),
-
-
-            fluidRow(
-              column(1),
-              column(11,
-
-                     fluidRow(
-                       column(2,
-                            fileInput("Load_anything","Load DLMtool and MSEtool source code for OMs, MPs and PMs")
-                       ),
-                       column(1),
-                       column(2,
-
-                              checkboxInput("Debug","Debug mode",value=TRUE)
-                       )
-                     )
-            ))
-      ),
-     
-   column(12,style="height:10px"),
-  
-     
-   conditionalPanel(condition="input.Debug",
-      column(1),
-      column(9, textAreaInput("Log", "Log",height="120px"))
-   ),
+      hr(),
    
-   column(12,style="height:100px"),
-   hr(),
-   
-   column(6,style="height:40px"),
-   column(2,style="height:40px; padding:9px",textOutput("Dependencies")),
-   column(2,style="height:40px; padding:9px",textOutput("SessionID")),
-   column(2,style="height:40px", h6("Open Source, GPL-2, 2019"))
+     
+     
+       column(12),
+      
+       #checkboxInput("Debug","Debug mode",value=TRUE),
+       
+       #conditionalPanel(condition="input.Debug",
+          column(1),
+          column(9, textAreaInput("Log", "Log",height="120px")),
+       #),
+       
+       column(12),
+       hr(),
+       
+       column(6,style="height:40px"),
+       column(2,style="height:40px; padding:9px",textOutput("Dependencies")),
+       column(2,style="height:40px; padding:9px",textOutput("SessionID")),
+       column(2,style="height:40px", h6("Open Source, GPL-2, 2019"))
 
      #) # end of fluid row
     ) # end of fluid page

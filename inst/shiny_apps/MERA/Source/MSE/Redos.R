@@ -24,7 +24,7 @@ redoRA<-function(fease=F){
     nres<-length(Skin$Risk_Assessment$Tab_title)
     dims<-list()
     incrate<-1/nres
-    if(input$Debug)message(paste0("Max number of RA plots = ",nres))
+    message(paste0("Max number of RA plots = ",nres))
     
     options <- list(res=5)
     
