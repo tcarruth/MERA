@@ -19,7 +19,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.1.0"
+  Version<<-"5.1.2"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -146,6 +146,7 @@ shinyServer(function(input, output, session) {
   output$Fpanelout <- renderText({ paste("Fishery",Fpanel(),"/ 19")})
   output$Mpanelout <- renderText({ paste("Management",Mpanel(),"/ 7")})
   output$Dpanelout <- renderText({ paste("Data",Dpanel(),"/ 4")})
+  output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 6")})
 
   # Update UI
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
@@ -306,6 +307,7 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
       MSClog<-list(PanelState, Just, Des)
       doprogress("Saving Questionnaire")
       saveRDS(MSClog,file)
+      AM(paste0("Questionnaire saved:", file))
 
     }
 
@@ -319,7 +321,8 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
 
         MSClog<-readRDS(file=filey$datapath)
         cond<-length(MSClog)==3 & sum(names(MSClog[[1]])==c("Fpanel","Mpanel","Dpanel","Slider"))==4
-
+        AM(paste0("Questionnaire loaded:", filey$datapath))
+        
         if(cond){
           PanelState<<-MSClog[[1]]
           Just<<-MSClog[[2]]
@@ -367,13 +370,16 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
           Fpanel(1)
           Mpanel(1)
           Dpanel(1)
+          Opanel(1)
           Plan(0)
         }else{
+          AM(paste0("Questionnaire failed to load:", filey$datapath))
           shinyalert("File read error", "This does not appear to be a MERA questionnaire file", type = "error")
         }
 
       },
       error = function(e){
+        AM(paste0("Questionnaire failed to load:", filey$datapath))
         shinyalert("File read error", "This does not appear to be a MERA questionnaire file", type = "error")
         return(0)
       }
@@ -431,8 +437,8 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
       DataInd(1)
     }
 
-    saveRDS(dat_ind,"C:/temp/dat_ind.rda")
-    saveRDS(dat,"C:/temp/dat.rda")
+    #saveRDS(dat_ind,"C:/temp/dat_ind.rda")
+    #saveRDS(dat,"C:/temp/dat.rda")
     
     SD_codes<-getCodes(dat,maxtest=Inf)
     updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
@@ -448,7 +454,7 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
     content=function(file){
 
       doprogress("Saving Operating Model")
-      saveRDS(OM,file)
+      #saveRDS(OM,file)
 
     }
 
@@ -611,6 +617,7 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
         AM(paste0("Source file loaded: ",filey$datapath))
         source(file=filey$datapath)
         updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Application
+        updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
 
     },
       error = function(e){
@@ -654,6 +661,7 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
         Fpanel(1)
         Mpanel(1)
         Dpanel(1)
+        Opanel(1)
         Data(1)
 
       }else if(input$Cond_ops=="None"){ # Build OM from questionnaire only
@@ -684,7 +692,7 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
 
 
 #############################################################################################################################################################################
-### MSE functions
+### Calculation functions
 #############################################################################################################################################################################
 
   
@@ -711,7 +719,7 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
      
     Update_Options()
     
-    tryCatch({
+   # tryCatch({
       
       withProgress(message = "Running Risk Assessment", value = 0, {
         silent=T
@@ -722,22 +730,22 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
      
       # ==== Types of reporting ==========================================================
       
-      if(input$Debug)message("preredoRA")
+      message("preredoRA")
       redoRA()
-      if(input$Debug)message("postredoRA")
+      message("postredoRA")
       RA(1)
       #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
       
-    },
-    error = function(e){
-     shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-                   For example a short lived stock a low stock depletion with recently declining effort.
-                  Try revising operating model parameters.", type = "info")
-      return(0)
-    }
+   # },
+    #error = function(e){
+     #shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+    #               For example a short lived stock a low stock depletion with recently declining effort.
+     #             Try revising operating model parameters.", type = "info")
+    #  return(0)
+    #}
     
-    )
+    #)
     
   }) # press calculate
   
@@ -747,7 +755,6 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
     Status<-new('list')
     nsim<-input$nsim
     OM<-makeOM(PanelState,nsim=nsim)
-    setup()
     
     if(input$SDset=="Custom"){
       codes<-input$SDsel
@@ -764,15 +771,17 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
     
     ncode<-length(codes)
     Est<-Sim<-Fit<-list()
-    saveRDS(OM,"C:/temp/OM3")
-    saveRDS(dat,"C:/temp/dat3")
-    saveRDS(codes,"C:/temp/codes3")
-    #tryCatch({
+    #saveRDS(OM,"C:/temp/OM3")
+    #saveRDS(dat,"C:/temp/dat3")
+    #saveRDS(codes,"C:/temp/codes3")
+    setup()
+    
+    tryCatch({
       
       withProgress(message = "Running Status Determination", value = 0, {
         
         for(cc in 1:ncode){
-          Est[[cc]]<-GetDep(OM,dat,code=codes[cc],cores=parallel::detectCores())
+          Est[[cc]]<-GetDep(OM,dat,code=codes[cc],cores=4)
           AM(paste(cc,codes[cc],"Did not return depletion"))
           incProgress(1/ncode, detail = round(cc*100/ncode))
         }  
@@ -791,23 +800,24 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
       
       
       # ==== Types of reporting ==========================================================
+      Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim)
       
-      if(input$Debug)message("preredoSD")
+      message("preredoSD")
       redoSD()
-      if(input$Debug)message("postredoSD")
+      message("postredoSD")
       SD(1)
       #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
        
-      Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim)
+     
       
-   # },
-    #error = function(e){
-     # shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods.", type = "info")
-      #return(0)
-    #}
+    },
+    error = function(e){
+      shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods.", type = "info")
+      return(0)
+    }
     
-    #)
+    )
     
   }) # press calculate
   
@@ -839,7 +849,7 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
     Update_Options()
     #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
 
-    #tryCatch({
+    tryCatch({
 
         withProgress(message = "Running Planning Analysis", value = 0, {
           silent=T
@@ -862,23 +872,23 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
         
         # ==== Types of reporting ==========================================================
           
-        if(input$Debug)message("preredoPlan")
+        message("preredoPlan")
         Plan(1)
         redoPlan()
-        if(input$Debug)message("postredoPlan")
+        message("postredoPlan")
         
         #Tweak(0)
         #updateTabsetPanel(session,"Res_Tab",selected="1")
 
-     #},
-      #error = function(e){
-       # shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-        #           For example a short lived stock a low stock depletion with recently declining effort.
-         #         Try revising operating model parameters.", type = "info")
-        #return(0)
-      #}
+     },
+      error = function(e){
+        shinyalert("Computational error", "This probably occurred because the fishery dynamics of your questionnaire are not possible.
+                   For example, a short lived stock a low stock depletion with recently declining effort.
+                  Try revising operating model parameters.", type = "info")
+        return(0)
+      }
 
-    #)
+    )
 
   }) # press calculate
 
@@ -911,55 +921,39 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
     MSClog<<-list(PanelState, Just, Des)
     Update_Options()
    
-    #tryCatch({
+    tryCatch({
     
-      withProgress(message = "Running Evaluation", value = 0, {
-        saveRDS(OM_Eval,file="C:/temp/OM_Eval.Rdata")
-        saveRDS(EvalMPs,file="C:/temp/EvalMPs.Rdata")
+      withProgress(message = "Running Performance Evaluation", value = 0, {
+        #saveRDS(OM_Eval,file="C:/temp/OM_Eval.Rdata")
+        #saveRDS(EvalMPs,file="C:/temp/EvalMPs.Rdata")
         
         EvalMPs<-input$sel_MP
         MSEobj_Eval<<-runMSE(OM_Eval,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
         
       })
       
-      if(input$Debug)message("preredoEval")
+      message("preredoEval")
       redoEval()
-      if(input$Debug)message("postredoEval")
+      message("postredoEval")
       Eval(1)
       Ind(1)
      
-      saveRDS(MSEobj_Eval,file="C:/temp/MSEobj_Eval.Rdata")
-      saveRDS(dat,file="C:/temp/dat.Rdata")
-      saveRDS(dat_ind,file="C:/temp/dat_ind.Rdata")
+      #saveRDS(MSEobj_Eval,file="C:/temp/MSEobj_Eval.Rdata")
+      #saveRDS(dat,file="C:/temp/dat.Rdata")
+      #saveRDS(dat_ind,file="C:/temp/dat_ind.Rdata")
     
    
-      #},
-      #error = function(e){
-      #  shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-       #            For example a short lived stock a low stock depletion with recently declining effort.
-        #           Try revising operating model parameters.", type = "info")
-        #return(0)
-      #}
-    #) # try catch
+      },
+      error = function(e){
+        shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+                   For example a short lived stock a low stock depletion with recently declining effort.
+                   Try revising operating model parameters.", type = "info")
+        return(0)
+      }
+    ) # try catch
 
   }) # calculate MSE app
 
-  #observeEvent(input$Calculate_Ind,{
-    #tryCatch({
-
-     # redoInd()
-      #updateTabsetPanel(session,"Res_Tab",selected="3")
-    #  Ind(1)
-    #},
-    #error = function(e){
-    #  shinyalert("Computational error", "Could not calculate Ancillary indicators, check file format.", type = "info")
-    #  return(0)
-    #}
-    #) # try catch
-
-  #})
-
- 
   CheckJust<-function(){
 
     isjust<-function(x)sum(x=="No justification was provided")
@@ -983,7 +977,6 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
     if(input$Mode=='Evaluation')  redoEval()
     #Tweak(0)
   })
-
 
   # Update panelstate if ...
   observeEvent(input$D1,{
@@ -1082,46 +1075,6 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
     }
   )
 
-  # Data report for SD mode
-  output$Build_Data_SD <- downloadHandler(
-    # For PDF output, change this to "report.pdf"
-    filename = function(){paste0(namconv(input$Name),"_data.html")}, #"report.html",
-    
-    content = function(file) {
-      withProgress(message = "Building data report", value = 0, {
-        nsim<<-input$nsim
-        OM<<-makeOM(PanelState,nsim=nsim)
-        src <- normalizePath('Source/Markdown/DataRep.Rmd')
-        src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
-        
-        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-        MSClog<-list(PanelState, Just, Des)
-        
-        owd <- setwd(tempdir())
-        on.exit(setwd(owd))
-        file.copy(src, 'DataRep.Rmd', overwrite = TRUE)
-        file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
-        
-        library(rmarkdown)
-        params <- list(test = input$Name,
-                       set_title=paste0("Data report for ",input$Name),
-                       set_type=paste0("Demonstration Data description"," (MERA version ",Version,")"),
-                       dat=dat,
-                       author=input$Author,
-                       ntop=input$ntop,
-                       inputnames=inputnames,
-                       SessionID=SessionID,
-                       copyright=paste(Copyright,CurrentYr)
-        )
-        incProgress(0.2)
-        knitr::knit_meta(class=NULL, clean = TRUE) 
-        output<-render(input="DataRep.Rmd",output_format="html_document", params = params)
-        incProgress(0.7)
-        file.copy(output, file)
-        incProgress(0.1)
-      }) # end of progress
-    }
-  )
  
   
   # Conditioning report
@@ -1240,7 +1193,7 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
     filename = function(){paste0(namconv(input$Name),"_MERA_Risk_Assessment_Report.html")}, #"report.html",
     
     content = function(file) {
-      withProgress(message = "Building risk assessment report", value = 0, {
+      withProgress(message = "Building Risk Assessment report", value = 0, {
         src <- normalizePath('Source/Markdown/RA.Rmd')
         src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
        
@@ -1258,9 +1211,9 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
                        set_title=paste0("Risk Assessment Report for ",input$Name),
                        set_type=paste0("Risk Assessment of Status Quo Management "," (MERA version ",Version,")"),
                        Skin=Skin,
-                       MSEobj=MSEobj,
+                       MSEobj=RAobj,
                        OM=OM,
-                       MSEobj_reb=MSEobj_reb,
+                       MSEobj_reb=RAobj,
                        OM=OM,
                        options=options,
                        SessionID=SessionID,
@@ -1273,6 +1226,46 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
     }
     
   )
+  
+  output$Build_Status <-downloadHandler(
+    
+    filename = function(){paste0(namconv(input$Name),"_MERA_Status_Determination_Report.html")}, #"report.html",
+    
+    content = function(file) {
+      withProgress(message = "Building Status Determination report", value = 0, {
+        src <- normalizePath('Source/Markdown/SD.Rmd')
+        src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+        
+        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+        MSClog<-list(PanelState, Just, Des)
+        owd <- setwd(tempdir())
+        on.exit(setwd(owd))
+        file.copy(src, 'SD.Rmd', overwrite = TRUE)
+        file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
+        
+        options=Skin$Risk_Assessment$options
+        library(rmarkdown)
+        options()
+        params <- list(test = input$Name,
+                       set_title=paste0("Status Determination Report for ",input$Name),
+                       set_type=paste0("Status Determination "," (MERA version ",Version,")"),
+                       Skin=Skin,
+                       Status=Status,
+                       options=options,
+                       SessionID=SessionID,
+                       Source=SessionID,
+                       copyright=paste(Copyright,CurrentYr)
+        )
+        knitr::knit_meta(class=NULL, clean = TRUE) 
+        out<-render("SD.Rmd", output_format="html_document", params = params)
+        file.rename(out, file)
+      })
+    }
+    
+  )
+  
+  
+  
   
   
   output$Build_Plan <-downloadHandler(
@@ -1332,14 +1325,16 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
         file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
         options=Skin$Risk_Assessment$options
         library(rmarkdown)
-        options <- list(YIU = input$YIU, res=1)
+        
+        options <- list()
         
         params <- list(test = input$Name,
                        set_title=paste0("Evaluation Report for ",input$Name),
                        set_type=paste0("Multiple MP testing "," (MERA version ",Version,")"),
                        Skin=Skin,
-                       MSEobj=MSEobj,
-                       MSEobj_reb=MSEobj_reb,
+                       MSEobj=MSEobj_Eval,
+                       dat=dat,
+                       dat_ind=dat_ind,
                        OM=OM,
                        options=options,
                        SessionID=SessionID,
@@ -1354,54 +1349,6 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
   )
   
  
-  # Anciliary indicators report
-  output$Build_AI <- downloadHandler(
-    # For PDF output, change this to "report.pdf"
-    filename = function(){paste0(namconv(input$Name),"_AI.html")}, #"report.html",
-    content = function(file) {
-      withProgress(message = "Building indicators report", value = 0, {
-      src <- normalizePath('Source/Markdown/IndRep.Rmd')
-      src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
-     
-      test<-match(input$sel_MP,MPs)
-      if(is.na(test))mm<-1
-      if(!is.na(test))mm<-test
-
-      Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-      MSClog<-list(PanelState, Just, Des)
-
-      owd <- setwd(tempdir())
-      on.exit(setwd(owd))
-      file.copy(src, 'IndRep.Rmd', overwrite = TRUE)
-      file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
-
-      library(rmarkdown)
-      params <- list(test = input$Name,
-                     set_title=paste0("Ancillary Indicator Analysis Report for ",input$Name),
-                     set_type=paste0("Ancillary indicators report"," (MERA version ",Version,")"),
-
-                     PanelState=MSClog[[1]],
-                     Just=MSClog[[2]],
-                     Des=MSClog[[3]],
-                     OM=OM,
-                     inputnames=inputnames,
-                     MSEobj=MSEobj,
-                     dat=dat,
-                     dat_ind=dat_ind,
-                     mm=mm,
-                     ntop=input$ntop,
-                     burnin=burnin,
-                     SessionID=SessionID,
-                     copyright=paste(Copyright,CurrentYr)
-      )
-      knitr::knit_meta(class=NULL, clean = TRUE)
-      out<-render("IndRep.Rmd", params = params)
-      file.rename(out, file)
-      })
-    }
-  )
-
-
   # Fishery panel reactions ============================================================================================================
 
   observeEvent(input$Justification,{

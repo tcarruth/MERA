@@ -24,7 +24,7 @@ redoRA<-function(fease=F){
     nres<-length(Skin$Risk_Assessment$Tab_title)
     dims<-list()
     incrate<-1/nres
-    if(input$Debug)message(paste0("Max number of RA plots = ",nres))
+    message(paste0("Max number of RA plots = ",nres))
     
     options <- list(res=5)
     
@@ -267,7 +267,7 @@ redoEval<-function(fease=F){
     
     # option code
     #options <- list(burnin = input$burnin, res=input$res)
-    options <- list(YIU = input$YIU, res=1)
+    options <- list(res=1)
     
     if(Skin$Evaluation$Intro_title[[1]]==""){
       output[["P_Intro_title"]]<-renderText(NULL)
