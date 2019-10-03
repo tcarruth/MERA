@@ -21,3 +21,23 @@ Shiny <- function(app) {
   appDir <- system.file("shiny_apps", app, package = "MERA")
   shiny::runApp(appDir, display.mode = "normal",launch.browser = TRUE)
 }
+
+
+PKGENVIR <- new.env(parent=emptyenv()) 
+
+#' Run the MERA Shiny App
+#'
+#' @param skin Character. Skin to use to present results
+#'
+#' @return Nothing. Opens the MERA app in a web browser
+#' @export
+MERA <- function(skin="Train") {
+  if (class(skin) !="character") stop("skin must be character")
+  skins <- list.files(file.path(system.file(package = 'MERA'), "shiny_apps/MERA/source/Skins"))
+  skins <- tools::file_path_sans_ext(skins)
+  if (!skin %in% skins) stop(skin , ' is not a valid skin. Options are: ', paste(skins, collapse=", "))
+  
+  PKGENVIR$skin <- skin
+  appDir <- system.file("shiny_apps/MERA", package = "MERA")
+  shiny::runApp(appDir, display.mode = "normal",launch.browser = TRUE)
+}

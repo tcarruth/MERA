@@ -30,6 +30,7 @@ shinyServer(function(input, output, session) {
   # Presentation of results
   source("./Source/Skins/ABNJ.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
+  source("./Source/Skins/Train.R",local=TRUE)
   
   #source("./Analysis_results.R",local=TRUE)
   source("./Source/AI/AI_results.R",local=TRUE)
@@ -151,8 +152,14 @@ shinyServer(function(input, output, session) {
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
   output$Dependencies<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
 
+if (!is.null(MERA:::PKGENVIR$skin)) {
+    skin <- MERA:::PKGENVIR$skin
+  } else {
+    skin <- "MSC"
+  }
+  
   Skin_nams<<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
-  updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected="MSC")
+  updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected=skin)
   
   observe({
     query <- parseQueryString(session$clientData$url_search)
