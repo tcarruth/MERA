@@ -20,3 +20,4 @@ Imports: corpcor,
          MSEtool,
          tinytex,
          DT
+RoxygenNote: 6.1.1
