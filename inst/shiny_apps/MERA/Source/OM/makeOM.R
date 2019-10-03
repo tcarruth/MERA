@@ -242,8 +242,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA){
     
     OM@MPA<-matrix(c(1,1,1,0,                                            # year1, area1 open, area2 open, area3 shut
                      nyears-1,0,1,1),ncol=nareas+1,byrow=T)              # nyears-1, area1 shut, area2 open, area3 open              
-    
-   
+ 
     # Initial depletion                                                                      # F19 ----------
     initDrng<-getminmax(1,"Dh",PanelState)
     
@@ -273,6 +272,21 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA){
    
     OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Linf=Linf,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias,D=D))
   
+    # ---- Bioeconomic parameters ----------------------------------------------------------------------------------------------
+    #AM("TEST BE")
+    
+    if(input$EC_Model!="None"){
+      
+      OM@cpars<-c(OM@cpars,list(CostCurr=rep(input$CostCurr,OM@nsim), 
+                                RevCurr=rep(input$RevCurr,OM@nsim), 
+                                Response=rep(input$Response/100,OM@nsim), 
+                                CostInc=rep(input$CostInc,OM@nsim), 
+                                RevInc=rep(input$RevInc,OM@nsim)))
+      
+      #AM("Using bioeconomic model parameters")
+      
+    }
+    
     testing=F
     
     if(testing){

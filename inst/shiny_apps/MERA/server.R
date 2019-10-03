@@ -19,7 +19,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.1.2"
+  Version<<-"5.1.3"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -390,11 +390,13 @@ shinyServer(function(input, output, session) {
       tryCatch(
         {
          dat<<-new('Data',filey$datapath)
-         Data(1)
+         Data(1) 
+         AM(paste0(".csv data loaded:", filey$datapath))
         },
         error = function(e){
           shinyalert("Not a properly formatted DLMtool Data .csv file", "Trying to load as an object of class 'Data'", type = "error")
           Data(0)
+          AM(paste0(".csv data failed to load:", filey$datapath))
           loaded=F
         }
       )
@@ -404,16 +406,19 @@ shinyServer(function(input, output, session) {
       tryCatch(
         {
           dat<<-load(filey$datapath)
+          AM(paste0("Data object loaded:", filey$datapath))
           Data(1)
         },
         error = function(e){
           shinyalert("Could not load object", "Failed to load this file as a formatted data object", type = "error")
+          AM(paste0("Data object failed to load:", filey$datapath))
           Data(0)
         }
       )
 
       if(class(dat)!="Data"){
         shinyalert("Data load error!", "Failed to load this file as either a formatted .csv datafile or a DLMtool object of class 'Data'", type = "error")
+        AM(paste0("Data object failed to load:", filey$datapath))
         stop()
       }
     }
@@ -426,6 +431,7 @@ shinyServer(function(input, output, session) {
     }else{
       dat_ind<<-dat
       dat<<-dat_test
+      AM(paste0("Data object contains ", length(dat_ind@Years)-length(dat@Years)," years of indicator data after LHYear"))
 
       DataInd(1)
     }
@@ -434,6 +440,7 @@ shinyServer(function(input, output, session) {
     #saveRDS(dat,"C:/temp/dat.rda")
     
     SD_codes<-getCodes(dat,maxtest=Inf)
+    AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
     updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
     
   })
@@ -445,7 +452,7 @@ shinyServer(function(input, output, session) {
     filename = function()paste0(namconv(input$Name),".OM"),
 
     content=function(file){
-
+      AM(paste0("Operating model saved: ", file))
       doprogress("Saving Operating Model")
       #saveRDS(OM,file)
 
@@ -460,9 +467,11 @@ shinyServer(function(input, output, session) {
 
       tryCatch({
         OM_L<<-readRDS(file=filey$datapath)
+        
       },
       error = function(e){
         shinyalert("File read error", "This does not appear to be a DLMtool OM object, saved by saveRDS()", type = "error")
+        AM(paste0("Operating model failed to load: ", filey$datapath))
         return(0)
       })
 
@@ -473,8 +482,10 @@ shinyServer(function(input, output, session) {
         updateCheckboxInput(session,"OM_L",value=TRUE)
         CondOM(0)
         Quest(0)
+        AM(paste0("Operating model loaded: ", filey$datapath))
       }else{
         shinyalert("Incorrect class of object", "This file should be an object of DLMtool class 'OM'", type = "error")
+        AM(paste0("Object not of class 'OM'", filey$datapath))
       }
 
   })
@@ -694,6 +705,7 @@ shinyServer(function(input, output, session) {
     Fpanel(1)
     MPs<-c('curE','curC','FMSYref','NFref')
     nsim <- ifelse(quick, 8, input$nsim)
+    
     OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
     OM@interval<<-input$interval

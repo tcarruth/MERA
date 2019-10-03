@@ -107,7 +107,7 @@ shinyUI(
     hr(),
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
-    h5("MERA links a graphical questionaire to the powerful DLMtool and MSEtool libraries to calculate stock status and management performance. ",style = "color:grey"),
+    h5("MERA links a graphical questionaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
     h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
@@ -470,12 +470,12 @@ shinyUI(
                                    HTML("<br>"),
                                    h5("5. Bio-economic dynamics <alpha>",style="color:grey"),
                                    selectInput("EC_Model","Economic Model",choices=c("None","Simple response","SR with inertia","SR with efficiency - depletion"),selected="None"),
-                                   conditionalPanel(condition="EC_Model!='None'",
-                                     column(4,numericInput("EC_Cost",label="Cost of current fishing effort",min=0,value=1)),
-                                     column(4,numericInput("EC_Rev",label="Revenue of current catches",min=0,value=1)),   
-                                     column(4,numericInput("EC_Response",label="Expected % change in effort given todays profit",value=0)),
-                                     column(4,numericInput("EC_Cost_Inc",label="Expected % annual increase in costs per unit of effort",value=0)), 
-                                     column(4,numericInput("EC_Rev_Inc",label="Expected % annual increase in revenue per unit of catch",value=0)) 
+                                   conditionalPanel(condition="input.EC_Model!='None'",
+                                     column(4,numericInput("CostCurr",label="Cost of current fishing effort",min=0,value=1)),
+                                     column(4,numericInput("RevCurr",label="Revenue of current catches",min=0,value=1)),   
+                                     column(4,numericInput("Response",label="Expected % change in effort given todays profit",value=0.0001)),
+                                     column(4,numericInput("CostInc",label="Expected % annual increase in costs per unit of effort",value=0)), 
+                                     column(4,numericInput("RevInc",label="Expected % annual increase in revenue per unit of catch",value=0)) 
                                    )
                                 ),
                                 
@@ -872,7 +872,9 @@ shinyUI(
                                 HTML("<br>"),
                                 HTML("<br>"),
                                 h5("Users have the option to specify bio-economic models that control the response of fishing effort in addition to management advice set by MPs", style = "color:grey"),
-                                h5("The Simple Response model is relatively simple and models fishing effort increases according to expected profit: effort next year = (effort this year) * (1+response) * (revenue catch) - (cost effort)", style = "color:grey")
+                                h5("The Simple Response model is relatively simple and models fishing effort increases according to expected profit: effort next year = (effort this year) * (1+response) * (revenue catch) - (cost effort)", style = "color:grey"),
+                                h5("For further information here is a ", a("guide to the bioeconomic model.", href="https://dlmtool.github.io/DLMtool/MERA/BioEco.html", target="_blank"),style = "color:grey")
+                                
                         )
                       ),
                       
@@ -890,13 +892,13 @@ shinyUI(
                       # ---- Other panel guides
 
                       conditionalPanel(condition="output.Fpanel==0&output.Dpanel==0&output.Mpanel==0&output.Opanel==0", #(input.tabs1==1 & (output.Fpanel==0&output.Dpanel==0&output.Mpanel==0))|(input.tabs1==2&(output.Fpanel==0&output.Dpanel==0&output.Mpanel==0))|(input.tabs1==3&(output.Fpanel==0&output.Dpanel==0&output.Mpanel==0))|(input.tabs1==4&(output.Fpanel==0&output.Dpanel==0&output.Mpanel==0))",
-                                       column(12,
-                                              h5("The Fishery, Management and Data questions specify the range of operating model simulations used in the closed-loop testing of management procedures (MPs).",style = "color:grey"),
-                                              h5("The questions are presented in order of general importance and default to maxmum uncertainty.",style = "color:grey"),
-                                              h5("At any stage you can select an analysis type and press 'CALCULATE'.",style = "color:grey"),
-                                              h5("As you work through the questions in the Fishery, Management and Data panels, you can narrow the range of simulated fisheries but you should provide justification for each selection in the justification box.",style = "color:grey"),
-                                              h5("The Extra panel includes extensions to the questionnaire that allow for operating model customization where necessary.",style = "color:grey")
-                                        )
+                             column(12,
+                                    h5("The Fishery, Management and Data questions specify the range of operating model simulations used in the closed-loop testing of management procedures (MPs).",style = "color:grey"),
+                                    h5("The questions are presented in order of general importance and default to maxmum uncertainty.",style = "color:grey"),
+                                    h5("At any stage you can select an analysis type and press 'CALCULATE'.",style = "color:grey"),
+                                    h5("As you work through the questions in the Fishery, Management and Data panels, you can narrow the range of simulated fisheries but you should provide justification for each selection in the justification box.",style = "color:grey"),
+                                    h5("The Extra panel includes extensions to the questionnaire that allow for operating model customization where necessary.",style = "color:grey")
+                              )
                       ),
                       
                       conditionalPanel(condition="input.tabs1==5 & (output.Dpanel>0 | output.Fpanel>0 | output.Mpanel>0)",
@@ -1123,7 +1125,10 @@ shinyUI(
                          h5("A: age composition data (year by age)", style = "color:grey"),
                          h5("Approaches that use only catch data or length compositions assume a pattern in annual 
                              fishing mortality rate defined by the annual fishing effort of Fishery
-                             Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey")
+                             Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey"),
+                         h5("For further information on the stock reduction analysis used to quantify population status see
+                            the", a(" detailed guide.", href="https://dlmtool.github.io/DLMtool/MERA/SRA_scope_vignette.html", 
+                                    target="_blank"),style = "color:grey")
                          
                                  
                   )
@@ -1258,7 +1263,7 @@ shinyUI(
                  column(3,style="padding:7px;padding-left:14px",
       
                         conditionalPanel(condition="output.DataInd==0",
-                              h5("Data file must be loaded (Extra panel 1)", style = "color:grey")
+                              h5("Data file must be loaded (Extra panel 1) that has indicator data", style = "color:grey")
       
                         ),
                         
@@ -1270,10 +1275,10 @@ shinyUI(
                  ),
                  column(1),
                  column(6,style="padding:19px",
-                      h5("A data file can be loaded with extended data for years after operating model conditioning",style = "color:grey"),
+                      h5("A data file can be loaded with indicator data for years after operating model conditioning (after LHYear)",style = "color:grey"),
                       h5("These data can be compared against the predicted data of the Evaluation operating model and used to detect exceptional
-                           circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://drive.google.com/open?id=1Liif_ugfDbzIKZMBusHNemgfi3cohvtr", target="_blank"),style = "color:grey"),
-                      h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
+                           circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://drive.google.com/open?id=1Liif_ugfDbzIKZMBusHNemgfi3cohvtr", target="_blank"),style = "color:grey")
+                      #h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
                  )
              )
         )
@@ -1300,7 +1305,6 @@ shinyUI(
         h4("RESULTS"),
         hr(),
 
-    
         fluidRow(
           column(1),
           column(11,
@@ -1309,7 +1313,7 @@ shinyUI(
               column(2,
                 conditionalPanel(width=4,condition="output.Plan==1|output.Eval==1",
                   column(12,HTML("<br>")),
-                  h4("Options",style="font-weight:bold"),
+                  #h4("Options",style="font-weight:bold"),
                   column(12,HTML("<br>")),
                   #column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
                   #column(12,HTML("<br>","<br>")),
@@ -1535,8 +1539,7 @@ shinyUI(
 
       hr(),
    
-     
-     
+    
        column(12),
       
        #checkboxInput("Debug","Debug mode",value=TRUE),
