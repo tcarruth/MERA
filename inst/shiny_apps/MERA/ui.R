@@ -400,7 +400,7 @@ shinyUI(
                                    h5("2. Closed loop simulation controls",style="color:grey"),
                                    HTML("<br>"),
                                    column(12,    column(4,numericInput("interval", label = "Management interval", value=8,min=2,max=10))),
-                                   column(12,    column(4,numericInput("nsim", label = "No. simulations", value=8,min=2,max=256))),
+                                   column(12,    column(4,numericInput("nsim", label = "No. simulations", value=24,min=2,max=256))),
                                    column(12,    column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"))
                                                  
                                 ),
@@ -1027,7 +1027,7 @@ shinyUI(
                   h5(" - Risk Assessment: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
                   h5(" - Status Determination: use the questionnaire and data to estimate population status",style = "color:grey"),
                   h5(" - Management Planning: calculate the expected future performance of many candidate management procedures",style = "color:grey"),
-                  h5(" - Management Evaluation: given a management procedure is in use, analyse new data and monitor performance", style = "color:grey")
+                  h5(" - Management Performance: given a management procedure is in use, analyse new data and monitor performance", style = "color:grey")
            )
            
     ),
