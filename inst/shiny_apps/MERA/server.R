@@ -152,7 +152,7 @@ shinyServer(function(input, output, session) {
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
   output$Dependencies<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
 
-if (!is.null(MERA:::PKGENVIR$skin)) {
+  if (!is.null(MERA:::PKGENVIR$skin)) {
     skin <- MERA:::PKGENVIR$skin
   } else {
     skin <- "MSC"
@@ -985,8 +985,7 @@ if (!is.null(MERA:::PKGENVIR$skin)) {
   # Update tables if ...
 
   observeEvent(input$Redo,{
-    if(input$Mode=='Planning')  redoPlan()
-    if(input$Mode=='Evaluation')  redoEval()
+    smartRedo()
     #Tweak(0)
   })
 

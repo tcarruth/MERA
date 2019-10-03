@@ -107,7 +107,7 @@ shinyUI(
     hr(),
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
-    h5("MERA links a graphical questionaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
+    h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
     h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
@@ -1313,8 +1313,9 @@ shinyUI(
               column(2,
                 conditionalPanel(width=4,condition="output.Plan==1|output.Eval==1",
                   column(12,HTML("<br>")),
-                  #h4("Options",style="font-weight:bold"),
+                  h4("Options",style="font-weight:bold"),
                   column(12,HTML("<br>")),
+                  actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red")),
                   #column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
                   #column(12,HTML("<br>","<br>")),
                   

@@ -772,7 +772,7 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
   Tab_title[[1]] <- "Table 1. Projected biomass relative to the LRP"
   Tab_text[[1]] <-"The probability that projected biomass is above 50% BMSY. Probabilities of 50% or lower are shaded red. Probabilities over 90% are shaded green. "
   
-  Tabs[[1]]<-function(MSEobj,MSEobj_reb,options=list(res=1),rnd=1){
+  Tabs[[1]]<-function(MSEobj,MSEobj_reb,options=list(burnin=10,res=1),rnd=1){
     
     nMPs<-MSEobj@nMPs
     proyears<-MSEobj@proyears
