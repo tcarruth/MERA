@@ -11,6 +11,7 @@ library(httpuv)
 library(shinyalert)
 library(DT)
 library(mvtnorm)
+library(cowplot)
 
 options(shiny.maxRequestSize=1000*1024^2)
 
@@ -152,13 +153,17 @@ shinyServer(function(input, output, session) {
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
   output$Dependencies<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
 
-  # if (!is.null(MERA:::PKGENVIR$skin)) {
-  #   skin <- MERA:::PKGENVIR$skin
-  # } else {
-  #   skin <- "MSC"
-  # }
-  skin <- "MSC"
-  
+  tt <- try(!is.null(MERA:::PKGENVIR$skin), silent=TRUE)
+  if (class(tt) == 'try-error') {
+    skin <- 'MSC'
+  } else {
+    if (!is.null(MERA:::PKGENVIR$skin)) {
+      skin <- MERA:::PKGENVIR$skin
+    } else {
+      skin <- "MSC"
+    }
+  }
+           
   Skin_nams<<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected=skin)
   
