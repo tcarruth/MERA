@@ -38,8 +38,8 @@ shinyUI(
                       .datatables .display {margin-left: 0;}
                       
                       .shiny-notification {
-                      height: 100px;
-                      width: 800px;
+                      height: 60px;
+                      width: 300px;
                       position:fixed;
                       top: calc(50% - 50px);
                       left: calc(50% - 400px);
