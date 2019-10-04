@@ -293,7 +293,13 @@ shinyServer(function(input, output, session) {
     RA(0); SD(0); Plan(0); Eval()
   })
   
-  
+  observeEvent(input$Demo_mode,{
+    updateNumericInput(session=session,inputId='nsim_RA',value=24)
+    updateNumericInput(session=session,inputId='nsim_SD',value=8)
+    updateNumericInput(session=session,inputId='nsim_Plan',value=12)
+    updateNumericInput(session=session,inputId='nsim_Eval',value=24)
+    
+  })
   
   # == File I/O ==========================================================================
 
@@ -643,7 +649,7 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$Build_OM_2,{
 
-    nsim<<-input$nsim
+    nsim<<-input$nsim_Plan
 
     #tryCatch({
 
@@ -712,7 +718,7 @@ shinyServer(function(input, output, session) {
     
     Fpanel(1)
     MPs<-c('curE','curC','FMSYref','NFref')
-    nsim <- ifelse(quick, 8, input$nsim)
+    nsim <- ifelse(quick, 8, input$nsim_RA)
     
     OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
@@ -766,7 +772,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Calculate_status,{
     
     Status<-new('list')
-    nsim<-input$nsim
+    nsim<-input$nsim_SD
     OM<-makeOM(PanelState,nsim=nsim)
     
     if(input$SDset=="Custom"){
@@ -840,11 +846,11 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Calculate_Plan,{
   
     doprogress("Building OM from Questionnaire",1)
-    OM<<-makeOM(PanelState,nsim=input$nsim)
+    OM<<-makeOM(PanelState,nsim=input$nsim_Plan)
     Fpanel(1)
     MPs<<-getMPs()
     
-    nsim<<-input$nsim
+    nsim<<-input$nsim_Plan
     parallel=F
     
     if(input$Parallel){
@@ -911,13 +917,13 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Calculate_Eval,{
 
     doprogress("Building OM from Questionnaire",1)
-    OM_Eval<<-makeOM(PanelState,nsim=input$nsim)
+    OM_Eval<<-makeOM(PanelState,nsim=input$nsim_Eval)
    # OM_Eval@proyears<-10
     
     Fpanel(1)
     EvalMPs<-input$sel_MP
     
-    nsim<<-input$nsim
+    nsim<<-input$nsim_Eval
     parallel=F
     
     if(input$Parallel){
@@ -1053,7 +1059,7 @@ shinyServer(function(input, output, session) {
 
     content = function(file) {
       withProgress(message = "Building data report", value = 0, {
-      nsim<<-input$nsim
+      nsim<<-input$nsim_Plan
       OM<<-makeOM(PanelState,nsim=nsim)
       src <- normalizePath('Source/Markdown/DataRep.Rmd')
       src2 <-normalizePath(paste0('www/',input$Skin,'.png'))

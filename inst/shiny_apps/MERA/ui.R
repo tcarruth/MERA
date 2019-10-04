@@ -399,9 +399,28 @@ shinyUI(
                                    HTML("<br>"),
                                    h5("2. Closed loop simulation controls",style="color:grey"),
                                    HTML("<br>"),
-                                   column(12,    column(4,numericInput("interval", label = "Management interval", value=8,min=2,max=10))),
-                                   column(12,    column(4,numericInput("nsim", label = "No. simulations", value=24,min=2,max=256))),
-                                   column(12,    column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"))
+                                   column(4,    
+                                          column(8,numericInput("interval", label = "Management interval", value=8,min=2,max=10)),
+                                   
+                                          column(8,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px")
+                                   ),
+                                   column(8,
+                                     h5("Number of simulations")
+                                   ),
+                                   column(5, 
+                                          column(12,h5("Risk Assessment:"),style="height:35px"),
+                                          column(12,h5("Status Determination:"),style="height:35px"),
+                                          column(12,h5("Management Planning:"),style="height:35px"),
+                                          column(12,h5("Management Performance:"),style="height:35px")
+                                   ),
+                                   
+                                   column(3, 
+                                          
+                                          column(12,numericInput("nsim_RA", label=NULL, value=96,min=2,max=256),style="height:35px"),
+                                          column(12,numericInput("nsim_SD", label=NULL, value=24,min=2,max=256),style="height:35px"),
+                                          column(12,numericInput("nsim_Plan", label=NULL, value=24,min=2,max=256),style="height:35px"),
+                                          column(12,numericInput("nsim_Eval",label=NULL, value=96,min=2,max=256),style="height:35px")
+                                   )
                                                  
                                 ),
                                 
@@ -826,7 +845,7 @@ shinyUI(
                             HTML("<br>"),
                             HTML("<br>"),
                             h5("Management interval controls how frequently new management advice is calculated. For example, given a management interval of 4 years a new Total Allowable Catch may be set in 2020, 2024, 2028 (and so on) that is kept constant in the interval between these updates.",style = "color:grey"),
-                            h5("You can control the number of simulated realizations of your fishery using 'No. simulations'. Each simulation takes a draw of model parameters from the ranges specified by the MERA questionnaire. This also controls the number of simulations generated if you condition your 
+                            h5("You can control the number of simulated realizations of your fishery for each MERA mode. Each simulation takes a draw of model parameters from the ranges specified by the MERA questionnaire. This also controls the number of simulations generated if you condition your 
                                operating model on data. Generally you can obtain meaningful early results with just 48 simulations, stable MP performance ranking with 96 simulations and stable absolute MP performance with 192. In general 192 or greater simulations are required 
                                to quantify value of information and cost of current uncertainties.",style = "color:grey"),
                             h5("If greater than 48 simulations are specified, the user has the option to distribute calculations over a cluster using parallel computation. Note however that you will lose the progress bar.",style = "color:grey")
@@ -1548,6 +1567,9 @@ shinyUI(
        #conditionalPanel(condition="input.Debug",
           column(1),
           column(9, textAreaInput("Log", "Log",height="120px")),
+          column(1),
+          column(2, actionButton("Demo_mode","Demo Mode"),style="padding-top:24px"),
+   
        #),
        
        column(12),
