@@ -83,7 +83,7 @@ shinyUI(
     fluidRow(
 
       column(1,style="height:65px",
-             h1("MERA")
+             tags$a(h1("MERA"),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')
       ),
       column(5,style="height:65px",
              h5(textOutput("Version") ,style="padding:22px;")
@@ -94,8 +94,8 @@ shinyUI(
 
                column(7,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
                conditionalPanel(condition="output.SkinNo==2",column(5,tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank'))),
-               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')))
-               
+               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank'))),
+               conditionalPanel(condition="output.SkinNo==3",column(5,tags$a(img(src = "Train.png", height = 58, width = 126),href="https://www.merafish.org/",target='_blank')))
             )
       ),
       column(1,
@@ -108,8 +108,8 @@ shinyUI(
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
     h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
-    h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
-    h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
+    h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),".",style = "color:grey"),
+    h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"), style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
 
     fluidRow(

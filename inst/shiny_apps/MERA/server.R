@@ -19,7 +19,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.1.3"
+  Version<<-"5.1.4"
   
   # -------------------------------------------------------------
   # Explanatory figures
