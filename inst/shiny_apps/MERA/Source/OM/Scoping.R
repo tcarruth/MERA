@@ -397,8 +397,8 @@ SimSam<-function(OM,dat,code){
 GetDep<-function(OM,dat,code,cores=4){
   
   outlist<-DataStrip(dat,code,simno=1)
-  #saveRDS(code,"C:/temp/code")
-  #saveRDS(outlist,"C:/temp/outlist_whaat")
+  #saveRDS(OM,"C:/temp/OM")
+  #saveRDS(outlist,"C:/temp/outlist")
     
   out<-SRA_scope(OM=OM,
                  Chist = outlist$Chist,
@@ -410,9 +410,10 @@ GetDep<-function(OM,dat,code,cores=4){
                  ML = outlist$ML,
                  length_bin = outlist$length_bin,
                  report=F,
+                 mean_fit = TRUE,
                  cores=cores)
   
-  out@OM@cpars$D[out@conv]
+  out
   
 }
 

@@ -1126,8 +1126,8 @@ shinyUI(
                   conditionalPanel(condition="output.Data==0",
                          HTML("<br>"),
                          h5("To calculate stock status you must first load data (Extra panel 1)", style = "color:grey")
-                        
                   )
+                  
                   
                   ),
                   
@@ -1159,8 +1159,7 @@ shinyUI(
        
        
        fluidRow(
-         column(1),
-         column(6),
+         column(7),
          column(4,
                 column(6,style="padding:10px",
                        fileInput("Load_Status","Load  (.Status)")
@@ -1181,6 +1180,17 @@ shinyUI(
                        )
                        
                 )
+         ),
+         
+         conditionalPanel(condition="output.SD==1",
+           column(7),
+           column(4,
+                  hr(),
+                  column(4, selectInput("SDdet",label=" Detailed Status Report",  choices=c("C"),selected="C", multiple = FALSE)),
+                  column(6, downloadButton("SDdet_rep",""))
+                                        
+           )
+          
          )
        )
        
@@ -1295,8 +1305,8 @@ shinyUI(
                  column(1),
                  column(6,style="padding:19px",
                       h5("A data file can be loaded with indicator data for years after operating model conditioning (after LHYear)",style = "color:grey"),
-                      h5("These data can be compared against the predicted data of the Evaluation operating model and used to detect exceptional
-                           circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://drive.google.com/open?id=1Liif_ugfDbzIKZMBusHNemgfi3cohvtr", target="_blank"),style = "color:grey")
+                      h5("These data can be compared against the future predicted data of the operating model and used to detect exceptional
+                           circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://www.nrcresearchpress.com/doi/abs/10.1139/cjfas-2018-0223?journalCode=cjfas#.XZeG7kZKhPY", target="_blank"),style = "color:grey")
                       #h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
                  )
              )
