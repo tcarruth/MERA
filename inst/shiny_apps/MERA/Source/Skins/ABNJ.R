@@ -500,7 +500,7 @@ Figs[[4]]<- function(MSEobj,MSEobj_reb,options=list()) {
   }
 }
 
-Fig_dim[[4]]<-function(dims) list(height=3000,width=1200)
+Fig_dim[[4]]<-function(dims) list(height=2400,width=1200)
 
 Fig_title[[5]] <- "Figure 2. Projection Plots"
 Fig_text[[5]] <- "Projection plots of 6 acceptable and feasible MPs with highest yield."
