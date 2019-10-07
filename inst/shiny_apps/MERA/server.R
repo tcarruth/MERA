@@ -786,7 +786,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Calculate_risk,{
     
     Fpanel(1)
-    MPs<-c('curE','curC','FMSYref','NFref')
+    MPs<-c('curE','CurC','FMSYref','NFref')
     nsim <- ifelse(quick, 8, input$nsim_RA)
     
     OM<<-makeOM(PanelState,nsim=nsim)
