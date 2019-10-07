@@ -20,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.2.0"
+  Version<<-"5.2.1"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -219,6 +219,7 @@ shinyServer(function(input, output, session) {
   CurrentYr<-as.integer(substr(as.character(Sys.time()),1,4))
   Copyright<-"Open Source, GPL-2"
   
+  FeaseMPs<<-NULL
   
   
   Just<-list(
@@ -439,6 +440,7 @@ shinyServer(function(input, output, session) {
           }else{
             dat<-MSClog[[1]]$dat
             Data(1)
+            FeaseMPs<<-Fease(dat)
             AM("Data loaded with questionnaire")
             if(!is.null(MSClog[[1]]$dat_ind)){
                dat_ind<-MSClog[[1]]$dat_ind
@@ -474,6 +476,7 @@ shinyServer(function(input, output, session) {
         {
          dat<<-new('Data',filey$datapath)
          Data(1) 
+        
          AM(paste0(".csv data loaded:", filey$datapath))
         },
         error = function(e){
@@ -489,6 +492,7 @@ shinyServer(function(input, output, session) {
       tryCatch(
         {
           dat<<-load(filey$datapath)
+         
           AM(paste0("Data object loaded:", filey$datapath))
           Data(1)
         },
@@ -514,6 +518,7 @@ shinyServer(function(input, output, session) {
     }else{
       dat_ind<<-dat
       dat<<-dat_test
+      FeaseMPs<<-Fease(dat)
       AM(paste0("Data object contains ", length(dat_ind@Year)-length(dat@Year)," years of indicator data after LHYear"))
 
       DataInd(1)
