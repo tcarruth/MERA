@@ -220,7 +220,7 @@ Tabs[[1]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
 # Trade-Off Plot 
 Fig_title[[1]] <- "Figure 1. Risk Asssement Trade-Off Plot"
 Fig_text[[1]] <- HTML(paste0('Trade-off plots showing the probability that spawning biomass 
-                             is above 0.1, 0.2, and 0.5 B', tags$sub('MSY'),
+                             is above 0.1, 0.25, and 0.5 B', tags$sub('MSY'),
                              ' (x-axis) and the average relative long-term yield (y-axis).')) 
 
 Figs[[1]]<-function(MSEobj, MSEobj_reb, options=list()){
