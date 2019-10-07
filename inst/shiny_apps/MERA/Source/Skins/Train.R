@@ -36,7 +36,7 @@ Figs[[1]]<-function(MSEobj, MSEobj_reb, options=list()){
   MGT <- round(mean(MSEobj@OM$MGT),0)
   PMlist <- c("P50_1", "Yield1", "P50_2", "Yield1")
   
-  Labels <- list(curE="Current Effort", curC="Current Catch", FMSYref="FMSY Fishing", NFref="No Fishing")
+  Labels <- list(curE="Current Effort", CurC="Current Catch", FMSYref="FMSY Fishing", NFref="No Fishing")
   DLMtool::TradePlot(MSEobj, PMlist=PMlist, Labels=Labels, Show='plots',
                      Lims=c(0.8, 0, 0.8,0),
                      Yrs=list(P50_1=c(MGT, MSEobj@proyears), P50_2=-10))
@@ -65,7 +65,7 @@ Tab_text[[1]] <- HTML(paste0("The probability spawning biomass is above 0.5B", t
 
 Tabs[[1]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
   nMPs<-MSEobj@nMPs
-  Labels <- list(curE="Current Effort", curC="Current Catch", FMSYref="FMSY Fishing", NFref="No Fishing")
+  Labels <- list(curE="Current Effort", CurC="Current Catch", FMSYref="FMSY Fishing", NFref="No Fishing")
   PMlist <- c('P50_1', 'P50_2')
   nPM <- length(PMlist)
   runPM <- vector("list", length(PMlist))
