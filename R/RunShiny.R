@@ -33,7 +33,7 @@ PKGENVIR <- new.env(parent=emptyenv())
 #' @export
 MERA <- function(skin="Train") {
   if (class(skin) !="character") stop("skin must be character")
-  skins <- list.files(file.path(system.file(package = 'MERA'), "shiny_apps/MERA/source/Skins"))
+  skins <- list.files(file.path(system.file(package = 'MERA'), "shiny_apps/MERA/Source/Skins"))
   skins <- tools::file_path_sans_ext(skins)
   if (!skin %in% skins) stop(skin , ' is not a valid skin. Options are: ', paste(skins, collapse=", "))
   
