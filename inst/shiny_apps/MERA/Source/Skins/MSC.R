@@ -465,12 +465,12 @@ FeaseLabs<-function(MPs,dat=NULL){
   
   nMPs<-length(MPs) 
   
-  if(!is.null(dat)){
-    DFeasible<-Fease(dat)
-  }else{
+  if(is.null(FeaseMPs)){
     DFeasible<-MPs
+  }else{
+    DFeasible<-FeaseMPs # these are calculated when data are loaded
   }
-  
+
   tempdat0<-DLMtool::SimulatedData
   
   # TAC TAE Feasibility
