@@ -1,5 +1,5 @@
 # ====================================================================================================================================
-# ====  FAO Skin  ====================================================================================================================
+# ====  ABNJ Skin  ====================================================================================================================
 # ====================================================================================================================================
 
 # Performance Metrics
@@ -49,17 +49,17 @@ PB100a<<-function (MSEobj = NULL, Ref = 1, Yrs = -40) {
   Yrs <- ChkYrs(Yrs, MSEobj)
   PMobj <- new("PMobj")
   PMobj@Name <- "Probability long-term biomass is greater than BMSY"
-  if (Ref != 1) {
-    PMobj@Caption <- paste0("Prob. B > ", Ref, " BMSY (Year ", 
-                            Yrs[1],"-",Yrs[2],")")
-  } else {
-    PMobj@Caption <- paste0("Prob. B > BMSY (Years ", 
-                            Yrs[1],"-",Yrs[2],")")
-  }
-  if (Yrs[1] == Yrs[2]) {
-    PMobj@Caption <- paste0("Prob. B > BMSY (Year ", Yrs[1],")")
-  }
-  
+  PMobj@Caption <- "Long-Term Biomass"
+  # if (Ref != 1) {
+  #   PMobj@Caption <- "Long-Term Biomass" #paste0("Prob. B > ", Ref, " BMSY (Year ", Yrs[1],"-",Yrs[2],")")
+  # } else {
+  #   PMobj@Caption <- paste0("Prob. B > BMSY (Years ", 
+  #                           Yrs[1],"-",Yrs[2],")")
+  # }
+  # if (Yrs[1] == Yrs[2]) {
+  #   PMobj@Caption <- paste0("Prob. B > BMSY (Year ", Yrs[1],")")
+  # }
+  # 
   PMobj@Ref <- Ref
   PMobj@Stat <- array(MSEobj@B_BMSY[, , Yrs[1]:Yrs[2]], dim=c(MSEobj@nsim, MSEobj@nMPs, length(Yrs[1]:Yrs[2])))
   PMobj@Prob <- calcProb(PMobj@Stat > PMobj@Ref, MSEobj)
@@ -89,7 +89,7 @@ STY1 <<- function (MSEobj = NULL, Ref = 1, Yrs = 10) {
   Yrs <- ChkYrs(Yrs, MSEobj)
   PMobj <- new("PMobj")
   PMobj@Name <- "Average short-term yield"
-  PMobj@Caption <- "Average short-term yield"
+  PMobj@Caption <- "Short-Term Yield"
   RefYd <- array(MSEobj@OM$RefY, dim = dim(MSEobj@C[, , Yrs[1]:Yrs[2]]))
   PMobj@Stat <- MSEobj@C[, , Yrs[1]:Yrs[2]]/RefYd
   PMobj@Ref <- Ref
@@ -103,8 +103,8 @@ class(STY1) <<- "PM"
 LTY1 <<- function (MSEobj = NULL, Ref = 1, Yrs = -40) {
   Yrs <- ChkYrs(Yrs, MSEobj)
   PMobj <- new("PMobj")
-  PMobj@Name <- "Average long-term yield"
-  PMobj@Caption <- "Average long-term yield"
+  PMobj@Name <- "Long-Term Yield"
+  PMobj@Caption <- "Long-Term Yield"
   RefYd <- array(MSEobj@OM$RefY, dim = dim(MSEobj@C[, , Yrs[1]:Yrs[2]]))
   PMobj@Stat <- MSEobj@C[, , Yrs[1]:Yrs[2]]/RefYd
   PMobj@Ref <- Ref
@@ -119,7 +119,7 @@ AAVY1 <<- function (MSEobj = NULL, Ref = 0.2, Yrs = NULL) {
   Yrs <- ChkYrs(Yrs, MSEobj)
   PMobj <- new("PMobj")
   PMobj@Name <- "Average inter-annual variability in yield "
-  PMobj@Caption <- "Prob. AAVY < 20%"
+  PMobj@Caption <- "Prob. Annual Var. Yield < 20%"
   
   y1<- Yrs[1]:(Yrs[2]-1) # year index
   y2<-(Yrs[1]+1):Yrs[2] 
@@ -143,7 +143,7 @@ AAVE1 <<- function (MSEobj = NULL, Ref = 0.2, Yrs = -40) {
   Yrs <- ChkYrs(Yrs, MSEobj)
   PMobj <- new("PMobj")
   PMobj@Name <- "Average inter-annual variability in effort "
-  PMobj@Caption <- "Prob. AAVE < 20%"
+  PMobj@Caption <- "Prob. Annual Var. Effort < 20%"
   y1<- Yrs[1]:(Yrs[2]-1) # year index
   y2<-(Yrs[1]+1):Yrs[2]
   
@@ -456,7 +456,7 @@ MPs are considered feasible based on the user-specified fishery data types avail
 # --- Figures ----
 
 Fig_title[[4]] <- "Figure 1. Performance Objectives Trade-Off Plot"
-Fig_text[[4]] <- "Trade-off plots of acceptable MPs for each performance objective. Non-feasible MPs are colored red."
+Fig_text[[4]] <- "Trade-off plots of acceptable MPs for each performance objective. "
 Figs[[4]]<- function(MSEobj,MSEobj_reb,options=list()) {
   if (length(PassMPs)==0) {
 
@@ -472,12 +472,35 @@ Figs[[4]]<- function(MSEobj,MSEobj_reb,options=list()) {
     notFease <- isFease$MPs[(nchar(isFease$feasible) > 0)]
     Notfease.ind <- MSEobj2@MPs %in% notFease
     cols[Notfease.ind] <- "#FF0000"
-    Tplotout <<- TradePlot(MSEobj2, PMlist= PMlist, Lims=0, Show='plots', cols=cols)
-
+    MSEobj2 <- Sub(MSEobj2, MPs=MSEobj2@MPs[!Notfease.ind])
+    Tplotout <<- TradePlot(MSEobj2, PMlist= c('PB100a', 'LTY1'), Lims=0, Show='plots', cols=cols)
+    p1 <- Tplotout[[2]][[1]]
+    p2 <- TradePlot(MSEobj2, PMlist= c('PB100a', 'STY1'), Lims=0, Show='plots', cols=cols)[[2]][[1]]
+    p3 <- TradePlot(MSEobj2, PMlist= c('STY1', 'LTY1'), Lims=0, Show='plots', cols=cols)[[2]][[1]]
+    p4 <- TradePlot(MSEobj2, PMlist= c('AAVY1', 'LTY1'), Lims=0, Show='plots', cols=cols)[[2]][[1]]
+    p5 <- TradePlot(MSEobj2, PMlist= c('AAVE1', 'LTY1'), Lims=0, Show='plots', cols=cols)[[2]][[1]]
+    
+    prow <- cowplot::plot_grid(
+      p1 + ggplot2::theme(legend.position="none"),
+      p2 + ggplot2::theme(legend.position="none"),
+      p3 + ggplot2::theme(legend.position="none"),
+      p4 + ggplot2::theme(legend.position="none"),
+      p5 + ggplot2::theme(legend.position="none"),
+      align = 'vh',
+      hjust = -1,
+      ncol=1
+    )
+    
+    legend <- cowplot::get_legend(
+      # create some space to the left of the legend
+      p1 + ggplot2::theme(legend.box.margin = ggplot2::margin(0, 0, 0, 12))
+    )
+    
+    cowplot::plot_grid(prow, legend, rel_widths = c(3, .4))
   }
 }
 
-Fig_dim[[4]]<-function(dims) list(height=400,width=1200)
+Fig_dim[[4]]<-function(dims) list(height=2400,width=1200)
 
 Fig_title[[5]] <- "Figure 2. Projection Plots"
 Fig_text[[5]] <- "Projection plots of 6 acceptable and feasible MPs with highest yield."
@@ -495,16 +518,17 @@ Figs[[5]]<- function(MSEobj,MSEobj_reb,options=list()) {
       MPcol[MSEobj2@MPs %in% nonFease] <- "red"  
     }
     
-    Pplot2(MSEobj2, YVar=c("SSB_SSBMSY", "F_FMSY", "Yield"), RefYield="curr",
-           incquant=TRUE, traj="both", MPcol=MPcol)
+    BMSYproj(MSEobj2,MSEobj_reb,options,maxcol=6)
+    # Pplot2(MSEobj2, YVar=c("SSB_SSBMSY", "F_FMSY", "Yield"), RefYield="curr",
+           # incquant=TRUE, traj="both", MPcol=MPcol)
   }
 }
 Fig_dim[[5]]<-function(dims) list(height=400,width=1200)
 
 
-Fig_title[[6]] <- "Figure 3. Trade-Off plot - Rebuilding Analysis"
-Fig_text[[6]] <- "Trade-off plots of acceptable MPs for rebuilding analysis. Non-feasible MPs are colored red."
-Figs[[6]] <- function(MSEobj,MSEobj_reb,options=list()) {
+Fig_title[[7]] <- "Figure 3. Trade-Off plot - Rebuilding Analysis"
+Fig_text[[7]] <- "Trade-off plots of acceptable MPs for rebuilding analysis. Non-feasible MPs are colored red."
+Figs[[7]] <- function(MSEobj,MSEobj_reb,options=list()) {
   if (length(PassMPs)==0) {
     
   } else {
@@ -530,14 +554,14 @@ Figs[[6]] <- function(MSEobj,MSEobj_reb,options=list()) {
   }
 }
 
-Fig_dim[[6]]<-function(dims) list(height=400,width=1200)
+Fig_dim[[7]]<-function(dims) list(height=400,width=1200)
 
 
-Fig_title[[7]] <- "Figure 4. Rebuilding Analysis. B/BMSY projection plots - 6 MPs with highest yield."
-Fig_text[[7]] <- "Projections of biomass relative to MSY. The vertical gray lines indicate
+Fig_title[[8]] <- "Figure 4. Rebuilding Analysis. B/BMSY projection plots - 6 MPs with highest yield."
+Fig_text[[8]] <- "Projections of biomass relative to MSY. The vertical gray lines indicate
 MGT (dotted), Tmin (dashed), and Tmin+MGT (dot-dash)." 
 
-Figs[[7]] <- function(MSEobj,MSEobj_reb,options=list()) {
+Figs[[8]] <- function(MSEobj,MSEobj_reb,options=list()) {
   if (length(PassMPs)==0) {
     
   } else {
@@ -556,17 +580,17 @@ Figs[[7]] <- function(MSEobj,MSEobj_reb,options=list()) {
     nonFease <- isFease$MPs[nchar(isFease$feasible)>0]
     
     MPcol[MSEobj2@MPs %in% nonFease] <- "red"
-    Pplot2(MSEobj2, YVar="SSB_SSBMSY",
-           incquant=TRUE, traj="quant", MPcol=MPcol,
-           oneIt = FALSE,
-           quants=c(0.2, 0.8),
-           xline=c(Tmin, MGT, MGT+Tmin))
-    
-    
+    # Pplot2(MSEobj2, YVar="SSB_SSBMSY",
+    #        incquant=TRUE, traj="quant", MPcol=MPcol,
+    #        oneIt = FALSE,
+    #        quants=c(0.2, 0.8),
+    #        xline=c(Tmin, MGT, MGT+Tmin))
+    # 
+    BMSYproj(MSEobj2,MSEobj_reb,options,maxcol=6)
   }
 }
   
-Fig_dim[[7]]<-function(dims) list(height=400,width=1200)
+Fig_dim[[8]]<-function(dims) list(height=400,width=1200)
 
 
 # --- Tables ----
@@ -727,15 +751,23 @@ Tabs[[1]]<- function(MSEobj, MSEobj_reb, options=list(),rnd=1) {
   
   MPwithurl <- !is.na(TabDF$url) 
   fail.ind <- TabDF$min <Prob
-  TabDF$MP[!fail.ind&MPwithurl] <-
-    paste0("<a href='", TabDF$url[!fail.ind&MPwithurl],"' style='color: #008000' ' target='_blank'>", TabDF$MP[!fail.ind&MPwithurl],"</a>")
-  TabDF$MP[fail.ind&MPwithurl] <-
-    paste0("<a href='", TabDF$url[fail.ind&MPwithurl],"' style='color: #FF0000' ' target='_blank'>", TabDF$MP[fail.ind&MPwithurl],"</a>")
+  # TabDF$MP[!fail.ind&MPwithurl] <-
+  #   paste0("<a href='", TabDF$url[!fail.ind&MPwithurl],"' style='color: #008000' ' target='_blank'>", TabDF$MP[!fail.ind&MPwithurl],"</a>")
+  # TabDF$MP[fail.ind&MPwithurl] <-
+  #   paste0("<a href='", TabDF$url[fail.ind&MPwithurl],"' style='color: #FF0000' ' target='_blank'>", TabDF$MP[fail.ind&MPwithurl],"</a>")
 
+  TabDF$Documentation <- paste0("<a href='", TabDF$url,"' style='color: #000000' ' target='_blank'>", 'Link',"</a>")
+  TabDF$Documentation[!MPwithurl] <-''
+  
+  
   # TabDF$MP[MPwithurl] <- paste0("<a href='", TabDF$url[MPwithurl]," ' target='_blank'>", TabDF$MP[MPwithurl],"</a>")
   
   TabDF$url <- NULL; TabDF$min <- NULL
   caption <- ""
+
+  TabDF$colorcond <- "AF"
+  TabDF$colorcond[TabDF$Pass == "Yes" & TabDF$Feasible == "No"] <- 'ANF'
+  TabDF$colorcond[TabDF$Pass == "No"] <- 'NA'
 
   TabDF$MP <- factor(TabDF$MP)
   TabDF$Feasible <- factor(TabDF$Feasible)
@@ -746,9 +778,12 @@ Tabs[[1]]<- function(MSEobj, MSEobj_reb, options=list(),rnd=1) {
   cind <- which(cnames == "Type")
   cnames <- cnames[(cind+1):length(cnames)]
   
+  
+  
   DT::datatable(TabDF, escape=FALSE, caption=caption, filter = 'top', rownames= FALSE,
                 extensions = "Buttons",
-                colnames=c("MP", "Type", "Feasible", 'Pass', runPM[[1]]@Caption, runPM[[2]]@Caption),
+                colnames=c("MP", "Type", "Feasible", 'Pass', runPM[[1]]@Caption, runPM[[2]]@Caption,
+                           "MP Doc.", "tt"),
                 class = 'display', 
                 options = list(
                   pageLength = 20,
@@ -761,9 +796,12 @@ Tabs[[1]]<- function(MSEobj, MSEobj_reb, options=list(),rnd=1) {
                   dom = 'Blfrtip',
                   autoWidth = TRUE,
                   columnDefs = list(list(width = '150px', targets = "_all"),
-                                    list(searchable  = FALSE, targets = 0))
+                                    list(searchable  = FALSE, targets = 6),
+                                    list(visible=FALSE, targets=7))
                   )) %>%
-    DT::formatStyle(colnames(TabDF), color = DT::styleInterval(cuts=c(-1, Prob*0.999), values=c("black", "red", "green"))) 
+    DT::formatStyle(colnames(TabDF), color = DT::styleInterval(cuts=c(-1, Prob*0.999), values=c("black", "red", "green"))) %>% 
+    DT::formatStyle('MP', 'colorcond' , color=DT::styleEqual(c("AF", "ANF", "NA"), 
+                                                             c('#008000', '#fff200', '#FF0000')))  
   
 }
 
@@ -857,27 +895,33 @@ Tabs[[2]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
     notFease <- isFease$MPs[(nchar(isFease$feasible) > 0)]
     Notfease.ind <- TabDF$MP %in% notFease
 
-    TabDF$MP[Notfease.ind&MPwithurl] <-
-      paste0("<a href='", TabDF$url[Notfease.ind&MPwithurl],"' style='color: #FF0000' ' target='_blank'>", TabDF$MP[Notfease.ind&MPwithurl],"</a>")
-    TabDF$MP[!Notfease.ind&MPwithurl] <-
-      paste0("<a href='", TabDF$url[!Notfease.ind&MPwithurl],"' style='color: #000000' ' target='_blank'>", TabDF$MP[!Notfease.ind&MPwithurl],"</a>")
+    # TabDF$MP[Notfease.ind&MPwithurl] <-
+    #   paste0("<a href='", TabDF$url[Notfease.ind&MPwithurl],"' style='color: #FF0000' ' target='_blank'>", TabDF$MP[Notfease.ind&MPwithurl],"</a>")
+    # TabDF$MP[!Notfease.ind&MPwithurl] <-
+    #   paste0("<a href='", TabDF$url[!Notfease.ind&MPwithurl],"' style='color: #000000' ' target='_blank'>", TabDF$MP[!Notfease.ind&MPwithurl],"</a>")
 
+    TabDF$Documentation <- paste0("<a href='", TabDF$url,"' style='color: #000000' ' target='_blank'>", 'Link',"</a>")
+    TabDF$Documentation[!MPwithurl] <-''
+    
+    
+    TabDF <- TabDF[!Notfease.ind, ] # remove infeasible MPs from Table
     TabDF$url <- NULL
     TabDF$Type <- as.factor(TabDF$Type)
 
     cnames <- colnames(TabDF)
     cind <- which(cnames == "Type")
     cnames <- cnames[(cind+1):length(cnames)]
-    TabDF$Type <- NULL
+    # TabDF$Type <- NULL
 
     PMCaptions <- vector("character", length(runPM))
     for (i in 1:length(runPM)) {
       PMCaptions[i] <- runPM[[i]]@Caption
     }
 
+    TabDF$MP <- as.factor(TabDF$MP)
     DT::datatable(TabDF, escape=FALSE, filter = 'top', rownames= FALSE, 
                   extensions = "Buttons",
-                  colnames=c("MP", PMCaptions),
+                  colnames=c("MP", "Type", PMCaptions, 'MP Doc.'),
                   class = 'display', 
                   options = list(stateSave = TRUE,
                     pageLength = 20,
@@ -889,15 +933,15 @@ Tabs[[2]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
                       )),
                     dom = 'Blfrtip',
                     autoWidth = TRUE,
-                    columnDefs=list(list(searchable  = FALSE, targets = 0),
+                    columnDefs=list(list(searchable  = FALSE, targets = 7),
                                     list(width = '150px', targets = "_all"))))
 
   }
 }
 
 
-Tab_title[[3]] <- HTML(paste0(tags$h4(tags$b("Rebuilding Analysis"))))
-Tab_text[[3]] <- HTML(paste0(tags$p("Due to the inherent uncertainties around the current depletion level of data-limited fisheries, 
+Tab_title[[6]] <- HTML(paste0(tags$h4(tags$b("Rebuilding Analysis"))))
+Tab_text[[6]] <- HTML(paste0(tags$p("Due to the inherent uncertainties around the current depletion level of data-limited fisheries, 
 the rebuilding analysis provides an additional test to determine whether MPs that perform 
 well under the user-specified assumed level of current depletion are robust to the 
 possibility that the stock is actually more depleted than assumed. 
@@ -907,14 +951,14 @@ rebuild to BMSY within a time period calculated as the number of years rebuildin
 would be projected to occur in the absence of fishing (Tmin) plus a mean generation time for the fish species.  
 ")))
 
-Tabs[[3]]<- function(MSE, MSEobj_reb,options=list(res=5),rnd=1) {
+Tabs[[6]]<- function(MSE, MSEobj_reb,options=list(res=5),rnd=1) {
 
 }
 
-Tab_title[[8]] <- "Rebuilding Analysis"
-Tab_text[[8]] <- "Probability of B>BMSY in Year MGT + Tmin."
+Tab_title[[7]] <- "Rebuilding Analysis"
+Tab_text[[7]] <- "Probability of B>BMSY in Year MGT + Tmin."
 
-Tabs[[8]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
+Tabs[[7]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
   if (length(PassMPs)<1) {
     
   } else{
@@ -984,36 +1028,42 @@ Tabs[[8]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
     # TabDF$MP[fail.ind&MPwithurl] <-
     #   paste0("<a href='", TabDF$url[fail.ind&MPwithurl],"' style='color: #FF0000' ' target='_blank'>", TabDF$MP[fail.ind&MPwithurl],"</a>")
     # 
-    TabDF$MP[MPwithurl] <- paste0("<a href='", TabDF$url[MPwithurl]," ' target='_blank'>", TabDF$MP[MPwithurl],"</a>")
+    # TabDF$MP[MPwithurl] <- paste0("<a href='", TabDF$url[MPwithurl]," ' target='_blank'>", TabDF$MP[MPwithurl],"</a>")
+    
+    TabDF$Documentation <- paste0("<a href='", TabDF$url,"' style='color: #000000' ' target='_blank'>", 'Link',"</a>")
+    TabDF$Documentation[!MPwithurl] <-''
+    
     
     TabDF$url <- NULL; TabDF$min <- NULL
     caption <- ""
     
     TabDF$MP <- factor(TabDF$MP)
     TabDF$Feasible <- factor(TabDF$Feasible)
+    # TabDF$Feasible <- NULL
     TabDF$Type <- factor(TabDF$Type)
   
     cnames <- colnames(TabDF)
     cind <- which(cnames == "Type")
     cnames <- cnames[(cind+1):length(cnames)]
+    TabDF$MP <- as.factor(TabDF$MP)
     
-    DT::datatable(TabDF, escape=FALSE, caption=caption, filter = 'top', rownames= FALSE, 
+    
+    DT::datatable(TabDF, escape=FALSE, filter = 'top', rownames= FALSE, 
                   extensions = "Buttons",
-                  colnames=c("MP", "Type", "Feasible", runPM[[1]]@Caption),
+                  colnames=c("MP", "Type", "Feasible", runPM[[1]]@Caption, 'MP Doc.'),
                   class = 'display', 
-                  options = list(
-                    pageLength = 20,
-                    buttons = 
-                      list('copy', list(
-                        extend = 'collection',
-                        buttons = c('csv', 'excel', 'pdf'),
-                        text = 'Download'
-                      )),
-                    dom = 'Blfrtip',
-                    autoWidth = TRUE,
-                    columnDefs=list(list(searchable  = FALSE, targets = 0),
-                                    list(width = '150px', targets = "_all")))) 
-    
+                  options = list(stateSave = TRUE,
+                                 pageLength = 20,
+                                 buttons = 
+                                   list('copy', list(
+                                     extend = 'collection',
+                                     buttons = c('csv', 'excel', 'pdf'),
+                                     text = 'Download'
+                                   )),
+                                 dom = 'Blfrtip',
+                                 autoWidth = TRUE,
+                                 columnDefs=list(list(searchable  = FALSE, targets = 4),
+                                                 list(width = '150px', targets = "_all"))))
     
   }
   

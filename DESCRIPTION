@@ -1,7 +1,7 @@
 Package: MERA
 Type: Package
 Title: Method Evaluation and Risk Assessment
-Version: 4.3.2
+Version: 5.1.5
 Authors@R: person("Tom", "Carruthers",, "t.carruthers@fisheries.ubc.ca", role=c("aut", "cre"))
 Maintainer: Tom Carruthers <t.carruthers@oceans.ubc.ca>
 Description: A population risk assessment framework that links a Shiny GUI to the DLMtool/MSEtool operating model OMx
@@ -19,5 +19,6 @@ Imports: corpcor,
          shinyalert,
          MSEtool,
          tinytex,
+         cowplot,
          DT
 RoxygenNote: 6.1.1

@@ -36,6 +36,14 @@ shinyUI(
                       tbody{ font-size:13px;}
                       style{ font-size:13px;}
                       .datatables .display {margin-left: 0;}
+                      
+                      .shiny-notification {
+                      height: 60px;
+                      width: 300px;
+                      position:fixed;
+                      top: calc(50% - 50px);
+                      left: calc(50% - 400px);
+                      }
 
                       [type = 'number'] {font-size:13px;height:30px;}
                       [type = 'text'] {font-size:13px;}
@@ -83,7 +91,7 @@ shinyUI(
     fluidRow(
 
       column(1,style="height:65px",
-             h1("MERA")
+             tags$a(h1("MERA"),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')
       ),
       column(5,style="height:65px",
              h5(textOutput("Version") ,style="padding:22px;")
@@ -94,8 +102,8 @@ shinyUI(
 
                column(7,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
                conditionalPanel(condition="output.SkinNo==2",column(5,tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank'))),
-               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')))
-               
+               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank'))),
+               conditionalPanel(condition="output.SkinNo==3",column(5,tags$a(img(src = "Train.png", height = 58, width = 126),href="https://www.merafish.org/",target='_blank')))
             )
       ),
       column(1,
@@ -108,8 +116,8 @@ shinyUI(
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
     h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
-    h5("For further information see the ", a("MERA Manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
-    h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"),style = "color:grey"),
+    h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),".",style = "color:grey"),
+    h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"), style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
 
     fluidRow(
@@ -399,9 +407,28 @@ shinyUI(
                                    HTML("<br>"),
                                    h5("2. Closed loop simulation controls",style="color:grey"),
                                    HTML("<br>"),
-                                   column(12,    column(4,numericInput("interval", label = "Management interval", value=8,min=2,max=10))),
-                                   column(12,    column(4,numericInput("nsim", label = "No. simulations", value=24,min=2,max=256))),
-                                   column(12,    column(4,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px"))
+                                   column(4,    
+                                          column(8,numericInput("interval", label = "Management interval", value=8,min=2,max=10)),
+                                   
+                                          column(8,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px")
+                                   ),
+                                   column(8,
+                                     h5("Number of simulations")
+                                   ),
+                                   column(5, 
+                                          column(12,h5("Risk Assessment:"),style="height:35px"),
+                                          column(12,h5("Status Determination:"),style="height:35px"),
+                                          column(12,h5("Management Planning:"),style="height:35px"),
+                                          column(12,h5("Management Performance:"),style="height:35px")
+                                   ),
+                                   
+                                   column(3, 
+                                          
+                                          column(12,numericInput("nsim_RA", label=NULL, value=96,min=2,max=256),style="height:35px"),
+                                          column(12,numericInput("nsim_SD", label=NULL, value=24,min=2,max=256),style="height:35px"),
+                                          column(12,numericInput("nsim_Plan", label=NULL, value=24,min=2,max=256),style="height:35px"),
+                                          column(12,numericInput("nsim_Eval",label=NULL, value=96,min=2,max=256),style="height:35px")
+                                   )
                                                  
                                 ),
                                 
@@ -826,7 +853,7 @@ shinyUI(
                             HTML("<br>"),
                             HTML("<br>"),
                             h5("Management interval controls how frequently new management advice is calculated. For example, given a management interval of 4 years a new Total Allowable Catch may be set in 2020, 2024, 2028 (and so on) that is kept constant in the interval between these updates.",style = "color:grey"),
-                            h5("You can control the number of simulated realizations of your fishery using 'No. simulations'. Each simulation takes a draw of model parameters from the ranges specified by the MERA questionnaire. This also controls the number of simulations generated if you condition your 
+                            h5("You can control the number of simulated realizations of your fishery for each MERA mode. Each simulation takes a draw of model parameters from the ranges specified by the MERA questionnaire. This also controls the number of simulations generated if you condition your 
                                operating model on data. Generally you can obtain meaningful early results with just 48 simulations, stable MP performance ranking with 96 simulations and stable absolute MP performance with 192. In general 192 or greater simulations are required 
                                to quantify value of information and cost of current uncertainties.",style = "color:grey"),
                             h5("If greater than 48 simulations are specified, the user has the option to distribute calculations over a cluster using parallel computation. Note however that you will lose the progress bar.",style = "color:grey")
@@ -1107,8 +1134,8 @@ shinyUI(
                   conditionalPanel(condition="output.Data==0",
                          HTML("<br>"),
                          h5("To calculate stock status you must first load data (Extra panel 1)", style = "color:grey")
-                        
                   )
+                  
                   
                   ),
                   
@@ -1140,8 +1167,7 @@ shinyUI(
        
        
        fluidRow(
-         column(1),
-         column(6),
+         column(7),
          column(4,
                 column(6,style="padding:10px",
                        fileInput("Load_Status","Load  (.Status)")
@@ -1162,6 +1188,17 @@ shinyUI(
                        )
                        
                 )
+         ),
+         
+         conditionalPanel(condition="output.SD==1",
+           column(7),
+           column(4,
+                  hr(),
+                  column(4, selectInput("SDdet",label=" Detailed Status Report",  choices=c("C"),selected="C", multiple = FALSE)),
+                  column(6, downloadButton("SDdet_rep",""))
+                                        
+           )
+          
          )
        )
        
@@ -1276,8 +1313,8 @@ shinyUI(
                  column(1),
                  column(6,style="padding:19px",
                       h5("A data file can be loaded with indicator data for years after operating model conditioning (after LHYear)",style = "color:grey"),
-                      h5("These data can be compared against the predicted data of the Evaluation operating model and used to detect exceptional
-                           circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://drive.google.com/open?id=1Liif_ugfDbzIKZMBusHNemgfi3cohvtr", target="_blank"),style = "color:grey")
+                      h5("These data can be compared against the future predicted data of the operating model and used to detect exceptional
+                           circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://www.nrcresearchpress.com/doi/abs/10.1139/cjfas-2018-0223?journalCode=cjfas#.XZeG7kZKhPY", target="_blank"),style = "color:grey")
                       #h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
                  )
              )
@@ -1548,6 +1585,9 @@ shinyUI(
        #conditionalPanel(condition="input.Debug",
           column(1),
           column(9, textAreaInput("Log", "Log",height="120px")),
+          column(1),
+          column(2, actionButton("Demo_mode","Demo Mode"),style="padding-top:24px"),
+   
        #),
        
        column(12),

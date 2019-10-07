@@ -11,6 +11,7 @@ library(httpuv)
 library(shinyalert)
 library(DT)
 library(mvtnorm)
+library(cowplot)
 
 options(shiny.maxRequestSize=1000*1024^2)
 
@@ -19,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.1.3"
+  Version<<-"5.1.5"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -152,13 +153,17 @@ shinyServer(function(input, output, session) {
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
   output$Dependencies<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
 
-  # if (!is.null(MERA:::PKGENVIR$skin)) {
-  #   skin <- MERA:::PKGENVIR$skin
-  # } else {
-  #   skin <- "MSC"
-  # }
-  skin <- "MSC"
-  
+  tt <- try(!is.null(MERA:::PKGENVIR$skin), silent=TRUE)
+  if (class(tt) == 'try-error') {
+    skin <- 'MSC'
+  } else {
+    if (!is.null(MERA:::PKGENVIR$skin)) {
+      skin <- MERA:::PKGENVIR$skin
+    } else {
+      skin <- "MSC"
+    }
+  }
+           
   Skin_nams<<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected=skin)
   
@@ -293,7 +298,13 @@ shinyServer(function(input, output, session) {
     RA(0); SD(0); Plan(0); Eval()
   })
   
-  
+  observeEvent(input$Demo_mode,{
+    updateNumericInput(session=session,inputId='nsim_RA',value=24)
+    updateNumericInput(session=session,inputId='nsim_SD',value=8)
+    updateNumericInput(session=session,inputId='nsim_Plan',value=12)
+    updateNumericInput(session=session,inputId='nsim_Eval',value=24)
+    
+  })
   
   # == File I/O ==========================================================================
 
@@ -439,7 +450,7 @@ shinyServer(function(input, output, session) {
     }else{
       dat_ind<<-dat
       dat<<-dat_test
-      AM(paste0("Data object contains ", length(dat_ind@Years)-length(dat@Years)," years of indicator data after LHYear"))
+      AM(paste0("Data object contains ", length(dat_ind@Year)-length(dat@Year)," years of indicator data after LHYear"))
 
       DataInd(1)
     }
@@ -643,7 +654,7 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$Build_OM_2,{
 
-    nsim<<-input$nsim
+    nsim<<-input$nsim_Plan
 
     #tryCatch({
 
@@ -712,7 +723,7 @@ shinyServer(function(input, output, session) {
     
     Fpanel(1)
     MPs<-c('curE','curC','FMSYref','NFref')
-    nsim <- ifelse(quick, 8, input$nsim)
+    nsim <- ifelse(quick, 8, input$nsim_RA)
     
     OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
@@ -732,7 +743,7 @@ shinyServer(function(input, output, session) {
      
     Update_Options()
     
-   # tryCatch({
+    tryCatch({
       
       withProgress(message = "Running Risk Assessment", value = 0, {
         silent=T
@@ -750,15 +761,15 @@ shinyServer(function(input, output, session) {
       #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
       
-   # },
-    #error = function(e){
-     #shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-    #               For example a short lived stock a low stock depletion with recently declining effort.
-     #             Try revising operating model parameters.", type = "info")
-    #  return(0)
-    #}
+    },
+    error = function(e){
+     shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
+                   For example a short lived stock a low stock depletion with recently declining effort.
+                  Try revising operating model parameters.", type = "info")
+      return(0)
+    }
     
-    #)
+    )
     
   }) # press calculate
   
@@ -766,11 +777,11 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Calculate_status,{
     
     Status<-new('list')
-    nsim<-input$nsim
+    nsim<-input$nsim_SD
     OM<-makeOM(PanelState,nsim=nsim)
     
     if(input$SDset=="Custom"){
-      codes<-input$SDsel
+      codes<<-input$SDsel
     }else{
       if(input$SDset=="All"){
         nSD=Inf
@@ -779,13 +790,14 @@ shinyServer(function(input, output, session) {
       }else if(input$SDset=="Top 3"){
         nSD=3
       }
-      codes<-getCodes(dat,maxtest=nSD)
+      codes<<-getCodes(dat,maxtest=nSD)
     }
     
     ncode<-length(codes)
     Est<-Sim<-Fit<-list()
-    #saveRDS(OM,"C:/temp/OM3")
-    #saveRDS(dat,"C:/temp/dat3")
+    
+    #saveRDS(OM,"C:/temp/OM")
+    #saveRDS(dat,"C:/temp/dat")
     #saveRDS(codes,"C:/temp/codes3")
     setup()
     
@@ -794,8 +806,10 @@ shinyServer(function(input, output, session) {
       withProgress(message = "Running Status Determination", value = 0, {
         
         for(cc in 1:ncode){
-          Est[[cc]]<-GetDep(OM,dat,code=codes[cc],cores=4)
-          AM(paste(cc,codes[cc],"Did not return depletion"))
+          Fit[[cc]]<-GetDep(OM,dat,code=codes[cc],cores=4)
+          #if(cc==1)saveRDS(Fit[[cc]],"C:/temp/fittedOM")
+          Est[[cc]]<-Fit[[cc]]@OM@cpars$D[Fit[[cc]]@conv]
+          if(sum(Fit[[cc]]@conv)==0)AM(paste(cc,codes[cc],"Did not return depletion"))
           incProgress(1/ncode, detail = round(cc*100/ncode))
         }  
     
@@ -819,6 +833,9 @@ shinyServer(function(input, output, session) {
       redoSD()
       message("postredoSD")
       SD(1)
+      updateSelectInput(session, "SDdet",choices=codes,selected=codes[1])
+      #updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
+      
       #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
        
@@ -834,17 +851,15 @@ shinyServer(function(input, output, session) {
     
   }) # press calculate
   
-  
-  
-  
+   
   observeEvent(input$Calculate_Plan,{
   
     doprogress("Building OM from Questionnaire",1)
-    OM<<-makeOM(PanelState,nsim=input$nsim)
+    OM<<-makeOM(PanelState,nsim=input$nsim_Plan)
     Fpanel(1)
     MPs<<-getMPs()
     
-    nsim<<-input$nsim
+    nsim<<-input$nsim_Plan
     parallel=F
     
     if(input$Parallel){
@@ -911,13 +926,13 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Calculate_Eval,{
 
     doprogress("Building OM from Questionnaire",1)
-    OM_Eval<<-makeOM(PanelState,nsim=input$nsim)
+    OM_Eval<<-makeOM(PanelState,nsim=input$nsim_Eval)
    # OM_Eval@proyears<-10
     
     Fpanel(1)
     EvalMPs<-input$sel_MP
     
-    nsim<<-input$nsim
+    nsim<<-input$nsim_Eval
     parallel=F
     
     if(input$Parallel){
@@ -1053,7 +1068,7 @@ shinyServer(function(input, output, session) {
 
     content = function(file) {
       withProgress(message = "Building data report", value = 0, {
-      nsim<<-input$nsim
+      nsim<<-input$nsim_Plan
       OM<<-makeOM(PanelState,nsim=nsim)
       src <- normalizePath('Source/Markdown/DataRep.Rmd')
       src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
@@ -1277,6 +1292,34 @@ shinyServer(function(input, output, session) {
   )
   
   
+  # Conditioning report
+  output$SDdet_rep <- downloadHandler(
+    # For PDF output, change this to "report.pdf"
+    filename = function(){paste0(namconv(input$Name),"_Det_Cond.html")}, #"report.html",
+    
+    content = function(file) {
+      withProgress(message = "Building detailed Status Determination report", value = 0, {
+        
+        incProgress(0.1)
+        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+        MSClog<-list(PanelState, Just, Des)
+        
+        owd <- setwd(tempdir())
+        on.exit(setwd(owd))
+         
+        library(rmarkdown)
+       
+        incProgress(0.1)
+        knitr::knit_meta(class=NULL, clean = TRUE) 
+        ccno<-match(input$SDdet,codes)
+        OM<-Fit[[ccno]]@OM
+        output<-plot(Fit[[ccno]],open_file = FALSE)
+           
+        incProgress(0.8)
+        file.copy(output, file)
+      }) # end of progress
+    }
+  )
   
   
   
