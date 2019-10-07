@@ -107,16 +107,29 @@ shinyUI(
             )
       ),
       column(1,
-             div(id="SkinArea",style="width:105px;height:50px",
-                   selectInput("Skin", label = "", choices=c("None"),selected="None")
-                )
+             fluidRow(
+               column(6,
+                  div(id="SkinArea",style="width:105px;height:48px;padding-top:15px",
+                  
+                   selectInput("Skin", label = NULL, choices=c("None"),selected="None")
+                     
+                 )
+               ),
+               column(6,
+                    div(id="DemoArea",style="width:105px;height:48px;padding-top:15px",
+                          
+                      actionButton("Demo_mode","Demo")
+                    
+                    )
+               )
              )
+      )
     ),
     hr(),
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
     h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
-    h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),".",style = "color:grey"),
+    h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"), style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
 
@@ -339,7 +352,7 @@ shinyUI(
                                  conditionalPanel(width=4,condition="output.Dpanel==undefined|output.Dpanel==0",
 
                                   HTML("<br>"),
-                                  h5("The Data panel contains a set of questions about what types of data are available and the quality of the data that are available.",style="color:grey"),
+                                  h5("The Data panel provides the option to load fishery data and specify the quality of the data that are available.",style="color:grey"),
                                   h5("These questions are used to: ",style="color:grey"),
                                   h5(" - identify what management procedures are feasible given the types of data available.",style="color:grey"),
                                   h5(" - determine the relative success of the management approaches that rely on differing types of data.",style="color:grey"),
@@ -348,10 +361,18 @@ shinyUI(
                                          : ", a("Section 2.3.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#23_data_questions", target="_blank"),style="color:grey")),
 
                                  conditionalPanel(width=4,condition="output.Dpanel==1",
-                                                  checkboxGroupInput("D1", label = h5("1. Types of data that are available",style="color:black"),
-                                                                     choices = D1_list, selected = D1_list),
-                                                  actionLink("All_D1","UNKNOWN")),
-
+                                                  
+                                                  h5("1. Load fishery data",style="color:black"),
+                                                  column(12,style="padding-left:27px",
+                                                         
+                                                     HTML("<br>"),
+                                                     fileInput("Load_Data","Load available data  (.csv)"),
+                                                     conditionalPanel(width=4,condition="output.Data==1",
+                                                                      h5("Data Report",style="font-weight:bold"),
+                                                                      downloadButton("Build_Data"," ")
+                                                     )
+                                                  )),
+       
                                  conditionalPanel(width=4,condition="output.Dpanel==2",
                                                   checkboxGroupInput("CB", label = h5("2. Catch reporting bias",style="color:black"),
                                                                      choices = CB_list, selected = CB_list),
@@ -385,27 +406,10 @@ shinyUI(
                                 ),
                          
                                 conditionalPanel(width=4,condition="output.Opanel==1",
-                                   
-                                   HTML("<br>"),
-                                   h5("1. Load fishery data",style="color:grey"),
-                                   column(12,style="padding-left:27px",
-                                          
-                                          HTML("<br>"),
-                                          fileInput("Load_Data","Load available data  (.csv)"),
-                                          conditionalPanel(width=4,condition="output.Data==1",
-                                                           h5("Data Report",style="font-weight:bold"),
-                                                           downloadButton("Build_Data"," ")
-                                          )
-                                   )
-                                                 
-                                ),
-                                
-                                
-                                conditionalPanel(width=4,condition="output.Opanel==2",
                                                  
                                                  
                                    HTML("<br>"),
-                                   h5("2. Closed loop simulation controls",style="color:grey"),
+                                   h5("1. Closed loop simulation controls",style="color:grey"),
                                    HTML("<br>"),
                                    column(4,    
                                           column(8,numericInput("interval", label = "Management interval", value=8,min=2,max=10)),
@@ -433,10 +437,10 @@ shinyUI(
                                 ),
                                 
                                 
-                                conditionalPanel(width=4,condition="output.Opanel==3",
+                                conditionalPanel(width=4,condition="output.Opanel==2",
                                                  
                                   HTML("<br>"),
-                                  h5("3. Detailed operating model controls",style="color:grey"),
+                                  h5("2. Detailed operating model controls",style="color:grey"),
                                   column(12,
                                     column(7,
                                            fileInput("Load_OM","Load  (.OM)"),
@@ -459,10 +463,10 @@ shinyUI(
                                                    
                                 ),
                                 
-                                conditionalPanel(width=4,condition="output.Opanel==4",
+                                conditionalPanel(width=4,condition="output.Opanel==3",
                                                  
                                    HTML("<br>"),
-                                   h5("4. Condition operating models <alpha>",style="color:grey"),
+                                   h5("3. Condition operating models <alpha>",style="color:grey"),
                                    HTML("<br>"),
                                    column(12,style="padding-left:27px",
                                           
@@ -492,10 +496,10 @@ shinyUI(
                                    )              
                                 ),
                                 
-                                conditionalPanel(width=4,condition="output.Opanel==5",
+                                conditionalPanel(width=4,condition="output.Opanel==4",
                                                  
                                    HTML("<br>"),
-                                   h5("5. Bio-economic dynamics <alpha>",style="color:grey"),
+                                   h5("4. Bio-economic dynamics <alpha>",style="color:grey"),
                                    selectInput("EC_Model","Economic Model",choices=c("None","Simple response","SR with inertia","SR with efficiency - depletion"),selected="None"),
                                    conditionalPanel(condition="input.EC_Model!='None'",
                                      column(4,numericInput("CostCurr",label="Cost of current fishing effort",min=0,value=1)),
@@ -507,10 +511,10 @@ shinyUI(
                                 ),
                                 
                                 
-                                conditionalPanel(width=4,condition="output.Opanel==6",
+                                conditionalPanel(width=4,condition="output.Opanel==5",
                                                  
                                   HTML("<br>"),
-                                  h5("6. Load Source Code",style="color:grey"),
+                                  h5("5. Load Source Code",style="color:grey"),
                                   fileInput("Load_anything","Load DLMtool and MSEtool source code for MPs and PMs")
                                 ),  
                                 
@@ -783,21 +787,18 @@ shinyUI(
                       # -------- Data panel guides --------------------------------------------------------------------------------------------------------------------
 
                       conditionalPanel(condition="input.tabs1==3&output.Dpanel==0",
-                          h5("",style = "color:grey")
+                                       h5("",style = "color:grey")
                       ),
-
+                      
                       conditionalPanel(condition="input.tabs1==3&output.Dpanel==1",
-                          h5("Management procedures (MPs) require various data. Data availability will determine what MPs are feasible.", style = "color:grey"),
-                          h5("Annual catches are yearly reported landings (e.g. 135 tonnes in 1998, 159 tonnes in 1999, etc).", style = "color:grey"),
-                          h5("Relative abundance indices may be fishery-dependent such as catch-per-unit-effort data, or fishery-independent such as an annual abundance survey.", style = "color:grey"),
-                          h5("In the context of annual catches and relative abundance indices, 'historical' refers to data going back to 'unfished conditions' (pre industrial fishing) such that catches may be used to reconstruct stock trajectory and indices may infer current stock depletion.", style = "color:grey"),
-                          h5("In contrast, 'recent' refers to data available for least 5 years from the present", style = "color:grey"),
-                          h5("Effort data are annual observations of fishing effort such as boat days in 2002.", style = "color:grey"),
-                          h5("Growth data refers to estimates for growth parameters such as von Bertalanffy growth parameter (K) and mean asymptotic length (L-infinity).", style = "color:grey"),
-                          h5("Size and age composition data are samples of sizes and ages in the catch going back at least 2 years from the present", style = "color:grey"),
-                          h5(""),
-                          h5("If you require further guidance on what types of data are available in your fishery see the MERA manual: ", a("Section 6.", href="http://www.sciencedirect.com/science/article/pii/S0165783613003081", target="_blank"),style = "color:grey")
-
+                          h5("Users have the option of loading fishery data to unlock various MERA features",style = "color:grey"),
+                          h5("When formatted into a DLMtool/MSEtool csv data file, fishery data can be used to:",style = "color:grey"),
+                          h5(" - condition operating models (Extra panel 3)",style = "color:grey"),
+                          h5(" - determine feasible MPs (Management Planning mode)", style = "color:grey"),
+                          h5(" - assess the fishery status (Status Determination mode)", style = "color:grey"),
+                          h5(" - test for exceptional circumstances (Management Performance mode).",style = "color:grey"),
+                          h5("A description of the data object can be found ",a("here", href="https://dlmtool.github.io/DLMtool/cheat_sheets/Data", target="_blank"),style = "color:grey"),
+                          h5("A comprehensive guide to data formatting for MERA is avaialble ",a("here", href="https://dlmtool.github.io/DLMtool/Data/Data.html", target="_blank"),style = "color:grey")
                       ),
 
                       conditionalPanel(condition="input.tabs1==3&output.Dpanel==2",
@@ -848,7 +849,7 @@ shinyUI(
                           h5("",style = "color:grey")
                       ),
                       
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==2",
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==1",
                          column(12,
                             HTML("<br>"),
                             HTML("<br>"),
@@ -860,7 +861,7 @@ shinyUI(
                          )
                       ),
                       
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==3",
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==2",
                           column(12,
                               HTML("<br>"),
                               HTML("<br>"),
@@ -870,22 +871,7 @@ shinyUI(
                           )
                       ),
                       
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==1",
-                         column(12,
-                             HTML("<br>"),
-                             HTML("<br>"),
-                             h5("When formatted into a DLMtool/MSEtool csv data file, fishery data can be used to:",style = "color:grey"),
-                             h5(" - condition operating models (Extra panel 4)",style = "color:grey"),
-                             h5(" - determine feasible MPs (Management Planning mode)", style = "color:grey"),
-                             h5(" - assess the fishery status (Status Determination mode)", style = "color:grey"),
-                             h5(" - test for exceptional circumstances (Management Performance mode).",style = "color:grey"),
-                             h5("A description of the data object can be found ",a("here", href="https://dlmtool.github.io/DLMtool/cheat_sheets/Data", target="_blank"),style = "color:grey"),
-                             h5("A comprehensive guide to data formatting for MERA is avaialble ",a("here", href="https://dlmtool.github.io/DLMtool/Data/Data.html", target="_blank"),style = "color:grey")
-                             
-                         )
-                      ),
-                      
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==4",
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==3",
                         column(12, 
                             HTML("<br>"),
                             HTML("<br>"),
@@ -894,7 +880,7 @@ shinyUI(
                         )
                       ),
                       
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==5",
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==4",
                          column(12, 
                                 HTML("<br>"),
                                 HTML("<br>"),
@@ -905,7 +891,7 @@ shinyUI(
                         )
                       ),
                       
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==6",
+                      conditionalPanel(condition="input.tabs1==4&output.Opanel==5",
                                        column(12, 
                                               HTML("<br>"),
                                               HTML("<br>"),
@@ -983,10 +969,10 @@ shinyUI(
                  ),
 
                  column(width = 2,
-                   conditionalPanel(condition="(input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<6)",
+                   conditionalPanel(condition="(input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<5)",
                       actionButton("Fcont","Next >")
                    ),
-                   conditionalPanel(condition="!((input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<6))",
+                   conditionalPanel(condition="!((input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<5))",
                       actionButton("FcontD","Next >",style="color: #CFCFCF;  border-color: #CFCFCF") #background-color: #CFCFCF;
                    )
 
@@ -1585,8 +1571,8 @@ shinyUI(
        #conditionalPanel(condition="input.Debug",
           column(1),
           column(9, textAreaInput("Log", "Log",height="120px")),
-          column(1),
-          column(2, actionButton("Demo_mode","Demo Mode"),style="padding-top:24px"),
+          
+         
    
        #),
        

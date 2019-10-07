@@ -461,47 +461,17 @@ Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
 
 # generic functions
 
-FeaseLabs<-function(MPs,dat=NA){
+FeaseLabs<-function(MPs,dat=NULL){
   
   nMPs<-length(MPs) 
   
-  # Proper Data Feasibility based on complex fease analysis by MP
-  tempdat<-tempdat0<-DLMtool::SimulatedData
-  tempdat@Cat<-array(NA,dim(tempdat0@Cat))
-  tempdat@Ind<-array(NA,dim(tempdat0@Ind))
-  tempdat@CAL<-array(NA,dim(tempdat0@CAL))
-  tempdat@CAA<-array(NA,dim(tempdat0@CAA))
-  tempdat@vbK<-rep(NA,length(tempdat0@vbK))
-  tempdat@Abun<-rep(NA,length(tempdat0@Abun))
-  
-  ndaty<-dim(tempdat@Cat)[2]
-  cond<-unlist(PanelState[[3]][1]) # cond=rep(T,9) cond=c(T,T,F,T,T,F,T,T,T)
-  FeasePos<-c("Catch","Catch","Index","Index","Index","Catch_at_length","Catch_at_age","Growth","Abundance")
-  Datslot<-c("Cat","Cat","Ind",  "Ind","Ind","CAL","CAA","vbK","Abun")
-  yrrange<-c(ndaty, 5,    ndaty,  5,    ndaty,        2,                2, NA, NA)
-  
-  for(i in 1:length(Datslot)){
-    if(cond[i]){ # if user has specified that data are available
-      if(!is.na(yrrange[i])){ # it not a vector of values
-        ndim<-length(dim(slot(tempdat0,Datslot[i])))
-        if(ndim==2){ # is a matrix
-          slot(tempdat,Datslot[i])[,ndaty-(yrrange[i]:1)+1]<-slot(tempdat0,Datslot[i])[,ndaty-(yrrange[i]:1)+1]
-        }else{ # is a 3D array
-          slot(tempdat,Datslot[i])[,ndaty-(yrrange[i]:1)+1,]<-slot(tempdat0,Datslot[i])[,ndaty-(yrrange[i]:1)+1,]
-        }
-      }else{
-        slot(tempdat,Datslot[i])<-slot(tempdat0,Datslot[i])
-      }
-    }
-  }
-  
-  if(!cond[3])tempdat@Dep<-rep(NA,2)
-  
-  if(!is.na(dat)){
-    DFeasible<-RealFease(dat)
+  if(!is.null(dat)){
+    DFeasible<-Fease(dat)
   }else{
-    DFeasible<-Fease(tempdat,msg=F)
+    DFeasible<-MPs
   }
+  
+  tempdat0<-DLMtool::SimulatedData
   
   # TAC TAE Feasibility
   cond<-unlist(PanelState[[2]][1]) # cond=rep(T,4) cond=c(F,T,T,T)
@@ -529,8 +499,6 @@ FeaseLabs<-function(MPs,dat=NA){
   MP_Type[totneeded>1]<-"Mixed"
   
   cols<-rep('black',length(MPs))
-  #cols[!MPs%in%MFeasible & !MPs%in%DFeasible]<-'purple'
-  #cols[!MPs%in%MFeasible & MPs%in%DFeasible]<-'red'
   cols[!MPs%in%MFeasible | !MPs%in%DFeasible]<-'red'
   
   feasible<-rep("",length(MPs))
@@ -542,9 +510,7 @@ FeaseLabs<-function(MPs,dat=NA){
   feasible[condDM]<-"D/M"
   
   # Rankings
-  #rnkscore<-Ptab2$LTY
   rnkscore<-rep(0,nMPs)
-  # rnkscore[cols=="green"]=rnkscore[cols=="green"]+2000
   rnkscore[cols=="red"]=rnkscore[cols=="red"]+1000
   ord<-order(rnkscore,decreasing = T)
   
@@ -782,7 +748,7 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
     
     LRP<-round(apply(MSEobj@B_BMSY[,,1:burnin,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind]
     
-    FT<<-FeaseLabs(MPs=MSEobj@MPs,dat=NA)
+    FT<<-FeaseLabs(MPs=MSEobj@MPs,dat=dat)
     MPcols<<-FT$MPcols  # just do FeaseLabs once or else this computationally costly code has to be reused
     
     Tab1<-as.data.frame(cbind(MSEobj@MPs, FT$MP_Type, FT$feasible, LRP),stringsAsFactors = F)

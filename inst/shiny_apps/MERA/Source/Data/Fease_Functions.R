@@ -90,5 +90,3 @@ MPtype2 <- function(MPs=NA) {
   df[order(df$Type),]
 
 }
-
-

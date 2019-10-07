@@ -20,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.1.5"
+  Version<<-"5.2.0"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -147,7 +147,7 @@ shinyServer(function(input, output, session) {
   output$Fpanelout <- renderText({ paste("Fishery",Fpanel(),"/ 19")})
   output$Mpanelout <- renderText({ paste("Management",Mpanel(),"/ 7")})
   output$Dpanelout <- renderText({ paste("Data",Dpanel(),"/ 4")})
-  output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 6")})
+  output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 5")})
 
   # Update UI
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
@@ -163,7 +163,9 @@ shinyServer(function(input, output, session) {
       skin <- "MSC"
     }
   }
-           
+       
+  dat<-dat_int<-NULL
+      
   Skin_nams<<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected=skin)
   
@@ -187,8 +189,26 @@ shinyServer(function(input, output, session) {
   
   
   shinyjs::hide("Skin")
-  onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
-  onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+  shinyjs::hide("Demo_mode")
+  
+  onevent("mouseenter", "SkinArea", {
+             shinyjs::show("Skin")
+          }
+  )
+  onevent("mouseleave", "SkinArea", {
+            shinyjs::hide("Skin")
+          }
+  )
+  
+  onevent("mouseenter", "DemoArea", {
+    shinyjs::show("Demo_mode")
+          }
+  )
+  
+  onevent("mouseleave", "DemoArea", {
+    shinyjs::hide("Demo_mode")
+          }
+  )
  
   
   # Some useful things
@@ -237,7 +257,7 @@ shinyServer(function(input, output, session) {
       , rep("No justification was provided",3)))
 
 
-  # Default simulation ttributes --------------------------------------------------------------------------------
+  # Default simulation attributes --------------------------------------------------------------------------------
   nyears<-68 # 1950-2018
   nsim<-48
 
@@ -315,8 +335,21 @@ shinyServer(function(input, output, session) {
 
     content=function(file){
       Des<<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-
+      if(Data()==1){
+        PanelState$dat<-dat
+        AM("Saving appended data")
+      }
+      if(DataInd()==1){
+        PanelState$dat_ind<-dat_ind
+      }
+      
+      #saveRDS(PanelState,"C:/temp/PanelState.rds")
+      
       MSClog<-list(PanelState, Just, Des)
+      
+      
+      #saveRDS(MSClog,"C:/temp/MSClog.rds")
+      
       doprogress("Saving Questionnaire")
       saveRDS(MSClog,file)
       AM(paste0("Questionnaire saved:", file))
@@ -332,7 +365,7 @@ shinyServer(function(input, output, session) {
     tryCatch({
 
         MSClog<-readRDS(file=filey$datapath)
-        cond<-length(MSClog)==3 & sum(names(MSClog[[1]])==c("Fpanel","Mpanel","Dpanel","Slider"))==4
+        cond<-length(MSClog)==3 & sum(names(MSClog[[1]])[1:4]==c("Fpanel","Mpanel","Dpanel","Slider"))==4
         AM(paste0("Questionnaire loaded:", filey$datapath))
         
         if(cond){
@@ -340,17 +373,30 @@ shinyServer(function(input, output, session) {
           Just<<-MSClog[[2]]
 
           # All panels except radio button on D4
-          for(i in 1:3){
+          for(i in 1:2){
             for(j in 1:length(PanelState[[i]])) {
-              if(!(i==3 & j==4)){ # not the radio button
-                state<-as.vector(unlist(PanelState[[i]][j]))
-                choices<-as.vector(unlist(get(MasterList[[i]][j])))
-                selected<-as.list(choices[state])
-                choices<-as.list(choices)
-                updateCheckboxGroupInput(session, as.character(inputnames[[i]][j]), selected = selected)
-              }
+             
+              state<-as.vector(unlist(PanelState[[i]][j]))
+              choices<-as.vector(unlist(get(MasterList[[i]][j])))
+              selected<-as.list(choices[state])
+              choices<-as.list(choices)
+              updateCheckboxGroupInput(session, as.character(inputnames[[i]][j]), selected = selected)
+              
             }
           }
+          
+          i<-3
+          
+          for(j in 2:3){
+            
+            state<-as.vector(unlist(PanelState[[i]][j]))
+            choices<-as.vector(unlist(get(MasterList[[i]][j])))
+            selected<-as.list(choices[state])
+            choices<-as.list(choices)
+            updateCheckboxGroupInput(session, as.character(inputnames[[i]][j]), selected = selected)
+            
+          }
+        
           for(j in 1:length(PanelState[[4]])){
             updateSliderInput(session,as.character(inputnames[[4]][j]),value=as.numeric(PanelState[[4]][j]))
           }
@@ -372,6 +418,7 @@ shinyServer(function(input, output, session) {
           updateTextInput(session, "Author",   value= MSClog[[3]]$Author)
           updateTextInput(session, "Justification",value=Just[[1]][1])
           updateTabsetPanel(session,"tabs1",selected="1")
+          
 
           #=== DEBUGGING WINDOW =====================================================
           #updateTextAreaInput(session,"Debug",value=choices)
@@ -384,6 +431,23 @@ shinyServer(function(input, output, session) {
           Dpanel(1)
           Opanel(1)
           Plan(0)
+          
+          
+          if(is.null(MSClog[[1]]$dat)){
+            Data(0)
+            DataInd(0)
+          }else{
+            dat<-MSClog[[1]]$dat
+            Data(1)
+            AM("Data loaded with questionnaire")
+            if(!is.null(MSClog[[1]]$dat_ind)){
+               dat_ind<-MSClog[[1]]$dat_ind
+               DataInd(1)
+               AM("Additional data loaded since MP was adopted")
+            }
+          }
+           
+          
         }else{
           AM(paste0("Questionnaire failed to load:", filey$datapath))
           shinyalert("File read error", "This does not appear to be a MERA questionnaire file", type = "error")
@@ -826,8 +890,13 @@ shinyServer(function(input, output, session) {
       }
       
       
+     
+      
+      
       # ==== Types of reporting ==========================================================
       Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim)
+      #saveRDS(Status,"C:/temp/Status.rda")
+      
       
       message("preredoSD")
       redoSD()

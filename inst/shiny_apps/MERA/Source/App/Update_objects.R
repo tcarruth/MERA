@@ -1,12 +1,18 @@
 
 
 UpPanelState<-function(){
-  for(i in 1:3){
+  for(i in 1:2){
     for(j in 1:length(PanelState[[i]])) {
       value<-sapply(inputnames[[i]][j],function(x) input[[x]])
       PanelState[[i]][[j]] <<- get(MasterList[[i]][j])%in%value
     }
   }
+  i<-3
+  for(j in 2:length(PanelState[[i]])) {
+    value<-sapply(inputnames[[i]][j],function(x) input[[x]])
+    PanelState[[i]][[j]] <<- get(MasterList[[i]][j])%in%value
+  }
+  
   for(j in 1:length(Slider_names)) {
     PanelState[[4]][[j]] <<-sapply(inputnames[[4]][j],function(x) input[[x]])
   }
