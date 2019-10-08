@@ -58,15 +58,15 @@ whatOMmess<-function(){
 }
 
 
-makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA){
+makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,UseQonly=F){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
   
-  if(input$OM_L==TRUE){
+  if(input$OM_L & !UseQonly){
     OM<-OM_L
     SampList<<-NULL
     AM("Using loaded operating model")
-  }else if(input$OM_C){
+  }else if(input$OM_C & !UseQonly){
     OM<-OM_C
     SampList<<-NULL
     AM("Using conditioned operating model")
@@ -290,6 +290,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA){
     testing=F
     
     if(testing){
+      
       MSEobj<-runMSE(OM,"DCAC")
       OM_reb<-OM
       OM_reb@proyears<-max(OM@proyears,20+2) # only have to compute to this year
@@ -297,6 +298,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA){
       OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0#apply(MSEobj@SSB_hist[,,MSEobj@nyears,],1, sum)/(MSEobj@OM$SSB0*2) # start from half BMSY
       MSEobj_reb<-runMSE(OM_reb,"DCAC")
       Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
+      
     }
     
     #saveRDS(OM,"OM_autosave.rda")

@@ -518,11 +518,12 @@ shinyServer(function(input, output, session) {
     }else{
       dat_ind<<-dat
       dat<<-dat_test
-      FeaseMPs<<-Fease(dat)
+     
       AM(paste0("Data object contains ", length(dat_ind@Year)-length(dat@Year)," years of indicator data after LHYear"))
 
       DataInd(1)
     }
+    FeaseMPs<<-Fease(dat)
 
     #saveRDS(dat_ind,"C:/temp/dat_ind.rda")
     #saveRDS(dat,"C:/temp/dat.rda")
@@ -530,6 +531,7 @@ shinyServer(function(input, output, session) {
     SD_codes<-getCodes(dat,maxtest=Inf)
     AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
     updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
+    updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
     
   })
 
@@ -719,74 +721,49 @@ shinyServer(function(input, output, session) {
 
   })
 
-  # ======= OM building =============================
-
-  observeEvent(input$Build_OM_2,{
-
-    nsim<<-input$nsim_Plan
-
-    #tryCatch({
-
-      if(input$Cond_ops == "MERA SRA ML (DLMtool)"){
-        withProgress(message = "Building OM from Questionnaire & SRA ML", value = 0, {
-
-          OM<-makeOM(PanelState,nsim=nsim)
-          ML<-mean(dat@ML[1,length(dat@ML[1,])-(0:4)],na.rm=T)/dat@vbLinf*mean(OM@Linf)
-          OM<<-ML2D_frame(OM,ML=ML,ploty=F,nsim=OM@nsim,Dlim=c(0.05,0.7))
-
-        })
-
-      }else if(input$Cond_ops == "Stochastic SRA (Walters et al. 2006)"){ # Build from SRA
-
-        OM<-makeOM(PanelState,nsim=nsim,nyears=ncol(dat@Cat),maxage=dat@MaxAge)
-
-        #updateTextAreaInput(session,"Debug1",value=paste(OM@nyears,ncol(dat@Cat)))
-        withProgress(message = "Building OM from Questionnaire & S-SRA", value = 0, {
-          SRAout<<-SSRA_wrap(OM,dat)
-          OM<<-SRAout$OM
-          SRAinfo<<-SRAout$SRAinfo
-        })
-        #GoBackwards_SRA(OM)
-        #UpdateQuest()
-        Just[[1]][1+c(2,4,5,6,7,10)]<<-"Estimated by Stochastic SRA"
-        CondOM(1)
-        Fpanel(1)
-        Mpanel(1)
-        Dpanel(1)
-        Opanel(1)
-        Data(1)
-
-      }else if(input$Cond_ops=="None"){ # Build OM from questionnaire only
-
-        doprogress("Building OM from Questionnaire",1)
-        OM<<-makeOM(PanelState,nsim=nsim)
-
-      }
-     #},
-     #error = function(e){
-    #  shinyalert("Could not build operating model", "Try again with another OM conditioning method or examine data object", type = "info")
-    #  return(0)
-    # }
-
-    #)
-
-    Quest(1)
-    MadeOM(1)
-    Plan(0)
-    Eval(0)
-    Ind(0)
-    RA(0)
-
-    MPs<<-getMPs()
-    selectedMP<<-MPs[2]
-
-  })
-
 
 #############################################################################################################################################################################
 ### Calculation functions
 #############################################################################################################################################################################
 
+  # OM conditioning ============================
+  
+  observeEvent(input$Cond,{
+    
+    code<-input$Cond_ops
+    AM(paste0("Conditioning operating model using method ",code))
+  
+    OM<-makeOM(PanelState,nsim=input$nsim_OM,UseQonly=T)
+    setup()
+    
+    tryCatch({
+      
+      withProgress(message = "Conditioning Operating Model", value = 0, {
+        incProgress(0.1)
+        CFit<<-GetDep(OM,dat,code=code,cores=4)
+        
+        if(sum(CFit@conv)==0)AM(paste0(code,": ",sum(CFit@conv), " of ",length(CFit@conv)," simulations converged"))
+        
+        incProgress(0.8)
+     
+      })
+      
+      OM_C<<-CFit@OM
+      CondOM(1)
+      updateCheckboxInput(session,"OM_C",value=TRUE)
+ 
+   
+    },
+    error = function(e){
+      shinyalert("Computational error", "Operating model conditionin returned an error. Try using a different model for conditioning.", type = "info")
+      CondOM(0)
+      return(0)
+    }
+    
+    )
+    
+  }) # press calculate
+  
   
   observeEvent(input$Calculate_risk,{
     
@@ -893,16 +870,11 @@ shinyServer(function(input, output, session) {
         Effort<-dat@Cat/dat@Ind
         dat@Effort<-Effort/apply(Effort,1,mean) # standardized
       }
-      
-      
-     
-      
-      
+  
       # ==== Types of reporting ==========================================================
       Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim)
       #saveRDS(Status,"C:/temp/Status.rda")
-      
-      
+  
       message("preredoSD")
       redoSD()
       message("postredoSD")
@@ -1135,48 +1107,33 @@ shinyServer(function(input, output, session) {
     }
   )
 
+ 
+
   # Data report
   output$Build_Data <- downloadHandler(
     # For PDF output, change this to "report.pdf"
     filename = function(){paste0(namconv(input$Name),"_data.html")}, #"report.html",
-
+    
     content = function(file) {
       withProgress(message = "Building data report", value = 0, {
-      nsim<<-input$nsim_Plan
-      OM<<-makeOM(PanelState,nsim=nsim)
-      src <- normalizePath('Source/Markdown/DataRep.Rmd')
-      src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
- 
-      Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-      MSClog<-list(PanelState, Just, Des)
-
-      owd <- setwd(tempdir())
-      on.exit(setwd(owd))
-      file.copy(src, 'DataRep.Rmd', overwrite = TRUE)
-      file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
-
-      library(rmarkdown)
-      params <- list(test = input$Name,
-                     set_title=paste0("Data report for ",input$Name),
-                     set_type=paste0("Demonstration Data description"," (MERA version ",Version,")"),
-                     dat=dat,
-                     author=input$Author,
-                     ntop=input$ntop,
-                     inputnames=inputnames,
-                     SessionID=SessionID,
-                     copyright=paste(Copyright,CurrentYr)
-      )
-      incProgress(0.2)
-      knitr::knit_meta(class=NULL, clean = TRUE) 
-      output<-render(input="DataRep.Rmd",output_format="html_document", params = params)
-      incProgress(0.7)
-      file.copy(output, file)
-      incProgress(0.1)
+        saveRDS(tempdir(),"C:/temp/tempdir.rda")
+        owd <- setwd(tempdir())
+        on.exit(setwd(owd))
+        
+        library(rmarkdown)
+        output<-paste0(tempdir(),"/Data-Report.html")
+        
+        #Report(dat,title=paste0("Data Report for",input$Name),author=input$Author,quiet=T,overwrite=T,dir=getwd(),open=F)
+        Report(dat,title=paste0("Data Report for",input$Name),author=input$Author,quiet=T,overwrite=T,open=F,dir=tempdir())
+        incProgress(0.7)
+        file.copy(output, file)
+        incProgress(0.1)
+        
       }) # end of progress
     }
+    
   )
-
- 
+  
   
   # Conditioning report
   output$Build_Cond <- downloadHandler(
@@ -1271,23 +1228,36 @@ shinyServer(function(input, output, session) {
     }
   )
 
+  # Conditioning report
+  output$Cond_rep <- downloadHandler(
+    # For PDF output, change this to "report.pdf"
+    filename = function(){paste0(namconv(input$Name),"_Det_Cond.html")}, #"report.html",
+    
+    content = function(file) {
+      withProgress(message = "Building Conditioning Report", value = 0, {
+        
+        incProgress(0.1)
+        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+        MSClog<-list(PanelState, Just, Des)
+        
+        owd <- setwd(tempdir())
+        on.exit(setwd(owd))
+        
+        library(rmarkdown)
+        
+        incProgress(0.1)
+        knitr::knit_meta(class=NULL, clean = TRUE) 
+        OM<-CFit@OM
+        output<-plot(CFit,open_file = FALSE)
+        
+        incProgress(0.8)
+        file.copy(output, file)
+      }) # end of progress
+    }
+  )
   
- # output$downloadReport <- downloadHandler(
-  #  filename = function() {
-   #   paste0('Report_.pdf')
-  #  },
-  #  content = function(file) {
-  #    src <- normalizePath('report.rmd')
-  #    src2 <- normalizePath('www/MSC.png') #NEW 
-  #    owd <- setwd(tempdir())
-  #    on.exit(setwd(owd))
-  #    file.copy(src, 'report.rmd')
-  #    file.copy(src2, 'logo.png') #NEW
-  #    library(rmarkdown)
-  #    out <- render('report.rmd',pdf_document())
-  #    file.rename(out, file)
-  #  }
-  #)
+  
+  
   
   output$Build_RA <-downloadHandler(
     

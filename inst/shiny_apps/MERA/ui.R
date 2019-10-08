@@ -466,31 +466,29 @@ shinyUI(
                                 conditionalPanel(width=4,condition="output.Opanel==3",
                                                  
                                    HTML("<br>"),
-                                   h5("3. Condition operating models <alpha>",style="color:grey"),
+                                   h5("3. Condition operating models on data <alpha>",style="color:grey"),
                                    HTML("<br>"),
                                    column(12,style="padding-left:27px",
                                           
                                      conditionalPanel(condition="output.Data==0",
-                                         h5("You must first load data (first 'Extra' panel) before conditioning operating models",style="color:grey")
+                                         h5("You must first load data (first 'Data' question) before conditioning operating models",style="color:grey")
                                      ),
                                      
                                      conditionalPanel(condition="output.Data==1",
                                         
-                                      column(4,
-                                             h5("Use a conditioned OM",style="font-weight:bold"),
-                                             checkboxInput("OM_C",label="",value=FALSE), 
-                                             style="height:55px"
-                                      ),
-                                      column(8,conditionalPanel(condition="input.Cond_OM",
-                                                                selectInput("Cond_ops", label = "Conditioning Method", choices=c("None"),selected="None")),
-                                             style="height:55px; padding:6px")     
-                                      ),
+                                           column(6,selectInput("Cond_ops", label = "Conditioning Method", choices=c("None"),selected="None"),style="height:75px"),
+                                           column(6,numericInput("nsim_OM", label="No. simulations", value=12,min=2,max=256),style="height:75px"),
+                                           column(6, checkboxInput("OM_C","Use conditioned OM for analyses",value=FALSE),style="height:75px"),
+                                           column(6, actionButton("Cond","Condition operating model"),style="height:75px")
+                                              
+                                     ),
                                      
                                      conditionalPanel(condition="output.CondOM==1",
-                                        
-                                        h5("Conditioning Report",style="font-weight:bold"),
-                                        downloadButton("Build_Cond","")
-                                                      
+                                           column(6),
+                                           column(6,
+                                                  h5("Conditioning report",style="color:grey"),
+                                           downloadButton("Cond_rep",""),style="height:75px")
+                                            
                                      )
                                      
                                    )              
@@ -1119,7 +1117,7 @@ shinyUI(
                   ),
                   conditionalPanel(condition="output.Data==0",
                          HTML("<br>"),
-                         h5("To calculate stock status you must first load data (Extra panel 1)", style = "color:grey")
+                         h5("To calculate stock status you must first load data (Data question 1)", style = "color:grey")
                   )
                   
                   
@@ -1286,7 +1284,7 @@ shinyUI(
                  column(3,style="padding:7px;padding-left:14px",
       
                         conditionalPanel(condition="output.DataInd==0",
-                              h5("Data file must be loaded (Extra panel 1) that has indicator data", style = "color:grey")
+                              h5("Data file must be loaded (Data question 1) that has indicator data", style = "color:grey")
       
                         ),
                         
