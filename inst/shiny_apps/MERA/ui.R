@@ -872,9 +872,19 @@ shinyUI(
                       conditionalPanel(condition="input.tabs1==4&output.Opanel==3",
                         column(12, 
                             HTML("<br>"),
-                            HTML("<br>"),
-                            h5("Operating models are specified from the responses in the questionnaire", style = "color:grey"),
-                            h5("Alternatively, users can use upload their data and condition models", style = "color:grey")
+                            h5("Operating model conditioning automatically detects which data types are available and identifies those 
+                            conditioning models that are compatible given teh types of data that are available:: ", style = "color:grey"),
+                            h5("C: catch data (annual)", style = "color:grey"),
+                            h5("I: index of relative abundance (annual)", style = "color:grey"),
+                            h5("M: mean length of fish in the catch (annual)", style = "color:grey"),
+                            h5("L: length composition data (year by length class)", style = "color:grey"),
+                            h5("A: age composition data (year by age)", style = "color:grey"),
+                            h5("Approaches that use only catch data or length compositions assume a pattern in annual 
+                             fishing mortality rate defined by the annual fishing effort of Fishery
+                             Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey"),
+                            h5("For further information on the stock reduction analysis used to condition operating models see
+                            the", a(" detailed guide.", href="https://dlmtool.github.io/DLMtool/MERA/SRA_scope_vignette.html", 
+                                    target="_blank"),style = "color:grey")
                         )
                       ),
                       
@@ -1568,7 +1578,7 @@ shinyUI(
        
        #conditionalPanel(condition="input.Debug",
           column(1),
-          column(9, textAreaInput("Log", "Log",height="120px")),
+          column(10, textAreaInput("Log", "Log",height="120px")),
           
          
    
