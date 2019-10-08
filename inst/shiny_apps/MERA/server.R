@@ -20,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.3.1"
+  Version<<-"5.3.2"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -434,10 +434,7 @@ shinyServer(function(input, output, session) {
           Plan(0)
           
           
-          if(is.null(MSClog[[1]]$dat)){
-            Data(0)
-            DataInd(0)
-          }else{
+          if(!is.null(MSClog[[1]]$dat)){
             dat<<-MSClog[[1]]$dat
             Data(1)
             DataInd(0)
@@ -448,6 +445,10 @@ shinyServer(function(input, output, session) {
                DataInd(1)
                AM("Additional data loaded since MP was adopted")
             }
+            SD_codes<-getCodes(dat,maxtest=Inf)
+            AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
+            updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
+            updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
           }
            
           
