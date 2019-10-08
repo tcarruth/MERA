@@ -20,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.3.0"
+  Version<<-"5.3.1"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -438,12 +438,13 @@ shinyServer(function(input, output, session) {
             Data(0)
             DataInd(0)
           }else{
-            dat<-MSClog[[1]]$dat
+            dat<<-MSClog[[1]]$dat
             Data(1)
+            DataInd(0)
             FeaseMPs<<-Fease(dat)
             AM("Data loaded with questionnaire")
             if(!is.null(MSClog[[1]]$dat_ind)){
-               dat_ind<-MSClog[[1]]$dat_ind
+               dat_ind<<-MSClog[[1]]$dat_ind
                DataInd(1)
                AM("Additional data loaded since MP was adopted")
             }
