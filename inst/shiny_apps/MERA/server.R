@@ -855,7 +855,6 @@ shinyServer(function(input, output, session) {
         
         for(cc in 1:ncode){
           Fit[[cc]]<-GetDep(OM,dat,code=codes[cc],cores=4)
-          #if(cc==1)saveRDS(Fit[[cc]],"C:/temp/fittedOM")
           Est[[cc]]<-Fit[[cc]]@OM@cpars$D[Fit[[cc]]@conv]
           if(sum(Fit[[cc]]@conv)==0)AM(paste(cc,codes[cc],"Did not return depletion"))
           incProgress(1/ncode, detail = round(cc*100/ncode))
@@ -1118,7 +1117,7 @@ shinyServer(function(input, output, session) {
     
     content = function(file) {
       withProgress(message = "Building data report", value = 0, {
-        saveRDS(tempdir(),"C:/temp/tempdir.rda")
+        #saveRDS(tempdir(),"C:/temp/tempdir.rda")
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
         
