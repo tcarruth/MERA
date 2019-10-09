@@ -20,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.2.1"
+  Version<<-"5.3.2"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -434,19 +434,21 @@ shinyServer(function(input, output, session) {
           Plan(0)
           
           
-          if(is.null(MSClog[[1]]$dat)){
-            Data(0)
-            DataInd(0)
-          }else{
-            dat<-MSClog[[1]]$dat
+          if(!is.null(MSClog[[1]]$dat)){
+            dat<<-MSClog[[1]]$dat
             Data(1)
+            DataInd(0)
             FeaseMPs<<-Fease(dat)
             AM("Data loaded with questionnaire")
             if(!is.null(MSClog[[1]]$dat_ind)){
-               dat_ind<-MSClog[[1]]$dat_ind
+               dat_ind<<-MSClog[[1]]$dat_ind
                DataInd(1)
                AM("Additional data loaded since MP was adopted")
             }
+            SD_codes<-getCodes(dat,maxtest=Inf)
+            AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
+            updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
+            updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
           }
            
           
@@ -853,7 +855,6 @@ shinyServer(function(input, output, session) {
         
         for(cc in 1:ncode){
           Fit[[cc]]<-GetDep(OM,dat,code=codes[cc],cores=4)
-          #if(cc==1)saveRDS(Fit[[cc]],"C:/temp/fittedOM")
           Est[[cc]]<-Fit[[cc]]@OM@cpars$D[Fit[[cc]]@conv]
           if(sum(Fit[[cc]]@conv)==0)AM(paste(cc,codes[cc],"Did not return depletion"))
           incProgress(1/ncode, detail = round(cc*100/ncode))
@@ -1116,7 +1117,7 @@ shinyServer(function(input, output, session) {
     
     content = function(file) {
       withProgress(message = "Building data report", value = 0, {
-        saveRDS(tempdir(),"C:/temp/tempdir.rda")
+        #saveRDS(tempdir(),"C:/temp/tempdir.rda")
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
         
