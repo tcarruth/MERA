@@ -1785,6 +1785,9 @@ shinyServer(function(input, output, session) {
   #            updateTextAreaInput(session,"Debug1",value=MadeOM())
   #)
   
-  
+  observeEvent(input$P_Tab_1_state, {
+    TabFilters <<- input$P_Tab_1_state
+    filtered <<- lapply(lapply(TabFilters$columns, "[[", 'search'), "[[", "search")
+  })
 
 })
