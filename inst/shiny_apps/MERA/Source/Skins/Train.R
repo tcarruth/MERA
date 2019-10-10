@@ -743,14 +743,14 @@ Fig_dim[[1]]<-function(dims) list(height=800,width=1000)
 Fig_title[[2]] <- "Figure 2. Management Planning Projection Plots"
 Fig_text[[2]] <-  HTML(paste0(
 tags$p("Select up to four rows in Table 1 to plot projection plots
-of biomass relative to BMSY and relative yield.",
-       tags$p("Note: if only the first four 
-       selected rows will be plotted if more than four rows are 
-              selected in Table 1."),
-       tags$p("The blue regions represent the 90% and 50% probability intervals, the white solid 
+of biomass relative to BMSY and relative yield."),
+tags$p("Note: if only the first four selected rows will be plotted if more than
+four rows are selected in Table 1."),
+tags$p("The blue regions represent the 90% and 50% probability intervals, the white solid 
                line is the median and the dark blue lines are two example simulations. 
                For reference the grey horizontal lines denote values of 0.25, 0.5, and 1.")
-Figs[[2]]<-function(MSEobj,MSEobj_reb,options=list()){
+))
+Figs[[2]] <-function(MSEobj,MSEobj_reb,options=list()){
   if (is.null(options$tab1.row.select)) {
     par(mfrow=c(1,1))
     plot(c(0,1), c(0,1), type='n', axes=FALSE, xlab="", ylab="")
