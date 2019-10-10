@@ -10,9 +10,14 @@ UpdateTrainPlots <- function() {
       width <- Skin$Planning$Fig_dim[[p]](dims)$width
       
       if (p == 2) {
-        width <- 300 * min(4,options$train_nplot)
+        if (is.null(options$tab1.row.select)) {
+          width <- 600
+        } else {
+          width <- 300 * min(4,options$train_nplot)  
+        }
+        
       }
-      
+  
       output[[paste0("P_Fig_", p)]] <- renderPlot(Skin$Planning$Figs[[p]](MSEobj,MSEobj_reb,options),                                     height =ceiling(height) , width = ceiling(width))
     })
   }
@@ -79,7 +84,7 @@ PB_4 <<- function (MSEobj = NULL, Ref = 1, Yrs = c(10, 50)) {
 class(PB_4) <<- "PM"
 
 
-STY1 <<- function (MSEobj = NULL, Ref = 1, Yrs = -40) {
+STY1 <<- function (MSEobj = NULL, Ref = 1, Yrs = 10) {
   Yrs <- ChkYrs(Yrs, MSEobj)
   PMobj <- new("PMobj")
   PMobj@Name <- "Short-Term Yield"
@@ -562,11 +567,11 @@ Tabs[[1]]<- function(MSEobj, MSEobj_reb, options=list(),rnd=1) {
   TabDF <- tidyr::spread(df, PM, prob)
   TabDF <- TabDF %>% dplyr::arrange(dplyr::desc(min))
   
+  MPwithurl <- nchar(df$url)>0
   TabDF$Documentation <- paste0("<a href='", TabDF$url,
                                 "' style='color: #000000' ' target='_blank'>", 'Link',"</a>")
-  TabDF$Documentation[!MPwithurl] <-''
+  TabDF$Documentation[which(!MPwithurl)] <- ""
   TabDF$url <- NULL; TabDF$min <- NULL
-
   
   TabDF$colorcond <- "Avail"
   TabDF$colorcond[TabDF$Fease == "No"] <- 'NotAvail'
@@ -620,8 +625,7 @@ Fig_text[[1]] <- HTML(paste0(
            tags$li("Black - feasibility of the MP could not be calculated, probably
                    because no Data file has been uploaded.")
          )),
-  tags$p('Select rows in Table 1 to re-draw the trade-off plots with a limited set of MPs. 
-         Click the "Refresh Results" button to show results for all MPs.')
+  tags$p('Select rows in Table 1 to re-draw the trade-off plots with a limited set of MPs.') 
   ))
 
 Figs[[1]] <- function(MSEobj, MSEobj_reb, options=list()) {
