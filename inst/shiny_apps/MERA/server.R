@@ -1044,11 +1044,21 @@ shinyServer(function(input, output, session) {
   }
 
   # Train skin observe
-  observeEvent(input$P_Tab_1_rows_selected,{
-    if(input$Skin == "Train" & input$Mode =="Management Planning") {
-      UpdateTrainPlots()
-    }
-  })
+  P_Tab_1_track = observe({
+    input$P_Tab_1_rows_selected
+    # print(input$P_Tab_1_rows_selected)
+    isolate({
+      if(input$Skin == "Train" & input$Mode =="Management Planning") {
+        UpdateTrainPlots()
+      }  
+    })
+  }) 
+  
+  #  observe(input$P_Tab_1_rows_selected,{
+  #   if(input$Skin == "Train" & input$Mode =="Management Planning") {
+  #     UpdateTrainPlots()
+  #   }
+  # })
   
   
   # Show REFRESH RESULTS if ...
