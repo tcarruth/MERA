@@ -702,14 +702,12 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
     Est<-Status$Est[keep]
     nEst<-sum(keep)
     
-    cols<-c('black','grey',rainbow(nEst-1))
-    dens<-lapply(Est,function(x)density(x*100,from=0))
-    
-    ymax<-max(unlist(lapply(dens,function(x)max(x$y))))
-    xmax<-max(unlist(lapply(dens,function(x)max(x$x))))
-    plot(dens[[1]],type='l',xlim=c(0,100),ylim=c(0,ymax),main="",xlab="Depletion estimate (% unfished SSB)",ylab="Rel. Freq.")
-    if(nEst>1)for(i in 2:nEst)lines(dens[[i]],col=cols[i])
+    cols<-c('darkgrey','lightgrey',rainbow(nEst-1))
+      
+    SDdat<-data.frame(y=unlist(Est),x=rep(Status$codes[keep],unlist(lapply(Est,length))))
+    boxplot(y~x,SDdat,col=cols)
     legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
+    
     
   }
   Fig_dim[[1]]<-function()list(height=600,width=600)

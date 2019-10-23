@@ -844,8 +844,8 @@ shinyServer(function(input, output, session) {
     ncode<-length(codes)
     Est<-Sim<-Fit<-list()
     
-    #saveRDS(OM,"C:/temp/OM")
-    #saveRDS(dat,"C:/temp/dat")
+    #saveRDS(OM,"C:/temp/OM3")
+    #saveRDS(dat,"C:/temp/dat3")
     #saveRDS(codes,"C:/temp/codes3")
     setup()
     
