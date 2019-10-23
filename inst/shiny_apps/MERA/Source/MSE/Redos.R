@@ -184,7 +184,8 @@ redoPlan<-function(fease=F){
     incrate<-1/nres
     
     # option code
-    options <- list(burnin = input$burnin, res=input$res)
+    options <- list(burnin = input$burnin, res=input$res, 
+                    tab1.row.select=input$P_Tab_1_rows_selected)
     #options <- list( res=1)
     
     if(Skin$Planning$Intro_title[[1]]==""){
@@ -208,7 +209,8 @@ redoPlan<-function(fease=F){
         }else{
           output[[paste0("P_Tab_",res2,"_title")]]<-renderText(Skin$Planning$Tab_title[[res2]])
           output[[paste0("P_Tab_",res2,"_text")]]<-renderText(Skin$Planning$Tab_text[[res2]])
-          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(Skin$Planning$Tabs[[res2]](MSEobj,MSEobj_reb,options)) 
+          output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(Skin$Planning$Tabs[[res2]](MSEobj,MSEobj_reb,options))
+          
         }
         
         
@@ -216,7 +218,7 @@ redoPlan<-function(fease=F){
         if(Skin$Planning$Fig_title[[res2]]==""){
           output[[paste0("P_Fig_",res2,"_title")]]<-renderText(NULL)
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(NULL)
-          output[[paste0("P_Fig_",res2)]]<-renderPlot(NULL) 
+          output[[paste0("P_Fig_",res2)]]<- renderPlot(NULL) 
          }else{ 
           output[[paste0("P_Fig_",res2,"_title")]]<-renderText(Skin$Planning$Fig_title[[res2]])
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(Skin$Planning$Fig_text[[res2]])

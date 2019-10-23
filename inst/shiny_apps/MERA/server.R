@@ -608,7 +608,8 @@ shinyServer(function(input, output, session) {
     filey<-input$Load_Plan
 
     tryCatch({
-      listy<-readRDS(file=filey$datapath)
+      listy<<-readRDS(file=filey$datapath)
+      if (class(listy[[1]]) !='MSE') stop()
     },
     error = function(e){
       shinyalert("File read error", "This does not appear to be a MERA evaluation object", type = "error")
@@ -931,16 +932,21 @@ shinyServer(function(input, output, session) {
           MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
         })
         
+      if (input$Skin !="Train") { # don't run rebuild for Train skin
         if(exists('SampList'))MSEobj@Misc[[4]]<<-SampList
         Dep_reb<-runif(OM@nsim,input$Dep_reb[1],input$Dep_reb[2]) # is a %
         OM_reb<-OM
         OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0 
-          
+        
         withProgress(message = "Rebuilding Analysis", value = 0, {
           if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
           MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
         })
         MSEobj_reb@Misc[[4]]<<-SampList
+      } else {
+        MSEobj_reb <<- MSEobj
+      }
+
 
         #saveRDS(MSEobj,file="C:/temp/MSEobj2.Rdata")
         #saveRDS(MSEobj_reb,file="C:/temp/MSEobj_reb2.Rdata")
@@ -957,6 +963,7 @@ shinyServer(function(input, output, session) {
 
      },
       error = function(e){
+        print(e)
         shinyalert("Computational error", "This probably occurred because the fishery dynamics of your questionnaire are not possible.
                    For example, a short lived stock a low stock depletion with recently declining effort.
                   Try revising operating model parameters.", type = "info")
@@ -1036,8 +1043,25 @@ shinyServer(function(input, output, session) {
 
   }
 
+  # Train skin observe
+  P_Tab_1_track = observe({
+    input$P_Tab_1_rows_selected
+    # print(input$P_Tab_1_rows_selected)
+    isolate({
+      if(input$Skin == "Train" & input$Mode =="Management Planning") {
+        UpdateTrainPlots()
+      }  
+    })
+  }) 
+  
+  #  observe(input$P_Tab_1_rows_selected,{
+  #   if(input$Skin == "Train" & input$Mode =="Management Planning") {
+  #     UpdateTrainPlots()
+  #   }
+  # })
+  
+  
   # Show REFRESH RESULTS if ...
-
   observeEvent(input$burnin,{ Tweak(1) })
   observeEvent(input$YIU,{ Tweak(1) })
   observeEvent(input$res,{ Tweak(1) })
@@ -1386,7 +1410,9 @@ shinyServer(function(input, output, session) {
         file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
         options=Skin$Risk_Assessment$options
         library(rmarkdown)
-        options <- list(burnin = input$burnin, res=input$res)
+        options <- list(burnin = input$burnin, res=input$res,
+                        tab1.row.select=input$P_Tab_1_rows_selected,
+                        train_nplot=length(input$P_Tab_1_rows_selected))
         
         params <- list(test = input$Name,
                        set_title=paste0("Planning Report for ",input$Name),
@@ -1786,6 +1812,12 @@ shinyServer(function(input, output, session) {
   #            updateTextAreaInput(session,"Debug1",value=MadeOM())
   #)
   
-  
+  # observeEvent(input$P_Tab_1_rows_selected, {
+  #   row.select <<- input$P_Tab_1_rows_selected
+  #   print("*1.**********")
+  #   print(row.select)
+  #   print("----------")
+  #   
+  # })
 
 })

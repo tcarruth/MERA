@@ -44,7 +44,7 @@ getMPs<-function(All=FALSE){
     MPs<-input$ManPlanMPsel
     #updateTextAreaInput(session,"Debug1",value=unlist(input$ManPlanMPsel))
   }else if(input$MPset=="Top 20"){
-    MPs<-c("DCAC","DBSRA","DD","DDe","DDe75",  "DD4010","MCD","MCD4010","IT10","IT5",  "MRreal","MRnoreal","matlenlim","matlenlim2","DCAC_40", "DBSRA_40","Fratio","HDAAC","ITe10")
+    MPs<-c("DCAC","DBSRA", "DBSRA4010", "DD","DDe","DDe75",  "DD4010","MCD","MCD4010","IT10","IT5",  "MRreal","MRnoreal","matlenlim","matlenlim2","DCAC_40", "DBSRA_40","Fratio","HDAAC","ITe10")
   }else{
     MPs<-getAllMPs()
   }
