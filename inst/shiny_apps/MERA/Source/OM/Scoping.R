@@ -1,7 +1,7 @@
 
 
 
-SimTest<-function(OM,code, ndeps=20, DepLB=0.05, DepUB=0.8){
+SimTest<-function(OM,code, ndeps=40, DepLB=0.05, DepUB=0.8){
   
   ndeps<-min(ndeps,OM@nsim)
   OMc<-makesimsamOM(OM,ndeps=ndeps,DepLB=DepLB,DepUB=DepUB)  # Convert Operating model to simsam OM (depletion range in cpars)
@@ -14,7 +14,7 @@ SimTest<-function(OM,code, ndeps=20, DepLB=0.05, DepUB=0.8){
 fitdep<-function(out,dEst=0.5,plot=T){
   
   fitdat<-data.frame(Sim=out$Sim,Sam=out$Sam)      # Summarize these data (simulated versus assessed)
-  opt<-optim(par=  c(0,0,0), fitdep_int,
+  opt<-optim(par=  c(-5,0,0), fitdep_int,
              #method="L-BFGS-B",
              #lower=c(-1, -20, -2),
              #upper=c(1,   2,  2),
@@ -23,8 +23,7 @@ fitdep<-function(out,dEst=0.5,plot=T){
              hessian=T,
              control=list(trace=6,REPORT=1,maxit=20))
   
-  
-  fitted<-fitdep_int(opt$par,x=fitdat$Sam,y=fitdat$Sim,mode=2)
+  fitted<-fitdep_int(par=opt$par,x=fitdat$Sam,y=fitdat$Sim,mode=2)
   ord<-order(-fitdat$Sam)
   # dEst<-rlnorm(10,log(0.3),0.1)
   
@@ -37,13 +36,12 @@ fitdep<-function(out,dEst=0.5,plot=T){
   nobs<-nrow(fitdat)
   stoch<-array(NA,c(totsamp,nobs))
  
-  
   for(i in 1:totsamp)   stoch[i,]<-fitdep_int(samps[i,],x=fitdat$Sam,y=fitdat$Sim,mode=2)
  
   sums<-apply(stoch,1,function(x,sim=fitdat$Sim)sum((x-sim)<0))
   tokeep<-((1:totsamp)[sums>(nobs*0.15)&sums<(nobs*0.85)])[1:nsim]
-  samps<-samps[tokeep,]
-  stoch<-stoch[tokeep,]
+  samps<-matrix(samps[tokeep,],nrow=nsim)
+  stoch<-matrix(stoch[tokeep,],nrow=nsim)
   
   biascor<-rep(NA,nsim)
   
@@ -57,13 +55,14 @@ fitdep<-function(out,dEst=0.5,plot=T){
 fitdep_int<-function(par,x,y,mode=1){
   # par<-c(0,0,0); x = fitdat$Sam; y=fitdat$Sim # inverted because you wish to predict 'real' / simulated depletion
   print(par)
-  yest<-par[1]+(exp(par[2])*x)^exp(par[3])   # exponential model
-  sdEmp<-sd(yest/y)
+  yest<-exp(par[1])+exp(par[2])*x^exp(par[3])   # exponential model
+  rat<-log(yest/y)
+  sdEmp<-min(0.5,sd(rat))
   print(yest)
   print("----")
   
-  nLLdat<-(-dnorm(yest,y,sd=yest*sdEmp,log=TRUE))
-  nLLprior<-(-dnorm(par,0,sd=c(1,1,1),log=TRUE))
+  nLLdat<-(-dnorm(0,rat,sd=sdEmp,log=TRUE))
+  nLLprior<-(-dnorm(par,c(-5,0,0),sd=c(10,10,10),log=TRUE))
   #sdEmp<-0.2# empirical sd from fit
   #sum(-dnorm(yest,y,sd=sdEmp,log=TRUE)) # return sum of neg LL
   if(mode==1){
@@ -100,8 +99,8 @@ biasplot<-function(fitout,lab=""){
   dAss<-density(fitout$dEst,adjust=1.5,from=0)
   dBC<-density(fitout$biascor,adjust=1.5,from=0)
   
-  polygon(dAss$x,dAss$y/max(dAss$y)*0.1,col="#0000ff50",border="#0000ff50")
-  polygon(dBC$y/max(dBC$y)*0.08,dBC$x,col="#00ff0050",border="#00ff0050")
+  polygon(c(0,dAss$x),c(0,dAss$y/max(dAss$y)*0.1),col="#0000ff50",border="#0000ff50")
+  polygon(c(0,dBC$y/max(dBC$y)*0.08),c(0,dBC$x),col="#00ff0050",border="#00ff0050")
   mtext(lab,side=3,line=0.4)
 
 }
@@ -185,17 +184,30 @@ DataStrip<-function(dat,code,simno=1){
     NL<-length(dat@CAL_bins)
     outlist[['length_bin']]<-(dat@CAL_bins[1:(NL-1)]+dat@CAL_bins[2:NL])/2
   }
+  
+  # Cut out projection PPD years
+  #yrs<-1:OM@nyears
+  
+  #for(i in 1:length(outlist)){
+    
+   # if(names(outlist)[i]%in%c("Chist","Ehist","Index","ML")){
+    #  outlist[[i]]<-outlist[[i]][yrs]
+      
+    #}else if(names(outlist)[i]%in%c("CAA","CAL")))
 
+    #}
+    
+  #}
+  
   outlist
 
 }
 
 
-makesimsamOM<-function(OM,ndeps=20,DepLB=0.05, DepUB=0.8){
+makesimsamOM<-function(OM,ndeps=40,DepLB=0.05, DepUB=0.8){
   OM_s<-trimOM(OM,ndeps)
   OM_s@cpars$D<-seq(DepLB,DepUB,length.out=ndeps)
-  OM_s@proyears<-5
-  OM_s@interval<-5
+  OM_s@interval<-100
   OM_s
 }
 
@@ -362,12 +374,13 @@ getOMsim<-function(OM,simno=1,silent=T){
 }
 
 
-Scoping_parallel<-function(x,OM,dat,eff,code){
+Scoping_parallel<-function(x,OMc,dat,code){
   
-  outlist<-DataStrip(dat,eff,code,simno=x)
+  outlist<-DataStrip(dat,code,simno=x)
   
-  OMp<-getOMsim(OM,simno=x)
-  
+  OMp<-getOMsim(OMc,simno=x)
+  #loadRDS(OMp,"C:/temp/OMp.rds")
+  #loadRDS(outlist,"C:/temp/outlist.rds")
   out<-SRA_scope(OM=OMp,
                  Chist = outlist$Chist,
                  Ehist = outlist$Ehist,
@@ -379,17 +392,17 @@ Scoping_parallel<-function(x,OM,dat,eff,code){
                  length_bin = outlist$length_bin,
                  report=F,
                  cores=1)
-  out[[1]]
+  out@OM
   
 }
 
 
-SimSam<-function(OM,dat,code){
+SimSam<-function(OMc,dat,code){
   
   sfExport('DataStrip','getOMsim')
-  scoped<-sfSapply(1:OM@nsim,Scoping_parallel,OM=OM,dat=dat,code=code)
+  scoped<-sfSapply(1:OMc@nsim,Scoping_parallel,OMc=OMc,dat=dat,code=code)
   deps<-lapply(scoped, function(x)x@cpars$D)
-  list(Sim=OM@cpars$D, Sam=unlist(deps))
+  list(Sim=OMc@cpars$D, Sam=unlist(deps))
   
 }
 
@@ -426,14 +439,14 @@ getCodes<-function(dat,maxtest=6){
 }
 
 
-DataTrim<-function(dat,startyr=1,endyr=NA){
+DataTrim<-function(dat,OM,startyr=1,endyr=NA){
   
   if(is.na(endyr)){
     stop("You need to specify an endyr to cut the data")
   }else if(endyr > length(dat@Year)){
     stop("You specified an end yr that is greater than the length of the Year slot")
   }else{
-    yind<-1:SimOM@nyears
+    yind<-1:OM@nyears
     dat@Year<-dat@Year[yind]
     dat@Cat<-dat@Cat[,yind]
     dat@Effort<-dat@Effort[,yind]

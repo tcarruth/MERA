@@ -828,6 +828,7 @@ shinyServer(function(input, output, session) {
     Status<-new('list')
     nsim<-input$nsim_SD
     OM<-makeOM(PanelState,nsim=nsim)
+    saveRDS(OM,"C:/Users/tcarruth/Dropbox/MERA prototyping/OM_Scoping/OM3.rds")
     
     if(input$SDset=="Custom"){
       codes<<-input$SDsel
@@ -863,18 +864,53 @@ shinyServer(function(input, output, session) {
     
       })
       
+      SimSams<-BCfit<-list()
+      
       if(input$SD_simtest){
-        simOM<-makeOM(PanelState,nsim=nsim)
-        simOM@proyears=5
-        simOM@interval=10
-        MSEout<-runMSE(simOM,MPs="curE",PPD=TRUE)
-        dat<-MSEout@Misc[[4]][[1]]
-        Effort<-dat@Cat/dat@Ind
-        dat@Effort<-Effort/apply(Effort,1,mean) # standardized
+       
+        if(any(grepl("E",codes))){
+          AM("You have requested to sim test at least one approach for status determination that uses effort data...")
+          AM("This is not possible given the current version of DLMtool. If you want to sim-test please choose approaches that do not include 'E' for effort.")
+        }  
+        
+        AM("Conducting sim-testing of approaches for Status Determination")
+        
+        withProgress(message = "Running sim test of Status Determination approaches", value = 0, {
+        
+            # Generate simulated data over a range of stock depletion
+          for(cc in 1:ncode){
+            
+            AM(paste(" -------------- ", codes[cc],":", cc,"/",ncode, " -------------- "))
+            SimSams[[cc]]<-SimTest(OM,code=codes[cc], ndeps=40, DepLB=0.05, DepUB=0.8)
+            incProgress(1/ncode, detail = round(cc*100/ncode))
+            
+          } 
+          
+        }
+        
+        # Fit non-linear models to the sim-sam fit and calculate bias-corrected estimates of stock depletion
+        withProgress(message = "Calculating bias correction", value = 0, {
+          
+          for(cc in 1:ncode){
+            
+            BCfit[[cc]]<-fitdep(out=SimSams[[cc]],dEst=Est[[cc]],plot=T)
+            incProgress(1/ncode, detail = round(cc*100/ncode))
+          }
+          
+        }  
+          
+     
+      }else{
+        
+        SimSams<-NULL
+        BCfit<-NULL
+        
       }
   
       # ==== Types of reporting ==========================================================
-      Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim)
+      
+      Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
+      #Status<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
       #saveRDS(Status,"C:/temp/Status.rda")
   
       message("preredoSD")
@@ -887,11 +923,9 @@ shinyServer(function(input, output, session) {
       #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
        
-     
-      
     },
     error = function(e){
-      shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods.", type = "info")
+      shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods. Sim testing for effort-based approaches is currently not available.", type = "info")
       return(0)
     }
     
@@ -1132,7 +1166,6 @@ shinyServer(function(input, output, session) {
     }
   )
 
- 
 
   # Data report
   output$Build_Data <- downloadHandler(
