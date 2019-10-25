@@ -19,6 +19,7 @@ smartRedo<-function(){
   
 }
 
+
 redoRA<-function(fease=F){
   withProgress(message = "Calculating Risk Assessment results", value = 0, {
     nres<-length(Skin$Risk_Assessment$Tab_title)
@@ -336,5 +337,32 @@ redoEval<-function(fease=F){
     incProgress(incrate)
      
   })
+}
+
+
+redoBlank<-function(){
+ 
+    nres=10
+    output[["P_Intro_title"]]<-renderText(NULL)
+    output[["P_Intro_text"]]<-renderText(NULL)
+   
+    for(res in 1:nres){
+      
+      local({
+        
+        res2<-res
+       
+        output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
+        output[[paste0("P_Tab_",res2,"_text")]]<-renderText(NULL)
+        output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(NULL) 
+ 
+        output[[paste0("P_Fig_",res2,"_title")]]<-renderText(NULL)
+        output[[paste0("P_Fig_",res2,"_text")]]<-renderText(NULL)
+        output[[paste0("P_Fig_",res2)]]<-renderPlot(function()plot(0,type='n',axes=FALSE,ann=FALSE),height=10,width=100) 
+ 
+      })
+ 
+    }
+ 
 }
 

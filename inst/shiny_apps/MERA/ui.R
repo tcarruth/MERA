@@ -1121,7 +1121,7 @@ shinyUI(
                       fluidRow(
                           column(7,radioButtons('SDset',label="Status Determination Methods",choices=c("All","Top 6","Top 3","Custom"),selected="Top 3",inline=T)),
                           column(5,conditionalPanel(condition="input.SDset=='Custom'",selectInput("SDsel","",  choices=c("C"),selected="C", multiple = TRUE))),
-                          column(6,checkboxInput("SD_simtest", label = "Include simulation test", value = FALSE)),
+                          column(6,checkboxInput("SD_simtest", label = "Include simulation test (computationally intensive)", value = FALSE)),
                           column(12,actionButton("Calculate_status",h5("      CALCULATE     ",style="color:red")))
                       )
                   ),
@@ -1145,6 +1145,11 @@ shinyUI(
                          h5("L: length composition data (year by length class)", style = "color:grey"),
                          h5("A: age composition data (year by age)", style = "color:grey"),
                          h5("Approaches that use only catch data or length compositions assume a pattern in annual 
+                             fishing mortality rate defined by the annual fishing effort of Fishery
+                             Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey"),
+                         h5("There is the option of simulation testing Status Determination approaches. This is computationally 
+                         intensive but can reveal the expected pattern of bias and estimation error across a range of known stock status.
+                         The methods that use only catch data or length compositions assume a pattern in annual 
                              fishing mortality rate defined by the annual fishing effort of Fishery
                              Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey"),
                          h5("For further information on the stock reduction analysis used to quantify population status see

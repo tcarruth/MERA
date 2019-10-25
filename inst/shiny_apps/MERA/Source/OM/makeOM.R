@@ -58,7 +58,7 @@ whatOMmess<-function(){
 }
 
 
-makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,UseQonly=F){
+makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
   
@@ -101,8 +101,11 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,UseQonly=F){
   
     OM@Source<-input$Author
     OM@interval<-input$interval
-    OM@proyears<-proyears<-50 #input$proyears
-  
+    if(is.na(proyears)){
+      OM@proyears<-proyears<-50 #input$proyears
+    }else{
+      OM@proyears<-proyears #input$proyears
+    }
     #save(OM,file="OM.Rdata")  # debug
   
     loc<-match("Err",inputnames[[3]])                                                        # D1 -----------

@@ -20,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.3.2"
+  Version<<-"5.4.1"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -220,7 +220,7 @@ shinyServer(function(input, output, session) {
   Copyright<-"Open Source, GPL-2"
   
   FeaseMPs<<-NULL
-  
+  redoBlank() # make all the results plots with default sizes - seems to stabilize initial plotting and spacing
   
   Just<-list(
     c(
@@ -347,7 +347,6 @@ shinyServer(function(input, output, session) {
       #saveRDS(PanelState,"C:/temp/PanelState.rds")
       
       MSClog<-list(PanelState, Just, Des)
-      
       
       #saveRDS(MSClog,"C:/temp/MSClog.rds")
       
@@ -773,8 +772,15 @@ shinyServer(function(input, output, session) {
     Fpanel(1)
     MPs<-c('curE','CurC','FMSYref','NFref')
     nsim <- ifelse(quick, 8, input$nsim_RA)
+
+    if(LoadOM()==1&input$OM_L){ 
+      OM<<-OM_L
+    }else if(CondOM()==1&input$OM_C){ 
+      OM<<-OM_C
+    }else{
+      OM<<-makeOM(PanelState,nsim=nsim)
+    }
     
-    OM<<-makeOM(PanelState,nsim=nsim)
     MSClog<<-list(PanelState, Just, Des)
     OM@interval<<-input$interval
     
@@ -826,9 +832,20 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Calculate_status,{
     
     Status<-new('list')
+    
     nsim<-input$nsim_SD
-    OM<-makeOM(PanelState,nsim=nsim)
-    OMsimsam<-makeOM(PanelState,nsim=40)
+    
+    if(LoadOM()==1&input$OM_L){ 
+      OM<-OM_L
+      OMsimsam<-OM_L
+    }else if(CondOM()==1&input$OM_C){ 
+      OM<-OM_C
+      OMsimsam<-OM_L
+    }else{
+      OM<-makeOM(PanelState,nsim=nsim)
+      OMsimsam<-makeOM(PanelState,nsim=40)
+    }
+    
     #saveRDS(OM,"C:/Users/tcarruth/Dropbox/MERA prototyping/OM_Scoping/OM3.rds")
     
     if(input$SDset=="Custom"){
@@ -864,7 +881,20 @@ shinyServer(function(input, output, session) {
         }  
     
       })
-     
+      
+      #saveRDS(OMsimsam,"C:/temp/OMsimsam")
+      #saveRDS(Est,"C:/temp/Est")
+      #saveRDS(codes,"C:/temp/codes")
+      
+    },
+      error = function(e){
+        shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods. Sim testing for effort-based approaches is currently not available.", type = "info")
+        return(0)
+      }
+    )
+    
+    tryCatch({
+      
       if(input$SD_simtest){
         
         SimSams<-BCfit<-list()
@@ -889,34 +919,51 @@ shinyServer(function(input, output, session) {
           
         })
         
-        saveRDS(SimSams,"C:/temp/SimSams.rds")
+        #saveRDS(SimSams,"C:/temp/SimSams.rds")
         
-        # Fit non-linear models to the sim-sam fit and calculate bias-corrected estimates of stock depletion
-        withProgress(message = "Calculating bias correction", value = 0, {
+      }
+      
+      },
+      error = function(e){
+        shinyalert("Computational error", "Something went wrong with the Simulation test. Try using an alternative selection of Status Determination methods.", type = "info")
+        return(0)
+      
+      }
+    )
+    
+    tryCatch({    
+      
+      if(input$SD_simtest){
+      
+         BCfit<-list() 
           
-          for(cc in 1:ncode){
+         # Fit non-linear models to the sim-sam fit and calculate bias-corrected estimates of stock depletion
+          withProgress(message = "Calculating bias correction", value = 0, {
             
-            BCfit[[cc]]<-fitdep(out=SimSams[[cc]],dEst=Est[[cc]],plot=T)
-            incProgress(1/ncode, detail = round(cc*100/ncode))
-          }
-          
-        })  
-          
-     
+            for(cc in 1:ncode){
+              
+              BCfit[[cc]]<-fitdep(out=SimSams[[cc]],dEst=Est[[cc]],plot=T)
+              incProgress(1/ncode, detail = round(cc*100/ncode))
+            }
+            
+          })  
+            
+       
       }else{
-        
-        SimSams<-NULL
-        BCfit<-NULL
-        
+          
+          SimSams<-NULL
+          BCfit<-NULL
+          
       }
   
       # ==== Types of reporting ==========================================================
       
-      Status<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
-      saveRDS(Status,"C:/temp/Status.rda")
+      #Status<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
+      #saveRDS(Status,"C:/temp/Status.rda")
       Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
       
       message("preredoSD")
+      redoBlank()
       redoSD()
       message("postredoSD")
       SD(1)
@@ -928,11 +975,10 @@ shinyServer(function(input, output, session) {
        
     },
     error = function(e){
-      shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods. Sim testing for effort-based approaches is currently not available.", type = "info")
-      return(0)
-    }
+      shinyalert("Computational error", "One or more of the power models used to characterize estimation bias failed to converge. Try selecting a different set of status determination methods.", type = "info")
+        return(0)
+    })
     
-    )
     
   }) # press calculate
   
@@ -940,7 +986,15 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Calculate_Plan,{
   
     doprogress("Building OM from Questionnaire",1)
-    OM<<-makeOM(PanelState,nsim=input$nsim_Plan)
+    
+    if(LoadOM()==1&input$OM_L){ 
+      OM<<-OM_L
+    }else if(CondOM()==1&input$OM_C){ 
+      OM<<-OM_C
+    }else{
+      OM<<-makeOM(PanelState,nsim=input$nsim_Plan)
+    }
+    
     Fpanel(1)
     MPs<<-getMPs()
     
@@ -1017,9 +1071,16 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Calculate_Eval,{
 
     doprogress("Building OM from Questionnaire",1)
-    OM_Eval<<-makeOM(PanelState,nsim=input$nsim_Eval)
-   # OM_Eval@proyears<-10
+    YIU=length(dat_ind@Year)-length(dat@Year)
     
+    if(LoadOM()==1&input$OM_L){ 
+      OM_Eval<<-OM_L
+    }else if(CondOM()==1&input$OM_C){ 
+      OM_Eval<<-OM_C
+    }else{
+      OM_Eval<<-makeOM(PanelState,proyears=YIU*2,nsim=input$nsim_Eval) # project to 2 x years in use
+    }  
+   
     Fpanel(1)
     EvalMPs<-input$sel_MP
     
@@ -1061,7 +1122,6 @@ shinyServer(function(input, output, session) {
       #saveRDS(dat,file="C:/temp/dat.Rdata")
       #saveRDS(dat_ind,file="C:/temp/dat_ind.Rdata")
     
-   
       },
       error = function(e){
         shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.

@@ -161,6 +161,6 @@ plot_mdist<-function(indPPD,indData,alpha=0.05){
 
   text(dist,max(dens$y)*0.05,"D (observed data)",font=2,col="orange")
   legend('top',legend=leg,text.col=lcol,text.font=2)
-  mtext(paste("AI Analysis for",MSEobj@MPs[1]),3,line=0.1)
+  mtext(paste("AI Analysis for",MSEobj_Eval@MPs[1]),3,line=0.1)
 
 }

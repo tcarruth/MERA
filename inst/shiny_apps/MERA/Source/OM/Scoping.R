@@ -1,10 +1,10 @@
 
 
 
-SimTest<-function(OM,code, ndeps=40, DepLB=0.05, DepUB=0.8){
+SimTest<-function(OMsimsam,code, ndeps=40, DepLB=0.05, DepUB=0.8){
   
-  ndeps<-min(ndeps,OM@nsim)
-  OMc<-makesimsamOM(OM,ndeps=ndeps,DepLB=DepLB,DepUB=DepUB)  # Convert Operating model to simsam OM (depletion range in cpars)
+  ndeps<-min(ndeps,OMsimsam@nsim)
+  OMc<-makesimsamOM(OMsimsam,ndeps=ndeps,DepLB=DepLB,DepUB=DepUB)  # Convert Operating model to simsam OM (depletion range in cpars)
   SimMSE<-runMSE(OMc,MPs="curE",PPD=TRUE)                    # Simulate historical data for each depletion level
   dat<-SimMSE@Misc[[4]][[1]]                                 # Extract the posterior predicted data
   SimSam(OMc,dat,code)                                       # Get the depletion from the conditioned operating model
@@ -47,6 +47,7 @@ fitdep<-function(out,dEst=0.5,plot=T){
     stoch<-matrix(stoch[tokeep,],nrow=nsim)
     
     biascor<-rep(NA,nsim)
+    for(i in 1:nsim)biascor[i]<-fitdep_int(samps[i,],x=dEst[i],y=dEst[i],mode=2)
     
   }else{
     
@@ -56,8 +57,6 @@ fitdep<-function(out,dEst=0.5,plot=T){
     
   }
   
-  
-  for(i in 1:nsim)biascor[i]<-fitdep_int(samps[i,],x=dEst[i],y=dEst[i],mode=2)
   #fitout= 
   list(biascor=biascor,samps=samps,stoch=stoch,opt=opt,dEst=dEst,Sam=fitdat$Sam,Sim=fitdat$Sim,fitted=fitted,posdef=posdef)
   
@@ -386,7 +385,7 @@ getOMsim<-function(OM,simno=1,silent=T){
 }
 
 
-Scoping_parallel<-function(x,OMc,dat,code){
+Scoping_parallel<-function(x,OMc,dat,code,DataStrip,getOMsim){
   
   outlist<-DataStrip(dat,code,simno=x)
   
@@ -411,8 +410,8 @@ Scoping_parallel<-function(x,OMc,dat,code){
 
 SimSam<-function(OMc,dat,code){
   
-  sfExport('DataStrip','getOMsim')
-  scoped<-sfSapply(1:OMc@nsim,Scoping_parallel,OMc=OMc,dat=dat,code=code)
+  #sfExport('getOMsim')
+  scoped<-sfSapply(1:OMc@nsim, Scoping_parallel, OMc=OMc, dat=dat, code=code, DataStrip=DataStrip, getOMsim=getOMsim)
   deps<-lapply(scoped, function(x)x@cpars$D)
   list(Sim=OMc@cpars$D, Sam=unlist(deps))
   

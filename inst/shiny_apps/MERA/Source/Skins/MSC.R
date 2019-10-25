@@ -521,7 +521,7 @@ FeaseLabs<-function(MPs,dat=NULL){
 
 
 
-plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
+plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   
   styr=max(dat@Year)-min(dat@Year)+1
   PPD<-MSEobj_Eval@Misc$Data[[1]]
@@ -545,8 +545,8 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
   
   indData<-getinds(dat_ind,styr=styr,res=res,tsd=tsd,stat=stat)
   
-  if(CC)CC(indPPD,indData,pp=1,res=res)
-  if(!CC)plot_mdist(indPPD,indData,alpha=0.05)
+  if(pCC)CC(indPPD,indData,pp=1,res=res)
+  if(!pCC)plot_mdist(indPPD,indData,alpha=0.05)
   
 }
 
@@ -660,16 +660,18 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
   Intro_text[[1]] <- "Status determination provides estimates of spawning stock biomass relative to asymptotic unfished conditions for various combinations of data types."
   
   # --- Tables --- 
-  Tab_title[[1]] <- "Table 1. Depletion estimates"
-  Tab_text[[1]] <-"The median and 80% quantiles. "
+  Tab_title[[1]] <- "Table 1. Depletion estimates (SSB relative to unfished)"
+  Tab_text[[1]] <-"Quantiles of the depletion estimates of various methods. Method refers to a stochastic 
+  stock reduction analysis fitted to various combinations of data types (C Catch, I Index, M mean length, CAA Catch at age composition, CAL Catch at length composition).
+  'Conv' is the fraction of runs that converged."
   
   Tabs[[1]]<-function(Status,options=list()){
     
     ncode<-length(Status$codes)
-    qs<-matrix(NA,nrow=ncode,ncol=3)
+    qs<-matrix(NA,nrow=ncode,ncol=5)
     for(i in 1:ncode){
       if(length(Status$Est[[i]])>2){
-        qs[i,]<-round(quantile(Status$Est[[i]]*100,c(0.1,0.5,0.9)),2)
+        qs[i,]<-round(quantile(Status$Est[[i]]*100,c(0.025,0.05,0.5,0.95,0.975)),2)
         
       }else{
         qs[i,]<-NA
@@ -678,7 +680,7 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
    
     conv<-round(unlist(lapply(Status$Est,length))/Status$nsim*100,2)
     tab<-as.data.frame(cbind(Status$codes,qs,conv))
-    names(tab)<-c("Method","10%","Median","90%","Conv %")
+    names(tab)<-c("Method","2.5%","5%","Median","95%","97.5%","Conv %")
     datatable(tab,caption="Stock status estimates",
               extensions = 'Buttons',
               options=list(buttons = 
@@ -693,8 +695,8 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
   }
   
   # --- Figures --- 
-  Fig_title[[1]] <- "Figure 1. Depletion estimates"
-  Fig_text[[1]] <-"The median and 80% quantiles. "
+  Fig_title[[1]] <- "Figure 1. Depletion estimates (SSB relative to unfished)"
+  Fig_text[[1]] <-"The median, interquartile range and 95% interval of stock depletion estimated by various methods."
   
   Figs[[1]]<-function(Status,options=list()){
  
@@ -706,7 +708,7 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
       
     SDdat<-data.frame(y=unlist(Est),x=rep(Status$codes[keep],unlist(lapply(Est,length))))
     
-    boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='i',ylab="Estimated Status (SSB relative to unfished)")
+    boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='i',ylab="Estimated Status (%, SSB relative to unfished)")
     #legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
     abline(h=seq(0.1,1,length.out=10),col="grey")
     boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='n',
@@ -775,6 +777,9 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
         
       }
       
+      mtext("Historical Year",1,line=0.5,outer=T)
+      mtext("Stock Depletion (SSB relative to unfished)",2,line=0.5,outer=T)
+      
     }else{
       plot(1,col='white',xlab="",ylab="",axes=F)
       
@@ -785,7 +790,11 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
   
   
   Fig_title[[3]] <- "Figure 3. Simulation testing and bias correction for selected status determination methods. "
-  Fig_text[[3]] <-"Bla Bla"
+  Fig_text[[3]] <-"Black points represent simulated depletions and the corresponding estimate by the various status determination approaches.
+  The red lines are samples of the fitted power curve that approximates the estimation performance of each approach. For each status determination method and estimate 
+  of stock depletion (blue vertical lines, blue distribution) this is bias-corrected by sampling a powercurve and calculating the corresponding depletion level (horizontal 
+  green lines, green distribution). The samples of the power curve are taken from the covariance-variance matrix arising form a single maximum likelihood fit to the simulated an 
+  assessed values (black dots), assuming a multivariate normal distribution."
   
   Figs[[3]]<-function(Status,options=list()){
     
@@ -818,7 +827,7 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
 
   
   Fig_title[[4]] <- "Figure 4. Bias corrected distribution of depletion across all methods."
-  Fig_text[[4]] <-"Bla Bla"
+  Fig_text[[4]] <-"Summary of raw and bias corrected status estimates among methods."
   
   Figs[[4]]<-function(Status,options=list()){
     
@@ -828,13 +837,14 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
       keep<-unlist(lapply(Status$Est,length))>3
       Est<-Status$Est[keep]
       nEst<-sum(keep)
-      biascor2<-sapply(1:ntot,function(X,listy)listy[[X]]$biascor,listy=Status$BCfit)[keep]
+      biascor2<-lapply(Status$BCfit,function(x)x$biascor)[keep]
+      biascor<-lapply(Status$BCfit,function(x)x$biascor)
       
       par(mfrow=c(1,3),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.1,0.05))
       
-      xlim<-quantile(c(dEst,biascor),c(0.01,0.99))+c(0,0.1)
+      xlim<-quantile(c(unlist(Est),unlist(biascor2)),c(0.01,0.99))+c(0,0.1)
       maxn<-max(ns)
-      tot<-length(dEst)
+      tot<-length(Est)
       
       plot(c(0,1),xlim,col='white')
       dAss<-density(unlist(Est),adjust=0.85,from=0)
@@ -860,7 +870,7 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
       cols<-c('#00ff0070',rep('lightgrey',ntot))
       mcols<-c('#00ff0090',rep('black',ntot))
       y=c(unlist(biascor2),unlist(biascor2))
-      x=c(rep("All",length(unlist(biascor2))),rep(Status$codes[keep],unlist(lapply(biascor2,length))))
+      x=c(rep("All",length(unlist(biascor2))),rep(Status$codes[keep],unlist(lapply(biascor,length))))
       SDdat<-data.frame(y=y,x=x)
       boxplot(y~x,SDdat,col=cols,ylim=xlim,pars=list(medcol=mcols))
       #legend('topright',legend=c("All",Status$codes[keep]),text.col=cols,bty='n',cex=0.9)
@@ -874,30 +884,11 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
       
     } 
   }
-  Fig_dim[[4]]<-function()list(height=500,width=1000)
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  Fig_dim[[4]]<-function(dims)list(height=500,width=1000)
+ 
   SD<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                         Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
-  
-  
-  
-  
+   
     
 # ============= Planning =========================
   
@@ -1165,7 +1156,7 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
     MPwithurl <- !is.na(URLs) 
     Tab3$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab3$MP[MPwithurl],"</a>")
     
-    Bdeps<-MSEobj_reb@OM$D#MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj_Eval@OM$D#MSEobj_reb@B_BMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% of unfished SSB" )
     datatable(Tab3,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                 options=list(buttons = 
@@ -1183,34 +1174,94 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
   }
 
 
- 
-  
   # --- Figures ---
- 
 
   Fig_title[[2]] <- "Figure 1. Biomass projected since MP adoption"
   Fig_text[[2]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
   
-  Figs[[2]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) BMSYproj(MSEobj_Eval,MSEobj_Eval,options,maxcol=1)
+  Figs[[2]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) BMSYproj(MSEobj_Eval,MSEobj_Eval,options=list( YIU=length(dat_ind@Year)-length(dat@Year)),maxcol=1)
   Fig_dim[[2]] <- function(dims)list(height=420,width=600)
   
   Fig_title[[3]] <- "Figure 2. Biomass projected since MP adoption relative to unfished SSB"
   Fig_text[[3]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
   
-  Figs[[3]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) B0proj(MSEobj_Eval,MSEobj_Eval,options,maxcol=1)
+  Figs[[3]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) B0proj(MSEobj_Eval,MSEobj_Eval,options=list( YIU=length(dat_ind@Year)-length(dat@Year)),maxcol=1)
   Fig_dim[[3]] <- function(dims)list(height=420,width=600)
-  
-  Fig_title[[4]] <- "Figure 3. Posterior predicted data"
-  Fig_text[[4]] <- "Data correlations"
-  
-  Figs[[4]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,CC=TRUE)
-  Fig_dim[[4]] <- function(dims)list(height=700,width=700)
  
-  Fig_title[[5]] <- "Figure 4. MIdist"
-  Fig_text[[5]] <- "MI text"
+  Fig_title[[4]] <- "Figure 3. Posterior predicted data versus those observed"
+  Fig_text[[4]] <- "The 'cloud' of posterior predicted data are represented by the grey shaded areas that"
   
-  Figs[[5]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,CC=FALSE)
-  Fig_dim[[5]] <- function(dims)list(height=550,width=550)
+  Figs[[4]]<-function(MSEobj_Eval,dat,dat_ind,options=list()){
+    
+    YIU=length(dat_ind@Year)-length(dat@Year)
+    styr=max(dat@Year)-min(dat@Year)
+    PPD<-MSEobj_Eval@Misc$Data[[1]]
+    
+    # Standardization
+    predCat<-(PPD@Cat/PPD@Cat[,styr])[,styr+(1:YIU),drop=F]
+    predInd<-(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
+    predML<-(PPD@ML/PPD@ML[,styr])[,styr+(1:YIU),drop=F]
+    
+    # Standardization
+    obsCat<-(dat_ind@Cat/dat_ind@Cat[,styr])[styr+(1:YIU)]
+    obsInd<-(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
+    obsML<-(dat_ind@ML/dat_ind@ML[,styr])[styr+(1:YIU)]
+    yrlab<-dat_ind@Year[styr+(1:YIU)]
+    
+    ppdplot<-function(pred,obs,yrlab,p=c(0.025,0.05,0.25,0.75,0.95,0.975),pcols=c("grey90","grey78","grey66"),lab="",pcex=1.3){
+      
+      qmat<-apply(pred,2,quantile,p)
+      nobs<-length(obs)
+      ylim<-range(pred,obs)
+      plot(range(yrlab),ylim,col="white")
+      yind<-c(1:nobs,nobs:1)
+      rind<-nobs:1
+      polygon(yrlab[yind],c(qmat[1,],qmat[6,rind]),col=pcols[1],border=pcols[1])
+      polygon(yrlab[yind],c(qmat[2,],qmat[5,rind]),col=pcols[2],border=pcols[2])
+      polygon(yrlab[yind],c(qmat[3,],qmat[4,rind]),col=pcols[3],border=pcols[3])
+      
+      #obs<-qmat[cbind(1:nobs,1:nobs)]-0.02
+      ocol<-rep("black",nobs)
+      ocol[obs<qmat[2,]|obs>qmat[5,]]<-"orange"
+      ocol[obs<qmat[1,]|obs>qmat[6,]]<-"red"
+      
+      points(yrlab,obs,col=ocol,pch=19,cex=pcex)
+      
+      #points(yrlab,obs,pch=1,cex=pcex)
+      
+      mtext(lab,3,line=0.6,font=2)
+      
+    }
+    
+    par(mfrow=c(1,3),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+    ppdplot(pred=predCat,obs=obsCat,yrlab,lab="Catch")
+    ppdplot(pred=predML,obs=obsML,yrlab,lab="Mean Length in Catch")
+    ppdplot(pred=predInd,obs=obsInd,yrlab,lab="Index of Abundance")
+    mtext("Year",1,line=1.5,outer=T)
+    mtext(paste("Data relative to",yrlab[1]-1),2,line=1.5,outer=T)
+    
+    legend('topleft',legend=c("95% PI","90% PI","50% PI"),fill=c("grey90","grey78","grey66"),title="Pred. Data")
+    legend('topright',legend=c("Consistent","Borderline","Inconsistent"),pch=19,col=c("black","orange","red"),title="Obs. Data",text.col=c("black","orange","red"))
+    
+  } 
+  Fig_dim[[4]] <- function(dims)list(height=400,width=800)
+  
+  
+  Fig_title[[5]] <- "Figure 4. Joint Posterior predicted data"
+  Fig_text[[5]] <- "For both posterior predicted data (blue points) and observed (orange crosses) Catch (C), Mean Length (ML), and relative abundance index data (I), The mean (M), variance (V) 
+  and slope (S) of three types of data are calculated. The figure below shows the marginal distribution of these data." 
+  
+  Figs[[5]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,pCC=TRUE)
+  Fig_dim[[5]] <- function(dims)list(height=700,width=700)
+  
+  Fig_title[[6]] <- "Figure 5. Multivariate analysis of observed versus predicted data"
+  Fig_text[[6]] <- "The multivariate (Mahalanobis) distance from the mean of the predicted data (blue distribution) (of Figure 4 above) is calculated to detect whether the 
+  observed data (orange vertical line) can be considered to be an outlier."
+  
+  Figs[[6]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,pCC=FALSE)
+  Fig_dim[[6]] <- function(dims)list(height=550,width=550)
+  
+  
  
   Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                    Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
