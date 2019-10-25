@@ -21,45 +21,57 @@ fitdep<-function(out,dEst=0.5,plot=T){
              method="Nelder-Mead",
              x=fitdat$Sam,y=fitdat$Sim,
              hessian=T,
-             control=list(trace=6,REPORT=1,maxit=20))
+             control=list(trace=0,REPORT=0,maxit=500))
+  
+  posdef<-sum(eigen(solve(opt$hessian))$values>0)==3  # is the var covar matrix invertible?
   
   fitted<-fitdep_int(par=opt$par,x=fitdat$Sam,y=fitdat$Sim,mode=2)
   ord<-order(-fitdat$Sam)
   # dEst<-rlnorm(10,log(0.3),0.1)
-  
-  nsim<-length(dEst)
-  varcov<-solve(opt$hessian)
-  
-  totsamp<-nsim*2
-  samps<-rmvnorm(totsamp,mean=opt$par,sigma=varcov)
-  
-  nobs<-nrow(fitdat)
-  stoch<-array(NA,c(totsamp,nobs))
  
-  for(i in 1:totsamp)   stoch[i,]<-fitdep_int(samps[i,],x=fitdat$Sam,y=fitdat$Sim,mode=2)
- 
-  sums<-apply(stoch,1,function(x,sim=fitdat$Sim)sum((x-sim)<0))
-  tokeep<-((1:totsamp)[sums>(nobs*0.15)&sums<(nobs*0.85)])[1:nsim]
-  samps<-matrix(samps[tokeep,],nrow=nsim)
-  stoch<-matrix(stoch[tokeep,],nrow=nsim)
+  if(posdef){
+    
+    nsim<-length(dEst)
+    varcov<-solve(opt$hessian)
+    
+    totsamp<-nsim*2
+    samps<-rmvnorm(totsamp,mean=opt$par,sigma=varcov)
+    nobs<-nrow(fitdat)
+    stoch<-array(NA,c(totsamp,nobs))
+    
+    for(i in 1:totsamp)   stoch[i,]<-fitdep_int(samps[i,],x=fitdat$Sam,y=fitdat$Sim,mode=2)
+    
+    sums<-apply(stoch,1,function(x,sim=fitdat$Sim)sum((x-sim)<0))
+    tokeep<-((1:totsamp)[sums>(nobs*0.15)&sums<(nobs*0.85)])[1:nsim]
+    samps<-matrix(samps[tokeep,],nrow=nsim)
+    stoch<-matrix(stoch[tokeep,],nrow=nsim)
+    
+    biascor<-rep(NA,nsim)
+    
+  }else{
+    
+    samps<-NULL
+    biascor<-NULL
+    stoch<-NULL
+    
+  }
   
-  biascor<-rep(NA,nsim)
   
   for(i in 1:nsim)biascor[i]<-fitdep_int(samps[i,],x=dEst[i],y=dEst[i],mode=2)
   #fitout= 
-  list(biascor=biascor,samps=samps,stoch=stoch,opt=opt,dEst=dEst,Sam=fitdat$Sam,Sim=fitdat$Sim,fitted=fitted)
+  list(biascor=biascor,samps=samps,stoch=stoch,opt=opt,dEst=dEst,Sam=fitdat$Sam,Sim=fitdat$Sim,fitted=fitted,posdef=posdef)
   
 }
 
 
 fitdep_int<-function(par,x,y,mode=1){
   # par<-c(0,0,0); x = fitdat$Sam; y=fitdat$Sim # inverted because you wish to predict 'real' / simulated depletion
-  print(par)
+ # print(par)
   yest<-exp(par[1])+exp(par[2])*x^exp(par[3])   # exponential model
   rat<-log(yest/y)
   sdEmp<-min(0.5,sd(rat))
-  print(yest)
-  print("----")
+  #print(yest)
+  #print("----")
   
   nLLdat<-(-dnorm(0,rat,sd=sdEmp,log=TRUE))
   nLLprior<-(-dnorm(par,c(-5,0,0),sd=c(10,10,10),log=TRUE))

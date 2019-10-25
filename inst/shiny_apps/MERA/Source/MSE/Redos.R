@@ -100,6 +100,7 @@ redoSD<-function(){
     
     nres<-length(Skin$SD$Tab_title)
     incrate<-1/nres
+    dims<-list(nmeth=sum(unlist(lapply(Status$Est,length))>3))
     
     # option code
     #options <- list(burnin = input$burnin, res=input$res)
@@ -136,8 +137,8 @@ redoSD<-function(){
         }else{ 
           output[[paste0("P_Fig_",res2,"_title")]]<-renderText(Skin$SD$Fig_title[[res2]])
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(Skin$SD$Fig_text[[res2]])
-          height=Skin$SD$Fig_dim[[res2]]()$height
-          width=Skin$SD$Fig_dim[[res2]]()$width
+          height=Skin$SD$Fig_dim[[res2]](dims)$height
+          width=Skin$SD$Fig_dim[[res2]](dims)$width
           output[[paste0("P_Fig_",res2)]]<-renderPlot(Skin$SD$Figs[[res2]](Status), height =ceiling(height) , width = ceiling(width)) 
         }
         

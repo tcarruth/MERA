@@ -698,20 +698,199 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,CC=TRUE){
   
   Figs[[1]]<-function(Status,options=list()){
  
-    keep<-unlist(lapply(Status$Est,length))>2
+    keep<-unlist(lapply(Status$Est,length))>3
     Est<-Status$Est[keep]
     nEst<-sum(keep)
     
-    cols<-c('darkgrey','lightgrey',rainbow(nEst-1))
+    cols<-rep(rgb(0.4,0.8,0.95),nEst)#c('darkgrey','lightgrey',rainbow(nEst-1))
       
     SDdat<-data.frame(y=unlist(Est),x=rep(Status$codes[keep],unlist(lapply(Est,length))))
-    boxplot(y~x,SDdat,col=cols)
-    legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
+    
+    boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='i',ylab="Estimated Status (SSB relative to unfished)")
+    #legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
+    abline(h=seq(0.1,1,length.out=10),col="grey")
+    boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='n',
+            ylab="Estimated Status (SSB relative to unfished)",add=T)
     
     
   }
-  Fig_dim[[1]]<-function()list(height=600,width=600)
+  Fig_dim[[1]]<-function(dims)list(height=500,width=800)
 
+  Fig_title[[2]] <- "Figure 2. Spawning stock depletion relative to equilibrium SSB in initial year "
+  Fig_text[[2]] <-"The first panel shows median estimated depletion trend for all status determination methods. 
+Subsequent panels show the 90th (light grey), 50th (dark grey) and median estimates (white line) for each Status determination method"
+  
+  Figs[[2]]<-function(Status,options=list()){
+    if(!is.null(Status$SimSams)){
+      ntot<-length(Status$Fit)
+      keep<-unlist(lapply(Status$Est,length))>3 # keep estimates from one of the methods of estimation
+      nmods<-sum(keep)
+      keep_ind<-(1:ntot)[keep]
+      nplots<-nmods+1 # add the overall mean plot
+      cols<-c('darkgrey','lightgrey',rainbow(nmods-1))
+      
+      nc<-5
+      nr<-ceiling(nplots/nc)
+      
+      procdeps_inst<-function(x){  # Instantaneous version
+        t(sapply(1:length(x@Misc),function(X,listy)listy[[X]]$E[1:(length(listy[[X]]$E)-1)],listy=x@Misc)
+          / sapply(1:length(x@Misc),function(X,listy)listy[[X]]$E0,listy=x@Misc))
+      } 
+      
+      procdeps<-function(x){
+        t(sapply(1:length(x@Misc),function(X,listy)listy[[X]]$E[1:(length(listy[[X]]$E)-1)],listy=x@Misc))/
+          sapply(1:length(x@Misc),function(X,listy)listy[[X]]$E0[1],listy=x@Misc)
+      } 
+      
+      deps<-lapply(Status$Fit,procdeps) # ntot matrices of depletion (nsim x nyears)
+      
+      getquants<-function(x)  apply(x,2,quantile,p=c(0.05,0.25,0.5,0.75,0.95))
+      Dqs<-lapply(deps,getquants)
+      meds<-matrix(unlist(lapply(Dqs,function(x)x[3,])),ncol=ntot)[,keep,drop=F]
+      ny<-nrow(meds)
+      par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+      
+      plot(c(0,ny),c(0,1),col="white",yaxs='i',ylab="",xlab="")
+      abline(h=seq(0.1,1,length.out=10),col="light grey")
+      matplot(meds,type='l',col=cols,add=T,lty=1) 
+      
+      legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
+      mtext("Median trend, all methods",3,line=0.2,font=2)
+      
+      qplot<-function(mat,xlab=1:ny,main=""){ #qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4"
+        
+        plot(c(0,ny),c(0,1),col="white",yaxs='i',ylab="",xlab="")
+        abline(h=seq(0.1,1,length.out=10),col="light grey")
+        
+        polygon(c(xlab,xlab[length(xlab):1]),c(mat[1,],mat[5,ncol(mat):1]),col=rgb(0.4,0.8,0.95),border=rgb(0.4,0.8,0.95))
+        polygon(c(xlab,xlab[length(xlab):1]),c(mat[2,],mat[4,ncol(mat):1]),col="dodgerblue4",border="dodgerblue4")
+        lines(xlab,mat[3,],col='white',lwd=1)
+        mtext(main,3,line=0.2,font=2)
+        
+      }
+      
+      for(i in keep_ind){
+        
+        qplot(Dqs[[i]],xlab=1:ny,main=Status$codes[[i]])
+        
+      }
+      
+    }else{
+      plot(1,col='white',xlab="",ylab="",axes=F)
+      
+    }
+    
+  }
+  Fig_dim[[2]]<-function(dims)list(height=500*ceiling(dims$nmeth/5),width=1200)
+  
+  
+  Fig_title[[3]] <- "Figure 3. Simulation testing and bias correction for selected status determination methods. "
+  Fig_text[[3]] <-"Bla Bla"
+  
+  Figs[[3]]<-function(Status,options=list()){
+    
+    if(!is.null(Status$SimSams)){
+      
+      ntot<-length(Status$Fit)
+      keep<-unlist(lapply(Status$Est,length))>3 # keep estimates from one of the methods of estimation
+      nmods<-sum(keep)
+      keep_ind<-(1:ntot)[keep]
+      nc<-5
+      nr<-ceiling(nmods/nc)
+      
+      par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+      
+      for(cc in keep_ind){
+        
+        biasplot(Status$BCfit[[cc]],lab=Status$codes[[cc]])
+        
+      }
+      
+      mtext("Assessed status",1,line=0.5,outer=T)
+      mtext("Simulated status (bias corrected estimate)",2,line=0.5,outer=T)
+    
+    }else{
+      plot(1,col='white',xlab="",ylab="",axes=F)
+      
+    }
+  }
+  Fig_dim[[3]]<-function(dims)list(height=500*ceiling(dims$nmeth/5),width=1200)
+
+  
+  Fig_title[[4]] <- "Figure 4. Bias corrected distribution of depletion across all methods."
+  Fig_text[[4]] <-"Bla Bla"
+  
+  Figs[[4]]<-function(Status,options=list()){
+    
+    if(!is.null(Status$SimSams)){
+      ntot<-length(Status$Fit)
+      ns<-sapply(1:ntot,function(X,listy)length(listy[[X]]$dEst),listy=Status$BCfit)
+      keep<-unlist(lapply(Status$Est,length))>3
+      Est<-Status$Est[keep]
+      nEst<-sum(keep)
+      biascor2<-sapply(1:ntot,function(X,listy)listy[[X]]$biascor,listy=Status$BCfit)[keep]
+      
+      par(mfrow=c(1,3),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.1,0.05))
+      
+      xlim<-quantile(c(dEst,biascor),c(0.01,0.99))+c(0,0.1)
+      maxn<-max(ns)
+      tot<-length(dEst)
+      
+      plot(c(0,1),xlim,col='white')
+      dAss<-density(unlist(Est),adjust=0.85,from=0)
+      dBC<-density(unlist(biascor2),adjust=0.85,from=0)
+      polygon(c(0,dAss$y/max(dAss$y)),c(0,dAss$x),col="#0000ff60",border="#0000ff60")
+      polygon(c(0,dBC$y/max(dBC$y)),c(0,dBC$x),col="#00ff0070",border="#00ff0070")
+      abline(h=quantile(unlist(Est),c(0.025,0.5,0.975)),lty=c(2,1,2),lwd=c(1,2,1),col="#0000ff90")
+      abline(h=quantile(unlist(biascor2),c(0.025,0.5,0.975)),lty=c(2,1,2),lwd=c(1,2,1),col="#00ff0090")
+      legend('topright',legend=c("Status estimates","Bias-corrected"),text.col=c("#0000ff90","#00ff0090"),bty='n')
+      mtext("All method estimates combined",3,line=0.6)
+      mtext("Relative Frequency",1,line=2.6)
+      
+        
+      cols<-c('#0000ff70',rep('lightgrey',ntot))
+      mcols<-c('#0000ff90',rep('black',ntot))
+      y=c(unlist(Est),unlist(Est))
+      x=c(rep("All",length(unlist(Est))),rep(Status$codes[keep],unlist(lapply(Est,length))))
+      SDdat<-data.frame(y=y,x=x)
+      boxplot(y~x,SDdat,col=cols,ylim=xlim,pars=list(medcol=mcols))
+      #legend('topright',legend=c("All",Status$codes[keep]),text.col=cols,bty='n',cex=0.9)
+      mtext("Stock statues estimates",3,line=0.6)
+      
+      cols<-c('#00ff0070',rep('lightgrey',ntot))
+      mcols<-c('#00ff0090',rep('black',ntot))
+      y=c(unlist(biascor2),unlist(biascor2))
+      x=c(rep("All",length(unlist(biascor2))),rep(Status$codes[keep],unlist(lapply(biascor2,length))))
+      SDdat<-data.frame(y=y,x=x)
+      boxplot(y~x,SDdat,col=cols,ylim=xlim,pars=list(medcol=mcols))
+      #legend('topright',legend=c("All",Status$codes[keep]),text.col=cols,bty='n',cex=0.9)
+      mtext("Bias-corrected stock status",3,line=0.6)
+      mtext("Status Determination Method",1,line=2.6,adj=-1)
+      mtext("Stock status (SSB relative to unfished)",2,line=0.6,outer=T)
+      
+    }else{
+      
+      plot(1,col='white',xlab="",ylab="",axes=F)
+      
+    } 
+  }
+  Fig_dim[[4]]<-function()list(height=500,width=1000)
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   SD<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                         Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)

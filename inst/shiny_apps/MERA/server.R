@@ -828,7 +828,8 @@ shinyServer(function(input, output, session) {
     Status<-new('list')
     nsim<-input$nsim_SD
     OM<-makeOM(PanelState,nsim=nsim)
-    saveRDS(OM,"C:/Users/tcarruth/Dropbox/MERA prototyping/OM_Scoping/OM3.rds")
+    OMsimsam<-makeOM(PanelState,nsim=40)
+    #saveRDS(OM,"C:/Users/tcarruth/Dropbox/MERA prototyping/OM_Scoping/OM3.rds")
     
     if(input$SDset=="Custom"){
       codes<<-input$SDsel
@@ -863,11 +864,11 @@ shinyServer(function(input, output, session) {
         }  
     
       })
-      
-      SimSams<-BCfit<-list()
-      
+     
       if(input$SD_simtest){
-       
+        
+        SimSams<-BCfit<-list()
+        
         if(any(grepl("E",codes))){
           AM("You have requested to sim test at least one approach for status determination that uses effort data...")
           AM("This is not possible given the current version of DLMtool. If you want to sim-test please choose approaches that do not include 'E' for effort.")
@@ -875,18 +876,20 @@ shinyServer(function(input, output, session) {
         
         AM("Conducting sim-testing of approaches for Status Determination")
         
-        withProgress(message = "Running sim test of Status Determination approaches", value = 0, {
+        withProgress(message = "Running simulation test of SD approaches", value = 0, {
         
             # Generate simulated data over a range of stock depletion
           for(cc in 1:ncode){
             
             AM(paste(" -------------- ", codes[cc],":", cc,"/",ncode, " -------------- "))
-            SimSams[[cc]]<-SimTest(OM,code=codes[cc], ndeps=40, DepLB=0.05, DepUB=0.8)
+            SimSams[[cc]]<-SimTest(OMsimsam,code=codes[cc], ndeps=40, DepLB=0.05, DepUB=0.8)
             incProgress(1/ncode, detail = round(cc*100/ncode))
             
           } 
           
-        }
+        })
+        
+        saveRDS(SimSams,"C:/temp/SimSams.rds")
         
         # Fit non-linear models to the sim-sam fit and calculate bias-corrected estimates of stock depletion
         withProgress(message = "Calculating bias correction", value = 0, {
@@ -897,7 +900,7 @@ shinyServer(function(input, output, session) {
             incProgress(1/ncode, detail = round(cc*100/ncode))
           }
           
-        }  
+        })  
           
      
       }else{
@@ -909,10 +912,10 @@ shinyServer(function(input, output, session) {
   
       # ==== Types of reporting ==========================================================
       
+      Status<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
+      saveRDS(Status,"C:/temp/Status.rda")
       Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
-      #Status<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
-      #saveRDS(Status,"C:/temp/Status.rda")
-  
+      
       message("preredoSD")
       redoSD()
       message("postredoSD")
