@@ -64,7 +64,7 @@ incrate<-1/10
 incProgress(incrate)
 
 library(DT)
-dims<-list(nMPs=1)
+dims<-list(nmeth=sum(unlist(lapply(params$Status$Est,length))>3),SimSam=!is.null(params$Status$SimSams))
 
 
 ```
@@ -186,11 +186,12 @@ if(length(params$Skin$SD$Fig_title)>=i){
 
 ```
 
+
 ```{r Chunk2f, echo=F, warning=F, error=F, message=F, results='asis', fig.height=height, fig.width=width}
 
   knitr::opts_chunk$set(fig.width=width, fig.height=height, echo=FALSE, warning=FALSE, message=FALSE)
   cat("\\newpage")
-  if(length(params$Skin$SD$Fig_title)>=i){
+  
   if(params$Skin$SD$Fig_title[[i]]!=""){
     cat('\n')
     cat(paste0("# ",params$Skin$SD$Fig_title[[i]]))
@@ -201,7 +202,7 @@ if(length(params$Skin$SD$Fig_title)>=i){
       params$Skin$SD$Figs[[i]](params$Status)
     }
   }
-  }
+  
 
 ```
 
@@ -211,38 +212,35 @@ if(length(params$Skin$SD$Fig_title)>=i){
   i<-3
   
   cat("\\newpage")
-  if(length(params$Skin$SD$Tab_title)>=i){
+  
   if(params$Skin$SD$Tab_title[[i]]!=""){
     cat('\n')
     cat(paste0("# ",params$Skin$SD$Tab_title[[i]]))
     cat('\n')
     cat(params$Skin$SD$Tab_text[[i]])    
     cat('\n')
-    if(length(body(params$Skin$SD$Tabs[[i]]))>1){
+    #if(length(body(params$Skin$SD$Tabs[[i]]))>1){
       params$Skin$SD$Tabs[[i]](params$Status)
-    }
+    #}
   }
-  } 
+ 
 
 ```
 
-```{r,echo=FALSE}
 
-if(length(params$Skin$SD$Fig_title)>=i){
-  if(params$Skin$SD$Fig_title[[i]]!=""){
+
+
+```{r,echo=FALSE}
+if(params$Skin$SD$Fig_title[[3]]!=""){
+ 
+  width=params$Skin$SD$Fig_dim[[3]](dims)$width/50
+  height=params$Skin$SD$Fig_dim[[3]](dims)$height/50 
   
-  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
-  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
-  
-  }else{
+}else{
     width=3
     height=4
-  }
-}else{
-  width=3
-  height=4
   
-}  
+}
 
 
 ```
@@ -292,8 +290,8 @@ if(length(params$Skin$SD$Fig_title)>=i){
 if(length(params$Skin$SD$Fig_title)>=i){
   if(params$Skin$SD$Fig_title[[i]]!=""){
   
-  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
-  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/50
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/50
   
   }else{
     width=3
@@ -355,8 +353,8 @@ if(length(params$Skin$SD$Fig_title)>=i){
 if(length(params$Skin$SD$Fig_title)>=i){
   if(params$Skin$SD$Fig_title[[i]]!=""){
   
-  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
-  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/50
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/50
   
   }else{
     width=3
@@ -417,8 +415,8 @@ if(length(params$Skin$SD$Fig_title)>=i){
 if(length(params$Skin$SD$Fig_title)>=i){
   if(params$Skin$SD$Fig_title[[i]]!=""){
   
-  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
-  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/50
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/50
   
   }else{
     width=3
@@ -479,8 +477,8 @@ if(length(params$Skin$SD$Fig_title)>=i){
 if(length(params$Skin$SD$Fig_title)>=i){
   if(params$Skin$SD$Fig_title[[i]]!=""){
   
-  width=params$Skin$SD$Fig_dim[[i]](dims)$width/100
-  height=params$Skin$SD$Fig_dim[[i]](dims)$height/100 
+  width=params$Skin$SD$Fig_dim[[i]](dims)$width/50
+  height=params$Skin$SD$Fig_dim[[i]](dims)$height/50 
   
   }else{
     width=3

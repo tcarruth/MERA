@@ -29,9 +29,11 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Data_figs.R",local=TRUE)
 
   # Presentation of results
+  source("./Source/Skins/Generic.R",local=TRUE)
   source("./Source/Skins/ABNJ.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
   source("./Source/Skins/Train.R",local=TRUE)
+ 
   
   #source("./Analysis_results.R",local=TRUE)
   source("./Source/AI/AI_results.R",local=TRUE)
@@ -153,20 +155,27 @@ shinyServer(function(input, output, session) {
   output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
   output$Dependencies<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
 
+  
+  # Skin changing tips: you need to:
+  # (A) add an Icon to /www/<skin>.png   must be a .png to go with the reporting params
+  # (B) add the name to the list at line Skin_nams =  (below)   
+  # (C) go to the UI at tags$a(img(src = "DLMtool.png" and add a conditional panel
+  
+  
   tt <- try(!is.null(MERA:::PKGENVIR$skin), silent=TRUE)
   if (class(tt) == 'try-error') {
-    skin <- 'MSC'
+    skin <- 'Generic'
   } else {
     if (!is.null(MERA:::PKGENVIR$skin)) {
       skin <- MERA:::PKGENVIR$skin
     } else {
-      skin <- "MSC"
+      skin <- "Generic"
     }
   }
        
   dat<-dat_int<-NULL
       
-  Skin_nams<<-unlist(strsplit(list.files(path="./Source/Skins"),".R"))
+  Skin_nams<<-c("Generic","MSC","ABNJ","Train") # unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected=skin)
   
   observe({
@@ -624,6 +633,7 @@ shinyServer(function(input, output, session) {
       Plan(1)
       MadeOM(0)
       CondOM(0)
+      smartRedo()
       redoPlan()
       updateTabsetPanel(session,"Res_Tab",selected="1")
     }else{
@@ -669,6 +679,7 @@ shinyServer(function(input, output, session) {
       CondOM(0)
       Quest(0)
       Ind(0)
+      smartRedo()
       redoEval()
       updateTabsetPanel(session,"Res_Tab",selected="2")
     }else{
@@ -810,7 +821,7 @@ shinyServer(function(input, output, session) {
       # ==== Types of reporting ==========================================================
       
       message("preredoRA")
-      redoRA()
+      smartRedo()
       message("postredoRA")
       RA(1)
       #Tweak(0)
@@ -888,7 +899,7 @@ shinyServer(function(input, output, session) {
       
     },
       error = function(e){
-        shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods. Sim testing for effort-based approaches is currently not available.", type = "info")
+        shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods. Sim testing for effort-based methods is currently not available.", type = "info")
         return(0)
       }
     )
@@ -900,13 +911,13 @@ shinyServer(function(input, output, session) {
         SimSams<-BCfit<-list()
         
         if(any(grepl("E",codes))){
-          AM("You have requested to sim test at least one approach for status determination that uses effort data...")
-          AM("This is not possible given the current version of DLMtool. If you want to sim-test please choose approaches that do not include 'E' for effort.")
+          AM("You have requested to sim test at least one method for status determination that uses effort data...")
+          AM("This is not possible given the current version of DLMtool. If you want to sim-test please choose methods that do not include 'E' for effort.")
         }  
         
-        AM("Conducting sim-testing of approaches for Status Determination")
+        AM("Conducting sim-testing of methods for Status Determination")
         
-        withProgress(message = "Running simulation test of SD approaches", value = 0, {
+        withProgress(message = "Running simulation test of SD methods", value = 0, {
         
             # Generate simulated data over a range of stock depletion
           for(cc in 1:ncode){
@@ -963,8 +974,7 @@ shinyServer(function(input, output, session) {
       Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
       
       message("preredoSD")
-      redoBlank()
-      redoSD()
+      smartRedo()
       message("postredoSD")
       SD(1)
       updateSelectInput(session, "SDdet",choices=codes,selected=codes[1])
@@ -1046,7 +1056,7 @@ shinyServer(function(input, output, session) {
           
         message("preredoPlan")
         Plan(1)
-        redoPlan()
+        smartRedo()
         message("postredoPlan")
         
         #Tweak(0)
@@ -1113,7 +1123,7 @@ shinyServer(function(input, output, session) {
       })
       
       message("preredoEval")
-      redoEval()
+      smartRedo()
       message("postredoEval")
       Eval(1)
       Ind(1)
@@ -1284,7 +1294,7 @@ shinyServer(function(input, output, session) {
                      PanelState=MSClog[[1]],
                      Just=MSClog[[2]],
                      Des=MSClog[[3]],
-                     OM=OM,
+                     OM=OM_C,
                      SRAinfo=SRAinfo,
                      ntop=input$ntop,
                      inputnames=inputnames,

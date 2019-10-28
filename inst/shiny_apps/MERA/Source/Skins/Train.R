@@ -480,7 +480,312 @@ Risk_Assessment<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_te
 
 
 
-# ---- Status Determination ----
+
+
+# ============= Status Determination ==================
+
+Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
+Fig_title <- Tab_title <- rep(list(""), 10)
+#for(i in 1:10)Fig_dim[[i]]<-function(dims)list(height=1,width=1)
+
+# These are the names of widgets and their values to display in this skin / mode
+#             years in projection,  year resolution of reporting  rounding of digits
+options<-list()
+
+Intro_title[[1]] <- "Introduction"
+Intro_text[[1]] <- "Status determination provides estimates of spawning stock biomass relative to asymptotic unfished conditions for various combinations of data types."
+
+# --- Tables --- 
+Tab_title[[1]] <- "Table 1. Depletion estimates (SSB relative to unfished)"
+Tab_text[[1]] <-"Quantiles of the depletion estimates of various methods. Method refers to a stochastic 
+  stock reduction analysis fitted to various combinations of data types (C Catch, I Index, M mean length, CAA Catch at age composition, CAL Catch at length composition).
+  'Conv' is the fraction of runs that converged."
+
+Tabs[[1]]<-function(Status,options=list()){
+  
+  ncode<-length(Status$codes)
+  qs<-matrix(NA,nrow=ncode,ncol=5)
+  for(i in 1:ncode){
+    if(length(Status$Est[[i]])>2){
+      qs[i,]<-round(quantile(Status$Est[[i]]*100,c(0.025,0.05,0.5,0.95,0.975)),2)
+      
+    }else{
+      qs[i,]<-NA
+    }
+  }
+  
+  conv<-round(unlist(lapply(Status$Est,length))/Status$nsim*100,2)
+  tab<-as.data.frame(cbind(Status$codes,qs,conv))
+  names(tab)<-c("Method","2.5%","5%","Median","95%","97.5%","Conv %")
+  datatable(tab,caption="Stock status estimates (SSB relative to 'unfished')",
+            extensions = 'Buttons',
+            options=list(buttons = 
+                           list('copy', list(
+                             extend = 'collection',
+                             buttons = c('csv', 'excel', 'pdf'),
+                             text = 'Download'
+                           )),
+                         dom = 'Brti')
+  )
+  
+}
+
+Tab_title[[3]] <- "Table 2. Bias-corrected depletion estimates (SSB relative to unfished)"
+Tab_text[[3]] <-"Quantiles of the depletion estimates of various methods, bias corrected by simulation analysis (Figures 3 and 4). Method refers to a stochastic 
+  stock reduction analysis fitted to various combinations of data types (C Catch, I Index, M mean length, CAA Catch at age composition, CAL Catch at length composition).
+  'Conv' is the fraction of runs that converged."
+
+Tabs[[3]]<-function(Status,options=list()){
+  
+  if(!is.null(Status$SimSams)){
+    
+    ntot<-length(Status$Fit)
+    ns<-sapply(1:ntot,function(X,listy)length(listy[[X]]$dEst),listy=Status$BCfit)
+    keep<-unlist(lapply(Status$Est,length))>3
+    nkeep<-sum(keep)
+    keep_ind<-(1:ntot)[keep]
+    Allbc<-unlist(lapply(Status$BCfit,function(x)x$biascor)[keep])
+    
+    ncode<-length(Status$codes)
+    qs<-matrix(NA,nrow=nkeep+1,ncol=5)
+    
+    qs[1,]<-round(quantile(Allbc*100,c(0.025,0.05,0.5,0.95,0.975)),2)
+    
+    for(i in keep_ind){
+      
+      qs[i+1,]<-round(quantile(Status$BCfit[[i]]$biascor*100,c(0.025,0.05,0.5,0.95,0.975)),2)
+      
+    }
+    
+    tab<-as.data.frame(cbind(c("All",Status$codes[keep_ind]),qs))
+    names(tab)<-c("Method","2.5%","5%","Median","95%","97.5%")
+    datatable(tab,caption="Stock status estimates (SSB relative to 'unfished')",
+              extensions = 'Buttons',
+              options=list(buttons = 
+                             list('copy', list(
+                               extend = 'collection',
+                               buttons = c('csv', 'excel', 'pdf'),
+                               text = 'Download'
+                             )),
+                           dom = 'Brti')
+    )
+    
+  }else{
+    
+    datatable(data.frame("Simulation testing not selected"),filter="none",rownames=FALSE,colnames="",caption=NULL,escape=FALSE,options=list(dom="t",bSort=FALSE))%>%
+      formatStyle("X.Simulation.testing.not.selected.",color = 'blue')
+  }
+  
+}
+
+
+# --- Figures --- 
+Fig_title[[1]] <- "Figure 1. Depletion estimates (SSB relative to unfished)"
+Fig_text[[1]] <-"The median, interquartile range and 95% interval of stock depletion estimated by various methods."
+
+Figs[[1]]<-function(Status,options=list()){
+  
+  keep<-unlist(lapply(Status$Est,length))>3
+  Est<-Status$Est[keep]
+  nEst<-sum(keep)
+  
+  cols<-rep(rgb(0.4,0.8,0.95),nEst)#c('darkgrey','lightgrey',rainbow(nEst-1))
+  
+  SDdat<-data.frame(y=unlist(Est),x=rep(Status$codes[keep],unlist(lapply(Est,length))))
+  
+  boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='i',ylab="Estimated Status (%, SSB relative to unfished)")
+  #legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
+  abline(h=seq(0.1,1,length.out=10),col="grey")
+  boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='n',
+          ylab="Estimated Status (SSB relative to unfished)",add=T)
+  
+  
+}
+Fig_dim[[1]]<-function(dims)list(height=500,width=800)
+
+Fig_title[[2]] <- "Figure 2. Spawning stock depletion relative to equilibrium SSB in initial year "
+Fig_text[[2]] <-"The first panel shows median estimated depletion trend for all status determination methods. 
+Subsequent panels show the 90th (light grey), 50th (dark grey) and median estimates (white line) for each Status determination method"
+
+Figs[[2]]<-function(Status,options=list()){
+  
+  ntot<-length(Status$Fit)
+  keep<-unlist(lapply(Status$Est,length))>3 # keep estimates from one of the methods of estimation
+  nmods<-sum(keep)
+  keep_ind<-(1:ntot)[keep]
+  nplots<-nmods+1 # add the overall mean plot
+  cols<-c('darkgrey','lightgrey',rainbow(nmods-1))
+  
+  nc<-5
+  nr<-ceiling(nplots/nc)
+  
+  procdeps_inst<-function(x){  # Instantaneous version
+    t(sapply(1:length(x@Misc),function(X,listy)listy[[X]]$E[1:(length(listy[[X]]$E)-1)],listy=x@Misc)
+      / sapply(1:length(x@Misc),function(X,listy)listy[[X]]$E0,listy=x@Misc))
+  } 
+  
+  procdeps<-function(x){
+    t(sapply(1:length(x@Misc),function(X,listy)listy[[X]]$E[1:(length(listy[[X]]$E)-1)],listy=x@Misc))/
+      sapply(1:length(x@Misc),function(X,listy)listy[[X]]$E0[1],listy=x@Misc)
+  } 
+  
+  deps<-lapply(Status$Fit,procdeps) # ntot matrices of depletion (nsim x nyears)
+  
+  getquants<-function(x)  apply(x,2,quantile,p=c(0.05,0.25,0.5,0.75,0.95))
+  Dqs<-lapply(deps,getquants)
+  meds<-matrix(unlist(lapply(Dqs,function(x)x[3,])),ncol=ntot)[,keep,drop=F]
+  ny<-nrow(meds)
+  par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+  
+  plot(c(0,ny),c(0,1),col="white",yaxs='i',ylab="",xlab="")
+  abline(h=seq(0.1,1,length.out=10),col="light grey")
+  matplot(meds,type='l',col=cols,add=T,lty=1) 
+  
+  legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
+  mtext("Median trend, all methods",3,line=0.2,font=2)
+  
+  qplot<-function(mat,xlab=1:ny,main=""){ #qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4"
+    
+    plot(c(0,ny),c(0,1),col="white",yaxs='i',ylab="",xlab="")
+    abline(h=seq(0.1,1,length.out=10),col="light grey")
+    
+    polygon(c(xlab,xlab[length(xlab):1]),c(mat[1,],mat[5,ncol(mat):1]),col=rgb(0.4,0.8,0.95),border=rgb(0.4,0.8,0.95))
+    polygon(c(xlab,xlab[length(xlab):1]),c(mat[2,],mat[4,ncol(mat):1]),col="dodgerblue4",border="dodgerblue4")
+    lines(xlab,mat[3,],col='white',lwd=1)
+    mtext(main,3,line=0.2,font=2)
+    
+  }
+  
+  for(i in keep_ind){
+    
+    qplot(Dqs[[i]],xlab=1:ny,main=Status$codes[[i]])
+    
+  }
+  
+  mtext("Historical Year",1,line=0.5,outer=T)
+  mtext("Stock Depletion (SSB relative to unfished)",2,line=0.5,outer=T)
+  
+}
+Fig_dim[[2]]<-function(dims)list(height=500*ceiling(dims$nmeth/5),width=1200)
+
+
+Fig_title[[3]] <- "Figure 3. Simulation testing and bias correction for selected status determination methods."
+Fig_text[[3]] <-"Black points represent simulated depletions and the corresponding estimate by the various status determination approaches.
+  The red lines are samples of the fitted power curve that approximates the estimation performance of each approach. For each status determination method and estimate 
+  of stock depletion (blue vertical lines, blue distribution) this is bias-corrected by sampling a powercurve and calculating the corresponding depletion level (horizontal 
+  green lines, green distribution). The samples of the power curve are taken from the covariance-variance matrix arising form a single maximum likelihood fit to the simulated an 
+  assessed values (black dots), assuming a multivariate normal distribution."
+
+Figs[[3]]<-function(Status,options=list()){
+  
+  if(!is.null(Status$SimSams)){
+    
+    ntot<-length(Status$Fit)
+    keep<-unlist(lapply(Status$Est,length))>3 # keep estimates from one of the methods of estimation
+    nmods<-sum(keep)
+    keep_ind<-(1:ntot)[keep]
+    nc<-5
+    nr<-ceiling(nmods/nc)
+    
+    par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+    
+    for(cc in keep_ind){
+      
+      biasplot(Status$BCfit[[cc]],lab=Status$codes[[cc]])
+      
+    }
+    
+    mtext("Assessed status",1,line=0.5,outer=T)
+    mtext("Simulated status (bias corrected estimate)",2,line=0.5,outer=T)
+    
+  }else{
+    plot(c(0,1),col='white',xlab="",ylab="",axes=F)
+    legend('center',legend="Simulation testing not selected",bty='n',text.col="blue")
+    
+  }
+}
+
+Fig_dim[[3]]<-function(dims){
+  if(dims$SimSam){
+    return(list(height=500*ceiling(dims$nmeth/5),width=1200))
+  }else{
+    return(list(height=150,width=400))
+  }
+  
+}
+
+Fig_title[[4]] <- "Figure 4. Bias corrected distribution of depletion across all methods."
+Fig_text[[4]] <- "Summary of raw and bias corrected status estimates among methods."
+
+Figs[[4]]<-function(Status,options=list()){
+  
+  if(!is.null(Status$SimSams)){
+    ntot<-length(Status$Fit)
+    ns<-sapply(1:ntot,function(X,listy)length(listy[[X]]$dEst),listy=Status$BCfit)
+    keep<-unlist(lapply(Status$Est,length))>3
+    Est<-Status$Est[keep]
+    nEst<-sum(keep)
+    biascor2<-lapply(Status$BCfit,function(x)x$biascor)[keep]
+    biascor<-lapply(Status$BCfit,function(x)x$biascor)
+    
+    par(mfrow=c(1,3),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.1,0.05))
+    
+    xlim<-quantile(c(unlist(Est),unlist(biascor2)),c(0.01,0.99))+c(0,0.1)
+    maxn<-max(ns)
+    tot<-length(Est)
+    
+    plot(c(0,1),xlim,col='white')
+    dAss<-density(unlist(Est),adjust=0.85,from=0)
+    dBC<-density(unlist(biascor2),adjust=0.85,from=0)
+    polygon(c(0,dAss$y/max(dAss$y)),c(0,dAss$x),col="#0000ff60",border="#0000ff60")
+    polygon(c(0,dBC$y/max(dBC$y)),c(0,dBC$x),col="#00ff0070",border="#00ff0070")
+    abline(h=quantile(unlist(Est),c(0.025,0.5,0.975)),lty=c(2,1,2),lwd=c(1,2,1),col="#0000ff90")
+    abline(h=quantile(unlist(biascor2),c(0.025,0.5,0.975)),lty=c(2,1,2),lwd=c(1,2,1),col="#00ff0090")
+    legend('topright',legend=c("Status estimates","Bias-corrected"),text.col=c("#0000ff90","#00ff0090"),bty='n')
+    mtext("All method estimates combined",3,line=0.6)
+    mtext("Relative Frequency",1,line=2.6)
+    
+    
+    cols<-c('#0000ff70',rep('lightgrey',ntot))
+    mcols<-c('#0000ff90',rep('black',ntot))
+    y=c(unlist(Est),unlist(Est))
+    x=c(rep("All",length(unlist(Est))),rep(Status$codes[keep],unlist(lapply(Est,length))))
+    SDdat<-data.frame(y=y,x=x)
+    boxplot(y~x,SDdat,col=cols,ylim=xlim,pars=list(medcol=mcols))
+    #legend('topright',legend=c("All",Status$codes[keep]),text.col=cols,bty='n',cex=0.9)
+    mtext("Stock statues estimates",3,line=0.6)
+    
+    cols<-c('#00ff0070',rep('lightgrey',ntot))
+    mcols<-c('#00ff0090',rep('black',ntot))
+    y=c(unlist(biascor2),unlist(biascor2))
+    x=c(rep("All",length(unlist(biascor2))),rep(Status$codes[keep],unlist(lapply(biascor,length))))
+    SDdat<-data.frame(y=y,x=x)
+    boxplot(y~x,SDdat,col=cols,ylim=xlim,pars=list(medcol=mcols))
+    #legend('topright',legend=c("All",Status$codes[keep]),text.col=cols,bty='n',cex=0.9)
+    mtext("Bias-corrected stock status",3,line=0.6)
+    mtext("Status Determination Method",1,line=2.6,adj=-1)
+    mtext("Stock status (SSB relative to unfished)",2,line=0.6,outer=T)
+    
+  }else{
+    
+    plot(c(0,1),col='white',xlab="",ylab="",axes=F)
+    legend('center',legend="Simulation testing not selected",bty='n',text.col="blue")
+    
+  } 
+}
+
+Fig_dim[[4]]<-function(dims){
+  if(dims$SimSam){
+    return(list(height=500,width=1000))
+  }else{
+    return(list(height=150,width=400))
+  }
+}
+
+
+SD<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
+         Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
+
 
 
 # ---- Management Planning ----
@@ -783,7 +1088,227 @@ Fig_dim[[2]]<-function(dims)list(height=600,width=600)
 Planning<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
 
-# ---- Management Performance ----
+
+
+# ============= Evaluation =======================
+
+Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
+Fig_title <- Tab_title <- rep(list(""), 10)
+#for(i in 1:10)Fig_dim[[i]]<-function(dims)list(height=1,width=1)
+# These are the names of widgets and their values to display in this skin / mode
+#             years in projection,  year resolution of reporting  rounding of digits
+options<-list()
+
+Intro_title[[1]] <- "Introduction"
+Intro_text[[1]] <- "A single MP is projected to infer future stock status and determine whether the data observed are consistent with those that were projected"
+
+
+# --- Tables --- 
+Tab_title[[1]] <- "Table 1. Biomass relative to 50% BMSY"
+Tab_text[[1]] <-"The biomass projection for the interim years that an MP has been in use."
+
+Tabs[[1]]<-function(MSEobj_Eval,dat,dat_ind,options=list(res=1),res=5,rnd=1){
+  
+  YIU<-length(dat_ind@Year)-length(dat@Year)
+  nMPs<-MSEobj_Eval@nMPs
+  proyears<-MSEobj_Eval@proyears
+  ind<-1:min(5,proyears)
+  
+  LRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,1:YIU,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
+  Tab1<-as.data.frame(cbind(MSEobj_Eval@MPs,LRP))
+  
+  colnams<-c("MP",Current_Year-((YIU-1):0))
+  names(Tab1)<-colnams
+  Tab1$MP<-as.character(Tab1$MP)
+  
+  URLs <- MPurl(as.character(Tab1$MP))
+  MPwithurl <- !is.na(URLs) 
+  Tab1$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab1$MP[MPwithurl],"</a>")
+  
+  
+  Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+  caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+  datatable(Tab1,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
+            options=list(buttons = 
+                           list('copy', list(
+                             extend = 'collection',
+                             buttons = c('csv', 'excel', 'pdf'),
+                             text = 'Download'
+                           )),
+                         dom = 'Brti', 
+                         ordering=F
+            )
+  )%>%
+    formatStyle(columns = 2:ncol(Tab1), valueColumns = 2:ncol(Tab1), color = styleInterval(c(50,100),c('red','orange','green')))
+  
+}
+
+Tab_title[[2]] <- "Table 2. Biomass relative to BMSY"
+Tab_text[[2]] <-"The biomass projection for the interim years that an MP has been in use."
+
+Tabs[[2]]<-function(MSEobj_Eval, dat,dat_ind,options=list(burnin=10,res=1),rnd=1){
+  
+  YIU<-length(dat_ind@Year)-length(dat@Year)
+  nMPs<-MSEobj_Eval@nMPs
+  proyears<-MSEobj_Eval@proyears
+  ind<-1:min(YIU,proyears)
+  
+  TRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
+  Tab2<-as.data.frame(cbind(MSEobj_Eval@MPs,TRP))
+  colnams<-c("MP",Current_Year-((YIU-1):0))
+  names(Tab2)<-colnams
+  Tab2$MP<-as.character(Tab2$MP)
+  
+  URLs <- sapply(Tab2$MP, MPurl) %>% unlist()
+  MPwithurl <- !is.na(URLs) 
+  Tab2$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab2$MP[MPwithurl],"</a>")
+  
+  Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+  caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
+  datatable(Tab2,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
+            options=list(buttons = 
+                           list('copy', list(
+                             extend = 'collection',
+                             buttons = c('csv', 'excel', 'pdf'),
+                             text = 'Download'
+                           )),
+                         dom = 'Brti', 
+                         ordering=F
+            )
+  )%>%
+    formatStyle(columns = 2:ncol(Tab2), valueColumns = 2:ncol(Tab2), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
+  
+}
+
+Tab_title[[3]] <- "Table 3. Spawning biomass relative to 20% of SSB unfished"
+Tab_text[[3]] <-"Probability of biomass exceeding 20% unfished levels in the years since MP adoption."
+
+Tabs[[3]]<-function(MSEobj_Eval,dat,dat_ind,options=list(burnin=10,res=1),rnd=1){
+  
+  YIU<-length(dat_ind@Year)-length(dat@Year)
+  B_B0<-MSEobj_Eval@SSB/MSEobj_Eval@OM$SSB0
+  nMPs<-MSEobj_Eval@nMPs
+  proyears<-MSEobj_Eval@proyears
+  ind<-1:min(YIU,proyears)
+  RP<-matrix(round(apply(B_B0[,,ind,drop=F]>0.2,2:3,mean)*100,rnd),nrow=nMPs)
+  Tab3<-as.data.frame(cbind(MSEobj_Eval@MPs,RP))
+  colnams<-c("MP",Current_Year-((YIU-1):0))
+  names(Tab3)<-colnams
+  Tab3$MP<-as.character(Tab3$MP)
+  
+  URLs <- sapply(Tab3$MP, MPurl) %>% unlist()
+  MPwithurl <- !is.na(URLs) 
+  Tab3$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab3$MP[MPwithurl],"</a>")
+  
+  Bdeps<-MSEobj_Eval@OM$D#MSEobj_reb@B_BMSY[,1,1]#
+  caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% of unfished SSB" )
+  datatable(Tab3,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
+            options=list(buttons = 
+                           list('copy', list(
+                             extend = 'collection',
+                             buttons = c('csv', 'excel', 'pdf'),
+                             text = 'Download'
+                           )),
+                         dom = 'Brti', 
+                         ordering=F
+            )
+  )%>%
+    formatStyle(columns = 2:ncol(Tab3), valueColumns = 2:ncol(Tab3), color = styleInterval(c(25,50,100),c('red','orange','green','darkgreen')))
+  
+}
+
+
+# --- Figures ---
+
+Fig_title[[2]] <- "Figure 1. Biomass projected since MP adoption"
+Fig_text[[2]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
+
+Figs[[2]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) BMSYproj(MSEobj_Eval,MSEobj_Eval,options=list( YIU=length(dat_ind@Year)-length(dat@Year)),maxcol=1)
+Fig_dim[[2]] <- function(dims)list(height=420,width=600)
+
+Fig_title[[3]] <- "Figure 2. Biomass projected since MP adoption relative to unfished SSB"
+Fig_text[[3]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
+
+Figs[[3]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) B0proj(MSEobj_Eval,MSEobj_Eval,options=list( YIU=length(dat_ind@Year)-length(dat@Year)),maxcol=1)
+Fig_dim[[3]] <- function(dims)list(height=420,width=600)
+
+Fig_title[[4]] <- "Figure 3. Posterior predicted data versus those observed"
+Fig_text[[4]] <- "The 'cloud' of posterior predicted data are represented by the grey shaded areas that"
+
+Figs[[4]]<-function(MSEobj_Eval,dat,dat_ind,options=list()){
+  
+  YIU=length(dat_ind@Year)-length(dat@Year)
+  styr=max(dat@Year)-min(dat@Year)
+  PPD<-MSEobj_Eval@Misc$Data[[1]]
+  
+  # Standardization
+  predCat<-(PPD@Cat/PPD@Cat[,styr])[,styr+(1:YIU),drop=F]
+  predInd<-(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
+  predML<-(PPD@ML/PPD@ML[,styr])[,styr+(1:YIU),drop=F]
+  
+  # Standardization
+  obsCat<-(dat_ind@Cat/dat_ind@Cat[,styr])[styr+(1:YIU)]
+  obsInd<-(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
+  obsML<-(dat_ind@ML/dat_ind@ML[,styr])[styr+(1:YIU)]
+  yrlab<-dat_ind@Year[styr+(1:YIU)]
+  
+  ppdplot<-function(pred,obs,yrlab,p=c(0.025,0.05,0.25,0.75,0.95,0.975),pcols=c("grey90","grey78","grey66"),lab="",pcex=1.3){
+    
+    qmat<-apply(pred,2,quantile,p)
+    nobs<-length(obs)
+    ylim<-range(pred,obs)
+    plot(range(yrlab),ylim,col="white")
+    yind<-c(1:nobs,nobs:1)
+    rind<-nobs:1
+    polygon(yrlab[yind],c(qmat[1,],qmat[6,rind]),col=pcols[1],border=pcols[1])
+    polygon(yrlab[yind],c(qmat[2,],qmat[5,rind]),col=pcols[2],border=pcols[2])
+    polygon(yrlab[yind],c(qmat[3,],qmat[4,rind]),col=pcols[3],border=pcols[3])
+    
+    #obs<-qmat[cbind(1:nobs,1:nobs)]-0.02
+    ocol<-rep("black",nobs)
+    ocol[obs<qmat[2,]|obs>qmat[5,]]<-"orange"
+    ocol[obs<qmat[1,]|obs>qmat[6,]]<-"red"
+    
+    points(yrlab,obs,col=ocol,pch=19,cex=pcex)
+    
+    #points(yrlab,obs,pch=1,cex=pcex)
+    
+    mtext(lab,3,line=0.6,font=2)
+    
+  }
+  
+  par(mfrow=c(1,3),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+  ppdplot(pred=predCat,obs=obsCat,yrlab,lab="Catch")
+  ppdplot(pred=predML,obs=obsML,yrlab,lab="Mean Length in Catch")
+  ppdplot(pred=predInd,obs=obsInd,yrlab,lab="Index of Abundance")
+  mtext("Year",1,line=1.5,outer=T)
+  mtext(paste("Data relative to",yrlab[1]-1),2,line=1.5,outer=T)
+  
+  legend('topleft',legend=c("95% PI","90% PI","50% PI"),fill=c("grey90","grey78","grey66"),title="Pred. Data")
+  legend('topright',legend=c("Consistent","Borderline","Inconsistent"),pch=19,col=c("black","orange","red"),title="Obs. Data",text.col=c("black","orange","red"))
+  
+} 
+Fig_dim[[4]] <- function(dims)list(height=400,width=800)
+
+
+Fig_title[[5]] <- "Figure 4. Joint Posterior predicted data"
+Fig_text[[5]] <- "For both posterior predicted data (blue points) and observed (orange crosses) Catch (C), Mean Length (ML), and relative abundance index data (I), The mean (M), variance (V) 
+  and slope (S) of three types of data are calculated. The figure below shows the marginal distribution of these data." 
+
+Figs[[5]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,pCC=TRUE)
+Fig_dim[[5]] <- function(dims)list(height=700,width=700)
+
+Fig_title[[6]] <- "Figure 5. Multivariate analysis of observed versus predicted data"
+Fig_text[[6]] <- "The multivariate (Mahalanobis) distance from the mean of the predicted data (blue distribution) (of Figure 4 above) is calculated to detect whether the 
+  observed data (orange vertical line) can be considered to be an outlier."
+
+Figs[[6]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,pCC=FALSE)
+Fig_dim[[6]] <- function(dims)list(height=550,width=550)
+
+
+
+Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
+                 Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
 
 
 

@@ -101,9 +101,10 @@ shinyUI(
              fluidRow(
 
                column(7,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
+               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "Generic.png", height = 52, width = 136),href="https://www.merafish.org/",target='_blank'))),
                conditionalPanel(condition="output.SkinNo==2",column(5,tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank'))),
-               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank'))),
-               conditionalPanel(condition="output.SkinNo==3",column(5,tags$a(img(src = "Train.png", height = 58, width = 126),href="https://www.merafish.org/",target='_blank')))
+               conditionalPanel(condition="output.SkinNo==3",column(5,tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank'))),
+               conditionalPanel(condition="output.SkinNo==4",column(5,tags$a(img(src = "Train.png", height = 58, width = 126),href="https://www.merafish.org/",target='_blank')))
             )
       ),
       column(1,
@@ -1326,7 +1327,7 @@ shinyUI(
       column(4,
              column(8),
              column(4,
-                    conditionalPanel(width=4,condition="output.DataInd==1",
+                    conditionalPanel(width=4,condition="output.DataInd==1 & output.Eval==1",
                             h5("Performance Evaluation Report",style="font-weight:bold"),
                             downloadButton("Build_Eval"," ")
                     )
