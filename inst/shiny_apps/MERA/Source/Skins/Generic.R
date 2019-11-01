@@ -1313,6 +1313,8 @@ Planning<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig
 
 
 
+
+
 # ============= Evaluation =======================
 
 Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
@@ -1529,37 +1531,6 @@ Figs[[6]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,
 Fig_dim[[6]] <- function(dims)list(height=550,width=550)
 
 
-
-Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
-                 Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
-
-
-# --- Figures ---
-
-
-Fig_title[[2]] <- "Figure 1. Biomass projected since MP adoption"
-Fig_text[[2]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
-
-Figs[[2]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) BMSYproj(MSEobj_Eval,MSEobj_Eval,options,maxcol=1)
-Fig_dim[[2]] <- function(dims)list(height=420,width=600)
-
-Fig_title[[3]] <- "Figure 2. Biomass projected since MP adoption relative to unfished SSB"
-Fig_text[[3]] <- "Projections of biomass relative to MSY levels. The blue regions represent the 90% and 50% probability intervals, the white solid line is the median and the dark blue lines are two example simulations. Grey horizontal lines denote the target and limit reference points. The bold black vertical line is the current year." 
-
-Figs[[3]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) B0proj(MSEobj_Eval,MSEobj_Eval,options,maxcol=1)
-Fig_dim[[3]] <- function(dims)list(height=420,width=600)
-
-Fig_title[[4]] <- "Figure 3. Posterior predicted data"
-Fig_text[[4]] <- "Data correlation text"
-
-Figs[[4]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,CC=TRUE)
-Fig_dim[[4]] <- function(dims)list(height=700,width=700)
-
-Fig_title[[5]] <- "Figure 4. MIdist"
-Fig_text[[5]] <- "MI text"
-
-Figs[[5]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,CC=FALSE)
-Fig_dim[[5]] <- function(dims)list(height=550,width=550)
 
 Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                  Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)

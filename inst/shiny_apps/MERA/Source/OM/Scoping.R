@@ -15,9 +15,9 @@ fitdep<-function(out,dEst=0.5,plot=T){
   
   fitdat<-data.frame(Sim=out$Sim,Sam=out$Sam)      # Summarize these data (simulated versus assessed)
   opt<-optim(par=  c(-5,0,0), fitdep_int,
-             #method="L-BFGS-B",
-             #lower=c(-1, -20, -2),
-             #upper=c(1,   2,  2),
+             # method="L-BFGS-B",
+             # lower=c(-1, -20, -2),
+             # upper=c(1,   2,  2),
              method="Nelder-Mead",
              x=fitdat$Sam,y=fitdat$Sim,
              hessian=T,
@@ -27,7 +27,7 @@ fitdep<-function(out,dEst=0.5,plot=T){
   
   fitted<-fitdep_int(par=opt$par,x=fitdat$Sam,y=fitdat$Sim,mode=2)
   ord<-order(-fitdat$Sam)
-  # dEst<-rlnorm(10,log(0.3),0.1)
+  # dEst <- rlnorm(10,log(0.3),0.1)
  
   if(posdef){
     
@@ -47,6 +47,7 @@ fitdep<-function(out,dEst=0.5,plot=T){
     stoch<-matrix(stoch[tokeep,],nrow=nsim)
     
     biascor<-rep(NA,nsim)
+    
     for(i in 1:nsim)biascor[i]<-fitdep_int(samps[i,],x=dEst[i],y=dEst[i],mode=2)
     
   }else{

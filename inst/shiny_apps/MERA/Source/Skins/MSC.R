@@ -866,6 +866,7 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
       mtext("Simulated status (bias corrected estimate)",2,line=0.5,outer=T)
     
     }else{
+      
       plot(c(0,1),col='white',xlab="",ylab="",axes=F)
       legend('center',legend="Simulation testing not selected",bty='n',text.col="blue")
       
@@ -912,7 +913,6 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
       mtext("All method estimates combined",3,line=0.6)
       mtext("Relative Frequency",1,line=2.6)
       
-        
       cols<-c('#0000ff70',rep('lightgrey',ntot))
       mcols<-c('#0000ff90',rep('black',ntot))
       y=c(unlist(Est),unlist(Est))
@@ -1107,8 +1107,6 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
  
   
   
-  
-  
 
 # ============= Evaluation =======================
 
@@ -1237,7 +1235,6 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
     
   }
 
-
   # --- Figures ---
 
   Fig_title[[2]] <- "Figure 1. Biomass projected since MP adoption"
@@ -1308,9 +1305,9 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
     legend('topright',legend=c("Consistent","Borderline","Inconsistent"),pch=19,col=c("black","orange","red"),title="Obs. Data",text.col=c("black","orange","red"))
     
   } 
+  
   Fig_dim[[4]] <- function(dims)list(height=400,width=800)
-  
-  
+ 
   Fig_title[[5]] <- "Figure 4. Joint Posterior predicted data"
   Fig_text[[5]] <- "For both posterior predicted data (blue points) and observed (orange crosses) Catch (C), Mean Length (ML), and relative abundance index data (I), The mean (M), variance (V) 
   and slope (S) of three types of data are calculated. The figure below shows the marginal distribution of these data." 
@@ -1325,8 +1322,6 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
   Figs[[6]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,pCC=FALSE)
   Fig_dim[[6]] <- function(dims)list(height=550,width=550)
   
-  
- 
   Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                    Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
  

@@ -20,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.4.1"
+  Version<<-"5.4.3"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -197,17 +197,17 @@ shinyServer(function(input, output, session) {
   })# update MP selection in Evaluation
   
   
-  shinyjs::hide("Skin")
+  #shinyjs::hide("Skin")
   shinyjs::hide("Demo_mode")
   
-  onevent("mouseenter", "SkinArea", {
-             shinyjs::show("Skin")
-          }
-  )
-  onevent("mouseleave", "SkinArea", {
-            shinyjs::hide("Skin")
-          }
-  )
+  #onevent("mouseenter", "SkinArea", {
+  #           shinyjs::show("Skin")
+  #        }
+  #)
+  #onevent("mouseleave", "SkinArea", {
+  #          shinyjs::hide("Skin")
+  #        }
+  #)
   
   onevent("mouseenter", "DemoArea", {
     shinyjs::show("Demo_mode")
@@ -516,32 +516,34 @@ shinyServer(function(input, output, session) {
       if(class(dat)!="Data"){
         shinyalert("Data load error!", "Failed to load this file as either a formatted .csv datafile or a DLMtool object of class 'Data'", type = "error")
         AM(paste0("Data object failed to load:", filey$datapath))
-        stop()
+        Data(0)
       }
     }
-
-    dat_test<-Data_trimer(dat)
-
-    if(class(dat_test)!='Data'){
-      DataInd(0)
-
-    }else{
-      dat_ind<<-dat
-      dat<<-dat_test
-     
-      AM(paste0("Data object contains ", length(dat_ind@Year)-length(dat@Year)," years of indicator data after LHYear"))
-
-      DataInd(1)
-    }
-    FeaseMPs<<-Fease(dat)
-
-    #saveRDS(dat_ind,"C:/temp/dat_ind.rda")
-    #saveRDS(dat,"C:/temp/dat.rda")
     
-    SD_codes<-getCodes(dat,maxtest=Inf)
-    AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
-    updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
-    updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
+    if(Data()==1){
+      dat_test<-Data_trimer(dat)
+  
+      if(class(dat_test)!='Data'){
+        DataInd(0)
+  
+      }else{
+        dat_ind<<-dat
+        dat<<-dat_test
+       
+        AM(paste0("Data object contains ", length(dat_ind@Year)-length(dat@Year)," years of indicator data after LHYear"))
+  
+        DataInd(1)
+      }
+      FeaseMPs<<-Fease(dat)
+  
+      #saveRDS(dat_ind,"C:/temp/dat_ind.rda")
+      #saveRDS(dat,"C:/temp/dat.rda")
+      
+      SD_codes<-getCodes(dat,maxtest=Inf)
+      AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
+      updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
+      updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
+    }
     
   })
 
@@ -566,16 +568,21 @@ shinyServer(function(input, output, session) {
       filey<-input$Load_OM
 
       tryCatch({
+        
         OM_L<<-readRDS(file=filey$datapath)
         
       },
+      
       error = function(e){
+        
         shinyalert("File read error", "This does not appear to be a DLMtool OM object, saved by saveRDS()", type = "error")
         AM(paste0("Operating model failed to load: ", filey$datapath))
         return(0)
+      
       })
 
       if(class(OM_L)=='OM'){
+        
         MPs<<-getMPs()
         MadeOM(1)
         LoadOM(1)
@@ -583,9 +590,12 @@ shinyServer(function(input, output, session) {
         CondOM(0)
         Quest(0)
         AM(paste0("Operating model loaded: ", filey$datapath))
+        
       }else{
+        
         shinyalert("Incorrect class of object", "This file should be an object of DLMtool class 'OM'", type = "error")
         AM(paste0("Object not of class 'OM'", filey$datapath))
+        
       }
 
   })
@@ -593,6 +603,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$MPset,{
     
     getMPs()
+    
   })
 
 
@@ -792,6 +803,8 @@ shinyServer(function(input, output, session) {
       OM<<-makeOM(PanelState,nsim=nsim)
     }
     
+    #saveRDS(OM,"C:/Users/tcar_/Dropbox/MERA paper/Figures/OM_Boc.rda")
+    
     MSClog<<-list(PanelState, Just, Des)
     OM@interval<<-input$interval
     
@@ -819,11 +832,11 @@ shinyServer(function(input, output, session) {
       RAobj@Misc[[4]]<<-SampList
      
       # ==== Types of reporting ==========================================================
-      
+      RA(1)
       message("preredoRA")
       smartRedo()
       message("postredoRA")
-      RA(1)
+    
       #Tweak(0)
       #updateTabsetPanel(session,"Res_Tab",selected="1")
       
@@ -969,19 +982,19 @@ shinyServer(function(input, output, session) {
   
       # ==== Types of reporting ==========================================================
       
-      #Status<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
-      #saveRDS(Status,"C:/temp/Status.rda")
-      Status<<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
+      # Status<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
+      # saveRDS(Status,"C:/temp/Status.rda")
       
+      Status <<- list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit)
+      SD(1) 
       message("preredoSD")
       smartRedo()
       message("postredoSD")
-      SD(1)
-      updateSelectInput(session, "SDdet",choices=codes,selected=codes[1])
-      #updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
       
-      #Tweak(0)
-      #updateTabsetPanel(session,"Res_Tab",selected="1")
+      updateSelectInput(session, "SDdet",choices=codes,selected=codes[1])
+      # updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
+      # Tweak(0)
+      # updateTabsetPanel(session,"Res_Tab",selected="1")
        
     },
     error = function(e){
@@ -1043,11 +1056,11 @@ shinyServer(function(input, output, session) {
           if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
           MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
         })
+        
         MSEobj_reb@Misc[[4]]<<-SampList
       } else {
         MSEobj_reb <<- MSEobj
       }
-
 
         #saveRDS(MSEobj,file="C:/temp/MSEobj2.Rdata")
         #saveRDS(MSEobj_reb,file="C:/temp/MSEobj_reb2.Rdata")
@@ -1122,12 +1135,12 @@ shinyServer(function(input, output, session) {
         
       })
       
+      Eval(1)
+      Ind(1)
       message("preredoEval")
       smartRedo()
       message("postredoEval")
-      Eval(1)
-      Ind(1)
-     
+   
       #saveRDS(MSEobj_Eval,file="C:/temp/MSEobj_Eval.Rdata")
       #saveRDS(dat,file="C:/temp/dat.Rdata")
       #saveRDS(dat_ind,file="C:/temp/dat_ind.Rdata")
@@ -1230,6 +1243,7 @@ shinyServer(function(input, output, session) {
                      SessionID=SessionID,
                      copyright=paste(Copyright,CurrentYr)
       )
+      
       knitr::knit_meta(class=NULL, clean = TRUE) 
     
       output<-render(input="OMRep.Rmd",output_format="html_document", params = params)
@@ -1247,7 +1261,8 @@ shinyServer(function(input, output, session) {
     
     content = function(file) {
       withProgress(message = "Building data report", value = 0, {
-        #saveRDS(tempdir(),"C:/temp/tempdir.rda")
+        
+        # saveRDS(tempdir(),"C:/temp/tempdir.rda")
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
         

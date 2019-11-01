@@ -91,45 +91,49 @@ shinyUI(
     fluidRow(
 
       column(1,style="height:65px",
-             tags$a(h1("MERA"),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')
+             tags$a(h1("MERA"),href="http://www.merafish.org/",target='_blank')
       ),
-      column(5,style="height:65px",
+      column(3,style="height:65px",
              h5(textOutput("Version") ,style="padding:22px;")
       ),
-      column(2),
+      column(1),
+      
       column(3,style="padding:14px;height:65px",
-             fluidRow(
-
-               column(7,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
-               conditionalPanel(condition="output.SkinNo==1",column(5,tags$a(img(src = "Generic.png", height = 52, width = 136),href="https://www.merafish.org/",target='_blank'))),
-               conditionalPanel(condition="output.SkinNo==2",column(5,tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank'))),
-               conditionalPanel(condition="output.SkinNo==3",column(5,tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank'))),
-               conditionalPanel(condition="output.SkinNo==4",column(5,tags$a(img(src = "Train.png", height = 58, width = 126),href="https://www.merafish.org/",target='_blank')))
-            )
+               
+          column(6,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
+          column(6,tags$a(img(src = "MSC_logo.png", height = 50, width = 140),href="https://www.msc.org",target='_blank'))
+              
       ),
-      column(1,
-             fluidRow(
-               column(6,
-                  div(id="SkinArea",style="width:105px;height:48px;padding-top:15px",
-                  
-                   selectInput("Skin", label = NULL, choices=c("None"),selected="None")
-                     
-                 )
-               ),
-               column(6,
-                    div(id="DemoArea",style="width:105px;height:48px;padding-top:15px",
-                          
-                      actionButton("Demo_mode","Demo")
-                    
-                    )
-               )
-             )
+      
+      column(2),
+      column(1,style="padding-top:10px",
+      
+        #div(id="SkinArea",style="width:105px;height:48px;padding-top:15px",
+        
+         selectInput("Skin", label = "Choose a skin:", choices=c("Generic"),selected="Generic")
+           
+       #)
+               
+      ),
+        
+      
+      column(1,style="padding:19px;height:65px",
+         fluidRow(
+           
+           conditionalPanel(condition="output.SkinNo==1",tags$a(img(src = "Generic.png", height = 52, width = 136),href="https://www.merafish.org/",target='_blank')),
+           conditionalPanel(condition="output.SkinNo==2",tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank')),
+           conditionalPanel(condition="output.SkinNo==3",tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')),
+           conditionalPanel(condition="output.SkinNo==4",tags$a(img(src = "Train.png", height = 58, width = 126),href="https://www.merafish.org/",target='_blank'))
+           
+         )
       )
+      
     ),
     hr(),
 
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
     h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
+    h5("The development and testing of MERA is supported by ", a("the Marine Stewardship Council.",href="https://msc.org",target="blank"),style = "color:grey"),
     h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
     h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"), style = "color:grey"),
     h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
@@ -420,14 +424,14 @@ shinyUI(
                                    column(8,
                                      h5("Number of simulations")
                                    ),
-                                   column(5, 
-                                          column(12,h5("Risk Assessment:"),style="height:35px"),
-                                          column(12,h5("Status Determination:"),style="height:35px"),
-                                          column(12,h5("Management Planning:"),style="height:35px"),
-                                          column(12,h5("Management Performance:"),style="height:35px")
+                                   column(4, 
+                                          column(12,h5("Risk Assess."),style="height:35px"),
+                                          column(12,h5("Stat. Det."),style="height:35px"),
+                                          column(12,h5("Mang. Plan."),style="height:35px"),
+                                          column(12,h5("Mang. Perf."),style="height:35px")
                                    ),
                                    
-                                   column(3, 
+                                   column(4, 
                                           
                                           column(12,numericInput("nsim_RA", label=NULL, value=96,min=2,max=256),style="height:35px"),
                                           column(12,numericInput("nsim_SD", label=NULL, value=24,min=2,max=256),style="height:35px"),
@@ -499,13 +503,13 @@ shinyUI(
                                                  
                                    HTML("<br>"),
                                    h5("4. Bio-economic dynamics <alpha>",style="color:grey"),
-                                   selectInput("EC_Model","Economic Model",choices=c("None","Simple response","SR with inertia","SR with efficiency - depletion"),selected="None"),
+                                   selectInput("EC_Model","Economic Model",choices=c("None","Simple response"),selected="None"),
                                    conditionalPanel(condition="input.EC_Model!='None'",
-                                     column(4,numericInput("CostCurr",label="Cost of current fishing effort",min=0,value=1)),
-                                     column(4,numericInput("RevCurr",label="Revenue of current catches",min=0,value=1)),   
-                                     column(4,numericInput("Response",label="Expected % change in effort given todays profit",value=0.0001)),
-                                     column(4,numericInput("CostInc",label="Expected % annual increase in costs per unit of effort",value=0)), 
-                                     column(4,numericInput("RevInc",label="Expected % annual increase in revenue per unit of catch",value=0)) 
+                                     column(4,numericInput("CostCurr",label="Current Cost",min=0,value=1)),
+                                     column(4,numericInput("RevCurr",label="Current Revenue.",min=0,value=1)),   
+                                     column(4,numericInput("Response",label="% chng given current profit",value=0.0001)),
+                                     column(4,numericInput("CostInc",label="% annual cost inc",value=0)), 
+                                     column(4,numericInput("RevInc",label="% annual revenue inc",value=0)) 
                                    )
                                 ),
                                 
@@ -894,6 +898,12 @@ shinyUI(
                                 HTML("<br>"),
                                 HTML("<br>"),
                                 h5("Users have the option to specify bio-economic models that control the response of fishing effort in addition to management advice set by MPs", style = "color:grey"),
+                                h5("There are five parameters of the simple response model: 
+                                   (1) the current cost of a unit of fishing effort,
+                                   (2) the current revenue of a unit of catch, 
+                                   (3) the % change in effort given the current level of profit, 
+                                   (4) the expected % change in future annual cost per unit of effort, 
+                                   (5) the % change in future annual revenue per catch.", style = "color:grey"),
                                 h5("The Simple Response model is relatively simple and models fishing effort increases according to expected profit: effort next year = (effort this year) * (1+response) * (revenue catch) - (cost effort)", style = "color:grey"),
                                 h5("For further information here is a ", a("guide to the bioeconomic model.", href="https://dlmtool.github.io/DLMtool/MERA/BioEco.html", target="_blank"),style = "color:grey")
                                 
@@ -961,6 +971,8 @@ shinyUI(
                )
             )
         ),
+      
+       
         column(12,
           fluidRow(
           column(1),
@@ -1044,15 +1056,23 @@ shinyUI(
                   radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Status Determination","Management Planning","Management Performance"),selected="Risk Assessment"),
                   style="padding-left:0px"),
            
-           column(8,
+           column(7,
                   h5("MERA contains four modes of varying complexity and objectives",style = "color:grey"),
                   h5(" - Risk Assessment: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
                   h5(" - Status Determination: use the questionnaire and data to estimate population status",style = "color:grey"),
                   h5(" - Management Planning: calculate the expected future performance of many candidate management procedures",style = "color:grey"),
                   h5(" - Management Performance: given a management procedure is in use, analyse new data and monitor performance", style = "color:grey")
+           ),
+           column(1,
+                  div(id="DemoArea",style="width:105px;height:48px;padding-top:15px",
+                      
+                      actionButton("Demo_mode","Demo")
+                      
+                  )
            )
            
     ),
+   
     
     column(12,style="height:15px"),
     

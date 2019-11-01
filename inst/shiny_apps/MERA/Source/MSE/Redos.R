@@ -24,10 +24,9 @@ smartRedo<-function(){
 }
 
 
-redoRA<-function(fease=F){
+redoRA<-function(){
   withProgress(message = "Calculating Risk Assessment results", value = 0, {
     nres<-length(Skin$Risk_Assessment$Tab_title)
-    dims<-list()
     incrate<-1/nres
     message(paste0("Max number of RA plots = ",nres))
     
@@ -159,6 +158,7 @@ redoSD<-function(){
       
       for(res in (nres+1):10){
         local({
+          
           res2<-res
           output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
           output[[paste0("P_Tab_",res2,"_text")]]<-renderText(NULL)
@@ -343,10 +343,29 @@ redoEval<-function(fease=F){
   })
 }
 
+blankplot<-function()plot(c(0,1),col='white',xlab="",ylab="",axes=F)
 
 redoBlank<-function(){
  
-   
+  for(res in 1:10){
+    
+    local({
+      
+      res2<-res
+      
+      output[[paste0("P_Tab_",res2,"_title")]]<-renderText(NULL)
+      output[[paste0("P_Tab_",res2,"_text")]]<-renderText(NULL)
+      output[[paste0("P_Tab_",res2)]]<-DT::renderDataTable(NULL) 
+      
+      output[[paste0("P_Fig_",res2,"_title")]]<-renderText(NULL)
+      output[[paste0("P_Fig_",res2,"_text")]]<-renderText(NULL)
+      output[[paste0("P_Fig_",res2)]]<-renderPlot(blankplot,height =150 , width = 400 ) 
+     
+    })
+    
+    incProgress(incrate)
+    
+  }
  
 }
 
