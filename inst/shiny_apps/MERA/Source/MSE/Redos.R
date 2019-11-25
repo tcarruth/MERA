@@ -92,7 +92,7 @@ redoRA<-function(){
       
     }
     
-    incProgress(incrate)
+     incProgress(incrate)
     
   })
 }
@@ -364,7 +364,7 @@ redoBlank<-function(){
      
     })
     
-    incProgress(incrate)
+    # incProgress(incrate)
     
   }
  
