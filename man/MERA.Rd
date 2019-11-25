@@ -4,7 +4,7 @@
 \alias{MERA}
 \title{Run the MERA Shiny App}
 \usage{
-MERA(skin = "Train")
+MERA(skin = "Generic")
 }
 \arguments{
 \item{skin}{Character. Skin to use to present results}

@@ -31,7 +31,7 @@ PKGENVIR <- new.env(parent=emptyenv())
 #'
 #' @return Nothing. Opens the MERA app in a web browser
 #' @export
-MERA <- function(skin="Train") {
+MERA <- function(skin="Generic") {
   if (class(skin) !="character") stop("skin must be character")
   skins <- list.files(file.path(system.file(package = 'MERA'), "shiny_apps/MERA/Source/Skins"))
   skins <- tools::file_path_sans_ext(skins)
