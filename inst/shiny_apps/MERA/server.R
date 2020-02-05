@@ -554,9 +554,10 @@ shinyServer(function(input, output, session) {
     filename = function()paste0(namconv(input$Name),".OM"),
 
     content=function(file){
+      OM<-makeOM(PanelState,nsim=input$nsim_OMsave)
       AM(paste0("Operating model saved: ", file))
       doprogress("Saving Operating Model")
-      #saveRDS(OM,file)
+      saveRDS(OM,file)
 
     }
 
@@ -929,10 +930,10 @@ shinyServer(function(input, output, session) {
         }  
         
         AM("Conducting sim-testing of methods for Status Determination")
-        
+        setup(cpus=4)
         withProgress(message = "Running simulation test of SD methods", value = 0, {
         
-            # Generate simulated data over a range of stock depletion
+          # Generate simulated data over a range of stock depletion
           for(cc in 1:ncode){
             
             AM(paste(" -------------- ", codes[cc],":", cc,"/",ncode, " -------------- "))
@@ -966,7 +967,7 @@ shinyServer(function(input, output, session) {
             
             for(cc in 1:ncode){
               
-              BCfit[[cc]]<-fitdep(out=SimSams[[cc]],dEst=Est[[cc]],plot=T)
+              BCfit[[cc]]<-fitdep(out=SimSams[[cc]],dEst=Est[[cc]])
               incProgress(1/ncode, detail = round(cc*100/ncode))
             }
             

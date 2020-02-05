@@ -718,9 +718,10 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
       
       qs[1,]<-round(quantile(Allbc*100,c(0.025,0.05,0.5,0.95,0.975)),2)
       
-      for(i in keep_ind){
+      for(i in 1:length(keep_ind)){
+        j<-keep_ind[i]
         
-        qs[i+1,]<-round(quantile(Status$BCfit[[i]]$biascor*100,c(0.025,0.05,0.5,0.95,0.975)),2)
+        qs[i+1,]<-round(quantile(Status$BCfit[[j]]$biascor*100,c(0.025,0.05,0.5,0.95,0.975)),2)
         
       }
       
@@ -920,7 +921,7 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
       SDdat<-data.frame(y=y,x=x)
       boxplot(y~x,SDdat,col=cols,ylim=xlim,pars=list(medcol=mcols))
       #legend('topright',legend=c("All",Status$codes[keep]),text.col=cols,bty='n',cex=0.9)
-      mtext("Stock statues estimates",3,line=0.6)
+      mtext("Stock status estimates",3,line=0.6)
       
       cols<-c('#00ff0070',rep('lightgrey',ntot))
       mcols<-c('#00ff0090',rep('black',ntot))
@@ -948,8 +949,7 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
       return(list(height=150,width=400))
     }
   }
-  
- 
+
   SD<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                         Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
    

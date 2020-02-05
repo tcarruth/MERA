@@ -11,7 +11,7 @@ SimTest<-function(OMsimsam,code, ndeps=40, DepLB=0.05, DepUB=0.8){
   
 }
 
-fitdep<-function(out,dEst=0.5,plot=T){
+fitdep<-function(out,dEst=0.5){
   
   fitdat<-data.frame(Sim=out$Sim,Sam=out$Sam)      # Summarize these data (simulated versus assessed)
   opt<-optim(par=  c(-5,0,0), fitdep_int,
@@ -41,7 +41,7 @@ fitdep<-function(out,dEst=0.5,plot=T){
     
     for(i in 1:totsamp)   stoch[i,]<-fitdep_int(samps[i,],x=fitdat$Sam,y=fitdat$Sim,mode=2)
     
-    sums<-apply(stoch,1,function(x,sim=fitdat$Sim)sum((x-sim)<0))
+    sums<-apply(stoch,1,function(x,sim=fitdat$Sim)sum((x-sim)<0,na.rm=T))
     tokeep<-((1:totsamp)[sums>(nobs*0.15)&sums<(nobs*0.85)])[1:nsim]
     samps<-matrix(samps[tokeep,],nrow=nsim)
     stoch<-matrix(stoch[tokeep,],nrow=nsim)
@@ -69,7 +69,7 @@ fitdep_int<-function(par,x,y,mode=1){
  # print(par)
   yest<-exp(par[1])+exp(par[2])*x^exp(par[3])   # exponential model
   rat<-log(yest/y)
-  sdEmp<-min(0.5,sd(rat))
+  sdEmp<-min(0.5,sd(rat),na.rm=T)
   #print(yest)
   #print("----")
   
@@ -78,7 +78,7 @@ fitdep_int<-function(par,x,y,mode=1){
   #sdEmp<-0.2# empirical sd from fit
   #sum(-dnorm(yest,y,sd=sdEmp,log=TRUE)) # return sum of neg LL
   if(mode==1){
-    return(sum(c(nLLdat,nLLprior))) #return(sum((yest-y)^2))
+    return(sum(c(nLLdat,nLLprior),na.rm=T)) #return(sum((yest-y)^2))
   }else{
     return(yest)
   }
@@ -182,7 +182,7 @@ DataStrip<-function(dat,code,simno=1){
       outlist[['Ehist']]<-rep(1,length(dat@Year))
       outlist[['condition']]<-"effort"
     }else{
-      outlist[['condition']]<-"catch"
+      outlist[['condition']]<-"catch2"  # catch 1 is F estimated, catch 2 is true sra with newton solving for Baranov
     }
 
   }
@@ -394,16 +394,11 @@ Scoping_parallel<-function(x,OMc,dat,code,DataStrip,getOMsim){
   #loadRDS(OMp,"C:/temp/OMp.rds")
   #loadRDS(outlist,"C:/temp/outlist.rds")
   out<-SRA_scope(OM=OMp,
-                 Chist = outlist$Chist,
-                 Ehist = outlist$Ehist,
-                 condition = outlist$condition,
-                 Index= outlist$Index,
-                 CAA = outlist$CAA,
-                 CAL = outlist$CAL,
-                 ML = outlist$ML,
-                 length_bin = outlist$length_bin,
+                 data=outlist,
                  report=F,
-                 cores=1)
+                 cores=1,
+                 ESS<-c(300,300),
+                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-6))
   out@OM
   
 }
@@ -414,6 +409,7 @@ SimSam<-function(OMc,dat,code){
   #sfExport('getOMsim')
   scoped<-sfSapply(1:OMc@nsim, Scoping_parallel, OMc=OMc, dat=dat, code=code, DataStrip=DataStrip, getOMsim=getOMsim)
   deps<-lapply(scoped, function(x)x@cpars$D)
+  deps[deps<0.01]<-NA
   list(Sim=OMc@cpars$D, Sam=unlist(deps))
   
 }
@@ -424,19 +420,15 @@ GetDep<-function(OM,dat,code,cores=4){
   outlist<-DataStrip(dat,code,simno=1)
   #saveRDS(OM,"C:/temp/OM")
   #saveRDS(outlist,"C:/temp/outlist")
+  OMeff<-outlist$condition=="effort"
     
   out<-SRA_scope(OM=OM,
-                 Chist = outlist$Chist,
-                 Ehist = outlist$Ehist,
-                 condition = outlist$condition,
-                 Index= outlist$Index,
-                 CAA = outlist$CAA,
-                 CAL = outlist$CAL,
-                 ML = outlist$ML,
-                 length_bin = outlist$length_bin,
+                 data=outlist,
                  report=F,
                  mean_fit = TRUE,
-                 cores=cores)
+                 cores=cores,
+                 OMeff=OMeff,
+                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-5))
   
   out
   

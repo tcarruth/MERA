@@ -753,7 +753,7 @@ Figs[[4]]<-function(Status,options=list()){
     SDdat<-data.frame(y=y,x=x)
     boxplot(y~x,SDdat,col=cols,ylim=xlim,pars=list(medcol=mcols))
     #legend('topright',legend=c("All",Status$codes[keep]),text.col=cols,bty='n',cex=0.9)
-    mtext("Stock statues estimates",3,line=0.6)
+    mtext("Stock status estimates",3,line=0.6)
     
     cols<-c('#00ff0070',rep('lightgrey',ntot))
     mcols<-c('#00ff0090',rep('black',ntot))

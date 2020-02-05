@@ -459,8 +459,10 @@ shinyUI(
                                   column(12,style="padding-left:27px",
                                     HTML("<br>"),    
                                     h5("Save OM",style="font-weight:bold"),
-                                    downloadButton("Save_OM","",width=70),
-                                 
+                                    column(12,
+                                      column(3,downloadButton("Save_OM","",width=70),style="padding-top:18px"),
+                                      column(5,numericInput("nsim_OMsave", label="No. simulations", value=96,min=2,max=256),style="padding:0px"),   
+                                    ),
                                     HTML("<br>"),      
                                     h5("Detailed OM Report",style="font-weight:bold"),
                                     downloadButton("Build_full_OM","")
@@ -519,6 +521,7 @@ shinyUI(
                                   HTML("<br>"),
                                   h5("5. Load Source Code",style="color:grey"),
                                   fileInput("Load_anything","Load DLMtool and MSEtool source code for MPs and PMs")
+                                  
                                 ),  
                                 
                                 value=4)

@@ -78,7 +78,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     }else{
       OM<-trimOM(OM,input$nsim)
     }
-    OM@R0<-100000
+    OM@R0<-1e9
     OM@Linf<-c(100,100)
     OM@L50<-NaN
     OM@K<-NaN
@@ -287,6 +287,24 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
                                 RevInc=rep(input$RevInc,OM@nsim)))
       
       #AM("Using bioeconomic model parameters")
+      
+    }
+    
+    # ---- Data overwriting ---------------------------------------------------------------------------------------------------
+    if(Data()==1){
+      
+      if(!is.na(dat@vbLinf[1])){
+        ratio<-dat@vbLinf[1]/mean(OM@cpars$Linf)
+        OM@Linf<-rep(dat@vbLinf,2)
+        OM@cpars$Linf<-OM@cpars$Linf*ratio
+        OM@cpars$LFS<-OM@cpars$LFS*ratio
+        OM@cpars$L5<-OM@cpars$L5*ratio
+        OM@cpars$L50<-OM@cpars$L50*ratio
+      }
+      
+      if(!is.na(dat@wla))OM@a<-dat@wla
+      if(!is.na(dat@wlb))OM@b<-dat@wlb
+      if(!is.na(dat@vbt0[1])) OM@t0<-rep(dat@vbt0[1],2)
       
     }
     
