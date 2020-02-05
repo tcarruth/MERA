@@ -92,7 +92,7 @@ redoRA<-function(){
       
     }
     
-    incProgress(incrate)
+     incProgress(incrate)
     
   })
 }
@@ -191,7 +191,8 @@ redoPlan<-function(fease=F){
     
     # option code
     options <- list(burnin = input$burnin, res=input$res, 
-                    tab1.row.select=input$P_Tab_1_rows_selected)
+                    tab1.row.select=input$P_Tab_1_rows_selected,
+                    tab4.row.select=input$P_Tab_4_rows_selected)
     #options <- list( res=1)
     
     if(Skin$Planning$Intro_title[[1]]==""){
@@ -224,7 +225,7 @@ redoPlan<-function(fease=F){
         if(Skin$Planning$Fig_title[[res2]]==""){
           output[[paste0("P_Fig_",res2,"_title")]]<-renderText(NULL)
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(NULL)
-          output[[paste0("P_Fig_",res2)]]<- renderPlot(NULL,height=10,width=10) 
+          output[[paste0("P_Fig_",res2)]]<- NULL # renderPlot(NULL,height=10,width=10) 
          }else{ 
           output[[paste0("P_Fig_",res2,"_title")]]<-renderText(Skin$Planning$Fig_title[[res2]])
           output[[paste0("P_Fig_",res2,"_text")]]<-renderText(Skin$Planning$Fig_text[[res2]])
@@ -363,7 +364,7 @@ redoBlank<-function(){
      
     })
     
-    incProgress(incrate)
+    # incProgress(incrate)
     
   }
  

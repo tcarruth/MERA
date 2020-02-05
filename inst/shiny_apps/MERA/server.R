@@ -32,7 +32,7 @@ shinyServer(function(input, output, session) {
   source("./Source/Skins/Generic.R",local=TRUE)
   source("./Source/Skins/ABNJ.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
-  source("./Source/Skins/Train.R",local=TRUE)
+  # source("./Source/Skins/Train.R",local=TRUE) # replaced with Generic now
  
   
   #source("./Analysis_results.R",local=TRUE)
@@ -175,7 +175,7 @@ shinyServer(function(input, output, session) {
        
   dat<-dat_int<-NULL
       
-  Skin_nams<<-c("Generic","MSC","ABNJ","Train") # unlist(strsplit(list.files(path="./Source/Skins"),".R"))
+  Skin_nams<<-c("Generic","MSC","ABNJ") # unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected=skin)
   
   observe({
@@ -1041,27 +1041,26 @@ shinyServer(function(input, output, session) {
     #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
 
     tryCatch({
-
         withProgress(message = "Running Planning Analysis", value = 0, {
           silent=T
           MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
         })
         
-      if (input$Skin !="Train") { # don't run rebuild for Train skin
-        if(exists('SampList'))MSEobj@Misc[[4]]<<-SampList
-        Dep_reb<-runif(OM@nsim,input$Dep_reb[1],input$Dep_reb[2]) # is a %
-        OM_reb<-OM
-        OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0 
-        
-        withProgress(message = "Rebuilding Analysis", value = 0, {
-          if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
-          MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
-        })
-        
-        MSEobj_reb@Misc[[4]]<<-SampList
-      } else {
-        MSEobj_reb <<- MSEobj
-      }
+      # if (input$Skin !="Train") { # don't run rebuild for Train skin
+      if(exists('SampList'))MSEobj@Misc[[4]]<<-SampList
+      Dep_reb<-runif(OM@nsim,input$Dep_reb[1],input$Dep_reb[2]) # is a %
+      OM_reb<-OM
+      OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0 
+      
+      withProgress(message = "Rebuilding Analysis", value = 0, {
+        if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
+        MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
+      })
+      
+      MSEobj_reb@Misc[[4]]<<-SampList
+      # } else {
+      #   MSEobj_reb <<- MSEobj
+      # }
 
         #saveRDS(MSEobj,file="C:/temp/MSEobj2.Rdata")
         #saveRDS(MSEobj_reb,file="C:/temp/MSEobj_reb2.Rdata")
@@ -1164,23 +1163,24 @@ shinyServer(function(input, output, session) {
 
   }
 
-  # Train skin observe
+  # Observe for selecting rows from tables
   P_Tab_1_track = observe({
     input$P_Tab_1_rows_selected
     # print(input$P_Tab_1_rows_selected)
     isolate({
-      if(input$Skin == "Train" & input$Mode =="Management Planning") {
-        UpdateTrainPlots()
+      if(input$Skin == "Generic" & input$Mode =="Management Planning") {
+        UpdateGenericSkinPlots()
       }  
     })
   }) 
-  
-  #  observe(input$P_Tab_1_rows_selected,{
-  #   if(input$Skin == "Train" & input$Mode =="Management Planning") {
-  #     UpdateTrainPlots()
-  #   }
-  # })
-  
+  P_Tab_3_track = observe({
+    input$P_Tab_3_rows_selected
+    isolate({
+      if(input$Skin == "Generic" & input$Mode =="Management Planning") {
+        UpdateGenericSkinPlots()
+      }  
+    })
+  }) 
   
   # Show REFRESH RESULTS if ...
   observeEvent(input$burnin,{ Tweak(1) })
@@ -1534,7 +1534,9 @@ shinyServer(function(input, output, session) {
         library(rmarkdown)
         options <- list(burnin = input$burnin, res=input$res,
                         tab1.row.select=input$P_Tab_1_rows_selected,
-                        train_nplot=length(input$P_Tab_1_rows_selected))
+                        tab4.row.select=input$P_Tab_4_rows_selected,
+                        train_nplot=length(input$P_Tab_1_rows_selected),
+                        train_nplot_4=length(input$P_Tab_4_rows_selected))
         
         params <- list(test = input$Name,
                        set_title=paste0("Planning Report for ",input$Name),
