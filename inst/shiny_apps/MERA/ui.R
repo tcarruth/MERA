@@ -451,8 +451,11 @@ shinyUI(
                                            fileInput("Load_OM","Load  (.OM)"),
                                            style="height:55px"
                                     ),
-                                    column(5,conditionalPanel(condition="output.LoadOM==1", h5("Use the loaded operating model",style="font-weight:bold"),
-                                                              checkboxInput("OM_L","",value=FALSE)),style="height:55px; padding:6px")
+                                    column(5,
+                                           conditionalPanel(condition="output.LoadOM==1", h5("Use the loaded operating model",style="font-weight:bold"),
+                                                              checkboxInput("OM_L","",value=FALSE)),
+                                           style="height:55px; padding:6px"
+                                           )
                                     
                                   ),
                                   HTML("<br>"),  
@@ -461,7 +464,7 @@ shinyUI(
                                     h5("Save OM",style="font-weight:bold"),
                                     column(12,
                                       column(3,downloadButton("Save_OM","",width=70),style="padding-top:18px"),
-                                      column(5,numericInput("nsim_OMsave", label="No. simulations", value=96,min=2,max=256),style="padding:0px"),   
+                                      column(5,numericInput("nsim_OMsave", label="No. simulations", value=96,min=2,max=256),style="padding:0px")   
                                     ),
                                     HTML("<br>"),      
                                     h5("Detailed OM Report",style="font-weight:bold"),

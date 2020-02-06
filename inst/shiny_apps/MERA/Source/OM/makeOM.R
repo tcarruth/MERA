@@ -305,6 +305,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       if(!is.na(dat@wla))OM@a<-dat@wla
       if(!is.na(dat@wlb))OM@b<-dat@wlb
       if(!is.na(dat@vbt0[1])) OM@t0<-rep(dat@vbt0[1],2)
+      if(!is.na(dat@vbK[1])) OM@K<-rep(dat@vbK[1],2); OM@cpars$K<-OM@cpars$K*dat@vbK/mean(OM@cpars$K)
       
     }
     

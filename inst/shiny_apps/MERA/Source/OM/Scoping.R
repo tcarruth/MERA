@@ -128,7 +128,7 @@ getCodes<-function(dat,maxtest=6){
   
 }
 
-DataStrip<-function(dat,code,simno=1){
+DataStrip<-function(dat,OM,code,simno=1){
 
   datTypes<-c("C","E","I","A","L","M")
   slotnams<-c("Cat","Effort","Ind","CAA","CAL","ML")
@@ -174,6 +174,9 @@ DataStrip<-function(dat,code,simno=1){
     }
 
   }
+  
+  #muE<-apply(OM@cpars$Find,2,mean)
+  #muE<-muE/mean(muE)
 
   if(grepl("E",code)){
      outlist[['condition']]<-"effort"
@@ -388,8 +391,8 @@ getOMsim<-function(OM,simno=1,silent=T){
 
 Scoping_parallel<-function(x,OMc,dat,code,DataStrip,getOMsim){
   
-  outlist<-DataStrip(dat,code,simno=x)
-  
+  outlist<-DataStrip(dat,OMc,code,simno=x)
+  OMeff<-outlist$condition=="effort"
   OMp<-getOMsim(OMc,simno=x)
   #loadRDS(OMp,"C:/temp/OMp.rds")
   #loadRDS(outlist,"C:/temp/outlist.rds")
@@ -397,7 +400,7 @@ Scoping_parallel<-function(x,OMc,dat,code,DataStrip,getOMsim){
                  data=outlist,
                  report=F,
                  cores=1,
-                 ESS<-c(300,300),
+                 OMeff=OMeff,
                  control=list(eval.max=5000, iter.max=5000, abs.tol=1e-6))
   out@OM
   
@@ -417,7 +420,7 @@ SimSam<-function(OMc,dat,code){
 
 GetDep<-function(OM,dat,code,cores=4){
   
-  outlist<-DataStrip(dat,code,simno=1)
+  outlist<-DataStrip(dat,OM,code,simno=1)
   #saveRDS(OM,"C:/temp/OM")
   #saveRDS(outlist,"C:/temp/outlist")
   OMeff<-outlist$condition=="effort"
@@ -428,7 +431,7 @@ GetDep<-function(OM,dat,code,cores=4){
                  mean_fit = TRUE,
                  cores=cores,
                  OMeff=OMeff,
-                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-5))
+                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-6))
   
   out
   
