@@ -529,7 +529,6 @@ shinyServer(function(input, output, session) {
       }else{
         dat_ind<<-dat
         dat<<-dat_test
-       
         AM(paste0("Data object contains ", length(dat_ind@Year)-length(dat@Year)," years of indicator data after LHYear"))
   
         DataInd(1)
@@ -892,7 +891,7 @@ shinyServer(function(input, output, session) {
     #saveRDS(OM,"C:/temp/OM3")
     #saveRDS(dat,"C:/temp/dat3")
     #saveRDS(codes,"C:/temp/codes3")
-    setup()
+    setup(cpus=4)
     
     tryCatch({
       
@@ -930,7 +929,7 @@ shinyServer(function(input, output, session) {
         }  
         
         AM("Conducting sim-testing of methods for Status Determination")
-        setup(cpus=4)
+        #setup(cpus=4)
         withProgress(message = "Running simulation test of SD methods", value = 0, {
         
           # Generate simulated data over a range of stock depletion

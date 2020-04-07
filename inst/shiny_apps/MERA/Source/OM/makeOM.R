@@ -135,8 +135,18 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     }else{
       OM@maxage=maxage
     }
-  
-    OM<-LH2OM(OM, dist='norm',plot=F)                                                               
+    
+    # --- Life history imputation
+    OM<-LH2OM(OM, dist='norm',plot=F)
+    
+      # --- Data overrides (if the user has loaded data)
+    if(Data()==1){
+      if(!is.null(dat@vbLinf) & !is.na(dat@vbLinf)) OM@cpars$Linf[]<-dat@vbLinf
+      if(!is.null(dat@vbK) & !is.na(dat@vbK)) OM@cpars$K <- OM@cpars$K * dat@vbK / mean(OM@cpars$K) 
+      if(!is.null(dat@vbt0) & !is.na(dat@vbt0)) OM@t0 <- rep(dat@vbt0,2) 
+      if(!is.null(dat@Mort) & !is.na(dat@Mort)) OM@cpars$M <- OM@cpars$M * dat@Mort / mean(OM@cpars$M) 
+    } 
+    
     OM@K<-quantile(OM@cpars$K,c(0.05,0.95))
     OM@L50<-quantile(OM@cpars$L50,c(0.05,0.95))
     OM@L50_95<-c(10,10)
