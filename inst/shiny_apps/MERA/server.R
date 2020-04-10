@@ -87,15 +87,15 @@ shinyServer(function(input, output, session) {
   LoadOM<-reactiveVal(0)
   CondOM<-reactiveVal(0)
   MadeOM<-reactiveVal(0)
-  RA<-reactiveVal(0) # Have run risk assessment (multi MP)
-  SD<-reactiveVal(0) # Has a status determination been run yet?
-  Plan<-reactiveVal(0) # Have run Planning (multi MP)
-  Eval<-reactiveVal(0)  # Have run Evaluation (single MP)
-  DataInd<-reactiveVal(0) # Indicator data loaded
-  Ind<-reactiveVal(0)  # Have run Indicator (single MP)
+  RA<-reactiveVal(0)     # Have run risk assessment (multi MP)
+  SD<-reactiveVal(0)     # Has a status determination been run yet?
+  Plan<-reactiveVal(0)   # Have run Planning (multi MP)
+  Eval<-reactiveVal(0)   # Have run Evaluation (single MP)
+  DataInd<-reactiveVal(0)# Indicator data loaded
+  Ind<-reactiveVal(0)    # Have run Indicator (single MP)
   AdCalc<-reactiveVal(0) # Has advice been calculated
   Tweak<-reactiveVal(0)  # Have things affecting performance metrics been tweaked?
-  SkinNo<-reactiveVal(0)   # Skin selection
+  SkinNo<-reactiveVal(0) # Skin selection
  
   output$Fpanel <- reactive({ Fpanel()})
   output$Mpanel <- reactive({ Mpanel()})
@@ -447,7 +447,10 @@ shinyServer(function(input, output, session) {
           Dpanel(1)
           Opanel(1)
           Plan(0)
-          
+          RA(0) # Have run risk assessment (multi MP)
+          SD(0) # Has a status determination been run yet?
+          Plan(0) # Have run Planning (multi MP)
+          Eval(0)
           
           if(!is.null(MSClog[[1]]$dat)){
             dat<<-MSClog[[1]]$dat
@@ -541,12 +544,17 @@ shinyServer(function(input, output, session) {
         DataInd(1)
       }
       FeaseMPs<<-Fease(dat)
-  
+      
       #saveRDS(dat_ind,"C:/temp/dat_ind.rda")
       #saveRDS(dat,"C:/temp/dat.rda")
       
       SD_codes<-getCodes(dat,maxtest=Inf)
       AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
+      ndatyr<-ncol(dat@Cat)
+      if(ndatyr!=input$nyears){
+        AM(paste("Stated number of historical years in Questionnaire (F1) updated from",input$nyears,"to",ndatyr,"- as specified by the data loaded"))
+        updateNumericInput(session,'nyears',value=ndatyr)
+      }  
       updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
       updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
     }
@@ -900,7 +908,8 @@ shinyServer(function(input, output, session) {
     }
     
     ncode<-length(codes)
-    Est<-Sim<-Fit<-list()
+    Est<-Sim<-list()
+    Fit<<-list()
     
     #saveRDS(OM,"C:/temp/OM3")
     #saveRDS(dat,"C:/temp/dat3")
@@ -910,9 +919,9 @@ shinyServer(function(input, output, session) {
     tryCatch({
       
       withProgress(message = "Running Status Determination", value = 0, {
-        
+        #saveRDS(OM,"C:/temp/OM.rda")
         for(cc in 1:ncode){
-          Fit[[cc]]<-GetDep(OM,dat,code=codes[cc],cores=4)
+          Fit[[cc]]<<-GetDep(OM,dat,code=codes[cc],cores=4)
           Est[[cc]]<-Fit[[cc]]@OM@cpars$D[Fit[[cc]]@conv]
           if(sum(Fit[[cc]]@conv)==0)AM(paste(cc,codes[cc],"Did not return depletion"))
           incProgress(1/ncode, detail = round(cc*100/ncode))
@@ -920,9 +929,9 @@ shinyServer(function(input, output, session) {
     
       })
       
-      #saveRDS(OMsimsam,"C:/temp/OMsimsam")
-      #saveRDS(Est,"C:/temp/Est")
-      #saveRDS(codes,"C:/temp/codes")
+      saveRDS(OMsimsam,"C:/temp/OMsimsam")
+      saveRDS(Est,"C:/temp/Est")
+      saveRDS(codes,"C:/temp/codes")
       
     },
       error = function(e){
@@ -931,6 +940,8 @@ shinyServer(function(input, output, session) {
         return(0)
       }
     )
+    
+  
     
     tryCatch({
       
@@ -970,6 +981,8 @@ shinyServer(function(input, output, session) {
       
       }
     )
+    
+  
     
     tryCatch({    
       
@@ -1361,47 +1374,55 @@ shinyServer(function(input, output, session) {
     filename = function(){paste0(namconv(input$Name),"_full_OM.html")}, #"report.html",
 
     content = function(file) {
-      withProgress(message = "Building operating model report", value = 0, {
-      #OM<<-makeOM(PanelState,nsim=nsim)
-      src <- normalizePath('Source/Markdown/OM_full_Rep.Rmd')
-      src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
-     
-      incProgress(0.1)
-      Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-      MSClog<-list(PanelState, Just, Des)
-
-      owd <- setwd(tempdir())
-      on.exit(setwd(owd))
-      file.copy(src, 'OM_full_Rep.Rmd', overwrite = TRUE)
-      file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
       
-      library(rmarkdown)
-      params <- list(test = input$Name,
-                     set_title=paste0("Full Operating Model Specification Report for ",input$Name),
-                     set_type=paste0("(MERA version ",Version,")"),
-                     PanelState=MSClog[[1]],
-                     Just=MSClog[[2]],
-                     Des=MSClog[[3]],
-                     OM=OM,
-                     ntop=input$ntop,
-                     inputnames=inputnames,
-                     SessionID=SessionID,
-                     copyright=paste(Copyright,CurrentYr),
-                     tabs=TRUE, 
-                     Pars=OM,
-                     plotPars=list(),
-                     its=NULL,
-                     nyears=OM@nyears,
-                     proyears=OM@proyears
-                       
-      )
-      incProgress(0.1)
-      knitr::knit_meta(class=NULL, clean = TRUE) 
-      output<-render(input="OM_full_Rep.Rmd",output_format="html_document", params = params)
-      incProgress(0.8)
-      file.copy(output, file)
-      })
-    }
+      tryCatch({
+        withProgress(message = "Building operating model report", value = 0, {
+          OM<<-makeOM(PanelState,nsim=nsim)
+          src <- normalizePath('Source/Markdown/OM_full_Rep.Rmd')
+          src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+          incProgress(0.1)
+        
+          Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+          MSClog<-list(PanelState, Just, Des)
+    
+          owd <- setwd(tempdir())
+          on.exit(setwd(owd))
+          file.copy(src, 'OM_full_Rep.Rmd', overwrite = TRUE)
+          file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
+          
+          library(rmarkdown)
+          params <- list(test = input$Name,
+                         set_title=paste0("Full Operating Model Specification Report for ",input$Name),
+                         set_type=paste0("(MERA version ",Version,")"),
+                         PanelState=MSClog[[1]],
+                         Just=MSClog[[2]],
+                         Des=MSClog[[3]],
+                         OM=OM,
+                         ntop=input$ntop,
+                         inputnames=inputnames,
+                         SessionID=SessionID,
+                         copyright=paste(Copyright,CurrentYr),
+                         tabs=TRUE, 
+                         Pars=OM,
+                         plotPars=list(),
+                         its=NULL,
+                         nyears=OM@nyears,
+                         proyears=OM@proyears
+                           
+          )
+          incProgress(0.1)
+          knitr::knit_meta(class=NULL, clean = TRUE) 
+          output<-render(input="OM_full_Rep.Rmd",output_format="html_document", params = params)
+          incProgress(0.8)
+          file.copy(output, file)
+        }) # with progres
+      },
+      error = function(e){
+        AM(paste0(e,"\n"))
+        shinyalert("Full OM report build error", paste(e), type = "info")
+      })  
+  
+    }  # content
   )
 
   # Conditioning report
@@ -1440,36 +1461,43 @@ shinyServer(function(input, output, session) {
     filename = function(){paste0(namconv(input$Name),"_MERA_Risk_Assessment_Report.html")}, #"report.html",
     
     content = function(file) {
-      withProgress(message = "Building Risk Assessment report", value = 0, {
-        src <- normalizePath('Source/Markdown/RA.Rmd')
-        src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
-       
-        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-        MSClog<-list(PanelState, Just, Des)
-        owd <- setwd(tempdir())
-        on.exit(setwd(owd))
-        file.copy(src, 'RA.Rmd', overwrite = TRUE)
-        file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
-        
-        options=Skin$Risk_Assessment$options
-        library(rmarkdown)
-        options()
-        params <- list(test = input$Name,
-                       set_title=paste0("Risk Assessment Report for ",input$Name),
-                       set_type=paste0("Risk Assessment of Status Quo Management "," (MERA version ",Version,")"),
-                       Skin=Skin,
-                       MSEobj=RAobj,
-                       OM=OM,
-                       MSEobj_reb=RAobj,
-                       OM=OM,
-                       options=options,
-                       SessionID=SessionID,
-                       copyright=paste(Copyright,CurrentYr)
-        )
-        knitr::knit_meta(class=NULL, clean = TRUE) 
-        out<-render("RA.Rmd", output_format="html_document", params = params)
-        file.rename(out, file)
-      })
+      
+      tryCatch({
+        withProgress(message = "Building Risk Assessment report", value = 0, {
+          src <- normalizePath('Source/Markdown/RA.Rmd')
+          src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+         
+          Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+          MSClog<-list(PanelState, Just, Des)
+          owd <- setwd(tempdir())
+          on.exit(setwd(owd))
+          file.copy(src, 'RA.Rmd', overwrite = TRUE)
+          file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
+          
+          options=Skin$Risk_Assessment$options
+          library(rmarkdown)
+          options()
+          params <- list(test = input$Name,
+                         set_title=paste0("Risk Assessment Report for ",input$Name),
+                         set_type=paste0("Risk Assessment of Status Quo Management "," (MERA version ",Version,")"),
+                         Skin=Skin,
+                         MSEobj=RAobj,
+                         OM=OM,
+                         MSEobj_reb=RAobj,
+                         OM=OM,
+                         options=options,
+                         SessionID=SessionID,
+                         copyright=paste(Copyright,CurrentYr)
+          )
+          knitr::knit_meta(class=NULL, clean = TRUE) 
+          out<-render("RA.Rmd", output_format="html_document", params = params)
+          file.rename(out, file)
+        })
+      },
+      error = function(e){
+        AM(paste0(e,"\n"))
+        shinyalert("Risk Assessment Report build error", paste(e), type = "info")
+      })  
     }
     
   )
@@ -1477,36 +1505,42 @@ shinyServer(function(input, output, session) {
   output$Build_Status <-downloadHandler(
     
     filename = function(){paste0(namconv(input$Name),"_MERA_Status_Determination_Report.html")}, #"report.html",
-    
+   
     content = function(file) {
-      withProgress(message = "Building Status Determination report", value = 0, {
-        src <- normalizePath('Source/Markdown/SD.Rmd')
-        src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
-        
-        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-        MSClog<-list(PanelState, Just, Des)
-        owd <- setwd(tempdir())
-        on.exit(setwd(owd))
-        file.copy(src, 'SD.Rmd', overwrite = TRUE)
-        file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
-        
-        options=Skin$Risk_Assessment$options
-        library(rmarkdown)
-        options()
-        params <- list(test = input$Name,
-                       set_title=paste0("Status Determination Report for ",input$Name),
-                       set_type=paste0("Status Determination "," (MERA version ",Version,")"),
-                       Skin=Skin,
-                       Status=Status,
-                       options=options,
-                       SessionID=SessionID,
-                       Source=SessionID,
-                       copyright=paste(Copyright,CurrentYr)
-        )
-        knitr::knit_meta(class=NULL, clean = TRUE) 
-        out<-render("SD.Rmd", output_format="html_document", params = params)
-        file.rename(out, file)
-      })
+      tryCatch({
+        withProgress(message = "Building Status Determination report", value = 0, {
+          src <- normalizePath('Source/Markdown/SD.Rmd')
+          src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
+          
+          Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+          MSClog<-list(PanelState, Just, Des)
+          owd <- setwd(tempdir())
+          on.exit(setwd(owd))
+          file.copy(src, 'SD.Rmd', overwrite = TRUE)
+          file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
+          
+          options=Skin$Risk_Assessment$options
+          library(rmarkdown)
+          options()
+          params <- list(test = input$Name,
+                         set_title=paste0("Status Determination Report for ",input$Name),
+                         set_type=paste0("Status Determination "," (MERA version ",Version,")"),
+                         Skin=Skin,
+                         Status=Status,
+                         options=options,
+                         SessionID=SessionID,
+                         Source=SessionID,
+                         copyright=paste(Copyright,CurrentYr)
+          )
+          knitr::knit_meta(class=NULL, clean = TRUE) 
+          out<-render("SD.Rmd", output_format="html_document", params = params)
+          file.rename(out, file)
+        })
+      },
+      error = function(e){
+        AM(paste0(e,"\n"))
+        shinyalert("Status Determination Report build error", paste(e), type = "info")
+      }) 
     }
     
   )
@@ -1531,6 +1565,7 @@ shinyServer(function(input, output, session) {
        
         incProgress(0.1)
         knitr::knit_meta(class=NULL, clean = TRUE) 
+        
         ccno<-match(input$SDdet,codes)
         OM<-Fit[[ccno]]@OM
         output<-plot(Fit[[ccno]],open_file = FALSE)
