@@ -1,5 +1,7 @@
 AM<-function(newtext){
-  updateTextAreaInput(session, "Log", value=paste(newtext,input$Log, sep = "\n"))
+  #updateTextAreaInput(session, "Log", value=paste(newtext,input$Log, sep = "\n"))
+  Log_text$text<-paste(newtext, Log_text$text, sep = "\n")
+  
 }
 
 doprogress<-function(message,duration=1,n=20){

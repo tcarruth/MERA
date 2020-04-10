@@ -20,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.4.4"
+  Version<<-"5.5.1"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -156,6 +156,8 @@ shinyServer(function(input, output, session) {
   output$Dependencies<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
 
   
+  
+  
   # Skin changing tips: you need to:
   # (A) add an Icon to /www/<skin>.png   must be a .png to go with the reporting params
   # (B) add the name to the list at line Skin_nams =  (below)   
@@ -227,6 +229,11 @@ shinyServer(function(input, output, session) {
 
   CurrentYr<-as.integer(substr(as.character(Sys.time()),1,4))
   Copyright<-"Open Source, GPL-2"
+  
+  # Log stuff
+  Log_text <- reactiveValues(text=paste0("-------- Start of Session -------- \nSession ID: ",SessionID,"\nUser ID: ",USERID))
+  output$Log <- renderText(Log_text$text)
+  
   
   FeaseMPs<<-NULL
   redoBlank() # make all the results plots with default sizes - seems to stabilize initial plotting and spacing
@@ -467,7 +474,7 @@ shinyServer(function(input, output, session) {
 
       },
       error = function(e){
-        AM(paste0("Questionnaire failed to load:", filey$datapath))
+        AM(paste0(e,"\n"))
         shinyalert("File read error", "This does not appear to be a MERA questionnaire file", type = "error")
         return(0)
       }
@@ -490,9 +497,9 @@ shinyServer(function(input, output, session) {
          AM(paste0(".csv data loaded:", filey$datapath))
         },
         error = function(e){
+          AM(paste0(e,"\n"))
           shinyalert("Not a properly formatted DLMtool Data .csv file", "Trying to load as an object of class 'Data'", type = "error")
           Data(0)
-          AM(paste0(".csv data failed to load:", filey$datapath))
           loaded=F
         }
       )
@@ -507,8 +514,8 @@ shinyServer(function(input, output, session) {
           Data(1)
         },
         error = function(e){
+          AM(paste0(e,"\n"))
           shinyalert("Could not load object", "Failed to load this file as a formatted data object", type = "error")
-          AM(paste0("Data object failed to load:", filey$datapath))
           Data(0)
         }
       )
@@ -574,7 +581,7 @@ shinyServer(function(input, output, session) {
       },
       
       error = function(e){
-        
+        AM(paste0(e,"\n"))
         shinyalert("File read error", "This does not appear to be a DLMtool OM object, saved by saveRDS()", type = "error")
         AM(paste0("Operating model failed to load: ", filey$datapath))
         return(0)
@@ -631,6 +638,7 @@ shinyServer(function(input, output, session) {
       if (class(listy[[1]]) !='MSE') stop()
     },
     error = function(e){
+      AM(paste0(e,"\n"))
       shinyalert("File read error", "This does not appear to be a MERA evaluation object", type = "error")
       return(0)
     }
@@ -648,6 +656,7 @@ shinyServer(function(input, output, session) {
       redoPlan()
       updateTabsetPanel(session,"Res_Tab",selected="1")
     }else{
+      AM("Planning object load failed: this does not appear to be a MERA planning object")
       shinyalert("File read error", "This does not appear to be a MERA planning object", type = "error")
     }
 
@@ -675,6 +684,7 @@ shinyServer(function(input, output, session) {
       listy<-readRDS(file=filey$datapath)
     },
     error = function(e){
+      AM(paste0(e,"\n"))
       shinyalert("File read error", "This does not appear to be a MERA Evaluation object", type = "error")
       return(0)
     }
@@ -694,7 +704,8 @@ shinyServer(function(input, output, session) {
       redoEval()
       updateTabsetPanel(session,"Res_Tab",selected="2")
     }else{
-      shinyalert("File read error", "This does not appear to be a MERA Application object", type = "error")
+      AM("File read error: This does not appear ot be a MERA Management Performance object")
+      shinyalert("File read error", "This does not appear to be a MERA Management Performance object", type = "error")
     }
 
   })
@@ -739,6 +750,7 @@ shinyServer(function(input, output, session) {
 
     },
       error = function(e){
+        AM(paste0(e,sep="\n"))
         shinyalert("File read error", "Your source code did not load correctly. Try sourcing this file in an R session to debug errors", type = "error")
       }
     )
@@ -779,6 +791,7 @@ shinyServer(function(input, output, session) {
    
     },
     error = function(e){
+      AM(paste0(e,sep="\n"))
       shinyalert("Computational error", "Operating model conditionin returned an error. Try using a different model for conditioning.", type = "info")
       CondOM(0)
       return(0)
@@ -842,6 +855,7 @@ shinyServer(function(input, output, session) {
       
     },
     error = function(e){
+     AM(paste0(e,sep="\n"))
      shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
                    For example a short lived stock a low stock depletion with recently declining effort.
                   Try revising operating model parameters.", type = "info")
@@ -912,6 +926,7 @@ shinyServer(function(input, output, session) {
       
     },
       error = function(e){
+        AM(paste0(e,sep="\n"))
         shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods. Sim testing for effort-based methods is currently not available.", type = "info")
         return(0)
       }
@@ -949,6 +964,7 @@ shinyServer(function(input, output, session) {
       
       },
       error = function(e){
+        AM(paste0(e,sep="\n"))
         shinyalert("Computational error", "Something went wrong with the Simulation test. Try using an alternative selection of Status Determination methods.", type = "info")
         return(0)
       
@@ -998,6 +1014,7 @@ shinyServer(function(input, output, session) {
        
     },
     error = function(e){
+      AM(paste0(e,sep="\n"))
       shinyalert("Computational error", "One or more of the power models used to characterize estimation bias failed to converge. Try selecting a different set of status determination methods.", type = "info")
         return(0)
     })
@@ -1076,7 +1093,7 @@ shinyServer(function(input, output, session) {
 
      },
       error = function(e){
-        print(e)
+        AM(paste0(e,"\n"))
         shinyalert("Computational error", "This probably occurred because the fishery dynamics of your questionnaire are not possible.
                    For example, a short lived stock a low stock depletion with recently declining effort.
                   Try revising operating model parameters.", type = "info")
@@ -1146,6 +1163,7 @@ shinyServer(function(input, output, session) {
     
       },
       error = function(e){
+        AM(paste0(e,"\n"))
         shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
                    For example a short lived stock a low stock depletion with recently declining effort.
                    Try revising operating model parameters.", type = "info")
@@ -1262,6 +1280,9 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       withProgress(message = "Building data report", value = 0, {
         
+        
+        
+        
         # saveRDS(tempdir(),"C:/temp/tempdir.rda")
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
@@ -1270,7 +1291,16 @@ shinyServer(function(input, output, session) {
         output<-paste0(tempdir(),"/Data-Report.html")
         
         #Report(dat,title=paste0("Data Report for",input$Name),author=input$Author,quiet=T,overwrite=T,dir=getwd(),open=F)
-        Report(dat,title=paste0("Data Report for",input$Name),author=input$Author,quiet=T,overwrite=T,open=F,dir=tempdir())
+        
+        tryCatch({
+          Report(dat,title=paste0("Data Report for",input$Name),author=input$Author,quiet=T,overwrite=T,open=F,dir=tempdir())
+        },
+        error = function(e){
+          AM(paste0(e,"\n"))
+          shinyalert("Data report build error", paste(e), type = "info")
+          #return(0)
+        })
+        
         incProgress(0.7)
         file.copy(output, file)
         incProgress(0.1)
