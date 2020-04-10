@@ -501,7 +501,7 @@ shinyServer(function(input, output, session) {
 
       tryCatch(
         {
-          dat<<-load(filey$datapath)
+          dat<<-readRDS(filey$datapath)
          
           AM(paste0("Data object loaded:", filey$datapath))
           Data(1)
