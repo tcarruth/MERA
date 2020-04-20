@@ -20,7 +20,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"5.4.4"
+  Version<<-"6.1.1"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -32,15 +32,10 @@ shinyServer(function(input, output, session) {
   source("./Source/Skins/Generic.R",local=TRUE)
   source("./Source/Skins/ABNJ.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
-  # source("./Source/Skins/Train.R",local=TRUE) # replaced with Generic now
- 
-  
-  #source("./Analysis_results.R",local=TRUE)
-  source("./Source/AI/AI_results.R",local=TRUE)
-  #source("./VOI.R",local=TRUE)
-  #source("./Fease.R",local=TRUE)
 
-  # OM construction / translation
+  source("./Source/AI/AI_results.R",local=TRUE)
+
+    # OM construction / translation
   source("./Source/OM/makeOM.R",local=TRUE)
   source("./Source/OM/ML2D.R",local=TRUE)
   source('./Source/OM/Backwards.R',local=TRUE) # Stochastic SRA until progress bar update comes to DLMtool
@@ -152,9 +147,11 @@ shinyServer(function(input, output, session) {
   output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 5")})
 
   # Update UI
-  output$Version<-renderText(paste0("method evaluation and risk assessment    (MSC-DLMtool App v", Version, ")")) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
+  output$Version<-renderText(paste0("MSC-DLMtool App v", Version)) 
   output$Dependencies<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
-
+  output$Version_help<-renderText(paste0("MSC-DLMtool App v", Version)) 
+  output$Dependencies_help<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
+  
   
   # Skin changing tips: you need to:
   # (A) add an Icon to /www/<skin>.png   must be a .png to go with the reporting params
@@ -197,8 +194,6 @@ shinyServer(function(input, output, session) {
   })# update MP selection in Evaluation
   
   
-  #shinyjs::hide("Skin")
-  shinyjs::hide("Demo_mode")
   
   #onevent("mouseenter", "SkinArea", {
   #           shinyjs::show("Skin")
@@ -328,13 +323,13 @@ shinyServer(function(input, output, session) {
     RA(0); SD(0); Plan(0); Eval()
   })
   
-  observeEvent(input$Demo_mode,{
-    updateNumericInput(session=session,inputId='nsim_RA',value=24)
-    updateNumericInput(session=session,inputId='nsim_SD',value=8)
-    updateNumericInput(session=session,inputId='nsim_Plan',value=12)
-    updateNumericInput(session=session,inputId='nsim_Eval',value=24)
+  #observeEvent(input$Demo_mode,{
+   # updateNumericInput(session=session,inputId='nsim_RA',value=24)
+    #updateNumericInput(session=session,inputId='nsim_SD',value=8)
+    #updateNumericInput(session=session,inputId='nsim_Plan',value=12)
+    #updateNumericInput(session=session,inputId='nsim_Eval',value=24)
     
-  })
+  #})
   
   # == File I/O ==========================================================================
 

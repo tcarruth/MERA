@@ -1,6 +1,7 @@
 library(shinyalert)
 library(shiny)
 library(shinyjs)
+library(shinyWidgets)
 
 
 #js_code <<- "shinyjs.browseURL = function(url) {window.open(url,'_blank')}"
@@ -93,51 +94,173 @@ shinyUI(
       column(1,style="height:65px",
              tags$a(h1("MERA"),href="http://www.merafish.org/",target='_blank')
       ),
-      column(3,style="height:65px",
-             h5(textOutput("Version") ,style="padding:22px;")
+      column(5,style="height:65px",
+             h5("method evaluation and risk assessment" ,style="padding:22px;")
       ),
-      column(1),
       
-      column(3,style="padding:14px;height:65px",
+      column(3),
+      
+      column(3,style="padding-top: 16px",
                
           column(6,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
           column(6,tags$a(img(src = "MSC_logo.png", height = 50, width = 140),href="https://www.msc.org",target='_blank'))
               
       ),
-      
-      column(2),
-      column(1,style="padding-top:10px",
-      
-        #div(id="SkinArea",style="width:105px;height:48px;padding-top:15px",
-        
-         selectInput("Skin", label = "Choose a skin:", choices=c("Generic"),selected="Generic")
-           
-       #)
-               
-      ),
-        
-      
-      column(1,style="padding:19px;height:65px",
-         fluidRow(
-           
-           conditionalPanel(condition="output.SkinNo==1",tags$a(img(src = "Generic.png", height = 52, width = 136),href="https://www.merafish.org/",target='_blank')),
-           conditionalPanel(condition="output.SkinNo==2",tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank')),
-           conditionalPanel(condition="output.SkinNo==3",tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')),
-           conditionalPanel(condition="output.SkinNo==4",tags$a(img(src = "Train.png", height = 58, width = 126),href="https://www.merafish.org/",target='_blank'))
-           
-         )
-      )
-      
+       
     ),
-    hr(),
-
-    h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black"),
-    h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
-    h5("The development and testing of MERA is supported by ", a("the Marine Stewardship Council.",href="https://msc.org",target="blank"),style = "color:grey"),
-    h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
-    h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"), style = "color:grey"),
-    h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"),
-
+    
+    h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black; padding-bottom:12px"),
+   
+    #tags$hr(style="margin-top: 25px; margin-bottom: 2px"),
+    #tags$style("#DD_file {background-color: #3f78a8; color: #3f78a8;}"),
+    fluidRow(style = "background-color:#3f78a8;",
+      column(10,style="padding-left: 14px",
+      div(style="display: inline-block;vertical-align:top",
+      dropdownButton(
+        
+        column(12,style="padding=5px",h5(tags$b("MERA Questionnaire")),
+            column(6,h5("Load (.mera)",style = "color:grey"),fileInput("Load",label=NULL,accept=c("mera",".mera"))),
+            column(1),
+            column(5,h5("Save (.mera)",style = "color:grey"),downloadButton("Save",""))
+        ),
+      
+        column(12,style="padding=5px",hr(), h5(tags$b("MERA Session")),
+          column(6,h5("Load (.merasession)",style = "color:grey"), fileInput("Load_session",label=NULL,accept=c("merasession",".merasession"))),
+          column(1),
+          column(5,h5("Save (.merasession)",style = "color:grey"),    downloadButton("Save_session","",width="100px"))
+        ),
+        
+        column(12,hr(), h5(tags$b("Operating models")),
+          column(6,h5("Import",style="color:grey"), fileInput("Load_OM",label=NULL)),
+          column(1),
+          column(2,h5("Export",style="color:grey"),downloadButton("Save_OM","",width=70)),
+          column(3,h5("Number of simulations",style="color:grey"),numericInput("nsim_OMsave", label=NULL, value=96,min=2,max=256))
+        ),
+        
+        column(12,hr(), h5(tags$b("Load DLMtool and MSEtool source code")),
+               
+          column(12,fileInput("Load_anything",label=NULL))
+               
+        ),
+         
+        inputId = "DD_file",
+        label = "File",
+        icon = icon("file"),
+        status = "primary",
+        circle = FALSE,
+        width="600px"
+        
+      )),
+      
+      div(style="display: inline-block;vertical-align:top",
+      dropdownButton(
+        h5(tags$b("Presentation of results")),      
+        selectInput("Skin", label = NULL, choices=c("Generic"),selected="Generic"),
+        checkboxInput("OM_L","Use Loaded OM for analyses",value=FALSE),
+        inputId = "DD_options",
+        label = "Options",
+        icon = icon("cogs"),
+        status = "primary",
+        circle = FALSE,
+        width="600px"
+        
+      )),
+      
+      div(style="display: inline-block;vertical-align:top",
+      dropdownButton(
+        
+        h5("Build MERA Questionnaire Report",style="font-weight:bold"),
+        downloadButton("Build_OM"," "),
+        
+        h5("Detailed OM Report",style="font-weight:bold"),
+        downloadButton("Build_full_OM",""),
+        
+        inputId = "DD_reports",
+        label = "Reports",
+        icon = icon("newspaper"),
+        status = "primary",
+        circle = FALSE,
+        width="300px"
+        
+      )),
+      
+      div(style="display: inline-block;vertical-align:top; width=150px",
+      dropdownButton(
+        
+        column(12,h5(tags$b("About")),
+          column(12,h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
+          ),
+          hr()
+        ),
+        
+        column(12,hr(),h5(tags$b("Manuals and Documentation")),
+          column(12,h5("The development and testing of MERA is supported by ", a("the Marine Stewardship Council.",href="https://msc.org",target="blank"),style = "color:grey"),
+          h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
+          h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"), style = "color:grey"),
+          h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"))
+          
+        ),
+        
+        column(12,hr(),
+          h5(tags$b("Management Procedures")),
+          column(12, fluidRow(
+           column(4,selectInput("help_MP", label=NULL, choices=c("AvC","AvC_MLL",      "BK" ,          "BK_CC" ,       "BK_ML",        "CC1" ,         "CC2",
+                             "CC3",          "CC4",          "CC5",          "CompSRA",      "CompSRA4010",  "curE",         "curE75",
+                             "DAAC",         "DBSRA",        "DBSRA_40",     "DBSRA4010",   "DCAC",        "DCAC_40",     "DCAC_ML",
+                             "DCAC4010",    "DCACs",       "DD",          "DD4010",      "DDe",         "DDe75",       "DDes",
+                             "DepF",        "DTe40",       "DTe50",       "DynF",        "EtargetLopt", "Fadapt",      "Fdem",
+                             "Fdem_CC",     "Fdem_ML",     "FMSYref",     "FMSYref50",   "FMSYref75",   "Fratio",      "Fratio_CC",
+                             "Fratio_ML",   "Fratio4010",  "GB_CC",       "GB_slope",    "GB_target",   "Gcontrol",    "HDAAC",
+                             "ICI",         "ICI2",        "Iratio",      "Islope1",     "Islope2",     "Islope4",     "IT10",
+                             "IT5",         "Itarget1",    "Itarget1_MPA","Itarget2",    "Itarget3",    "Itarget4",    "ItargetE1",
+                             "ItargetE2",   "ItargetE3",   "ItargetE4",   "ITe10",       "ITe5",        "ITM",         "L95target",
+                             "LBSPR",       "Lratio_BHI",  "Lratio_BHI2", "LstepCC1",    "LstepCC2",    "LstepCC3",    "LstepCC4",
+                             "LstepCE1",    "LstepCE2",    "Ltarget1",    "Ltarget2",    "Ltarget3",    "Ltarget4",    "LtargetE1",
+                             "LtargetE4",   "matlenlim",   "matlenlim2",  "MCD",         "MCD4010",     "minlenLopt1", "MRnoreal",
+                             "MRreal",      "NFref",       "Rcontrol",    "Rcontrol2",   "SBT1",        "SBT2",        "slotlim",
+                             "SPmod",       "SPMSY",       "SPslope",     "SPSRA",       "SPSRA_ML",    "YPR",         "YPR_CC",
+                             "YPR_ML")
+                             ,selected=character(0),width="200px")),
+          
+         
+            column(4,actionButton("getMPhelp","Open documentation for MP",width="200px"))
+          )
+          )
+        
+        ),
+       
+        column(12,hr(),h5(tags$b("Presentation of results")),
+          column(12,h5("The currently selected App results skin is:",style = "color:grey"),
+          div(style="display: inline-block;vertical-align:top",
+            conditionalPanel(condition="output.SkinNo==1",tags$a(img(src = "Generic.png", height = 52, width = 136),href="https://www.merafish.org/",target='_blank')),
+            conditionalPanel(condition="output.SkinNo==2",tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank')),
+            conditionalPanel(condition="output.SkinNo==3",tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')),
+            conditionalPanel(condition="output.SkinNo==4",tags$a(img(src = "Train.png", height = 58, width = 126),href="https://www.merafish.org/",target='_blank'))
+          ))
+        ),
+        
+        column(12, hr(),h5(tags$b("Software")),
+          column(12,h5(textOutput("Version"),style = "color:grey"), 
+          h5(textOutput("Dependencies_help"),style = "color:grey"),
+          h5(textOutput("SessionID_help"),style = "color:grey"),
+          h5("Open Source, GPL-2, 2020",style = "color:grey")
+          )
+        ),
+        inputId = "DD_help",
+        label = "Help",
+        icon = icon("info"),
+        status = "primary",
+        circle = FALSE,
+        width="600px"
+        
+      ))
+      )# end of column 10
+      
+     
+    ),
+    #tags$hr(style="margin-top: 2px; margin-bottom: 5px"),
+    
+    
     fluidRow(
 
       column(12,HTML("<br>")),
@@ -442,34 +565,9 @@ shinyUI(
                                 ),
                                 
                                 
-                                conditionalPanel(width=4,condition="output.Opanel==2",
+                                conditionalPanel(width=4,condition="output.Opanel==2"
                                                  
-                                  HTML("<br>"),
-                                  h5("2. Detailed operating model controls",style="color:grey"),
-                                  column(12,
-                                    column(7,
-                                           fileInput("Load_OM","Load  (.OM)"),
-                                           style="height:55px"
-                                    ),
-                                    column(5,
-                                           conditionalPanel(condition="output.LoadOM==1", h5("Use the loaded operating model",style="font-weight:bold"),
-                                                              checkboxInput("OM_L","",value=FALSE)),
-                                           style="height:55px; padding:6px"
-                                           )
-                                    
-                                  ),
-                                  HTML("<br>"),  
-                                  column(12,style="padding-left:27px",
-                                    HTML("<br>"),    
-                                    h5("Save OM",style="font-weight:bold"),
-                                    column(12,
-                                      column(3,downloadButton("Save_OM","",width=70),style="padding-top:18px"),
-                                      column(5,numericInput("nsim_OMsave", label="No. simulations", value=96,min=2,max=256),style="padding:0px")   
-                                    ),
-                                    HTML("<br>"),      
-                                    h5("Detailed OM Report",style="font-weight:bold"),
-                                    downloadButton("Build_full_OM","")
-                                  )  
+                                
                                                    
                                 ),
                                 
@@ -517,15 +615,6 @@ shinyUI(
                                      column(4,numericInput("RevInc",label="% annual revenue inc",value=0)) 
                                    )
                                 ),
-                                
-                                
-                                conditionalPanel(width=4,condition="output.Opanel==5",
-                                                 
-                                  HTML("<br>"),
-                                  h5("5. Load Source Code",style="color:grey"),
-                                  fileInput("Load_anything","Load DLMtool and MSEtool source code for MPs and PMs")
-                                  
-                                ),  
                                 
                                 value=4)
                       )
@@ -982,7 +1071,7 @@ shinyUI(
         column(12,
           fluidRow(
           column(1),
-          column(4,style="height:80px",
+          column(6,style="height:80px",
               fluidRow(
 
                  column(width = 2,
@@ -1023,25 +1112,8 @@ shinyUI(
               )
            ),
 
-           #column(2),
+           
 
-           column(4,style="height:50px",
-
-                 column(6,style="padding:10px",
-                        fileInput("Load","Load  (.mera)",accept=c("mera",".mera"))
-                 ),
-
-                 column(2,
-
-                          h5("Save",style="font-weight:bold"),
-                          downloadButton("Save","",width=70)
-                 ),
-
-                 column(4,
-                       h5("Questionnaire Report",style="font-weight:bold"),
-                       downloadButton("Build_OM"," ")
-                 )
-           )
 
           )
         )
@@ -1059,24 +1131,19 @@ shinyUI(
            
            column(4,
                   
-                  radioButtons("Mode",label=NULL,choices=c("Risk Assessment","Status Determination","Management Planning","Management Performance"),selected="Risk Assessment"),
+                  radioButtons("Mode",label=NULL,choices=c("Management Planning","Management Performance","Risk Assessment","Status Determination"),selected="Management Planning"),
                   style="padding-left:0px"),
            
            column(7,
                   h5("MERA contains four modes of varying complexity and objectives",style = "color:grey"),
-                  h5(" - Risk Assessment: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
-                  h5(" - Status Determination: use the questionnaire and data to estimate population status",style = "color:grey"),
+                 
                   h5(" - Management Planning: calculate the expected future performance of many candidate management procedures",style = "color:grey"),
-                  h5(" - Management Performance: given a management procedure is in use, analyse new data and monitor performance", style = "color:grey")
-           ),
-           column(1,
-                  div(id="DemoArea",style="width:105px;height:48px;padding-top:15px",
-                      
-                      actionButton("Demo_mode","Demo")
-                      
-                  )
+                  h5(" - Management Performance: given a management procedure is in use, analyse new data and monitor performance", style = "color:grey"),
+                  h5(" - Risk Assessment: characterize the fishery in the questionnaire and calculate the risk of status quo fishery management",style = "color:grey"),
+                  h5(" - Status Determination: use the questionnaire and data to estimate population status",style = "color:grey")
+                  
            )
-           
+         
     ),
    
     
@@ -1559,45 +1626,7 @@ shinyUI(
           ) # column
       ), # end of Results
      
-     conditionalPanel(condition="input.Mode!='Risk Assessment'",
-                      column(12,style="height:15px"),
-      h4("HELP"),
-      hr(),
-
-      fluidRow(
-        column(1),
-        column(11,
-
-               fluidRow(
-                 column(2,
-
-                   selectInput("help_MP", label = "Management Procedure", choices=c("AvC","AvC_MLL",      "BK" ,          "BK_CC" ,       "BK_ML",        "CC1" ,         "CC2",
-                                                                       "CC3",          "CC4",          "CC5",          "CompSRA",      "CompSRA4010",  "curE",         "curE75",
-                                                                       "DAAC",         "DBSRA",        "DBSRA_40",     "DBSRA4010",   "DCAC",        "DCAC_40",     "DCAC_ML",
-                                                                       "DCAC4010",    "DCACs",       "DD",          "DD4010",      "DDe",         "DDe75",       "DDes",
-                                                                       "DepF",        "DTe40",       "DTe50",       "DynF",        "EtargetLopt", "Fadapt",      "Fdem",
-                                                                       "Fdem_CC",     "Fdem_ML",     "FMSYref",     "FMSYref50",   "FMSYref75",   "Fratio",      "Fratio_CC",
-                                                                       "Fratio_ML",   "Fratio4010",  "GB_CC",       "GB_slope",    "GB_target",   "Gcontrol",    "HDAAC",
-                                                                       "ICI",         "ICI2",        "Iratio",      "Islope1",     "Islope2",     "Islope4",     "IT10",
-                                                                       "IT5",         "Itarget1",    "Itarget1_MPA","Itarget2",    "Itarget3",    "Itarget4",    "ItargetE1",
-                                                                       "ItargetE2",   "ItargetE3",   "ItargetE4",   "ITe10",       "ITe5",        "ITM",         "L95target",
-                                                                       "LBSPR",       "Lratio_BHI",  "Lratio_BHI2", "LstepCC1",    "LstepCC2",    "LstepCC3",    "LstepCC4",
-                                                                       "LstepCE1",    "LstepCE2",    "Ltarget1",    "Ltarget2",    "Ltarget3",    "Ltarget4",    "LtargetE1",
-                                                                       "LtargetE4",   "matlenlim",   "matlenlim2",  "MCD",         "MCD4010",     "minlenLopt1", "MRnoreal",
-                                                                       "MRreal",      "NFref",       "Rcontrol",    "Rcontrol2",   "SBT1",        "SBT2",        "slotlim",
-                                                                       "SPmod",       "SPMSY",       "SPslope",     "SPSRA",       "SPSRA_ML",    "YPR",         "YPR_CC",
-                                                                       "YPR_ML")
-                               ,selected=character(0))),
-
-                 column(2, style="padding-top:25px",
-                   actionButton("getMPhelp","Open documentation for MP")
-
-
-                 ),
-                 column(12,htmlOutput("MPdoc"))
-               )
-        )
-      )),
+    
 
       column(12),
 
@@ -1622,7 +1651,7 @@ shinyUI(
        column(6,style="height:40px"),
        column(2,style="height:40px; padding:9px",textOutput("Dependencies")),
        column(2,style="height:40px; padding:9px",textOutput("SessionID")),
-       column(2,style="height:40px", h6("Open Source, GPL-2, 2019"))
+       column(2,style="height:40px", h6("Open Source, GPL-2, 2020"))
 
      #) # end of fluid row
     ) # end of fluid page
