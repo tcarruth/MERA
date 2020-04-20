@@ -69,7 +69,7 @@ shinyUI(
                       #Justification{font-size: 13px;}
                       #SessionID{font-size:11px;}
                       #Dependencies{font-size:11px;}
-
+                      #Log{color:red; font-size:12px; font-style:italic;overflow-y:scroll; max-height: 250px; background: ghostwhite;}
 
                       ")),
 
@@ -1639,7 +1639,8 @@ shinyUI(
        
        #conditionalPanel(condition="input.Debug",
           column(1),
-          column(10, textAreaInput("Log", "Log",height="120px")),
+          column(10, verbatimTextOutput("Log",placeholder=T)), 
+          #textAreaInput("Log", "Log",height="120px")),
           
          
    

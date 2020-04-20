@@ -138,14 +138,8 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     
     # --- Life history imputation
     OM<-LH2OM(OM, dist='norm',plot=F)
-    
-      # --- Data overrides (if the user has loaded data)
-    if(Data()==1){
-      if(!is.null(dat@vbLinf) & !is.na(dat@vbLinf)) OM@cpars$Linf[]<-dat@vbLinf
-      if(!is.null(dat@vbK) & !is.na(dat@vbK)) OM@cpars$K <- OM@cpars$K * dat@vbK / mean(OM@cpars$K) 
-      if(!is.null(dat@vbt0) & !is.na(dat@vbt0)) OM@t0 <- rep(dat@vbt0,2) 
-      if(!is.null(dat@Mort) & !is.na(dat@Mort)) OM@cpars$M <- OM@cpars$M * dat@Mort / mean(OM@cpars$M) 
-    } 
+    saveRDS(OM,"C:/temp/OM.rda")
+
     
     OM@K<-quantile(OM@cpars$K,c(0.05,0.95))
     OM@L50<-quantile(OM@cpars$L50,c(0.05,0.95))
@@ -283,8 +277,8 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     
     # ---- Custom parameters ---------------------------------------------------------------------------------------------------
    
-    OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Linf=Linf,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias,D=D))
-  
+    OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias,D=D))
+   
     # ---- Bioeconomic parameters ----------------------------------------------------------------------------------------------
     #AM("TEST BE")
     
@@ -303,8 +297,11 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     # ---- Data overwriting ---------------------------------------------------------------------------------------------------
     if(Data()==1){
       
+      
       if(!is.na(dat@vbLinf[1])){
         ratio<-dat@vbLinf[1]/mean(OM@cpars$Linf)
+        
+       
         OM@Linf<-rep(dat@vbLinf,2)
         OM@cpars$Linf<-OM@cpars$Linf*ratio
         OM@cpars$LFS<-OM@cpars$LFS*ratio
@@ -316,7 +313,8 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       if(!is.na(dat@wlb))OM@b<-dat@wlb
       if(!is.na(dat@vbt0[1])) OM@t0<-rep(dat@vbt0[1],2)
       if(!is.na(dat@vbK[1])) OM@K<-rep(dat@vbK[1],2); OM@cpars$K<-OM@cpars$K*dat@vbK/mean(OM@cpars$K)
-      
+      if(!is.null(dat@Mort) & !is.na(dat@Mort)) OM@cpars$M <- OM@cpars$M * dat@Mort / mean(OM@cpars$M) 
+     
     }
     
     testing=F
@@ -332,8 +330,6 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
       
     }
-    
-    #saveRDS(OM,"OM_autosave.rda")
     
     SampList<<-data.frame(Ftype,Esdrand,qhssim,Sel50sim,Ahsim,Vhsim,Asim,Vsim,initD,Cbias)
     AM("Using questionnaire-based operating model")
