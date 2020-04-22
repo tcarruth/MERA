@@ -30,32 +30,18 @@ namconv<-function(nam){
 
 getAllMPs<-function(){
   MPs<-avail('MP')
-  cond<-grepl("MLL",MPs)|grepl('ML',MPs)|grepl('DDSS',MPs)|grepl('SPSS',MPs)|grepl('SCA',MPs)
+  cond<-grepl("MLL",MPs)|grepl('ML',MPs)
   MPs<-MPs[!cond]
   MPs<-MPs[!MPs%in%c("YPR","YPR_CC","YPR_ML","LBSPR")]
-  MPs<-MPs[!MPs%in%c("DDSS_4010","DDSS_MSY","SPSS_4010","SPSS_MSY","SCA_MSY","SCA_4010")]
+  #MPs<-MPs[!MPs%in%c("DDSS_4010","DDSS_MSY","SPSS_4010","SPSS_MSY","SCA_MSY","SCA_4010")]
   MPs[order(MPs)]
   MPs
 }
 
 getMPs<-function(All=FALSE){
 
-  if(input$MPset=="Demo"){
-    MPs<-c("DCAC","matlenlim","MRreal","curE75","IT10")
-  }else if(input$MPset=="Custom"){
-    MPs<-input$ManPlanMPsel
-    #updateTextAreaInput(session,"Debug1",value=unlist(input$ManPlanMPsel))
-  }else if(input$MPset=="Top 20"){
-    MPs<-c("DCAC","DBSRA", "DBSRA4010", "DD","DDe","DDe75",  "DD4010","MCD","MCD4010","IT10","IT5",  "MRreal","MRnoreal","matlenlim","matlenlim2","DCAC_40", "DBSRA_40","Fratio","HDAAC","ITe10")
-  }else{
-    MPs<-getAllMPs()
-  }
-
-  if(input$Ex_Ref_MPs) MPs<-MPs[!MPs%in%c("FMSYref","FMSYref75","FMSYref50","NFref")]
-
-  if(input$Data_Rich)  MPs<-c(MPs,"DDSS_4010","DDSS_MSY","SPSS_4010","SPSS_MSY")
-
-  if(All) MPs<-getAllMPs()
+  MPs<-input$ManPlanMPsel
+  
 
   MPs[order(MPs)]
 

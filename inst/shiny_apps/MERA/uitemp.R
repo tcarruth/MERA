@@ -307,18 +307,18 @@ shinyUI(
     
     
     fluidRow(
-      column(12,style="height:20px; "),
-      column(1,style="height:40px; "),
-      column(11, style="height:40px; ",
+      column(12,style="height:20px; background-color:#347ab6;"),
+      column(1,style="height:40px; background-color:#347ab6;"),
+      column(11, style="height:40px; background-color:#347ab6;",
  
-        h4("1. CHARACTERIZE FISHERY SYSTEM",style='color:#347ab6'),
+        h4("1. CHARACTERIZE FISHERY SYSTEM",style='color:white'),
 
-        HTML('<hr style="border-color: #347ab6;">')
+        #HTML('<hr style="border-color: #347ab6;">')
       ),
-      column(1,),
+      column(1,style="background-color:#347ab6;height:20px"),
       column(11,style="height:20px"),
 
-      column(1,),
+      column(1,style="background-color:#347ab6;height:360px"),
       column(11,
              fluidRow(
 
@@ -1095,7 +1095,7 @@ shinyUI(
              )
         ),
 
-       column(1),
+       column(1,style="background-color:#347ab6;height:180px"),
        column(10,style="height:180px",
              fluidRow(
 
@@ -1116,7 +1116,7 @@ shinyUI(
        
         column(12,
           fluidRow(
-          column(1),
+          column(1,style="background-color:#347ab6;height:80px"),
           column(6,style="height:80px",
               fluidRow(
 
@@ -1180,7 +1180,7 @@ shinyUI(
                      column(12,style="height:45px"),
                      
                      fluidRow(
-                       column(1),
+                       column(1,style="background-color:#347ab6"),
                        column(11,
                               fluidRow(
                                 

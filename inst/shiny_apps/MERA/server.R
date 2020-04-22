@@ -45,6 +45,7 @@ shinyServer(function(input, output, session) {
   source("./Source/Reports/OM_report.R",local=TRUE)
 
   # MSE running / indicator calculation
+  source("./Source/MSE/Calculations.R",local=TRUE)
   source("./Source/MSE/Redos.R",local=TRUE)
   
   # Advice
@@ -91,7 +92,7 @@ shinyServer(function(input, output, session) {
   AdCalc<-reactiveVal(0) # Has advice been calculated
   Tweak<-reactiveVal(0)  # Have things affecting performance metrics been tweaked?
   SkinNo<-reactiveVal(0) # Skin selection
- 
+  
   output$Fpanel <- reactive({ Fpanel()})
   output$Mpanel <- reactive({ Mpanel()})
   output$Dpanel <- reactive({ Dpanel()})
@@ -141,6 +142,9 @@ shinyServer(function(input, output, session) {
   
   outputOptions(output,"SkinNo",suspendWhenHidden=FALSE)
   
+   
+  #output$allMPs(getAllMPs())
+  updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs())
   output$Fpanelout <- renderText({ paste("Fishery",Fpanel(),"/ 19")})
   output$Mpanelout <- renderText({ paste("Management",Mpanel(),"/ 7")})
   output$Dpanelout <- renderText({ paste("Data",Dpanel(),"/ 4")})
@@ -151,8 +155,6 @@ shinyServer(function(input, output, session) {
   output$Dependencies<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
   output$Version_help<-renderText(paste0("MSC-DLMtool App v", Version)) 
   output$Dependencies_help<-renderText(paste0("Powered by: DLMtool v", packageVersion('DLMtool'), "  /  MSEtool v",packageVersion('MSEtool'))) #"method evaluation and risk assessment    (MSC-DLMtool App v4.1.7)"
-  
-  
   
   
   # Skin changing tips: you need to:
@@ -195,27 +197,6 @@ shinyServer(function(input, output, session) {
     
   })# update MP selection in Evaluation
   
-  
-  
-  #onevent("mouseenter", "SkinArea", {
-  #           shinyjs::show("Skin")
-  #        }
-  #)
-  #onevent("mouseleave", "SkinArea", {
-  #          shinyjs::hide("Skin")
-  #        }
-  #)
-  
-  onevent("mouseenter", "DemoArea", {
-    shinyjs::show("Demo_mode")
-          }
-  )
-  
-  onevent("mouseleave", "DemoArea", {
-    shinyjs::hide("Demo_mode")
-          }
-  )
- 
   
   # Some useful things
   USERID<-Sys.getenv()[names(Sys.getenv())=="USERNAME"]
@@ -303,13 +284,7 @@ shinyServer(function(input, output, session) {
   observeEvent(sapply(inputtabs, function(x) input[[x]]),{
 
     UpPanelState()
-    #for(i in 1:length(PanelState)){
-     # for(j in 1:length(PanelState[[i]])) {
-      #  value<-sapply(inputnames[[i]][j],function(x) input[[x]])
-       # PanelState[[i]][[j]] <<- get(MasterList[[i]][j])%in%value
-      #}
-    #}
-
+   
   })
 
   observeEvent(input$Mode,{
@@ -330,13 +305,7 @@ shinyServer(function(input, output, session) {
     RA(0); SD(0); Plan(0); Eval()
   })
   
-  #observeEvent(input$Demo_mode,{
-   # updateNumericInput(session=session,inputId='nsim_RA',value=24)
-    #updateNumericInput(session=session,inputId='nsim_SD',value=8)
-    #updateNumericInput(session=session,inputId='nsim_Plan',value=12)
-    #updateNumericInput(session=session,inputId='nsim_Eval',value=24)
-    
-  #})
+  
   
   # == File I/O ==========================================================================
 
@@ -715,7 +684,6 @@ shinyServer(function(input, output, session) {
 
   # Indicator Data load
 
-
   observeEvent(input$getMPhelp,{
 
     #browseURL(MPurl(input$help_MP))
@@ -729,15 +697,6 @@ shinyServer(function(input, output, session) {
 
   # End of file I/O ===================================================================================
 
-  #observeEvent(input$nsim, {
-   # nsim<<-as.numeric(input$nsim)
-    #updateTextInput(session,"Debug1",value=nsim)
-    #if(nsim>0){
-    #  if(nsim<48) shinyjs::disable("Parallel")
-    #  if(nsim>47) shinyjs::enable("Parallel")
-    #}
-  #})
-
   observeEvent(input$sel_MP,{
     selectedMP<<-input$sel_MP
   })
@@ -748,8 +707,7 @@ shinyServer(function(input, output, session) {
         filey<-input$Load_anything
         AM(paste0("Source file loaded: ",filey$datapath))
         source(file=filey$datapath)
-        updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Application
-        updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
+        
 
     },
       error = function(e){
@@ -759,7 +717,56 @@ shinyServer(function(input, output, session) {
     )
 
   })
-
+  
+  observeEvent(input$MPset,{
+    if(input$MPset=="Demo"){
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","matlenlim","MRreal","curE75","IT10"))
+    }else if(input$MPset=="Top 20"){
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","DBSRA", "DBSRA4010", "DD","DDe","DDe75",  "DD4010","MCD","MCD4010","IT10","IT5",  "MRreal","MRnoreal","matlenlim","matlenlim2","DCAC_40", "DBSRA_40","Fratio","HDAAC","ITe10"))
+    }else if(input$MPset=="All"){
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = getAllMPs())
+    }
+  })  
+  
+  observeEvent(input$Ex_Ref_MPs,{
+    tempMPs<-input$ManPlanMPsel
+    refMPs<-c("FMSYref","FMSYref75","FMSYref50","NFref")
+    if(any(tempMPs%in%refMPs)){
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected=tempMPs[!(tempMPs%in%refMPs)])
+    }else{
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected=unique(c(tempMPs,refMPs)))
+    }
+    
+  })
+  
+  observeEvent(input$Data_Rich,{
+    tempMPs<-input$ManPlanMPsel
+    refMPs<-c("DDSS_4010","DDSS_MSY","SPSS_4010","SPSS_MSY","SCA_MSY","SCA_4010")
+    if(any(tempMPs%in%refMPs)){
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected=tempMPs[!(tempMPs%in%refMPs)])
+    }else{
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected=unique(c(tempMPs,refMPs)))
+    }
+    
+  })
+  
+  observeEvent(input$StatusQuo_MPs,{
+    
+    tempMPs<-input$ManPlanMPsel
+    refMPs<-c("curE","curE75","CurC")
+    
+    if(any(refMPs%in%tempMPs)){
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected=tempMPs[!(tempMPs%in%refMPs)])
+    }else{
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected=unique(c(tempMPs,refMPs)))
+    }
+    
+  })
+  
+  observeEvent(input$Clear_MPs,{
+    updateSelectInput(session=session,inputId="ManPlanMPsel",selected="")
+  })
+  
 
 #############################################################################################################################################################################
 ### Calculation functions
@@ -804,382 +811,23 @@ shinyServer(function(input, output, session) {
     
   }) # press calculate
   
-  
-  observeEvent(input$Calculate_risk,{
-    
-    Fpanel(1)
-    MPs<-c('curE','CurC','FMSYref','NFref')
-    nsim <- ifelse(quick, 8, input$nsim_RA)
 
-    if(LoadOM()==1&input$OM_L){ 
-      OM<<-OM_L
-    }else if(CondOM()==1&input$OM_C){ 
-      OM<<-OM_C
+  observeEvent(input$Calculate,{
+    
+    if(input$Mode=="Management Planning"){
+      Calc_Plan()
+    }else if(input$Mode=="Management Performance"){
+      Calc_Perf()       
+    }else if(input$Mode=="Risk Assessment"){
+      Calc_RA()
     }else{
-      OM<<-makeOM(PanelState,nsim=nsim)
-    }
-    
-    #saveRDS(OM,"C:/Users/tcar_/Dropbox/MERA paper/Figures/OM_Boc.rda")
-    
-    MSClog<<-list(PanelState, Just, Des)
-    OM@interval<<-input$interval
-    
-    parallel=F
-    if(input$Parallel){
-      
-      if(nsim>47){
-        
-        parallel=T
-        setup()
-        
-      }
-      
-    }
-     
-    Update_Options()
-    
-    tryCatch({
-      
-      withProgress(message = "Running Risk Assessment", value = 0, {
-        silent=T
-        RAobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
-      })
-      
-      RAobj@Misc[[4]]<<-SampList
-     
-      # ==== Types of reporting ==========================================================
-      RA(1)
-      message("preredoRA")
-      smartRedo()
-      message("postredoRA")
-    
-      #Tweak(0)
-      #updateTabsetPanel(session,"Res_Tab",selected="1")
-      
-    },
-    error = function(e){
-     AM(paste0(e,sep="\n"))
-     shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-                   For example a short lived stock a low stock depletion with recently declining effort.
-                  Try revising operating model parameters.", type = "info")
-      return(0)
-    }
-    
-    )
-    
+      Calc_Status()
+    } 
+  
   }) # press calculate
   
-  
-  observeEvent(input$Calculate_status,{
-    
-    Status<-new('list')
-    
-    nsim<-input$nsim_SD
-    
-    if(LoadOM()==1&input$OM_L){ 
-      OM<-OM_L
-      OMsimsam<-OM_L
-    }else if(CondOM()==1&input$OM_C){ 
-      OM<-OM_C
-      OMsimsam<-OM_L
-    }else{
-      OM<-makeOM(PanelState,nsim=nsim)
-      OMsimsam<-makeOM(PanelState,nsim=40)
-    }
-    
-    #saveRDS(OM,"C:/Users/tcarruth/Dropbox/MERA prototyping/OM_Scoping/OM3.rds")
-    
-    if(input$SDset=="Custom"){
-      codes<<-input$SDsel
-    }else{
-      if(input$SDset=="All"){
-        nSD=Inf
-      }else if(input$SDset=="Top 6"){
-        nSD=6
-      }else if(input$SDset=="Top 3"){
-        nSD=3
-      }
-      codes<<-getCodes(dat,maxtest=nSD)
-    }
-    
-    ncode<-length(codes)
-    Est<-Sim<-list()
-    Fit<<-list()
-    
-    #saveRDS(OM,"C:/temp/OM3")
-    #saveRDS(dat,"C:/temp/dat3")
-    #saveRDS(codes,"C:/temp/codes3")
-    setup(cpus=4)
-    
-    tryCatch({
-      
-      withProgress(message = "Running Status Determination", value = 0, {
-        #saveRDS(OM,"C:/temp/OM.rda")
-        for(cc in 1:ncode){
-          Fit[[cc]]<<-GetDep(OM,dat,code=codes[cc],cores=4)
-          Est[[cc]]<-Fit[[cc]]@OM@cpars$D[Fit[[cc]]@conv]
-          if(sum(Fit[[cc]]@conv)==0)AM(paste(cc,codes[cc],"Did not return depletion"))
-          incProgress(1/ncode, detail = round(cc*100/ncode))
-        }  
-    
-      })
-      
-      saveRDS(OMsimsam,"C:/temp/OMsimsam")
-      saveRDS(Est,"C:/temp/Est")
-      saveRDS(codes,"C:/temp/codes")
-      
-    },
-      error = function(e){
-        AM(paste0(e,sep="\n"))
-        shinyalert("Computational error", "One or more of the Status Determination methods you selected returned an error. Try using a custom selection of Status Determination methods. Sim testing for effort-based methods is currently not available.", type = "info")
-        return(0)
-      }
-    )
-    
-  
-    
-    tryCatch({
-      
-      if(input$SD_simtest){
-        
-        SimSams<-BCfit<-list()
-        
-        if(any(grepl("E",codes))){
-          AM("You have requested to sim test at least one method for status determination that uses effort data...")
-          AM("This is not possible given the current version of DLMtool. If you want to sim-test please choose methods that do not include 'E' for effort.")
-        }  
-        
-        AM("Conducting sim-testing of methods for Status Determination")
-        #setup(cpus=4)
-        withProgress(message = "Running simulation test of SD methods", value = 0, {
-        
-          # Generate simulated data over a range of stock depletion
-          for(cc in 1:ncode){
-            
-            AM(paste(" -------------- ", codes[cc],":", cc,"/",ncode, " -------------- "))
-            SimSams[[cc]]<-SimTest(OMsimsam,code=codes[cc], ndeps=40, DepLB=0.05, DepUB=0.8)
-            incProgress(1/ncode, detail = round(cc*100/ncode))
-            
-          } 
-          
-        })
-        
-        #saveRDS(SimSams,"C:/temp/SimSams.rds")
-        
-      }
-      
-      },
-      error = function(e){
-        AM(paste0(e,sep="\n"))
-        shinyalert("Computational error", "Something went wrong with the Simulation test. Try using an alternative selection of Status Determination methods.", type = "info")
-        return(0)
-      
-      }
-    )
-    
-  
-    
-    tryCatch({    
-      
-      if(input$SD_simtest){
-      
-         BCfit<-list() 
-          
-         # Fit non-linear models to the sim-sam fit and calculate bias-corrected estimates of stock depletion
-          withProgress(message = "Calculating bias correction", value = 0, {
-            
-            for(cc in 1:ncode){
-              
-              BCfit[[cc]]<-fitdep(out=SimSams[[cc]],dEst=Est[[cc]])
-              incProgress(1/ncode, detail = round(cc*100/ncode))
-            }
-            
-          })  
-            
-       
-      }else{
-          
-          SimSams<-NULL
-          BCfit<-NULL
-          
-      }
-  
-      # ==== Types of reporting ==========================================================
-      
-      # Status<-list(codes=codes,Est=Est, Sim=Sim, Fit=Fit,nsim=nsim,Years=dat@Year,SimSams=SimSams,BCfit=BCfit)
-      # saveRDS(Status,"C:/temp/Status.rda")
-      
-      Status <<- list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit)
-      SD(1) 
-      message("preredoSD")
-      smartRedo()
-      message("postredoSD")
-      
-      updateSelectInput(session, "SDdet",choices=codes,selected=codes[1])
-      # updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
-      # Tweak(0)
-      # updateTabsetPanel(session,"Res_Tab",selected="1")
-       
-    },
-    error = function(e){
-      AM(paste0(e,sep="\n"))
-      shinyalert("Computational error", "One or more of the power models used to characterize estimation bias failed to converge. Try selecting a different set of status determination methods.", type = "info")
-        return(0)
-    })
-    
-    
-  }) # press calculate
-  
-   
-  observeEvent(input$Calculate_Plan,{
-  
-    doprogress("Building OM from Questionnaire",1)
-    
-    if(LoadOM()==1&input$OM_L){ 
-      OM<<-OM_L
-    }else if(CondOM()==1&input$OM_C){ 
-      OM<<-OM_C
-    }else{
-      OM<<-makeOM(PanelState,nsim=input$nsim_Plan)
-    }
-    
-    Fpanel(1)
-    MPs<<-getMPs()
-    
-    nsim<<-input$nsim_Plan
-    parallel=F
-    
-    if(input$Parallel){
-
-      if(nsim>47){
-        
-        parallel=T
-        setup()
-
-      }
-      
-    }
-    MSClog<<-list(PanelState, Just, Des)
-    
-    Update_Options()
-    #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
-
-    tryCatch({
-        withProgress(message = "Running Planning Analysis", value = 0, {
-          silent=T
-          MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
-        })
-        
-      # if (input$Skin !="Train") { # don't run rebuild for Train skin
-      if(exists('SampList'))MSEobj@Misc[[4]]<<-SampList
-      Dep_reb<-runif(OM@nsim,input$Dep_reb[1],input$Dep_reb[2]) # is a %
-      OM_reb<-OM
-      OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0 
-      
-      withProgress(message = "Rebuilding Analysis", value = 0, {
-        if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
-        MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
-      })
-      
-      MSEobj_reb@Misc[[4]]<<-SampList
-      # } else {
-      #   MSEobj_reb <<- MSEobj
-      # }
-
-        #saveRDS(MSEobj,file="C:/temp/MSEobj2.Rdata")
-        #saveRDS(MSEobj_reb,file="C:/temp/MSEobj_reb2.Rdata")
-        
-        # ==== Types of reporting ==========================================================
-          
-        message("preredoPlan")
-        Plan(1)
-        smartRedo()
-        message("postredoPlan")
-        
-        #Tweak(0)
-        #updateTabsetPanel(session,"Res_Tab",selected="1")
-
-     },
-      error = function(e){
-        AM(paste0(e,"\n"))
-        shinyalert("Computational error", "This probably occurred because the fishery dynamics of your questionnaire are not possible.
-                   For example, a short lived stock a low stock depletion with recently declining effort.
-                  Try revising operating model parameters.", type = "info")
-        return(0)
-      }
-
-    )
-
-  }) # press calculate
-
 
   # ------------------------------------------------------------------------------------------------------------------------------------
-
-  observeEvent(input$Calculate_Eval,{
-
-    doprogress("Building OM from Questionnaire",1)
-    YIU=length(dat_ind@Year)-length(dat@Year)
-    
-    if(LoadOM()==1&input$OM_L){ 
-      OM_Eval<<-OM_L
-    }else if(CondOM()==1&input$OM_C){ 
-      OM_Eval<<-OM_C
-    }else{
-      OM_Eval<<-makeOM(PanelState,proyears=YIU*2,nsim=input$nsim_Eval) # project to 2 x years in use
-    }  
-   
-    Fpanel(1)
-    EvalMPs<-input$sel_MP
-    
-    nsim<<-input$nsim_Eval
-    parallel=F
-    
-    if(input$Parallel){
-      
-      if(nsim>47){
-        
-        parallel=T
-        setup()
-        
-      }
-      
-    }
-    
-    MSClog<<-list(PanelState, Just, Des)
-    Update_Options()
-   
-    tryCatch({
-    
-      withProgress(message = "Running Performance Evaluation", value = 0, {
-        #saveRDS(OM_Eval,file="C:/temp/OM_Eval.Rdata")
-        #saveRDS(EvalMPs,file="C:/temp/EvalMPs.Rdata")
-        
-        EvalMPs<-input$sel_MP
-        MSEobj_Eval<<-runMSE(OM_Eval,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
-        
-      })
-      
-      Eval(1)
-      Ind(1)
-      message("preredoEval")
-      smartRedo()
-      message("postredoEval")
-   
-      #saveRDS(MSEobj_Eval,file="C:/temp/MSEobj_Eval.Rdata")
-      #saveRDS(dat,file="C:/temp/dat.Rdata")
-      #saveRDS(dat_ind,file="C:/temp/dat_ind.Rdata")
-    
-      },
-      error = function(e){
-        AM(paste0(e,"\n"))
-        shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-                   For example a short lived stock a low stock depletion with recently declining effort.
-                   Try revising operating model parameters.", type = "info")
-        return(0)
-      }
-    ) # try catch
-
-  }) # calculate MSE app
 
   CheckJust<-function(){
 
