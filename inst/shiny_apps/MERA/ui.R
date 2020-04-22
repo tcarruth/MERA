@@ -82,7 +82,10 @@ shinyUI(
     includeCSS("www/custom.css"),
      
     fluidRow(
-      column(12,style="height:10px; background-color:#347ab6;"),
+      column(12,style="height:15px; background-color:#347ab6;"),
+      column(12,style="height:7px; background-color:'white'"),
+      column(12,style="height:1px; background-color:#347ab6;"),
+      
       
       column(1,style="height:65px",
              tags$a(h1("MERA"),href="http://www.merafish.org/",target='_blank')
@@ -103,10 +106,17 @@ shinyUI(
     ),
     
     h4("Welcome to MERA, an open-source tool for analyzing risk, guiding fishery improvement projects, and evaluating management strategies for certification.",style = "color:black; padding-bottom:12px"),
-   
-    tags$head(tags$style(HTML("#DD_file { border-color: #347ab6 }"))),
+    fluidRow(
+      column(12,style="height:1px; background-color:#347ab6;"),
+      
+      column(12,style="height:7px; background-color:'white'"),
+    ),
+    
     fluidRow(style = "background-color:#347ab6;",
       column(10,style="padding-left: 10px",
+      
+      # File drop down ----------------------------------------------------------------------------------------------------------------       
+      tags$head(tags$style(HTML("#DD_file { border-color: #347ab6 }"))),
       div(style="display: inline-block;vertical-align:top",
       dropdownButton(
         
@@ -146,7 +156,8 @@ shinyUI(
         width="700px"
         
       )),
-      
+ 
+      # Options drop down ----------------------------------------------------------------------------------------------------------------       
       tags$head(tags$style(HTML("#DD_options { border-color: #347ab6 }"))),
       div(style="display: inline-block;vertical-align:top",
       dropdownButton(
@@ -167,25 +178,91 @@ shinyUI(
                h5(tags$b("Presentation of results",style="color:#347ab6")),      
                column(12,selectInput("Skin", label = NULL, choices=c("Generic"),selected="Generic",width="100px")),
         ),
-       
-        column(12, tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
-               h5(tags$b("Rebuilding MSE settings",style="color:#347ab6")),   
-          column(9, sliderInput("Dep_reb",label="Starting % BMSY from which to evaluate rebuilding",min=10,max=100,value=c(50,50))),
-          column(2, HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey")))
-        ),
-        column(12,  tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
-               h5(tags$b("Custom Operating Models",style="color:#347ab6")),   
-               column(12,checkboxInput("OM_L","Use Loaded OM for analyses",value=FALSE)),
-        ),
+        
+        
         inputId = "DD_options",
         label = "Options",
-        icon = icon("cogs"),
+        icon = icon("grip-horizontal"),
         status = "primary",
         circle = FALSE,
         width="800px"
         
       )),
       
+      # Settings drop down ----------------------------------------------------------------------------------------------------------------       
+      tags$head(tags$style(HTML("#DD_settings { border-color: #347ab6 }"))),
+      div(style="display: inline-block;vertical-align:top",
+          dropdownButton(
+            
+            column(12, 
+                   h5(tags$b("Closed-loop simulation",style="color:#347ab6")), 
+           
+                   column(5,    
+                     column(8,numericInput("interval", label = h5("Management interval"), value=8,min=2,max=10)),
+                     column(8,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px")
+                   ),
+                   
+                   column(7,
+                     h5("Number of simulations:")
+                   ),
+                   
+                   column(3, 
+                     column(12,h5("Risk Assess."),style="height:35px"),
+                     column(12,h5("Stat. Det."),style="height:35px"),
+                     column(12,h5("Mang. Plan."),style="height:35px"),
+                     column(12,h5("Mang. Perf."),style="height:35px")
+                   ),
+                    
+                   column(4, 
+                     column(12,numericInput("nsim_RA", label=NULL, value=144,min=2,max=512),style="height:35px"),
+                     column(12,numericInput("nsim_SD", label=NULL, value=48,min=2,max=512),style="height:35px"),
+                     column(12,numericInput("nsim_Plan", label=NULL, value=96,min=2,max=512),style="height:35px"),
+                     column(12,numericInput("nsim_Eval",label=NULL, value=144,min=2,max=512),style="height:35px"),
+                     column(12,
+                            actionButton("DemoSims",h5("DEMO",style="color:grey")),
+                            actionButton("DefSims",h5("DEFAULT",style="color:grey"))
+                     )
+                   )
+            ),
+            
+            column(12, tags$hr(style="margin-top: 6px; margin-bottom: 3px"),
+                   h5(tags$b("Rebuilding MSE",style="color:#347ab6")),   
+                   column(9, sliderInput("Dep_reb",label=h5("Starting % BMSY from which to evaluate rebuilding"),min=10,max=100,value=c(50,50))),
+                   column(2, HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey")))
+            ),
+            conditionalPanel(condition="output.LoadOM==1",
+              column(12,  tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
+                   h5(tags$b("Custom Operating Models",style="color:#347ab6")),   
+                   column(12,checkboxInput("OM_L","Use Loaded OM for analyses",value=FALSE)),
+              )
+            ),
+            conditionalPanel(condition="output.Data==1",
+              column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
+                   h5(tags$b("Status determination approach",style="color:#347ab6")),    
+                   column(6,selectInput("SDsel","",  choices=c("C"),selected="C", multiple = FALSE))
+              )
+            ),
+            conditionalPanel(condition="output.Data==1",
+                  column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
+                   h5(tags$b("Operating model conditioning (fitting to data)",style="color:#347ab6")), 
+                  
+                     column(6,selectInput("Cond_ops", label = h5("Conditioning Model"), choices=c("None"),selected="None"),style="height:75px"),
+                     column(6),
+                     column(6, checkboxInput("OM_C","Use conditioned OM for analyses",value=TRUE),style="height:75px")
+                   )
+            ),
+            
+            inputId = "DD_settings",
+            label = "Settings",
+            icon = icon("sliders-h"),
+            status = "primary",
+            circle = FALSE,
+            width="800px"
+            
+          )),
+      
+      
+      # Report drop down ----------------------------------------------------------------------------------------------------------------       
       tags$head(tags$style(HTML("#DD_reports { border-color: #347ab6 }"))),
       div(style="display: inline-block;vertical-align:top",
       dropdownButton(
@@ -196,10 +273,47 @@ shinyUI(
         column(9,h5("Detailed OM Report",style="font-weight:bold;color:#347ab6")),
         column(3,downloadButton("Build_full_OM","")),
         
-        column(9,h5("Management Planning Report",style="font-weight:bold;color:#347ab6")),
-        column(3,
-          conditionalPanel(condition="output.Plan==1", downloadButton("Build_Plan",""))
+        conditionalPanel(condition="output.Plan==0",
+          column(9,h5("Management Planning Report",style="color:grey")),
+        ),                 
+        conditionalPanel(condition="output.Plan==1",
+           column(9,h5("Management Planning Report",style="font-weight:bold;color:#347ab6")),
+           column(3,downloadButton("Build_Plan",""))
         ),
+        
+        conditionalPanel(condition="!(output.DataInd==1 & output.Eval==1)",
+          column(9,h5("Management Performance Report",style="color:grey")),
+        ),                 
+        conditionalPanel(condition="output.DataInd==1 & output.Eval==1",
+          column(9,h5("Management Performance Report",style="font-weight:bold;color:#347ab6")),
+          column(3,downloadButton("Build_Eval"," "))
+        ),
+        
+        conditionalPanel(condition="output.SD==0",
+          column(9,h5("Status Report",style="color:grey")),
+        ),                 
+        conditionalPanel(condition="output.SD==1",
+          column(9,h5("Status Report",style="font-weight:bold;color:#347ab6")),
+          column(3,downloadButton("Build_Status",""))
+        ),
+        
+        conditionalPanel(condition="output.SD==0",
+          column(9,h5("Detailed Status Report (model fitting)",style="color:grey")),
+        ),
+        conditionalPanel(condition="output.SD==1",
+          column(9,h5("Detailed Status Report (model fitting)",style="font-weight:bold;color:#347ab6")),
+          column(3, downloadButton("SDdet_rep",""))
+        ),
+        
+        conditionalPanel(condition="output.RA==0", 
+          column(9,h5("Risk Assessment Report",style="color:grey")),
+        ),
+        conditionalPanel(condition="output.RA==1", 
+          column(9,h5("Risk Assessment Report",style="font-weight:bold;color:#347ab6")),
+          column(3,downloadButton("Build_RA",""))
+        ),
+        
+      
         inputId = "DD_reports",
         label = "Reports",
         icon = icon("newspaper"),
@@ -209,6 +323,7 @@ shinyUI(
         
       )),
       
+      # Help drop down ----------------------------------------------------------------------------------------------------------------       
       tags$head(tags$style(HTML("#DD_help { border-color: #347ab6 }"))),
       div(style="display: inline-block;vertical-align:top; width=150px",
       dropdownButton(
@@ -310,7 +425,7 @@ shinyUI(
       column(1,),
       column(11,style="height:20px"),
 
-      column(1,),
+      column(1),
       column(11,
              fluidRow(
 
@@ -574,31 +689,7 @@ shinyUI(
                                 conditionalPanel(width=4,condition="output.Opanel==1",
                                                  
                                                  
-                                   HTML("<br>"),
-                                   h5("1. Closed loop simulation controls",style="color:grey"),
-                                   HTML("<br>"),
-                                   column(4,    
-                                          column(8,numericInput("interval", label = "Management interval", value=8,min=2,max=10)),
                                    
-                                          column(8,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px")
-                                   ),
-                                   column(8,
-                                     h5("Number of simulations")
-                                   ),
-                                   column(4, 
-                                          column(12,h5("Risk Assess."),style="height:35px"),
-                                          column(12,h5("Stat. Det."),style="height:35px"),
-                                          column(12,h5("Mang. Plan."),style="height:35px"),
-                                          column(12,h5("Mang. Perf."),style="height:35px")
-                                   ),
-                                   
-                                   column(4, 
-                                          
-                                          column(12,numericInput("nsim_RA", label=NULL, value=96,min=2,max=256),style="height:35px"),
-                                          column(12,numericInput("nsim_SD", label=NULL, value=24,min=2,max=256),style="height:35px"),
-                                          column(12,numericInput("nsim_Plan", label=NULL, value=24,min=2,max=256),style="height:35px"),
-                                          column(12,numericInput("nsim_Eval",label=NULL, value=96,min=2,max=256),style="height:35px")
-                                   )
                                                  
                                 ),
                                 
@@ -611,33 +702,7 @@ shinyUI(
                                 
                                 conditionalPanel(width=4,condition="output.Opanel==3",
                                                  
-                                   HTML("<br>"),
-                                   h5("3. Condition operating models on data <alpha>",style="color:grey"),
-                                   HTML("<br>"),
-                                   column(12,style="padding-left:27px",
-                                          
-                                     conditionalPanel(condition="output.Data==0",
-                                         h5("You must first load data (first 'Data' question) before conditioning operating models",style="color:grey")
-                                     ),
-                                     
-                                     conditionalPanel(condition="output.Data==1",
-                                        
-                                           column(6,selectInput("Cond_ops", label = "Conditioning Method", choices=c("None"),selected="None"),style="height:75px"),
-                                           column(6,numericInput("nsim_OM", label="No. simulations", value=12,min=2,max=256),style="height:75px"),
-                                           column(6, checkboxInput("OM_C","Use conditioned OM for analyses",value=FALSE),style="height:75px"),
-                                           column(6, actionButton("Cond","Condition operating model"),style="height:75px")
-                                              
-                                     ),
-                                     
-                                     conditionalPanel(condition="output.CondOM==1",
-                                           column(6),
-                                           column(6,
-                                                  h5("Conditioning report",style="color:grey"),
-                                           downloadButton("Cond_rep",""),style="height:75px")
-                                            
-                                     )
-                                     
-                                   )              
+                                       
                                 ),
                                 
                                 conditionalPanel(width=4,condition="output.Opanel==4",
@@ -1148,11 +1213,7 @@ shinyUI(
                  
                    
               )
-           ),
-
-           
-
-
+           )
           )
         )
     ), # end of Step 1 fluid row
@@ -1165,17 +1226,22 @@ shinyUI(
     
     # =============== Risk Assessment ================================================================================================================================================
     conditionalPanel(condition="input.Mode=='Risk Assessment'",
-                     column(12,style="height:15px"),  
-                     column(12,h4("2. CALCULATE RISK OF STATUS QUO MANAGEMENT",style="color:white"),"background-color:#347ab6"),
+                     column(12,style="height:15px"),
+                     fluidRow(
+                       column(1),
+                       column(11,
+                            h4("2. CALCULATE RISK OF STATUS QUO MANAGEMENT",style="color:#347ab6"),
                      
-                     #HTML('<hr style="border-color: #347ab6;">'),
-                     column(12,style="height:45px"),
+                            HTML('<hr style="border-color: #347ab6;">')
+                       )
+                     ),
+                     column(12,style="height:5px"),
                      
                      fluidRow(
                        column(1),
                        column(11,
                               fluidRow(
-                                
+                                column(4),
                                 column(6,
                                        
                                        h5("Current fishing effort, current catches, FMSY fishing and zero catches are projected to evaluate status-quo fishery risk", style = "color:grey"),
@@ -1186,22 +1252,6 @@ shinyUI(
                               )
                               
                        )
-                     ),
-                     
-                     fluidRow(
-                       column(1),
-                       column(6),
-                       column(4,
-                              
-                              column(4,
-                                     
-                                     conditionalPanel(condition="output.RA==1",
-                                                      h5("Risk Assessment Report",style="font-weight:bold"),
-                                                      downloadButton("Build_RA","")
-                                     )
-                                     
-                              )
-                       )
                      )
                      
     ),           
@@ -1211,37 +1261,34 @@ shinyUI(
     
     conditionalPanel(condition="input.Mode=='Status Determination'",
        column(12,style="height:15px"),                
-       h4("2. CALCULATE POPULATION STATUS",style="color:#347ab6"),
-       
-       HTML('<hr style="border-color: #347ab6;">'),
-       column(12,style="height:45px"),
        
        fluidRow(
          column(1),
          column(11,
-                fluidRow(
-                  column(4,conditionalPanel(condition="output.Data==1",
-                      fluidRow(
-                          column(7,radioButtons('SDset',label="Status Determination Methods",choices=c("All","Top 6","Top 3","Custom"),selected="Top 3",inline=T)),
-                          column(5,conditionalPanel(condition="input.SDset=='Custom'",selectInput("SDsel","",  choices=c("C"),selected="C", multiple = TRUE))),
-                          column(6,checkboxInput("SD_simtest", label = "Include simulation test (computationally intensive)", value = FALSE))
-                          
-                      )
-                  ),
+                h4("2. CALCULATE POPULATION STATUS",style="color:#347ab6"),
+                
+                HTML('<hr style="border-color: #347ab6;">')
+         )
+       ),
+      
+       column(12,style="height:5px"),
+       
+       fluidRow(
+         column(1),
+         column(11,
+                column(4,
+                  
                   conditionalPanel(condition="output.Data==0",
                          HTML("<br>"),
                          h5("To calculate stock status you must first load data (Data question 1)", style = "color:grey")
                   )
+                ),
                   
-                  
-                  ),
-                  
-                  column(6,
+                column(6,
                          
                          h5("Status determination mode automatically detects what data types are available and identifies those 
-                            status estimation methods approaches that are compatible. Each modelling approach for estimating 
-                            status relies on a varying 
-                            combination of data types that are coded according to the data used: ", style = "color:grey"),
+                            status estimation models that are compatible. The model that uses the most data is selected by default. 
+                            The user can override this by selecting a particular model from the options menu. The models are named according to the data types detected: ", style = "color:grey"),
                          h5("C: catch data (annual)", style = "color:grey"),
                          h5("I: index of relative abundance (annual)", style = "color:grey"),
                          h5("M: mean length of fish in the catch (annual)", style = "color:grey"),
@@ -1250,69 +1297,26 @@ shinyUI(
                          h5("Approaches that use only catch data or length compositions assume a pattern in annual 
                              fishing mortality rate defined by the annual fishing effort of Fishery
                              Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey"),
-                         h5("There is the option of simulation testing Status Determination approaches. This is computationally 
-                         intensive but can reveal the expected pattern of bias and estimation error across a range of known stock status.
-                         The methods that use only catch data or length compositions assume a pattern in annual 
-                             fishing mortality rate defined by the annual fishing effort of Fishery
-                             Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey"),
                          h5("For further information on the stock reduction analysis used to quantify population status see
                             the", a(" detailed guide.", href="https://dlmtool.github.io/DLMtool/MERA/SRA_scope_vignette.html", 
                                     target="_blank"),style = "color:grey")
-                         
-                                 
                   )
                 )
-                
-         )
-         
-       ),
-       
-       
-       fluidRow(
-         column(7),
-         column(4,
-                column(6,style="padding:10px",
-                       fileInput("Load_Status","Load  (.Status)")
-                ),
-                
-                column(2,
-                       conditionalPanel(condition="output.SD==1",
-                                        h5("Save",style="font-weight:bold"),
-                                        downloadButton("Save_Status","",width=70)
-                       )
-                       
-                ),
-                column(4,
-                       
-                       conditionalPanel(condition="output.SD==1",
-                                        h5("Status Report",style="font-weight:bold"),
-                                        downloadButton("Build_Status","")
-                       )
-                       
-                )
-         ),
-         
-         conditionalPanel(condition="output.SD==1",
-           column(7),
-           column(4,
-                  hr(),
-                  column(4, selectInput("SDdet",label=" Detailed Status Report",  choices=c("C"),selected="C", multiple = FALSE)),
-                  column(6, downloadButton("SDdet_rep",""))
-                                        
            )
-          
-         )
-       )
-       
-    ),                 
+     ),                 
 
-  
     # =============== Planning =======================================================================================================================================================          
     
     conditionalPanel(condition="input.Mode=='Management Planning'",
        column(12,style="height:15px"), 
-       h4("2. CALCULATE EXPECTED PERFORMANCE OF MANAGEMENT OPTIONS",style='color: #347ab6'),
-       HTML('<hr style="border-color: #347ab6;">'),
+       fluidRow(
+         column(1),
+         column(11,
+                h4("2. CALCULATE EXPECTED PERFORMANCE OF MANAGEMENT OPTIONS",style='color: #347ab6'),
+                
+                HTML('<hr style="border-color: #347ab6;">')
+         )
+       ),
        column(12,style="height:15px"),
        
        fluidRow(
@@ -1320,18 +1324,18 @@ shinyUI(
          column(11,
                 fluidRow(
                   column(4,
-                                            
                           # column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
                           # column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
                       fluidRow( 
                           column(12, selectInput("ManPlanMPsel","MPs for testing",  choices=c("DCAC","matlenlim","MRreal","curE75","IT10"),selected=c("DCAC","matlenlim","MRreal","curE75","IT10"), multiple = TRUE)),
-                          column(7, radioButtons('MPset',label="Presets",choices=c("Demo","Top 20","All"),selected="Demo",inline=T)),
+                          column(12, radioButtons('MPset',label="Presets",choices=c("Demo","Top 20","All"),selected="Demo",inline=T)),
                           column(12, h5("Toggles",style="font-weight:bold")),
-                          actionButton("Ex_Ref_MPs", label = "Reference"),
-                          actionButton("Data_Rich", label = "Data-rich"),
-                          actionButton("StatusQuo_MPs", label = "Status Quo"),
-                          actionButton("Clear_MPs", label = "Clear")
-                          
+                          column(12,style="padding-left:13px",
+                            actionButton("Ex_Ref_MPs", label = "Reference"),
+                            actionButton("Data_Rich", label = "Data-rich"),
+                            actionButton("StatusQuo_MPs", label = "Status Quo"),
+                            actionButton("Clear_MPs", label = "Clear")
+                          )
                       )
                     ),
                   
@@ -1361,10 +1365,14 @@ shinyUI(
     conditionalPanel(condition="input.Mode=='Management Performance'",
       column(12,style="height:15px"),          
  
-      h4("2. MANAGEMENT PERFORMANCE",style='color:#347ab6'),
-      
-      HTML('<hr style="border-color: #347ab6;">'),
-      
+      fluidRow(
+        column(1),
+        column(11,
+               h4("2. MANAGEMENT PERFORMANCE",style='color:#347ab6'),
+               HTML('<hr style="border-color: #347ab6;">')
+        )
+      ),
+     
       fluidRow(
         column(1),
         column(11,#style="height:285px",
@@ -1375,12 +1383,10 @@ shinyUI(
       
                         conditionalPanel(condition="output.DataInd==0",
                               h5("Data file must be loaded (Data question 1) that has indicator data", style = "color:grey")
-      
                         ),
                         
                         conditionalPanel(condition="output.DataInd==1",
-                            selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0)),
-                            actionButton("Calculate_Eval",h5(" CALCULATE  ",style="color:red"))
+                            selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0))
                         )
       
                  ),
@@ -1393,44 +1399,42 @@ shinyUI(
                  )
              )
         )
-    ),
-
-    fluidRow(
-      column(1),
-      column(6),
-      column(4,
-             column(8),
-             column(4,
-                    conditionalPanel(width=4,condition="output.DataInd==1 & output.Eval==1",
-                            h5("Performance Evaluation Report",style="font-weight:bold"),
-                            downloadButton("Build_Eval"," ")
-                    )
-             )
-       )
     )
+    
     ),
     
     # ====================================================================================================================================================================
     
     HTML("<br><br><br>"),
-     tags$style(HTML('#Calculate{ border-color: #347ab6;}')),
-     fluidRow(style = "background-color:#347ab6;",
-      column(3),
-      column(6,
-          actionBttn("Calculate",h4("CALCULATE",style="color:'red'"),icon("calculator"),block=T, style="simple",color='default',size='xs'),
-      ),
-      column(3)
-    ),  
-    
-    HTML("<br><br>"),
+    tags$style(HTML('#Calculate{ border-color: #347ab6;}')),
+    #fluidRow(
+      column(1,style="background-color:white"),
+      
+      column(11,style = "background-color:#347ab6",
+        column(12,style = "background-color:#347ab6; height=2px"),
+        column(4),
+        column(4,
+            actionBttn("Calculate",h4(tags$b("CALCULATE")),icon("cogs"),block=T, style="fill",color='default',size='sm')
+        ),
+        column(4),
+        column(12,style = "background-color:#347ab6; height=2px")
+      ) ,
+    #),
+    HTML("<br><br><br>"),
     # ====================================================================================================================================================================
     
     
    column(12,style="height:15px"),
 
-        h4("3. RESULTS",style='color: #347ab6'),
-        HTML('<hr style="border-color: #347ab6;">'),
-   
+       fluidRow(
+         column(1),
+         column(11,
+                h4("RESULTS",style='color: #347ab6'),
+                
+                HTML('<hr style="border-color: #347ab6;">')
+         )
+       ),
+       
 
         fluidRow(
           column(1),
@@ -1637,7 +1641,8 @@ shinyUI(
        #conditionalPanel(condition="input.Debug",
           column(1),
           column(10, verbatimTextOutput("Log",placeholder=T)), 
-          #textAreaInput("Log", "Log",height="120px")),
+          bsTooltip("Log","Application Log"),       
+   #textAreaInput("Log", "Log",height="120px")),
           
          
    
@@ -1653,6 +1658,9 @@ shinyUI(
 
      #) # end of fluid row
     ) # end of fluid page
+  
+   
+  
   ) # end of server
 
 

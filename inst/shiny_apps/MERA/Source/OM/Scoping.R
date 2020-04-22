@@ -424,7 +424,7 @@ GetDep<-function(OM,dat,code,cores=4){
   #saveRDS(OM,"C:/temp/OM")
   #saveRDS(outlist,"C:/temp/outlist")
   OMeff<-outlist$condition=="effort"
- 
+  options(warn=-1)
   out<-SRA_scope(OM=OM,
                  data=outlist,
                  report=F,
@@ -432,7 +432,7 @@ GetDep<-function(OM,dat,code,cores=4){
                  cores=cores,
                  OMeff=OMeff,
                  control=list(eval.max=5000, iter.max=5000, abs.tol=1e-6))
-  
+  options(warn=0)
   out
   
 }

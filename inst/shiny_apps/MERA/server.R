@@ -12,6 +12,7 @@ library(shinyalert)
 library(DT)
 library(mvtnorm)
 library(cowplot)
+library(shinyBS)
 
 options(shiny.maxRequestSize=1000*1024^2)
 
@@ -65,6 +66,9 @@ shinyServer(function(input, output, session) {
   # MERA shiny app related
   source("./Source/App/Update_objects.R",local=TRUE) # functions that update stored objects, panelstate justification etc
   source("./Source/App/Debug.R",local=TRUE) # functions that update stored objects, panelstate justification etc
+  source("./Source/App/IO.R",local=TRUE)  # functions that deal with input/output of objects (file load/save)
+  source("./Source/App/Tooltips.R",local=TRUE)  # tooltip info
+  
 
   # Miscellaneous
   source("./Source/Misc/Misc.R",local=TRUE)
@@ -289,8 +293,8 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$Mode,{
     
-    updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Evaluation
-    updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
+    #updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Evaluation
+    #updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
     Update_Options()
     AM(paste0("Mode selected: ", input$Mode))
     smartRedo()
@@ -315,21 +319,8 @@ shinyServer(function(input, output, session) {
     filename = function()paste0(namconv(input$Name),".mera"),
 
     content=function(file){
-      Des<<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-      if(Data()==1){
-        PanelState$dat<-dat
-        AM("Saving appended data")
-      }
-      if(DataInd()==1){
-        PanelState$dat_ind<-dat_ind
-      }
       
-      #saveRDS(PanelState,"C:/temp/PanelState.rds")
-      
-      MSClog<-list(PanelState, Just, Des)
-      
-      #saveRDS(MSClog,"C:/temp/MSClog.rds")
-      
+      MSClog<-package_Questionnaire()
       doprogress("Saving Questionnaire")
       saveRDS(MSClog,file)
       AM(paste0("Questionnaire saved:", file))
@@ -345,100 +336,8 @@ shinyServer(function(input, output, session) {
     tryCatch({
 
         MSClog<-readRDS(file=filey$datapath)
-        cond<-length(MSClog)==3 & sum(names(MSClog[[1]])[1:4]==c("Fpanel","Mpanel","Dpanel","Slider"))==4
-        AM(paste0("Questionnaire loaded:", filey$datapath))
-        
-        if(cond){
-          PanelState<<-MSClog[[1]]
-          Just<<-MSClog[[2]]
-
-          # All panels except radio button on D4
-          for(i in 1:2){
-            for(j in 1:length(PanelState[[i]])) {
-             
-              state<-as.vector(unlist(PanelState[[i]][j]))
-              choices<-as.vector(unlist(get(MasterList[[i]][j])))
-              selected<-as.list(choices[state])
-              choices<-as.list(choices)
-              updateCheckboxGroupInput(session, as.character(inputnames[[i]][j]), selected = selected)
-              
-            }
-          }
-          
-          i<-3
-          
-          for(j in 2:3){
-            
-            state<-as.vector(unlist(PanelState[[i]][j]))
-            choices<-as.vector(unlist(get(MasterList[[i]][j])))
-            selected<-as.list(choices[state])
-            choices<-as.list(choices)
-            updateCheckboxGroupInput(session, as.character(inputnames[[i]][j]), selected = selected)
-            
-          }
-        
-          for(j in 1:length(PanelState[[4]])){
-            updateSliderInput(session,as.character(inputnames[[4]][j]),value=as.numeric(PanelState[[4]][j]))
-          }
-
-          # update the radio button D4
-          i<-3
-          j<-4
-          state<-as.vector(unlist(PanelState[[i]][j]))
-          choices<-as.vector(unlist(get(MasterList[[i]][j])))
-          selected<-as.list(choices[state])
-          choices<-as.list(choices)
-          updateRadioButtons(session, as.character(inputnames[[i]][j]), selected = selected)
-
-          updateTextInput(session, "Name",     value= MSClog[[3]]$Name)
-          updateTextInput(session, "Species",  value= MSClog[[3]]$Species)
-          updateTextInput(session, "Region",   value= MSClog[[3]]$Region)
-          updateTextInput(session, "Agency",   value= MSClog[[3]]$Agency)
-          updateNumericInput(session, "nyears",   value= MSClog[[3]]$nyears)
-          updateTextInput(session, "Author",   value= MSClog[[3]]$Author)
-          updateTextInput(session, "Justification",value=Just[[1]][1])
-          updateTabsetPanel(session,"tabs1",selected="1")
-          
-
-          #=== DEBUGGING WINDOW =====================================================
-          #updateTextAreaInput(session,"Debug",value=choices)
-          #updateTextAreaInput(session,"Debug2",value=selected)
-          #updateTextAreaInput(session,"Debug3",value=inputId)
-          # ==========================================================================
-
-          Fpanel(1)
-          Mpanel(1)
-          Dpanel(1)
-          Opanel(1)
-          Plan(0)
-          RA(0) # Have run risk assessment (multi MP)
-          SD(0) # Has a status determination been run yet?
-          Plan(0) # Have run Planning (multi MP)
-          Eval(0)
-          
-          if(!is.null(MSClog[[1]]$dat)){
-            dat<<-MSClog[[1]]$dat
-            Data(1)
-            DataInd(0)
-            FeaseMPs<<-Fease(dat)
-            AM("Data loaded with questionnaire")
-            if(!is.null(MSClog[[1]]$dat_ind)){
-               dat_ind<<-MSClog[[1]]$dat_ind
-               DataInd(1)
-               AM("Additional data loaded since MP was adopted")
-            }
-            SD_codes<-getCodes(dat,maxtest=Inf)
-            AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
-            updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
-            updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
-          }
-           
-          
-        }else{
-          AM(paste0("Questionnaire failed to load:", filey$datapath))
-          shinyalert("File read error", "This does not appear to be a MERA questionnaire file", type = "error")
-        }
-
+        Update_Questionnaire(MSClog)
+       
       },
       error = function(e){
         AM(paste0(e,"\n"))
@@ -586,28 +485,33 @@ shinyServer(function(input, output, session) {
   })
 
 
-  # Plan save
-  output$Save_Plan<- downloadHandler(
+  # Session save
+  output$Save_session<- downloadHandler(
 
-    filename = function()paste0(namconv(input$Name),".Plan"),
+    filename = function()paste0(namconv(input$Name),".merasession"),
 
     content=function(file){
-
-      doprogress("Saving Evaluation data")
-      saveRDS(list(MSEobj=MSEobj,MSEobj_reb=MSEobj_reb),file)
+      MSClog<-package_Questionnaire()
+      doprogress("Saving MERA session")
+      if(!exists("MSEobj"))MSEobj=NULL
+      if(!exists("MSEobj_reb"))MSEobj_reb=NULL
+      if(!exists("RAobj"))RAobj=NULL
+      if(!exists("MSEobj_Eval"))MSEobj_Eval=NULL
+      if(!exists("Status"))Status=NULL
+      saveRDS(list(MSEobj=MSEobj,MSEobj_reb=MSEobj_reb,RAobj=RAobj,MSEobj_Eval=MSEobj_Eval,MSClog=MSClog,Status=Status),file)
 
     }
 
   )
 
-  # Plan load
-  observeEvent(input$Load_Plan,{
+  # Session load
+  observeEvent(input$Load_session,{
 
-    filey<-input$Load_Plan
+    filey<-input$Load_session
 
     tryCatch({
       listy<<-readRDS(file=filey$datapath)
-      if (class(listy[[1]]) !='MSE') stop()
+      
     },
     error = function(e){
       AM(paste0(e,"\n"))
@@ -615,84 +519,35 @@ shinyServer(function(input, output, session) {
       return(0)
     }
     )
+    Update_Questionnaire(listy$MSClog)
+    #cond<-class(listy[[1]])=="MSE" & class(listy[[2]])=="MSE" & listy[[1]]@nMPs>1
 
-    cond<-class(listy[[1]])=="MSE" & class(listy[[2]])=="MSE" & listy[[1]]@nMPs>1
-
-    if(cond){
-      MSEobj<<-listy[[1]]
-      MSEobj_reb<<-listy[[2]]
-      Plan(1)
-      MadeOM(0)
-      CondOM(0)
-      smartRedo()
-      redoPlan()
-      updateTabsetPanel(session,"Res_Tab",selected="1")
-    }else{
-      AM("Planning object load failed: this does not appear to be a MERA planning object")
-      shinyalert("File read error", "This does not appear to be a MERA planning object", type = "error")
-    }
-
-  })
-
-  # Eval save
-  output$Save_Eval<- downloadHandler(
-
-    filename = function()paste0(namconv(input$Name),".Eval"),
-
-    content=function(file){
-
-      doprogress("Saving Evaluation data")
-      saveRDS(list(MSEobj=MSEobj,MSEobj_reb=MSEobj_reb),file)
-
-    }
-  )
-
-  # Eval load
-  observeEvent(input$Load_Eval,{
-
-    filey<-input$Load_Eval
-
-    tryCatch({
-      listy<-readRDS(file=filey$datapath)
-    },
-    error = function(e){
-      AM(paste0(e,"\n"))
-      shinyalert("File read error", "This does not appear to be a MERA Evaluation object", type = "error")
-      return(0)
-    }
-    )
-
-    cond<-class(listy[[1]])=="MSE" & class(listy[[2]])=="MSE" & listy[[1]]@nMPs==1
-
-    if(cond){
-      MSEobj<<-listy[[1]]
-      MSEobj_reb<<-listy[[2]]
-      Eval(1)
-      MadeOM(0)
-      CondOM(0)
-      Quest(0)
-      Ind(0)
-      smartRedo()
-      redoEval()
-      updateTabsetPanel(session,"Res_Tab",selected="2")
-    }else{
-      AM("File read error: This does not appear ot be a MERA Management Performance object")
-      shinyalert("File read error", "This does not appear to be a MERA Management Performance object", type = "error")
-    }
+    #if(cond){
+    MSEobj<<-listy$MSEobj
+    MSEobj_reb<<-listy$MSEobj_reb
+    RAobj<<-listy$RAobj
+    MSEobj_Eval<<-listy$MSEobj_Eval
+    Status<<-listy$Status
+    Plan(0); Eval(0); SD(0); RA(0) # reset status switches
+    redoBlank()
+    #"Management Planning","Management Performance","Risk Assessment","Status Determination"
+    if(!is.null(MSEobj_Eval)){Eval(1);AM("Management Performance results loaded");redoEval();updateRadioButtons(session=session,"Mode",selected="Management Performance")}
+    if(!is.null(Status)){SD(1);AM("Status Determination results loaded");redoSD();updateRadioButtons(session=session,"Mode",selected="Status Determination")}
+    if(!is.null(RAobj)){RA(1);AM("Risk Assessment results loaded");redoRA();updateRadioButtons(session=session,"Mode",selected="Risk Assessment")}
+    if(!is.null(MSEobj)){Plan(1);AM("Management Planning results loaded");redoPlan(); updateRadioButtons(session=session,"Mode",selected="Management Planning")}
+    MadeOM(0)
+    CondOM(0)
+    updateTabsetPanel(session,"Res_Tab",selected="1")
+    #}else{
+    #  AM("Planning object load failed: this does not appear to be a MERA planning object")
+     # shinyalert("File read error", "This does not appear to be a MERA planning object", type = "error")
+    #}
 
   })
 
-  # Indicator Data load
-
+  
   observeEvent(input$getMPhelp,{
-
-    #browseURL(MPurl(input$help_MP))
     js$browseURL(MPurl(input$help_MP))
-    #output$MPdoc<-renderUI({
-    #  HTML(readLines('http://dlmtool.github.io/DLMtool/reference/DCAC.html'))
-    #})
-        #js$browseURL(MPurl(input$help_MP))
-
   })
 
   # End of file I/O ===================================================================================
@@ -767,6 +622,23 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session=session,inputId="ManPlanMPsel",selected="")
   })
   
+  observeEvent(input$DemoSims,{
+    
+    updateNumericInput(session=session,inputId="nsim_RA",value=24)
+    updateNumericInput(session=session,inputId="nsim_SD",value=12)
+    updateNumericInput(session=session,inputId="nsim_Plan",value=16)
+    updateNumericInput(session=session,inputId="nsim_Eval",value=24)
+    
+  })
+  
+  observeEvent(input$DefSims,{
+    
+    updateNumericInput(session=session,inputId="nsim_RA",value=144)
+    updateNumericInput(session=session,inputId="nsim_SD",value=48)
+    updateNumericInput(session=session,inputId="nsim_Plan",value=96)
+    updateNumericInput(session=session,inputId="nsim_Eval",value=144)
+    
+  })
 
 #############################################################################################################################################################################
 ### Calculation functions
@@ -1209,9 +1081,8 @@ shinyServer(function(input, output, session) {
         incProgress(0.1)
         knitr::knit_meta(class=NULL, clean = TRUE) 
         
-        ccno<-match(input$SDdet,codes)
-        OM<-Fit[[ccno]]@OM
-        output<-plot(Fit[[ccno]],open_file = FALSE)
+        OM<-Fit@OM
+        output<-plot(Fit,open_file = FALSE)
            
         incProgress(0.8)
         file.copy(output, file)
@@ -1639,16 +1510,8 @@ shinyServer(function(input, output, session) {
   output$plotBeta <- renderPlot(plotBeta())
   output$plotCB <- renderPlot(plotCB())
 
-  #observeEvent(input$debug,
-  #            updateTextAreaInput(session,"Debug1",value=MadeOM())
-  #)
   
-  # observeEvent(input$P_Tab_1_rows_selected, {
-  #   row.select <<- input$P_Tab_1_rows_selected
-  #   print("*1.**********")
-  #   print(row.select)
-  #   print("----------")
-  #   
-  # })
+  # Tool tips
+  for(i in 1:ntips)addTooltip(session,ids[[i]],title=titles[[i]])
 
 })

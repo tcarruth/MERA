@@ -41,8 +41,6 @@ getAllMPs<-function(){
 getMPs<-function(All=FALSE){
 
   MPs<-input$ManPlanMPsel
-  
-
   MPs[order(MPs)]
 
 }

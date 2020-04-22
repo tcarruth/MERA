@@ -66,10 +66,10 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     OM<-OM_L
     SampList<<-NULL
     AM("Using loaded operating model")
-  }else if(input$OM_C & !UseQonly){
-    OM<-OM_C
-    SampList<<-NULL
-    AM("Using conditioned operating model")
+  #}else if(input$OM_C & !UseQonly){
+   # OM<-OM_C
+    #SampList<<-NULL
+    #AM("Using conditioned operating model")
   }else{
 
     OM<-LowSlopes(DLMtool::testOM)

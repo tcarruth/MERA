@@ -402,54 +402,6 @@ Tabs[[1]]<-function(Status,options=list()){
   
 }
 
-Tab_title[[3]] <- "Table 2. Bias-corrected depletion estimates (SSB relative to unfished)"
-Tab_text[[3]] <-"Quantiles of the depletion estimates of various methods, bias corrected by simulation analysis (Figures 3 and 4). Method refers to a stochastic 
-  stock reduction analysis fitted to various combinations of data types (C Catch, I Index, M mean length, CAA Catch at age composition, CAL Catch at length composition).
-  'Conv' is the fraction of runs that converged."
-
-Tabs[[3]]<-function(Status,options=list()){
-  
-  if(!is.null(Status$SimSams)){
-    
-    ntot<-length(Status$Fit)
-    ns<-sapply(1:ntot,function(X,listy)length(listy[[X]]$dEst),listy=Status$BCfit)
-    keep<-unlist(lapply(Status$Est,length))>3
-    nkeep<-sum(keep)
-    keep_ind<-(1:ntot)[keep]
-    Allbc<-unlist(lapply(Status$BCfit,function(x)x$biascor)[keep])
-    
-    ncode<-length(Status$codes)
-    qs<-matrix(NA,nrow=nkeep+1,ncol=5)
-    
-    qs[1,]<-round(quantile(Allbc*100,c(0.025,0.05,0.5,0.95,0.975)),2)
-    
-    for(i in keep_ind){
-      
-      qs[i+1,]<-round(quantile(Status$BCfit[[i]]$biascor*100,c(0.025,0.05,0.5,0.95,0.975)),2)
-      
-    }
-    
-    tab<-as.data.frame(cbind(c("All",Status$codes[keep_ind]),qs))
-    names(tab)<-c("Method","2.5%","5%","Median","95%","97.5%")
-    datatable(tab,caption="Stock status estimates (SSB relative to 'unfished')",
-              extensions = 'Buttons',
-              options=list(buttons = 
-                             list('copy', list(
-                               extend = 'collection',
-                               buttons = c('csv', 'excel', 'pdf'),
-                               text = 'Download'
-                             )),
-                           dom = 'Brti')
-    )
-    
-  }else{
-    
-    datatable(data.frame("Simulation testing not selected"),filter="none",rownames=FALSE,colnames="",caption=NULL,escape=FALSE,options=list(dom="t",bSort=FALSE))%>%
-      formatStyle("X.Simulation.testing.not.selected.",color = 'blue')
-  }
-  
-}
-
 
 # --- Figures --- 
 Fig_title[[1]] <- "Figure 1. Depletion estimates (SSB relative to unfished)"
@@ -473,7 +425,7 @@ Figs[[1]]<-function(Status,options=list()){
   
   
 }
-Fig_dim[[1]]<-function(dims)list(height=500,width=800)
+Fig_dim[[1]]<-function(dims)list(height=500,width=400)
 
 Fig_title[[2]] <- "Figure 2. Spawning stock depletion relative to equilibrium SSB in initial year "
 Fig_text[[2]] <-"The first panel shows median estimated depletion trend for all status determination methods. 
@@ -507,14 +459,14 @@ Figs[[2]]<-function(Status,options=list()){
   Dqs<-lapply(deps,getquants)
   meds<-matrix(unlist(lapply(Dqs,function(x)x[3,])),ncol=ntot)[,keep,drop=F]
   ny<-nrow(meds)
-  par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+  par(mfrow=c(1,1),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
   
-  plot(c(0,ny),c(0,1),col="white",yaxs='i',ylab="",xlab="")
-  abline(h=seq(0.1,1,length.out=10),col="light grey")
-  matplot(meds,type='l',col=cols,add=T,lty=1) 
+  #plot(c(0,ny),c(0,1),col="white",yaxs='i',ylab="",xlab="")
+  #abline(h=seq(0.1,1,length.out=10),col="light grey")
+  #matplot(meds,type='l',col=cols,add=T,lty=1) 
   
-  legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
-  mtext("Median trend, all methods",3,line=0.2,font=2)
+  #legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
+  #mtext("Median trend, all methods",3,line=0.2,font=2)
   
   qplot<-function(mat,xlab=1:ny,main=""){ #qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4"
     
@@ -538,121 +490,8 @@ Figs[[2]]<-function(Status,options=list()){
   mtext("Stock Depletion (SSB relative to unfished)",2,line=0.5,outer=T)
   
 }
-Fig_dim[[2]]<-function(dims)list(height=500*ceiling(dims$nmeth/5),width=1200)
+Fig_dim[[2]]<-function(dims)list(height=500*ceiling(dims$nmeth/5),width=700)
 
-
-Fig_title[[3]] <- "Figure 3. Simulation testing and bias correction for selected status determination methods."
-Fig_text[[3]] <-"Black points represent simulated depletions and the corresponding estimate by the various status determination approaches.
-  The red lines are samples of the fitted power curve that approximates the estimation performance of each approach. For each status determination method and estimate 
-  of stock depletion (blue vertical lines, blue distribution) this is bias-corrected by sampling a powercurve and calculating the corresponding depletion level (horizontal 
-  green lines, green distribution). The samples of the power curve are taken from the covariance-variance matrix arising form a single maximum likelihood fit to the simulated an 
-  assessed values (black dots), assuming a multivariate normal distribution."
-
-Figs[[3]]<-function(Status,options=list()){
-  
-  if(!is.null(Status$SimSams)){
-    
-    ntot<-length(Status$Fit)
-    keep<-unlist(lapply(Status$Est,length))>3 # keep estimates from one of the methods of estimation
-    nmods<-sum(keep)
-    keep_ind<-(1:ntot)[keep]
-    nc<-5
-    nr<-ceiling(nmods/nc)
-    
-    par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
-    
-    for(cc in keep_ind){
-      
-      biasplot(Status$BCfit[[cc]],lab=Status$codes[[cc]])
-      
-    }
-    
-    mtext("Assessed status",1,line=0.5,outer=T)
-    mtext("Simulated status (bias corrected estimate)",2,line=0.5,outer=T)
-    
-  }else{
-    plot(c(0,1),col='white',xlab="",ylab="",axes=F)
-    legend('center',legend="Simulation testing not selected",bty='n',text.col="blue")
-    
-  }
-}
-
-Fig_dim[[3]]<-function(dims){
-  if(dims$SimSam){
-    return(list(height=500*ceiling(dims$nmeth/5),width=1200))
-  }else{
-    return(list(height=150,width=400))
-  }
-  
-}
-
-Fig_title[[4]] <- "Figure 4. Bias corrected distribution of depletion across all methods."
-Fig_text[[4]] <- "Summary of raw and bias corrected status estimates among methods."
-
-Figs[[4]]<-function(Status,options=list()){
-  
-  if(!is.null(Status$SimSams)){
-    ntot<-length(Status$Fit)
-    ns<-sapply(1:ntot,function(X,listy)length(listy[[X]]$dEst),listy=Status$BCfit)
-    keep<-unlist(lapply(Status$Est,length))>3
-    Est<-Status$Est[keep]
-    nEst<-sum(keep)
-    biascor2<-lapply(Status$BCfit,function(x)x$biascor)[keep]
-    biascor<-lapply(Status$BCfit,function(x)x$biascor)
-    
-    par(mfrow=c(1,3),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.1,0.05))
-    
-    xlim<-quantile(c(unlist(Est),unlist(biascor2)),c(0.01,0.99))+c(0,0.1)
-    maxn<-max(ns)
-    tot<-length(Est)
-    
-    plot(c(0,1),xlim,col='white')
-    dAss<-density(unlist(Est),adjust=0.85,from=0)
-    dBC<-density(unlist(biascor2),adjust=0.85,from=0)
-    polygon(c(0,dAss$y/max(dAss$y)),c(0,dAss$x),col="#0000ff60",border="#0000ff60")
-    polygon(c(0,dBC$y/max(dBC$y)),c(0,dBC$x),col="#00ff0070",border="#00ff0070")
-    abline(h=quantile(unlist(Est),c(0.025,0.5,0.975)),lty=c(2,1,2),lwd=c(1,2,1),col="#0000ff90")
-    abline(h=quantile(unlist(biascor2),c(0.025,0.5,0.975)),lty=c(2,1,2),lwd=c(1,2,1),col="#00ff0090")
-    legend('topright',legend=c("Status estimates","Bias-corrected"),text.col=c("#0000ff90","#00ff0090"),bty='n')
-    mtext("All method estimates combined",3,line=0.6)
-    mtext("Relative Frequency",1,line=2.6)
-    
-    
-    cols<-c('#0000ff70',rep('lightgrey',ntot))
-    mcols<-c('#0000ff90',rep('black',ntot))
-    y=c(unlist(Est),unlist(Est))
-    x=c(rep("All",length(unlist(Est))),rep(Status$codes[keep],unlist(lapply(Est,length))))
-    SDdat<-data.frame(y=y,x=x)
-    boxplot(y~x,SDdat,col=cols,ylim=xlim,pars=list(medcol=mcols))
-    #legend('topright',legend=c("All",Status$codes[keep]),text.col=cols,bty='n',cex=0.9)
-    mtext("Stock status estimates",3,line=0.6)
-    
-    cols<-c('#00ff0070',rep('lightgrey',ntot))
-    mcols<-c('#00ff0090',rep('black',ntot))
-    y=c(unlist(biascor2),unlist(biascor2))
-    x=c(rep("All",length(unlist(biascor2))),rep(Status$codes[keep],unlist(lapply(biascor,length))))
-    SDdat<-data.frame(y=y,x=x)
-    boxplot(y~x,SDdat,col=cols,ylim=xlim,pars=list(medcol=mcols))
-    #legend('topright',legend=c("All",Status$codes[keep]),text.col=cols,bty='n',cex=0.9)
-    mtext("Bias-corrected stock status",3,line=0.6)
-    mtext("Status Determination Method",1,line=2.6,adj=-1)
-    mtext("Stock status (SSB relative to unfished)",2,line=0.6,outer=T)
-    
-  }else{
-    
-    plot(c(0,1),col='white',xlab="",ylab="",axes=F)
-    legend('center',legend="Simulation testing not selected",bty='n',text.col="blue")
-    
-  } 
-}
-
-Fig_dim[[4]]<-function(dims){
-  if(dims$SimSam){
-    return(list(height=500,width=1000))
-  }else{
-    return(list(height=150,width=400))
-  }
-}
 
 
 SD<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
