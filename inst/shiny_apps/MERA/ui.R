@@ -38,14 +38,6 @@ shinyUI(
                       style{ font-size:13px;}
                       .datatables .display {margin-left: 0;}
                       
-                      .shiny-notification {
-                      height: 60px;
-                      width: 300px;
-                      position:fixed;
-                      top: calc(50% - 50px);
-                      left: calc(50% - 400px);
-                      }
-
                       [type = 'number'] {font-size:13px;height:30px;}
                       [type = 'text'] {font-size:13px;}
                       [type = 'textArea'] {font-size:13px;}
