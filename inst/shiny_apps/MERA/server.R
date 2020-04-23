@@ -152,7 +152,7 @@ shinyServer(function(input, output, session) {
   output$Fpanelout <- renderText({ paste("Fishery",Fpanel(),"/ 19")})
   output$Mpanelout <- renderText({ paste("Management",Mpanel(),"/ 7")})
   output$Dpanelout <- renderText({ paste("Data",Dpanel(),"/ 4")})
-  output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 5")})
+  output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 1")})
 
   # Update UI
   output$Version<-renderText(paste0("MSC-DLMtool App v", Version)) 
@@ -1219,7 +1219,7 @@ shinyServer(function(input, output, session) {
       Mpanel(Mpanel()+1)
     }else if(input$tabs1==3 && Dpanel() < 4){
       Dpanel(Dpanel()+1)
-    }else if(input$tabs1==4 && Opanel() < 6){
+    }else if(input$tabs1==4 && Opanel() < 1){
       Opanel(Opanel()+1)
     }
 

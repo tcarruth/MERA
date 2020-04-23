@@ -162,12 +162,9 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     stmagsim<-PanelState[[4]][[2]]
     cosim<-PanelState[[4]][[3]]
     Find<-array(NA,c(nsim,nyears))
-    #Ftrendfunc<-function(                 M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,start_mag=1,bm=F,plot=F){
       
     for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=locsim,start_mag=2-stmagsim,co=cosim,bm=F,plot=F)
-    # for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=0.5,start_mag=2-0.5,bm=F,plot=F)
-    
-   
+  
     Esd<-getminmax(1,"F",PanelState)                                                         # F6 ----------
     Esd_max<-Esd[2]
     Esd_min<-Esd[1]
@@ -230,10 +227,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       mov1[i,,]<-getmov2(i,Vsim,Asim)      
       mov2[i,,]<-getmov2(i,Vhsim,Ahsim)
     }
-    #V2<-apply(cbind(mov1[,2,2]-Vhsim, # staying in areas 2 and 3 minus staying in area 3
-     #           mov2[,2,2]-Vsim), # staying in areas 2 and 3 minus staying in area 1
-      #    1,min) # an overestimate of the prob_staying in area 2
-    
+     
     V2<-apply(cbind(mov1[,2,2], # staying in areas 2 and 3 minus staying in area 3
                     mov2[,2,2]), # staying in areas 2 and 3 minus staying in area 1
               1,mean) # an WRONG GUESS of the prob_staying in area 2 - need to do the linear equation modelling for this. 
@@ -315,6 +309,38 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       if(!is.na(dat@vbK[1])) OM@K<-rep(dat@vbK[1],2); OM@cpars$K<-OM@cpars$K*dat@vbK/mean(OM@cpars$K)
       if(!is.null(dat@Mort) & !is.na(dat@Mort)) OM@cpars$M <- OM@cpars$M * dat@Mort / mean(OM@cpars$M) 
      
+    }
+    
+    if(Data()==1&input$OM_C){
+      
+      code<-input$Cond_ops
+      AM(paste0("Conditioning operating model using method ",code))
+      
+      setup()
+      
+      tryCatch({
+        
+        withProgress(message = "Conditioning Operating Model", value = 0, {
+          incProgress(0.1)
+          CFit<<-GetDep(OM,dat,code=code,cores=4)
+          
+          if(sum(CFit@conv)==0)AM(paste0(code,": ",sum(CFit@conv), " of ",length(CFit@conv)," simulations converged"))
+          
+          incProgress(0.8)
+          
+        })
+        
+        OM<<-CFit@OM
+        CondOM(1)
+        
+      },
+      error = function(e){
+        AM(paste0(e,sep="\n"))
+        shinyalert("Computational error", "Operating model conditionin returned an error. Try using a different model for conditioning.", type = "info")
+        CondOM(0)
+        return(0)
+      }
+     )
     }
     
     testing=F

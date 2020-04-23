@@ -1393,22 +1393,6 @@ Figs[[4]]<-function(MSEobj_Eval,dat,dat_ind,options=list()){
 Fig_dim[[4]] <- function(dims)list(height=400,width=800)
 
 
-Fig_title[[5]] <- "Figure 4. Joint Posterior predicted data"
-Fig_text[[5]] <- "For both posterior predicted data (blue points) and observed (orange crosses) Catch (C), Mean Length (ML), and relative abundance index data (I), The mean (M), variance (V) 
-  and slope (S) of three types of data are calculated. The figure below shows the marginal distribution of these data." 
-
-Figs[[5]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,pCC=TRUE)
-Fig_dim[[5]] <- function(dims)list(height=700,width=700)
-
-Fig_title[[6]] <- "Figure 5. Multivariate analysis of observed versus predicted data"
-Fig_text[[6]] <- "The multivariate (Mahalanobis) distance from the mean of the predicted data (blue distribution) (of Figure 4 above) is calculated to detect whether the 
-  observed data (orange vertical line) can be considered to be an outlier."
-
-Figs[[6]]<-function(MSEobj_Eval,dat,dat_ind,options=list()) plotInd(MSEobj_Eval,dat,dat_ind,pCC=FALSE)
-Fig_dim[[6]] <- function(dims)list(height=550,width=550)
-
-
-
 Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                  Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)
 

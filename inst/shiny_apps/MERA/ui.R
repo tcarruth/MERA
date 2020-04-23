@@ -91,7 +91,7 @@ shinyUI(
              tags$a(h1("MERA"),href="http://www.merafish.org/",target='_blank')
       ),
       column(5,style="height:65px",
-             h5("method evaluation and risk assessment" ,style="padding:22px;")
+             h5("method evaluation and risk assessment" ,style="padding-top:22px;padding-left:4px")
       ),
       
       column(3),
@@ -101,7 +101,7 @@ shinyUI(
           column(6,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
           column(6,tags$a(img(src = "MSC_logo.png", height = 50, width = 140),href="https://www.msc.org",target='_blank'))
               
-      ),
+      )
        
     ),
     
@@ -109,7 +109,7 @@ shinyUI(
     fluidRow(
       column(12,style="height:1px; background-color:#347ab6;"),
       
-      column(12,style="height:7px; background-color:'white'"),
+      column(12,style="height:7px; background-color:'white'")
     ),
     
     fluidRow(style = "background-color:#347ab6;",
@@ -121,30 +121,33 @@ shinyUI(
       dropdownButton(
         
         column(12,h5(tags$b("MERA Questionnaire",style="color:#347ab6")),
-            column(6,h5("Load (.mera)",style = "color:grey"),fileInput("Load",label=NULL,accept=c("mera",".mera"))),
+           
+            column(6,h5("Load (.mera)",style = "color:grey"), 
+                   
+                       tipify(fileInput("Load",label=NULL,accept=c("mera",".mera")),title="Load just the MERA questionnaire (small)")),
             column(1),
             column(5,h5("Save (.mera)",style = "color:grey"),downloadButton("Save",""))
         ),
       
         column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
                h5(tags$b("MERA Session",style="color:#347ab6")),
-          column(6,h5("Load (.merasession)",style = "color:grey"), fileInput("Load_session",label=NULL,accept=c("merasession",".merasession"))),
+          column(6,h5("Load (.merasession)",style = "color:grey"), tipify(fileInput("Load_session",label=NULL,accept=c("merasession",".merasession")),title="Load a previous session including calculated results (large)")),
           column(1),
           column(5,h5("Save (.merasession)",style = "color:grey"),    downloadButton("Save_session","",width="100px"))
         ),
         
         column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
                h5(tags$b("Operating models",style="color:#347ab6")),
-          column(6,h5("Import",style="color:grey"), fileInput("Load_OM",label=NULL)),
+          column(6,h5("Import",style="color:grey"), tipify(fileInput("Load_OM",label=NULL),title="Import just the operating model created by this MERA session")),
           column(1),
           column(2,h5("Export",style="color:grey"),downloadButton("Save_OM","",width=70)),
-          column(3,h5("No. simulations",style="color:grey"),numericInput("nsim_OMsave", label=NULL, value=96,min=2,max=256))
+          column(3,h5("No. simulations",style="color:grey"),tipify(numericInput("nsim_OMsave", label=NULL, value=96,min=2,max=256),title="How many simulations should the exported OM have?"))
         ),
         
         column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
                h5(tags$b("Load DLMtool and MSEtool source code",style="color:#347ab6")),
                
-          column(12,fileInput("Load_anything",label=NULL))
+          column(12,tipify(fileInput("Load_anything",label=NULL),title="Load custom management procedures, performance metrics and other DLMtool and MSEtool code"))
                
         ),
          
@@ -198,8 +201,8 @@ shinyUI(
                    h5(tags$b("Closed-loop simulation",style="color:#347ab6")), 
            
                    column(5,    
-                     column(8,numericInput("interval", label = h5("Management interval"), value=8,min=2,max=10)),
-                     column(8,checkboxInput("Parallel", label = "Parallel comp.", value = FALSE),style="padding-top:0px")
+                     numericInput("interval", label = h5("Management interval"), value=8,min=2,max=10),
+                     checkboxInput("Parallel", label = "Parallel comp.", value = FALSE)
                    ),
                    
                    column(7,
@@ -225,7 +228,7 @@ shinyUI(
                    )
             ),
             
-            column(12, tags$hr(style="margin-top: 6px; margin-bottom: 3px"),
+            column(12, tags$hr(style="margin-top: 12px; margin-bottom: 3px"),
                    h5(tags$b("Rebuilding MSE",style="color:#347ab6")),   
                    column(9, sliderInput("Dep_reb",label=h5("Starting % BMSY from which to evaluate rebuilding"),min=10,max=100,value=c(50,50))),
                    column(2, HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey")))
@@ -327,6 +330,22 @@ shinyUI(
       tags$head(tags$style(HTML("#DD_help { border-color: #347ab6 }"))),
       div(style="display: inline-block;vertical-align:top; width=150px",
       dropdownButton(
+        fluidRow(
+          column(1,style="height:45px",
+                 tags$a(h2("MERA"),href="http://www.merafish.org/",target='_blank')
+          ),
+          column(5,style="height:45px",
+                 h5("method evaluation and risk assessment" ,style="padding-top:19px;padding-left:28px")
+          ),
+          column(2),
+          column(4,style="padding-top: 16px",
+                 
+                 column(6,tags$a(img(src = "DLMtool.png", height = 32, width = 105),href="https://www.datalimitedtoolkit.org",target='_blank')),
+                 column(6,tags$a(img(src = "MSC_logo.png", height = 34, width = 100),href="https://www.msc.org",target='_blank'))
+                 
+          ),
+        ),
+        hr(),
         
         column(12,h5(tags$b("About",style="color:#347ab6")),
           column(12,h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
@@ -416,13 +435,16 @@ shinyUI(
     fluidRow(
       column(12,style="height:20px; "),
       column(1,style="height:40px; "),
-      column(11, style="height:40px; ",
+      column(10, style="height:40px; ",
  
         h4("1. CHARACTERIZE FISHERY SYSTEM",style='color:#347ab6'),
 
         HTML('<hr style="border-color: #347ab6;">')
       ),
-      column(1,),
+      column(1)
+    ),  
+    fluidRow(  
+      column(1),
       column(11,style="height:20px"),
 
       column(1),
@@ -676,10 +698,7 @@ shinyUI(
                                  
                                   HTML("<br>"),
                                   h5("The Extra panel contains a number of optional features for characterising your fishery system.",style="color:grey"),
-                                  h5("These include: ",style="color:grey"),
-                                  h5(" - loading real fishery data.",style="color:grey"),
-                                  h5(" - conditioning operating models.",style="color:grey"),
-                                  h5(" - specifying bio-economic model parameters.",style="color:grey"),
+                                  h5("Currently these include the specification of bio-economic model parameters.",style="color:grey"),
                                   h5(""),
                                   h5("More detailed help on Extra features can be found in the MERA manual
                                       : ", a("Section 2.4.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#24_extra", target="_blank"),style="color:grey")
@@ -688,27 +707,8 @@ shinyUI(
                          
                                 conditionalPanel(width=4,condition="output.Opanel==1",
                                                  
-                                                 
-                                   
-                                                 
-                                ),
-                                
-                                
-                                conditionalPanel(width=4,condition="output.Opanel==2"
-                                                 
-                                
-                                                   
-                                ),
-                                
-                                conditionalPanel(width=4,condition="output.Opanel==3",
-                                                 
-                                       
-                                ),
-                                
-                                conditionalPanel(width=4,condition="output.Opanel==4",
-                                                 
                                    HTML("<br>"),
-                                   h5("4. Bio-economic dynamics <alpha>",style="color:grey"),
+                                   h5("Bio-economic dynamics <alpha>",style="color:grey"),
                                    selectInput("EC_Model","Economic Model",choices=c("None","Simple response"),selected="None"),
                                    conditionalPanel(condition="input.EC_Model!='None'",
                                      column(4,numericInput("CostCurr",label="Current Cost",min=0,value=1)),
@@ -1050,48 +1050,8 @@ shinyUI(
                           h5("",style = "color:grey")
                       ),
                       
+                      
                       conditionalPanel(condition="input.tabs1==4&output.Opanel==1",
-                         column(12,
-                            HTML("<br>"),
-                            HTML("<br>"),
-                            h5("Management interval controls how frequently new management advice is calculated. For example, given a management interval of 4 years a new Total Allowable Catch may be set in 2020, 2024, 2028 (and so on) that is kept constant in the interval between these updates.",style = "color:grey"),
-                            h5("You can control the number of simulated realizations of your fishery for each MERA mode. Each simulation takes a draw of model parameters from the ranges specified by the MERA questionnaire. This also controls the number of simulations generated if you condition your 
-                               operating model on data. Generally you can obtain meaningful early results with just 48 simulations, stable MP performance ranking with 96 simulations and stable absolute MP performance with 192. In general 192 or greater simulations are required 
-                               to quantify value of information and cost of current uncertainties.",style = "color:grey"),
-                            h5("If greater than 48 simulations are specified, the user has the option to distribute calculations over a cluster using parallel computation. Note however that you will lose the progress bar.",style = "color:grey")
-                         )
-                      ),
-                      
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==2",
-                          column(12,
-                              HTML("<br>"),
-                              HTML("<br>"),
-                              h5("Selecting use 'custom OM' provides the option of loading a DLMtool or MSEtool operating model rather than the operating model generated by the MERA questionnaire.",style = "color:grey"),
-                              h5("The Load / Save operating model feature allows users to export a MERA operating model, where necessary modify it in R (for example allowing for complex spatial dynamics, time-varying parameters etc).",style = "color:grey"),
-                              h5("The full operating model report include every simulated operating model parameter and provides a comprehensive record of the simulation conditions.",style = "color:grey")
-                          )
-                      ),
-                      
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==3",
-                        column(12, 
-                            HTML("<br>"),
-                            h5("Operating model conditioning automatically detects which data types are available and identifies those 
-                            conditioning models that are compatible given teh types of data that are available:: ", style = "color:grey"),
-                            h5("C: catch data (annual)", style = "color:grey"),
-                            h5("I: index of relative abundance (annual)", style = "color:grey"),
-                            h5("M: mean length of fish in the catch (annual)", style = "color:grey"),
-                            h5("L: length composition data (year by length class)", style = "color:grey"),
-                            h5("A: age composition data (year by age)", style = "color:grey"),
-                            h5("Approaches that use only catch data or length compositions assume a pattern in annual 
-                             fishing mortality rate defined by the annual fishing effort of Fishery
-                             Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey"),
-                            h5("For further information on the stock reduction analysis used to condition operating models see
-                            the", a(" detailed guide.", href="https://dlmtool.github.io/DLMtool/MERA/SRA_scope_vignette.html", 
-                                    target="_blank"),style = "color:grey")
-                        )
-                      ),
-                      
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==4",
                          column(12, 
                                 HTML("<br>"),
                                 HTML("<br>"),
@@ -1108,15 +1068,7 @@ shinyUI(
                         )
                       ),
                       
-                      conditionalPanel(condition="input.tabs1==4&output.Opanel==5",
-                                       column(12, 
-                                              HTML("<br>"),
-                                              HTML("<br>"),
-                                              h5("Any R source code that is compatible with DLMtool and MSEtool can be loaded here including custom:", style = "color:grey"),
-                                              h5(" - Management procedures", style = "color:grey"),
-                                              h5(" - Performance Metrics", style = "color:grey"),
-                                              h5(" - Figures and Tables", style = "color:grey")                                 )
-                      ),
+                     
                       
                       
                       # ---- Other panel guides
@@ -1188,10 +1140,10 @@ shinyUI(
                  ),
 
                  column(width = 2,
-                   conditionalPanel(condition="(input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<5)",
+                   conditionalPanel(condition="(input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<2)",
                       actionButton("Fcont","Next >")
                    ),
-                   conditionalPanel(condition="!((input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<5))",
+                   conditionalPanel(condition="!((input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<2))",
                       actionButton("FcontD","Next >",style="color: #CFCFCF;  border-color: #CFCFCF") #background-color: #CFCFCF;
                    )
 
@@ -1229,7 +1181,7 @@ shinyUI(
                      column(12,style="height:15px"),
                      fluidRow(
                        column(1),
-                       column(11,
+                       column(10,
                             h4("2. CALCULATE RISK OF STATUS QUO MANAGEMENT",style="color:#347ab6"),
                      
                             HTML('<hr style="border-color: #347ab6;">')
@@ -1241,8 +1193,8 @@ shinyUI(
                        column(1),
                        column(11,
                               fluidRow(
-                                column(4),
-                                column(6,
+                                
+                                column(12,
                                        
                                        h5("Current fishing effort, current catches, FMSY fishing and zero catches are projected to evaluate status-quo fishery risk", style = "color:grey"),
                                        
@@ -1264,7 +1216,7 @@ shinyUI(
        
        fluidRow(
          column(1),
-         column(11,
+         column(10,
                 h4("2. CALCULATE POPULATION STATUS",style="color:#347ab6"),
                 
                 HTML('<hr style="border-color: #347ab6;">')
@@ -1311,7 +1263,7 @@ shinyUI(
        column(12,style="height:15px"), 
        fluidRow(
          column(1),
-         column(11,
+         column(10,
                 h4("2. CALCULATE EXPECTED PERFORMANCE OF MANAGEMENT OPTIONS",style='color: #347ab6'),
                 
                 HTML('<hr style="border-color: #347ab6;">')
@@ -1367,7 +1319,7 @@ shinyUI(
  
       fluidRow(
         column(1),
-        column(11,
+        column(10,
                h4("2. MANAGEMENT PERFORMANCE",style='color:#347ab6'),
                HTML('<hr style="border-color: #347ab6;">')
         )
@@ -1386,7 +1338,7 @@ shinyUI(
                         ),
                         
                         conditionalPanel(condition="output.DataInd==1",
-                            selectInput("sel_MP", label = "Selected MP", choices=character(0),selected=character(0))
+                            selectInput("sel_MP", label = h5("Selected MP"), choices=character(0),selected=character(0))
                         )
       
                  ),
@@ -1394,7 +1346,7 @@ shinyUI(
                  column(6,style="padding:19px",
                       h5("A data file can be loaded with indicator data for years after operating model conditioning (after LHYear)",style = "color:grey"),
                       h5("These data can be compared against the future predicted data of the operating model and used to detect exceptional
-                           circumstances using the method of ",a("Carruthers and Hordyk (2018)", href="https://www.nrcresearchpress.com/doi/abs/10.1139/cjfas-2018-0223?journalCode=cjfas#.XZeG7kZKhPY", target="_blank"),style = "color:grey")
+                           circumstances ",a("Carruthers and Hordyk (2018)", href="https://www.nrcresearchpress.com/doi/abs/10.1139/cjfas-2018-0223?journalCode=cjfas#.XZeG7kZKhPY", target="_blank"),style = "color:grey")
                       #h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
                  )
              )
@@ -1410,11 +1362,11 @@ shinyUI(
     #fluidRow(
       column(1,style="background-color:white"),
       
-      column(11,style = "background-color:#347ab6",
+      column(10,style = "background-color:#347ab6",
         column(12,style = "background-color:#347ab6; height=2px"),
         column(4),
         column(4,
-            actionBttn("Calculate",h4(tags$b("CALCULATE")),icon("cogs"),block=T, style="fill",color='default',size='sm')
+            actionBttn("Calculate","CALCULATE",icon("cogs"),block=T, style="fill",color='danger',size='sm')
         ),
         column(4),
         column(12,style = "background-color:#347ab6; height=2px")
@@ -1428,7 +1380,7 @@ shinyUI(
 
        fluidRow(
          column(1),
-         column(11,
+         column(10,
                 h4("RESULTS",style='color: #347ab6'),
                 
                 HTML('<hr style="border-color: #347ab6;">')
@@ -1438,7 +1390,7 @@ shinyUI(
 
         fluidRow(
           column(1),
-          column(11,
+          column(10,
 
             fluidRow(
               column(2,
@@ -1446,7 +1398,7 @@ shinyUI(
                   column(12,HTML("<br>")),
                   h4("Options",style="font-weight:bold"),
                   column(12,HTML("<br>")),
-                  actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red")),
+                  #actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red")),
                   #column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
                   #column(12,HTML("<br>","<br>")),
                   
@@ -1642,7 +1594,7 @@ shinyUI(
           column(1),
           column(10, verbatimTextOutput("Log",placeholder=T)), 
           bsTooltip("Log","Application Log"),       
-   #textAreaInput("Log", "Log",height="120px")),
+       #textAreaInput("Log", "Log",height="120px")),
           
          
    
