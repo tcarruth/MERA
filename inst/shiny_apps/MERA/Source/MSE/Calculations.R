@@ -11,9 +11,6 @@ Calc_Status<-function(){
   if(LoadOM()==1&input$OM_L){ 
     OM<-OM_L
     OMsimsam<-OM_L
-  }else if(CondOM()==1&input$OM_C){ 
-    OM<-OM_C
-    OMsimsam<-OM_L
   }else{
     OM<-makeOM(PanelState,nsim=nsim)
     OMsimsam<-makeOM(PanelState,nsim=40)

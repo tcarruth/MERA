@@ -708,8 +708,8 @@ shinyUI(
                                 conditionalPanel(width=4,condition="output.Opanel==1",
                                                  
                                    HTML("<br>"),
-                                   h5("Bio-economic dynamics <alpha>",style="color:grey"),
-                                   selectInput("EC_Model","Economic Model",choices=c("None","Simple response"),selected="None"),
+                                   h5("Bioeconomic dynamics <alpha>",style="color:grey"),
+                                   selectInput("EC_Model",h5("Economic Model"),choices=c("None","Simple response"),selected="None"),
                                    conditionalPanel(condition="input.EC_Model!='None'",
                                      column(4,numericInput("CostCurr",label="Current Cost",min=0,value=1)),
                                      column(4,numericInput("RevCurr",label="Current Revenue.",min=0,value=1)),   
