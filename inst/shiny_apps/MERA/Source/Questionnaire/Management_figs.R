@@ -75,7 +75,7 @@ plotIB <- function(dummy=1){
   }else{
     par(mar=c(3,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
     plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(10,0.5,"< unspecified >", col="grey")
+    text(10,0.5,"< questionnaire incomplete >", col="red")
 
   }
 
@@ -158,7 +158,7 @@ plotIV <- function(){
 
       par(mar=c(3,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
       plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-      text(10,0.5,"< unspecified >", col="grey")
+      text(10,0.5,"< questionnaire incomplete >", col="red")
 
     }
 
@@ -166,7 +166,7 @@ plotIV <- function(){
 
     par(mar=c(3,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
     plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(10,0.5,"< Management Q2 is unspecified >", col="grey")
+    text(10,0.5,"< Management Q2 is unspecified >", col="red")
 
   }
 
@@ -248,7 +248,7 @@ plotIB_E <- function(dummy=1){
   }else{
     par(mar=c(3,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
     plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(10,0.5,"< unspecified >", col="grey")
+    text(10,0.5,"< questionnaire incomplete >", col="red")
 
   }
 
@@ -331,7 +331,7 @@ plotIV_E <- function(){
 
       par(mar=c(3,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
       plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-      text(10,0.5,"< unspecified >", col="grey")
+      text(10,0.5,"< questionnaire incomplete >", col="red")
 
     }
 
@@ -420,7 +420,7 @@ plotIB_SL <- function(dummy=1){
   }else{
     par(mar=c(3,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
     plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(10,0.5,"< unspecified >", col="grey")
+    text(10,0.5,"< questionnaire incomplete >", col="red")
 
   }
 
@@ -502,7 +502,7 @@ plotIV_SL <- function(){
 
       par(mar=c(3,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
       plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-      text(10,0.5,"< unspecified >", col="grey")
+      text(10,0.5,"< questionnaire incomplete >", col="red")
 
     }
 

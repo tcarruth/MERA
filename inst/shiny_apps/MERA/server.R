@@ -21,7 +21,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"6.1.1"
+  Version<<-"6.1.3"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -169,18 +169,18 @@ shinyServer(function(input, output, session) {
   
   tt <- try(!is.null(MERA:::PKGENVIR$skin), silent=TRUE)
   if (class(tt) == 'try-error') {
-    skin <- 'Generic'
+    skin <- 'MSC'
   } else {
     if (!is.null(MERA:::PKGENVIR$skin)) {
       skin <- MERA:::PKGENVIR$skin
     } else {
-      skin <- "Generic"
+      skin <- "MSC"
     }
   }
        
   dat<-dat_int<-NULL
       
-  Skin_nams<<-c("Generic","MSC","ABNJ") # unlist(strsplit(list.files(path="./Source/Skins"),".R"))
+  Skin_nams<<-c("MSC","ABNJ","Generic") # unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected=skin)
   
   observe({
@@ -214,7 +214,8 @@ shinyServer(function(input, output, session) {
   Log_text <- reactiveValues(text=paste0("-------- Start of Session -------- \nSession ID: ",SessionID,"\nUser ID: ",USERID))
   output$Log <- renderText(Log_text$text)
   
-  
+  # Variables
+  ncpus<-4 # how much parallel processing to use
   FeaseMPs<<-NULL
   redoBlank() # make all the results plots with default sizes - seems to stabilize initial plotting and spacing
   
@@ -256,7 +257,7 @@ shinyServer(function(input, output, session) {
 
   # Default simulation attributes --------------------------------------------------------------------------------
   nyears<-68 # 1950-2018
-  nsim<-48
+  #nsim<-48
 
   makeState<-function(x)rep(T,length(get(x)))
 
@@ -431,7 +432,8 @@ shinyServer(function(input, output, session) {
     filename = function()paste0(namconv(input$Name),".OM"),
 
     content=function(file){
-      OM<-makeOM(PanelState,nsim=input$nsim_OMsave)
+      if(checkQs()$error){shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered:",paste(temp$probQs,collapse=", ")), type = "warning");stop()}
+      if(MadeOM()==0)OM<-makeOM(PanelState,nsim=input$nsim)
       AM(paste0("Operating model saved: ", file))
       doprogress("Saving Operating Model")
       saveRDS(OM,file)
@@ -478,13 +480,7 @@ shinyServer(function(input, output, session) {
 
   })
 
-  observeEvent(input$MPset,{
-    
-    getMPs()
-    
-  })
-
-
+ 
   # Session save
   output$Save_session<- downloadHandler(
 
@@ -575,9 +571,9 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$MPset,{
     if(input$MPset=="Demo"){
-      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","matlenlim","MRreal","curE75","IT10"))
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","matlenlim","MRreal","curE75","IT10"),choices=getAllMPs())
     }else if(input$MPset=="Top 20"){
-      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","DBSRA", "DBSRA4010", "DD","DDe","DDe75",  "DD4010","MCD","MCD4010","IT10","IT5",  "MRreal","MRnoreal","matlenlim","matlenlim2","DCAC_40", "DBSRA_40","Fratio","HDAAC","ITe10"))
+      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","DBSRA", "DBSRA4010", "DD","DDe","DDe75",  "DD4010","MCD","MCD4010","IT10","IT5",  "MRreal","MRnoreal","matlenlim","matlenlim2","DCAC_40", "DBSRA_40","Fratio","HDAAC","ITe10"),choices=getAllMPs())
     }else if(input$MPset=="All"){
       updateSelectInput(session=session,inputId="ManPlanMPsel",selected = getAllMPs())
     }
@@ -623,78 +619,43 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$DemoSims,{
-    
-    updateNumericInput(session=session,inputId="nsim_RA",value=24)
-    updateNumericInput(session=session,inputId="nsim_SD",value=12)
-    updateNumericInput(session=session,inputId="nsim_Plan",value=16)
-    updateNumericInput(session=session,inputId="nsim_Eval",value=24)
-    
+    updateNumericInput(session=session,inputId="nsim",value=24)
   })
   
   observeEvent(input$DefSims,{
-    
-    updateNumericInput(session=session,inputId="nsim_RA",value=144)
-    updateNumericInput(session=session,inputId="nsim_SD",value=48)
-    updateNumericInput(session=session,inputId="nsim_Plan",value=96)
-    updateNumericInput(session=session,inputId="nsim_Eval",value=144)
-    
+    updateNumericInput(session=session,inputId="nsim",value=144)
   })
 
+  observeEvent(input$RemakeOM,{
+    OM<<-makeOM(PanelState)
+    
+  })
+  
+  
 #############################################################################################################################################################################
 ### Calculation functions
 #############################################################################################################################################################################
 
-  # OM conditioning ============================
   
-  observeEvent(input$Cond,{
-    
-    code<-input$Cond_ops
-    AM(paste0("Conditioning operating model using method ",code))
-  
-    OM<-makeOM(PanelState,nsim=input$nsim_OM,UseQonly=T)
-    setup()
-    
-    tryCatch({
-      
-      withProgress(message = "Conditioning Operating Model", value = 0, {
-        incProgress(0.1)
-        CFit<<-GetDep(OM,dat,code=code,cores=4)
-        
-        if(sum(CFit@conv)==0)AM(paste0(code,": ",sum(CFit@conv), " of ",length(CFit@conv)," simulations converged"))
-        
-        incProgress(0.8)
-     
-      })
-      
-      OM_C<<-CFit@OM
-      CondOM(1)
-      updateCheckboxInput(session,"OM_C",value=TRUE)
- 
-   
-    },
-    error = function(e){
-      AM(paste0(e,sep="\n"))
-      shinyalert("Computational error", "Operating model conditionin returned an error. Try using a different model for conditioning.", type = "info")
-      CondOM(0)
-      return(0)
-    }
-    
-    )
-    
-  }) # press calculate
-  
-
   observeEvent(input$Calculate,{
     
-    if(input$Mode=="Management Planning"){
-      Calc_Plan()
-    }else if(input$Mode=="Management Performance"){
-      Calc_Perf()       
-    }else if(input$Mode=="Risk Assessment"){
-      Calc_RA()
+    temp<-checkQs()
+    if(temp$error){
+      
+      shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered:",paste(temp$probQs,collapse=", ")), type = "warning")
+     
     }else{
-      Calc_Status()
-    } 
+    
+      if(input$Mode=="Management Planning"){
+        Calc_Plan()
+      }else if(input$Mode=="Management Performance"){
+        Calc_Perf()       
+      }else if(input$Mode=="Risk Assessment"){
+        Calc_RA()
+      }else{
+        Calc_Status()
+      }
+    }  
   
   }) # press calculate
   
@@ -763,8 +724,8 @@ shinyServer(function(input, output, session) {
     filename =  function(){  paste0(namconv(input$Name),"_Questionnaire_Report.html") },
     content = function(file) {
       withProgress(message = "Building questionnaire report", value = 0, {
-      
-      OM<<-makeOM(PanelState,nsim=nsim)
+      if(checkQs()$error){shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered:",paste(temp$probQs,collapse=", ")), type = "warning");stop()}
+      if(MadeOM()==0)OM<<-makeOM(PanelState)
       src <- normalizePath('Source/Markdown/OMRep.Rmd')
       src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
      
@@ -848,7 +809,6 @@ shinyServer(function(input, output, session) {
       withProgress(message = "Building conditioning report", value = 0, {
 
       incProgress(0.1)
-      #OM<<-makeOM(PanelState,nsim=nsim)
       src <- normalizePath('Source/Markdown/CondRep.Rmd')
       src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
      
@@ -892,7 +852,8 @@ shinyServer(function(input, output, session) {
       
       tryCatch({
         withProgress(message = "Building operating model report", value = 0, {
-          OM<<-makeOM(PanelState,nsim=nsim)
+          if(checkQs()$error){shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered:",paste(temp$probQs,collapse=", ")), type = "warning");stop()}
+          if(MadeOM()==0)OM<<-makeOM(PanelState)
           src <- normalizePath('Source/Markdown/OM_full_Rep.Rmd')
           src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
           incProgress(0.1)
@@ -1081,8 +1042,8 @@ shinyServer(function(input, output, session) {
         incProgress(0.1)
         knitr::knit_meta(class=NULL, clean = TRUE) 
         
-        OM<-Fit@OM
-        output<-plot(Fit,open_file = FALSE)
+        #OM<-Status$Fit@OM
+        output<-plot(Status$Fit[[1]],open_file = FALSE)
            
         incProgress(0.8)
         file.copy(output, file)
@@ -1234,131 +1195,131 @@ shinyServer(function(input, output, session) {
   # ---- Fishery all switches -----------------
 
   observeEvent(input$All_M,
-     if(input$All_M == 0 | input$All_M%%2 == 0){
+     #if(input$All_M == 0 | input$All_M%%2 == 0){
        updateCheckboxGroupInput(session,"M",choices=M_list,selected=M_list)
-     }else{
-       updateCheckboxGroupInput(session,"M",choices=M_list)
-     }
+     #}else{
+      # updateCheckboxGroupInput(session,"M",choices=M_list)
+     #}
   )
   observeEvent(input$All_D,
-     if(input$All_D == 0 | input$All_D%%2 == 0){
+     #if(input$All_D == 0 | input$All_D%%2 == 0){
         updateCheckboxGroupInput(session,"D",choices=D_list,selected=D_list)
-     }else{
-        updateCheckboxGroupInput(session,"D",choices=D_list)
-     }
+     #}else{
+      #  updateCheckboxGroupInput(session,"D",choices=D_list)
+     #}
   )
   observeEvent(input$All_h,
-     if(input$All_h == 0 | input$All_h%%2 == 0){
+     #if(input$All_h == 0 | input$All_h%%2 == 0){
         updateCheckboxGroupInput(session,"h",choices=h_list,selected=h_list)
-     }else{
-        updateCheckboxGroupInput(session,"h",choices=h_list)
-     }
+     #}else{
+       # updateCheckboxGroupInput(session,"h",choices=h_list)
+     #}
   )
   observeEvent(input$All_FP,
-     if(input$All_FP == 0 | input$All_FP%%2 == 0){
-       updateCheckboxGroupInput(session,"FP",choices=FP_list,selected=FP_list)
+     #if(input$All_FP == 0 | input$All_FP%%2 == 0){
+       {updateCheckboxGroupInput(session,"FP",choices=FP_list,selected=FP_list)
        updateSliderInput(session,"loc",value=1)
-       updateSliderInput(session,"stmag",value=1)
+       updateSliderInput(session,"stmag",value=1)}
 
-     }else{
-       updateCheckboxGroupInput(session,"FP",choices=FP_list)
-       updateSliderInput(session,"loc",value=1)
-       updateSliderInput(session,"stmag",value=1)
+     #}else{
+      # updateCheckboxGroupInput(session,"FP",choices=FP_list)
+      # updateSliderInput(session,"loc",value=1)
+      # updateSliderInput(session,"stmag",value=1)
 
-     }
+     #}
   )
   observeEvent(input$All_F,
-     if(input$All_F == 0 | input$All_F%%2 == 0){
+     #if(input$All_F == 0 | input$All_F%%2 == 0){
         updateCheckboxGroupInput(session,"F",choices=F_list,selected=F_list)
-     }else{
-        updateCheckboxGroupInput(session,"F",choices=F_list)
-     }
+     #}else{
+      #  updateCheckboxGroupInput(session,"F",choices=F_list)
+     #}
   )
   observeEvent(input$All_qh,
-     if(input$All_qh == 0 | input$All_qh%%2 == 0){
-       updateCheckboxGroupInput(session,"q_h",choices=q_list,selected=q_list)
-     }else{
-       updateCheckboxGroupInput(session,"q_h",choices=q_list)
-     }
+     #if(input$All_qh == 0 | input$All_qh%%2 == 0){
+       updateCheckboxGroupInput(session,"qh",choices=q_list,selected=q_list)
+     #}else{
+    #   updateCheckboxGroupInput(session,"qh",choices=q_list)
+     #}
   )
   observeEvent(input$All_q,
-     if(input$All_q == 0 | input$All_q%%2 == 0){
+     #if(input$All_q == 0 | input$All_q%%2 == 0){
        updateCheckboxGroupInput(session,"q",choices=q_list,selected=q_list)
-     }else{
-       updateCheckboxGroupInput(session,"q",choices=q_list)
-     }
+     #}else{
+    #   updateCheckboxGroupInput(session,"q",choices=q_list)
+     #}
   )
   observeEvent(input$All_LM,
-     if(input$All_LM == 0 | input$All_LM%%2 == 0){
+     #if(input$All_LM == 0 | input$All_LM%%2 == 0){
        updateCheckboxGroupInput(session,"LM",choices=LM_list,selected=LM_list)
-     }else{
-       updateCheckboxGroupInput(session,"LM",choices=LM_list)
-     }
+     #}else{
+    #   updateCheckboxGroupInput(session,"LM",choices=LM_list)
+     #}
   )
   observeEvent(input$All_sel,
-     if(input$All_sel == 0 | input$All_sel%%2 == 0){
+     #if(input$All_sel == 0 | input$All_sel%%2 == 0){
         updateCheckboxGroupInput(session,"sel",choices=sel_list,selected=sel_list)
-     }else{
-        updateCheckboxGroupInput(session,"sel",choices=sel_list)
-     }
+     #}else{
+    #    updateCheckboxGroupInput(session,"sel",choices=sel_list)
+     #}
   )
   observeEvent(input$All_dome,
-     if(input$All_dome == 0 | input$All_dome%%2 == 0){
+     #if(input$All_dome == 0 | input$All_dome%%2 == 0){
         updateCheckboxGroupInput(session,"dome",choices=dome_list,selected=dome_list)
-     }else{
-        updateCheckboxGroupInput(session,"dome",choices=dome_list)
-    }
+     #}else{
+    #    updateCheckboxGroupInput(session,"dome",choices=dome_list)
+    #}
   )
   observeEvent(input$All_DR,
-     if(input$All_DR == 0 | input$All_DR%%2 == 0){
+     #if(input$All_DR == 0 | input$All_DR%%2 == 0){
         updateCheckboxGroupInput(session,"DR",choices=DR_list,selected=DR_list)
-     }else{
-        updateCheckboxGroupInput(session,"DR",choices=DR_list)
-     }
+     #}else{
+    #    updateCheckboxGroupInput(session,"DR",choices=DR_list)
+     #}
   )
   observeEvent(input$All_PRM,
-    if(input$All_PRM == 0 | input$All_PRM%%2 == 0){
+    #if(input$All_PRM == 0 | input$All_PRM%%2 == 0){
         updateCheckboxGroupInput(session,"PRM",choices=PRM_list,selected=PRM_list)
-    }else{
-        updateCheckboxGroupInput(session,"PRM",choices=PRM_list)
-    }
+    #}else{
+    #    updateCheckboxGroupInput(session,"PRM",choices=PRM_list)
+    #}
   )
   observeEvent(input$All_sigR,
-     if(input$All_sigR == 0 | input$All_sigR%%2 == 0){
+     #if(input$All_sigR == 0 | input$All_sigR%%2 == 0){
         updateCheckboxGroupInput(session,"sigR",choices=sigR_list,selected=sigR_list)
-     }else{
-        updateCheckboxGroupInput(session,"sigR",choices=sigR_list)
-     }
+     #}else{
+    #    updateCheckboxGroupInput(session,"sigR",choices=sigR_list)
+    # }
   )
 
   observeEvent(input$All_Ah,
-     if(input$All_Ah  == 0 | input$All_Ah%%2 == 0){
+     #if(input$All_Ah  == 0 | input$All_Ah%%2 == 0){
        updateCheckboxGroupInput(session,"Ah",choices=Ah_list,selected=Ah_list[[1]]) # I know this duplication is...
-     }else{
-       updateCheckboxGroupInput(session,"Ah",choices=Ah_list,selected=Ah_list[[1]]) # ... lazy but I'm keeping it here for future toggle adaptation.
-     }
+     #}else{
+    #   updateCheckboxGroupInput(session,"Ah",choices=Ah_list,selected=Ah_list[[1]]) # ... lazy but I'm keeping it here for future toggle adaptation.
+     #}
   )
   observeEvent(input$All_Vh,
-     if(input$All_Vh  == 0 | input$All_Vh%%2 == 0){
+     #if(input$All_Vh  == 0 | input$All_Vh%%2 == 0){
        updateCheckboxGroupInput(session,"Vh",choices=Vh_list,selected=Vh_list[[length(Vh_list)]]) # I know this duplication is...
-     }else{
-       updateCheckboxGroupInput(session,"Vh",choices=Vh_list,selected=Vh_list[[length(Vh_list)]]) # ... lazy but I'm keeping it here for future toggle adaptation.
-     }
+     #}else{
+      # updateCheckboxGroupInput(session,"Vh",choices=Vh_list,selected=Vh_list[[length(Vh_list)]]) # ... lazy but I'm keeping it here for future toggle adaptation.
+     #}
   )
   
   observeEvent(input$All_A,
-    if(input$All_A  == 0 | input$All_A%%2 == 0){
+    #if(input$All_A  == 0 | input$All_A%%2 == 0){
        updateCheckboxGroupInput(session,"A",choices=A_list,selected=input$Ah) # I know this duplication is...
-    }else{
-      updateCheckboxGroupInput(session,"A",choices=A_list,selected=input$Ah)  # ... lazy but I'm keeping it here for future toggle adaptation. 
-    } 
+    #}else{
+    #  updateCheckboxGroupInput(session,"A",choices=A_list,selected=input$Ah)  # ... lazy but I'm keeping it here for future toggle adaptation. 
+    #} 
   )
   observeEvent(input$All_V,
-    if(input$All_V  == 0 | input$All_V%%2 == 0){
+    #if(input$All_V  == 0 | input$All_V%%2 == 0){
        updateCheckboxGroupInput(session,"V",choices=V_list,selected=input$Vh) # I know this duplication is...
-    }else{
-       updateCheckboxGroupInput(session,"V",choices=V_list,selected=input$Vh) # ... lazy but I'm keeping it here for future toggle adaptation. 
-    }
+    #}else{
+    #   updateCheckboxGroupInput(session,"V",choices=V_list,selected=input$Vh) # ... lazy but I'm keeping it here for future toggle adaptation. 
+    #}
   )
   observeEvent(input$All_Dh,
     if(input$All_Dh == 0 | input$All_Dh%%2 == 0){
@@ -1371,55 +1332,55 @@ shinyServer(function(input, output, session) {
   # ---- Management all switches -------------
 
   observeEvent(input$All_M1,
-               if(input$All_M1 == 0 | input$All_M1%%2 == 0){
+               #if(input$All_M1 == 0 | input$All_M1%%2 == 0){
                  updateCheckboxGroupInput(session,"M1",choices=M1_list,selected=M1_list)
-               }else{
-                 updateCheckboxGroupInput(session,"M1",choices=M1_list)
-               }
+              # }else{
+               #  updateCheckboxGroupInput(session,"M1",choices=M1_list)
+               #}
   )
   observeEvent(input$All_IB,
-               if(input$All_IB == 0 | input$All_IB%%2 == 0){
+               #if(input$All_IB == 0 | input$All_IB%%2 == 0){
                  updateCheckboxGroupInput(session,"IB",choices=IB_list,selected=IB_list)
-               }else{
-                 updateCheckboxGroupInput(session,"IB",choices=IB_list)
-               }
+               #}else{
+              #   updateCheckboxGroupInput(session,"IB",choices=IB_list)
+              # }
   )
   observeEvent(input$All_IV,
-               if(input$All_IV == 0 | input$All_IV%%2 == 0){
+               #if(input$All_IV == 0 | input$All_IV%%2 == 0){
                  updateCheckboxGroupInput(session,"IV",choices=IV_list,selected=IV_list)
-               }else{
-                 updateCheckboxGroupInput(session,"IV",choices=IV_list)
-               }
+               #}else{
+                # updateCheckboxGroupInput(session,"IV",choices=IV_list)
+               #}
   )
 
   observeEvent(input$All_IBE,
-               if(input$All_IBE == 0 | input$All_IBE%%2 == 0){
+               #if(input$All_IBE == 0 | input$All_IBE%%2 == 0){
                  #vals<-as.list(IB_list[input$IB])
                  updateCheckboxGroupInput(session,"IBE",choices=IBE_list,selected=input$IB)
-               }else{
-                 updateCheckboxGroupInput(session,"IBE",choices=IBE_list,selected=input$IB)
-               }
+               #}else{
+              #   updateCheckboxGroupInput(session,"IBE",choices=IBE_list,selected=input$IB)
+               #}
   )
   observeEvent(input$All_IVE,
-               if(input$All_IVE == 0 | input$All_IVE%%2 == 0){
+               #if(input$All_IVE == 0 | input$All_IVE%%2 == 0){
                  updateCheckboxGroupInput(session,"IVE",choices=IVE_list,selected=input$IV)
-               }else{
-                 updateCheckboxGroupInput(session,"IVE",choices=IVE_list,selected=input$IV)
-               }
+               #}else{
+                # updateCheckboxGroupInput(session,"IVE",choices=IVE_list,selected=input$IV)
+               #}
   )
   observeEvent(input$All_IBSL,
-               if(input$All_IBSL == 0 | input$All_IBSL%%2 == 0){
+               #if(input$All_IBSL == 0 | input$All_IBSL%%2 == 0){
                  updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=IBSL_list[length(IB_list)-match(input$IB,IB_list)+1])
-               }else{
-                 updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=IBSL_list[length(IB_list)-match(input$IB,IB_list)+1])
-               }
+               #}else{
+               #  updateCheckboxGroupInput(session,"IBSL",choices=IBSL_list,selected=IBSL_list[length(IB_list)-match(input$IB,IB_list)+1])
+               #}
   )
   observeEvent(input$All_IVSL,
-               if(input$All_IVSL == 0 | input$All_IVSL%%2 == 0){
+               #if(input$All_IVSL == 0 | input$All_IVSL%%2 == 0){
                  updateCheckboxGroupInput(session,"IVSL",choices=IVSL_list,selected=input$IV)
-               }else{
-                 updateCheckboxGroupInput(session,"IVSL",choices=IVSL_list,selected=input$IV)
-               }
+               #}else{
+                # updateCheckboxGroupInput(session,"IVSL",choices=IVSL_list,selected=input$IV)
+               #}
   )
 
 
@@ -1427,25 +1388,25 @@ shinyServer(function(input, output, session) {
   # ---- Data all switches -------------
 
   observeEvent(input$All_D1,
-               if(input$All_D1 == 0 | input$All_D1%%2 == 0){
+               #if(input$All_D1 == 0 | input$All_D1%%2 == 0){
                  updateCheckboxGroupInput(session,"D1",choices=D1_list,selected=D1_list)
-               }else{
-                 updateCheckboxGroupInput(session,"D1",choices=D1_list)
-               }
+               #}else{
+              #   updateCheckboxGroupInput(session,"D1",choices=D1_list)
+               #}
   )
   observeEvent(input$All_CB,
-               if(input$All_CB == 0 | input$All_CB%%2 == 0){
+               #if(input$All_CB == 0 | input$All_CB%%2 == 0){
                  updateCheckboxGroupInput(session,"CB",choices=CB_list,selected=CB_list)
-               }else{
-                 updateCheckboxGroupInput(session,"CB",choices=CB_list)
-               }
+               #}else{
+              #   updateCheckboxGroupInput(session,"CB",choices=CB_list)
+               #}
   )
   observeEvent(input$All_Beta,
-               if(input$All_Beta == 0 | input$All_Beta%%2 == 0){
+               #if(input$All_Beta == 0 | input$All_Beta%%2 == 0){
                  updateCheckboxGroupInput(session,"Beta",choices=Beta_list,selected=Beta_list)
-               }else{
-                 updateCheckboxGroupInput(session,"Beta",choices=Beta_list)
-               }
+               #}else{
+              #   updateCheckboxGroupInput(session,"Beta",choices=Beta_list)
+               #}
   )
   observeEvent(input$All_Err,
 

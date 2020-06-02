@@ -58,10 +58,10 @@ whatOMmess<-function(){
 }
 
 
-makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
+makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
-  
+  nsim<-input$nsim
   if(input$OM_L & !UseQonly){
     OM<-OM_L
     SampList<<-NULL
@@ -106,8 +106,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     }else{
       OM@proyears<-proyears #input$proyears
     }
-    #save(OM,file="OM.Rdata")  # debug
-  
+    
     loc<-match("Err",inputnames[[3]])                                                        # D1 -----------
     cond<-as.vector(unlist(PanelState[[3]][loc]))
     Dquality<-as.vector(unlist(Err_list)[cond])
@@ -138,9 +137,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     
     # --- Life history imputation
     OM<-LH2OM(OM, dist='norm',plot=F)
-    saveRDS(OM,"C:/temp/OM.rda")
-
-    
+   
     OM@K<-quantile(OM@cpars$K,c(0.05,0.95))
     OM@L50<-quantile(OM@cpars$L50,c(0.05,0.95))
     OM@L50_95<-c(10,10)
@@ -316,7 +313,7 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       code<-input$Cond_ops
       AM(paste0("Conditioning operating model using method ",code))
       
-      setup()
+      setup(cpus=ncpus)
       
       tryCatch({
         
@@ -360,7 +357,8 @@ makeOM<-function(PanelState,nsim=NA,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     SampList<<-data.frame(Ftype,Esdrand,qhssim,Sel50sim,Ahsim,Vhsim,Asim,Vsim,initD,Cbias)
     AM("Using questionnaire-based operating model")
   }
-    
+  AM("------------- New OM remade --------------")
+  MadeOM(1)  
   OM
   
 }

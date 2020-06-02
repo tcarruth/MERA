@@ -6,14 +6,12 @@ Calc_Status<-function(){
   Fit<<-new('list')
   Est<<-new('list')
   
-  nsim<-input$nsim_SD
+  nsim<-input$nsim
   
   if(LoadOM()==1&input$OM_L){ 
     OM<-OM_L
-    OMsimsam<-OM_L
   }else{
-    OM<-makeOM(PanelState,nsim=nsim)
-    OMsimsam<-makeOM(PanelState,nsim=40)
+    if(MadeOM()==0)OM<<-makeOM(PanelState)
   }
   
   #if(input$SDset=="Custom"){
@@ -24,10 +22,9 @@ Calc_Status<-function(){
 
   setup(cpus=4)
   
-  #tryCatch({
+  tryCatch({
     
     withProgress(message = "Running Status Determination", value = 0, {
-      #saveRDS(OM,"C:/temp/OM.rda")
       incProgress(1/2, detail = 50)
       Fit[[1]]<-GetDep(OM,dat,code=codes,cores=4)
       Est[[1]]<-Fit[[1]]@OM@cpars$D[Fit[[1]]@conv]
@@ -36,18 +33,19 @@ Calc_Status<-function(){
     })
     
     Status <<- list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit) 
+    #saveRDS(list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit) ,"C:/temp/Status.rda")
     SD(1) 
     message("preredoSD")
     smartRedo()
     message("postredoSD")
     
-  #},
-  #error = function(e){
-  #  AM(paste0(e,sep="\n"))
-  #  shinyalert("Computational error", paste("The Status Determination method",codes,"returned an error. Try selecting an alternative Status Determination method from the settings menu."), type = "info")
-  #  return(0)
-  #}
-  #)
+  },
+  error = function(e){
+    AM(paste0(e,sep="\n"))
+    shinyalert("Computational error", paste("The Status Determination method",codes,"returned an error. Try selecting an alternative Status Determination method from the settings menu."), type = "info")
+    return(0)
+  }
+  )
 
 }
 
@@ -62,9 +60,9 @@ Calc_Plan<-function(){
   #}else if(CondOM()==1&input$OM_C){ 
     #OM<<-OM_C
   }else{
-    OM<<-makeOM(PanelState,nsim=input$nsim_Plan)
+    if(MadeOM()==0) OM<<-makeOM(PanelState)
   }
-  
+  #saveRDS(OM,file="C:/temp/OM.rda")
   Fpanel(1)
   MPs<<-getMPs()
   
@@ -76,7 +74,7 @@ Calc_Plan<-function(){
     if(nsim>47){
       
       parallel=T
-      setup()
+      setup(cpus=ncpus)
       
     }
     
@@ -138,14 +136,11 @@ Calc_Plan<-function(){
 Calc_RA<-function(){
   Fpanel(1)
   MPs<-c('curE','CurC','FMSYref','NFref')
-  nsim <- ifelse(quick, 8, input$nsim_RA)
   
   if(LoadOM()==1&input$OM_L){ 
     OM<<-OM_L
-  }else if(CondOM()==1&input$OM_C){ 
-    OM<<-OM_C
   }else{
-    OM<<-makeOM(PanelState,nsim=nsim)
+    if(MadeOM()==0)OM<<-makeOM(PanelState)
   }
  
   MSClog<<-list(PanelState, Just, Des)
@@ -157,7 +152,7 @@ Calc_RA<-function(){
     if(nsim>47){
       
       parallel=T
-      setup()
+      setup(cpus=ncpus)
       
     }
     
@@ -202,10 +197,8 @@ Calc_Perf<-function(){
   
   if(LoadOM()==1&input$OM_L){ 
     OM_Eval<<-OM_L
-  }else if(CondOM()==1&input$OM_C){ 
-    OM_Eval<<-OM_C
   }else{
-    OM_Eval<<-makeOM(PanelState,proyears=YIU*2,nsim=input$nsim_Eval) # project to 2 x years in use
+    if(MadeOM()==0)OM_Eval<<-makeOM(PanelState,proyears=YIU*2) # project to 2 x years in use
   }  
   
   Fpanel(1)
@@ -219,7 +212,7 @@ Calc_Perf<-function(){
     if(nsim>47){
       
       parallel=T
-      setup()
+      setup(cpus=ncpus)
       
     }
     

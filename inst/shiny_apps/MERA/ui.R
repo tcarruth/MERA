@@ -2,9 +2,9 @@ library(shinyalert)
 library(shiny)
 library(shinyjs)
 library(shinyWidgets)
+library(shinyBS)
 
 
-#js_code <<- "shinyjs.browseURL = function(url) {window.open(url,'_blank')}"
 js_code <- "
 shinyjs.browseURL = function(url) {
   window.open(url,'_blank');
@@ -18,7 +18,6 @@ shinyUI(
     useShinyalert(),
     tags$head(
       tags$style(type="text/css", ".recalculating {opacity: 1.0;}"),
-      #tags$style(HTML("hr {border-top: 1.4px solid #E3E1DE;}
       tags$style(HTML("h4 { font-size:15px;}
                       h5 { font-size:13px;}
                       h6 { font-size:11px;}
@@ -136,19 +135,19 @@ shinyUI(
           column(5,h5("Save (.merasession)",style = "color:grey"),    downloadButton("Save_session","",width="100px"))
         ),
         
-        column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
-               h5(tags$b("Operating models",style="color:#347ab6")),
+        column(12,
+          tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
+          h5(tags$b("Operating models",style="color:#347ab6")),
           column(6,h5("Import",style="color:grey"), tipify(fileInput("Load_OM",label=NULL),title="Import just the operating model created by this MERA session")),
           column(1),
-          column(2,h5("Export",style="color:grey"),downloadButton("Save_OM","",width=70)),
-          column(3,h5("No. simulations",style="color:grey"),tipify(numericInput("nsim_OMsave", label=NULL, value=96,min=2,max=256),title="How many simulations should the exported OM have?"))
+          conditionalPanel(condition="output.MadeOM==1|output.LoadOM==1",
+                           column(2,h5("Export",style="color:grey"),downloadButton("Save_OM","",width=70))
+          )
         ),
         
         column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
-               h5(tags$b("Load DLMtool and MSEtool source code",style="color:#347ab6")),
-               
+          h5(tags$b("Load DLMtool and MSEtool source code",style="color:#347ab6")),
           column(12,tipify(fileInput("Load_anything",label=NULL),title="Load custom management procedures, performance metrics and other DLMtool and MSEtool code"))
-               
         ),
          
         inputId = "DD_file",
@@ -173,13 +172,13 @@ shinyUI(
                                 HTML("Management Planning &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;- calculate the expected future performance of management procedures"),
                                 HTML("Management Performance &nbsp;&nbsp; - given a management procedure is in use, analyse new data and monitor performance"),
                                 HTML("Risk Assessment &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- calculate the risk of status quo fishery management"),
-                                HTML("Status Determination &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- use the questionnaire and data to estimate population status"))),
-                ),
+                                HTML("Status Determination &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- use the questionnaire and data to estimate population status")))
+                )
         ),
        
         column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
                h5(tags$b("Presentation of results",style="color:#347ab6")),      
-               column(12,selectInput("Skin", label = NULL, choices=c("Generic"),selected="Generic",width="100px")),
+               column(12,selectInput("Skin", label = NULL, choices=c("MSC"),selected="MSC",width="100px"))
         ),
         
         
@@ -206,25 +205,15 @@ shinyUI(
                    ),
                    
                    column(7,
-                     h5("Number of simulations:")
-                   ),
-                   
-                   column(3, 
-                     column(12,h5("Risk Assess."),style="height:35px"),
-                     column(12,h5("Stat. Det."),style="height:35px"),
-                     column(12,h5("Mang. Plan."),style="height:35px"),
-                     column(12,h5("Mang. Perf."),style="height:35px")
-                   ),
-                    
-                   column(4, 
-                     column(12,numericInput("nsim_RA", label=NULL, value=144,min=2,max=512),style="height:35px"),
-                     column(12,numericInput("nsim_SD", label=NULL, value=48,min=2,max=512),style="height:35px"),
-                     column(12,numericInput("nsim_Plan", label=NULL, value=96,min=2,max=512),style="height:35px"),
-                     column(12,numericInput("nsim_Eval",label=NULL, value=144,min=2,max=512),style="height:35px"),
-                     column(12,
-                            actionButton("DemoSims",h5("DEMO",style="color:grey")),
-                            actionButton("DefSims",h5("DEFAULT",style="color:grey"))
-                     )
+                          h5("Number of simulations:",style="height:15px"),
+                          numericInput("nsim", label=NULL, value=144,min=2,max=512),
+                          column(6,
+                                 actionButton("DemoSims",h5("DEMO",style="color:grey")),
+                                 actionButton("DefSims",h5("DEFAULT",style="color:grey"))
+                          ),
+                          column(6,
+                                 conditionalPanel('output.MadeOM==1',actionButton("RemakeOM","Remake Operating Model",icon=icon('cogs')))
+                          )
                    )
             ),
             
@@ -236,7 +225,7 @@ shinyUI(
             conditionalPanel(condition="output.LoadOM==1",
               column(12,  tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
                    h5(tags$b("Custom Operating Models",style="color:#347ab6")),   
-                   column(12,checkboxInput("OM_L","Use Loaded OM for analyses",value=FALSE)),
+                   column(12,checkboxInput("OM_L","Use Loaded OM for analyses",value=FALSE))
               )
             ),
             conditionalPanel(condition="output.Data==1",
@@ -277,7 +266,7 @@ shinyUI(
         column(3,downloadButton("Build_full_OM","")),
         
         conditionalPanel(condition="output.Plan==0",
-          column(9,h5("Management Planning Report",style="color:grey")),
+          column(9,h5("Management Planning Report",style="color:grey"))
         ),                 
         conditionalPanel(condition="output.Plan==1",
            column(9,h5("Management Planning Report",style="font-weight:bold;color:#347ab6")),
@@ -285,7 +274,7 @@ shinyUI(
         ),
         
         conditionalPanel(condition="!(output.DataInd==1 & output.Eval==1)",
-          column(9,h5("Management Performance Report",style="color:grey")),
+          column(9,h5("Management Performance Report",style="color:grey"))
         ),                 
         conditionalPanel(condition="output.DataInd==1 & output.Eval==1",
           column(9,h5("Management Performance Report",style="font-weight:bold;color:#347ab6")),
@@ -293,7 +282,7 @@ shinyUI(
         ),
         
         conditionalPanel(condition="output.SD==0",
-          column(9,h5("Status Report",style="color:grey")),
+          column(9,h5("Status Report",style="color:grey"))
         ),                 
         conditionalPanel(condition="output.SD==1",
           column(9,h5("Status Report",style="font-weight:bold;color:#347ab6")),
@@ -301,7 +290,7 @@ shinyUI(
         ),
         
         conditionalPanel(condition="output.SD==0",
-          column(9,h5("Detailed Status Report (model fitting)",style="color:grey")),
+          column(9,h5("Detailed Status Report (model fitting)",style="color:grey"))
         ),
         conditionalPanel(condition="output.SD==1",
           column(9,h5("Detailed Status Report (model fitting)",style="font-weight:bold;color:#347ab6")),
@@ -309,7 +298,7 @@ shinyUI(
         ),
         
         conditionalPanel(condition="output.RA==0", 
-          column(9,h5("Risk Assessment Report",style="color:grey")),
+          column(9,h5("Risk Assessment Report",style="color:grey"))
         ),
         conditionalPanel(condition="output.RA==1", 
           column(9,h5("Risk Assessment Report",style="font-weight:bold;color:#347ab6")),
@@ -339,17 +328,14 @@ shinyUI(
           ),
           column(2),
           column(4,style="padding-top: 16px",
-                 
                  column(6,tags$a(img(src = "DLMtool.png", height = 32, width = 105),href="https://www.datalimitedtoolkit.org",target='_blank')),
                  column(6,tags$a(img(src = "MSC_logo.png", height = 34, width = 100),href="https://www.msc.org",target='_blank'))
-                 
-          ),
+          )
         ),
         hr(),
         
         column(12,h5(tags$b("About",style="color:#347ab6")),
-          column(12,h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey"),
-          ),
+          column(12,h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey")),
           hr()
         ),
         
@@ -394,26 +380,28 @@ shinyUI(
           column(8,h5("The currently selected App results skin is:",style = "color:grey")),
           column(4,
           div(style="display: inline-block;vertical-align:top",
-            conditionalPanel(condition="output.SkinNo==1",tags$a(img(src = "Generic.png", height = 52, width = 136),href="https://www.merafish.org/",target='_blank')),
-            conditionalPanel(condition="output.SkinNo==2",tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank')),
-            conditionalPanel(condition="output.SkinNo==3",tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')),
+            conditionalPanel(condition="output.SkinNo==3",tags$a(img(src = "Generic.png", height = 52, width = 136),href="https://www.merafish.org/",target='_blank')),
+            conditionalPanel(condition="output.SkinNo==1",tags$a(img(src = "MSC.png", height = 52, width = 136),href="https://www.msc.org/",target='_blank')),
+            conditionalPanel(condition="output.SkinNo==2",tags$a(img(src = "ABNJ.png", height = 52, width = 136),href="http://www.fao.org/gef/projects/detail/en/c/1056890/",target='_blank')),
             conditionalPanel(condition="output.SkinNo==4",tags$a(img(src = "Train.png", height = 58, width = 126),href="https://www.merafish.org/",target='_blank'))
           ))
         ),
         
         column(12, tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
                h5(tags$b("Software",style="color:#347ab6")),
-          column(12,h5(textOutput("Version"),style = "color:grey"), 
-          h5(textOutput("Dependencies_help"),style = "color:grey"),
-          h5(textOutput("SessionID_help"),style = "color:grey"),
-          h5("Open Source, GPL-2, 2020",style = "color:grey")
+          column(12,
+              h5(textOutput("Version"),style = "color:grey"), 
+              h5(textOutput("Dependencies_help"),style = "color:grey"),
+              h5(textOutput("SessionID_help"),style = "color:grey"),
+              h5("Open Source, GPL-2, 2020",style = "color:grey")
           )
         ),
         column(12, tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
          h5(tags$b("Acknowledgements",style="color:#347ab6")),
-         column(12,h5("MERA was initially commissioned by ", a("the Marine Stewardship Council.",href="https://msc.org",target="blank"),style = "color:grey"),
-         h5("MERA benefits from the ongoing support of the David & Lucile Packard Foundation, the Marine Stewardship Council, the Natural Resources Defense Council and the United Nations Food and Agricultural Organization",style = "color:grey"),
-         h5("The development of the DLMtool and MSEtool R libraries has been funded by the Gordon and Betty Moore Foundation, the Packard Foundation, 
+         column(12,
+                h5("MERA was initially commissioned by ", a("the Marine Stewardship Council.",href="https://msc.org",target="blank"),style = "color:grey"),
+                h5("MERA benefits from the ongoing support of the David & Lucile Packard Foundation, the Marine Stewardship Council, the Natural Resources Defense Council and the United Nations Food and Agricultural Organization",style = "color:grey"),
+                h5("The development of the DLMtool and MSEtool R libraries has been funded by the Gordon and Betty Moore Foundation, the Packard Foundation, 
             Fisheries and Oceans Canada, the Walton Foundation, Resources Legacy Fund, the Natural Resources Defense Council, the United Nations Food and Agricultural Organization, and the California Department of Fish and Wildlife ",style = "color:grey")       
          )
         ),
@@ -522,8 +510,9 @@ shinyUI(
                                 #HTML("<br>"),
                                 div(style="height: 97px;",sliderInput("loc",label=h5("Skew"),min=0.2,max=1.8,value=1,step=0.05)),
                                 div(style="height: 97px;",sliderInput("stmag",label=h5("Magnitude of recent change"),min=0.2,max=1.8,value=1,step=0.05)),
-                                div(style="height: 97px;",sliderInput("co",label=h5("Truncation"),min=0.2,max=1,value=1,step=0.025)))
-                              ),
+                                div(style="height: 97px;",sliderInput("co",label=h5("Truncation"),min=0.2,max=1,value=1,step=0.025))
+                              )
+                            ),
 
                             conditionalPanel(width=4,condition="output.Fpanel==6",
                                  checkboxGroupInput("F", label = h5("6. Inter-annual variability in historical effort",style="color:black"),
@@ -1067,10 +1056,7 @@ shinyUI(
                                 
                         )
                       ),
-                      
-                     
-                      
-                      
+                       
                       # ---- Other panel guides
 
                       conditionalPanel(condition="output.Fpanel==0&output.Dpanel==0&output.Mpanel==0&output.Opanel==0", #(input.tabs1==1 & (output.Fpanel==0&output.Dpanel==0&output.Mpanel==0))|(input.tabs1==2&(output.Fpanel==0&output.Dpanel==0&output.Mpanel==0))|(input.tabs1==3&(output.Fpanel==0&output.Dpanel==0&output.Mpanel==0))|(input.tabs1==4&(output.Fpanel==0&output.Dpanel==0&output.Mpanel==0))",
@@ -1304,12 +1290,8 @@ shinyUI(
                          
                   )
                 )
-                
-         )
-         
+          )
        )
-       
-     
     ),                 
 
     # ====================== Evaluation ========================================================================
@@ -1351,7 +1333,7 @@ shinyUI(
                  )
              )
         )
-    )
+      )
     
     ),
     
@@ -1359,24 +1341,24 @@ shinyUI(
     
     HTML("<br><br><br>"),
     tags$style(HTML('#Calculate{ border-color: #347ab6;}')),
-    #fluidRow(
-      column(1,style="background-color:white"),
-      
-      column(10,style = "background-color:#347ab6",
-        column(12,style = "background-color:#347ab6; height=2px"),
-        column(4),
-        column(4,
-            actionBttn("Calculate","CALCULATE",icon("cogs"),block=T, style="fill",color='danger',size='sm')
-        ),
-        column(4),
-        column(12,style = "background-color:#347ab6; height=2px")
-      ) ,
-    #),
+ 
+    column(1,style="background-color:white"),
+    
+    column(10,style = "background-color:#347ab6",
+      column(12,style = "background-color:#347ab6; height=2px"),
+      column(4),
+      column(4,
+          actionBttn("Calculate","CALCULATE",icon("cogs"),block=T, style="fill",color='danger',size='sm')
+      ),
+      column(4),
+      column(12,style = "background-color:#347ab6; height=2px")
+    ),
+    
     HTML("<br><br><br>"),
     # ====================================================================================================================================================================
     
     
-   column(12,style="height:15px"),
+    column(12,style="height:15px"),
 
        fluidRow(
          column(1),
@@ -1431,12 +1413,10 @@ shinyUI(
                 conditionalPanel(condition="input.Mode=='Management Performance' & output.Eval==0",
                                  h5("Management Performance calculations have not been run yet",style = "color:grey")              
                 )   
-                
-                
+                 
               ),
               column(9,
               div(style='height:1000px; overflow-y: scroll; width: 110%', 
-                
                   
                  conditionalPanel(condition="(input.Mode=='Management Planning' & output.Plan==1)|(input.Mode=='Management Performance'&output.Eval==1)|(input.Mode=='Risk Assessment'&output.RA==1)|(input.Mode=='Status Determination'&output.SD==1)",
 
@@ -1578,28 +1558,14 @@ shinyUI(
             ) # fluid row
           ) # column
       ), # end of Results
-     
-    
-
+   
       column(12),
-
       hr(),
-   
-    
-       column(12),
+      column(12),
+      column(1),
+      column(10, verbatimTextOutput("Log",placeholder=T)), 
+      bsTooltip("Log","Application Log"),       
       
-       #checkboxInput("Debug","Debug mode",value=TRUE),
-       
-       #conditionalPanel(condition="input.Debug",
-          column(1),
-          column(10, verbatimTextOutput("Log",placeholder=T)), 
-          bsTooltip("Log","Application Log"),       
-       #textAreaInput("Log", "Log",height="120px")),
-          
-         
-   
-       #),
-       
        column(12),
        hr(),
        
@@ -1608,11 +1574,8 @@ shinyUI(
        column(2,style="height:40px; padding:9px",textOutput("SessionID")),
        column(2,style="height:40px", h6("Open Source, GPL-2, 2020"))
 
-     #) # end of fluid row
     ) # end of fluid page
-  
-   
-  
+
   ) # end of server
 
 

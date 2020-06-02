@@ -30,7 +30,7 @@ plotM <- function(dummy=1){
   }else{
 
     plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(10,0.5,"< unspecified >",col="grey")
+    text(10,0.5,"< questionnaire incomplete >",col="red")
 
   }
 
@@ -116,7 +116,7 @@ plotD <- function(dummy=1){
   }else{
     par(mar=c(3.5,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
     plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(10,0.5,"< unspecified >", col="grey")
+    text(10,0.5,"< questionnaire incomplete >",col="red")
 
   }
 
@@ -151,7 +151,7 @@ ploth <- function(dummy=1){
   }else{
 
     plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(10,0.5,"< unspecified >",col="grey")
+    text(10,0.5,"< questionnaire incomplete >",col="red")
 
   }
 
@@ -327,7 +327,7 @@ plotFP <-function(dummy=1){
   }else{
 
     plot(c(1,ny),c(0,2),col="white",axes=FALSE,xlab="",ylab="")
-    text(ny/2,1,"< unspecified >",col="grey")
+    text(ny/2,1,"< questionnaire incomplete >",col="red")
 
   }
 
@@ -416,7 +416,7 @@ plotF <- function(dummy=1){
     if(sum(cond)==0){
       text(ny/2,1,"< Answer question 4 >",col="grey")
     }else{
-      text(ny/2,1,"< Unspecified >",col="grey")
+      text(ny/2,1,"< questionnaire incomplete >",col="red")
     }
 
   }
@@ -471,7 +471,7 @@ plotqh <- function(dummy=1){
 
   }else{
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
   }
 
 }
@@ -518,7 +518,7 @@ plotq <- function(dummy=1){
 
   }else{
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
   }
 
 }
@@ -557,7 +557,7 @@ plotLM <- function(dummy=1){
 
   }else{
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
   }
 
 }
@@ -599,7 +599,7 @@ plotsel <- function(dummy=1){
   }else{
 
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
 
   }
 
@@ -652,7 +652,7 @@ plotdome <- function(dummy=1){
 
   }else{
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
   }
 
 }
@@ -792,7 +792,7 @@ plotDR <- function(dummy=1){
 
   }else{
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
     #text(1.75,0.25,input$DR,col="grey")
     #text(1.75,0.75,DR_nams,col="grey")
   }
@@ -821,7 +821,7 @@ plotPRM <- function(dummy=1){
 
   }else{
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
     #text(1.75,0.25,input$DM,col="grey")
     #text(1.75,0.75,DM_nams,col="grey")
   }
@@ -896,7 +896,7 @@ plotsigR <- function(dummy=1){
 
   }else{
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
     #text(1.75,0.25,input$DM,col="grey")
     #text(1.75,0.75,DM_nams,col="grey")
   }
@@ -943,7 +943,7 @@ plotAh <- function(dummy=1){
   }else{
 
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
 
   }
 
@@ -978,7 +978,7 @@ plotVh <- function(dummy=1){
   }else{
 
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
 
   }
 
@@ -1007,7 +1007,7 @@ plotA <- function(dummy=1){
   }else{
 
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
 
   }
 
@@ -1069,7 +1069,7 @@ plotV <- function(dummy=1){
   }else{
 
     plot(c(0,3.5),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(1.75,0.5,"< Unspecified >",col="grey")
+    text(1.75,0.5,"< questionnaire incomplete >",col="red")
 
   }
 
@@ -1153,7 +1153,7 @@ plotDh <- function(dummy=1){
   }else{
     par(mar=c(3.5,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
     plot(c(1,20),c(0,1),col="white",axes=FALSE,xlab="",ylab="")
-    text(10,0.5,"< unspecified >", col="grey")
+    text(10,0.5,"< questionnaire incomplete >",col="red")
 
   }
 

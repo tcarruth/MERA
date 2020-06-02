@@ -56,6 +56,14 @@ pre { /* Code block */
 
 This is a prototype of an automatic report that documents how the user specified the operating model and their various justifications.  
 
+
+```{r Justs, echo=FALSE, results='asis',fig.width=10.5, fig.height=0.7,tidy=FALSE}
+
+plotJs()
+
+```
+
+
 <br clear="both"/>
 
 ```{r labs,echo=F,warning=F,error=F,results='asis'}
@@ -76,9 +84,11 @@ if(Just[[1]][1]!="No introduction / general comments were provided"){
   
 }
 
+
 ```
 
-<br clear="both"/>
+
+
 
 # Fishery Characteristics
 

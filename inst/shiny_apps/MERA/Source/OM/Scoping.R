@@ -356,7 +356,6 @@ Detect_scope<-function(dat,simno=1,minndat=20){
 
 getOMsim<-function(OM,simno=1,silent=T){
   
-  
   if(length(OM@cpars)==0){
     
     if(!silent) message("There is no cpars slot in this OM object, only the nsim slot has been modified")
@@ -394,8 +393,6 @@ Scoping_parallel<-function(x,OMc,dat,code,DataStrip,getOMsim){
   outlist<-DataStrip(dat,OMc,code,simno=x)
   OMeff<-outlist$condition=="effort"
   OMp<-getOMsim(OMc,simno=x)
-  #loadRDS(OMp,"C:/temp/OMp.rds")
-  #loadRDS(outlist,"C:/temp/outlist.rds")
   out<-SRA_scope(OM=OMp,
                  data=outlist,
                  report=F,
@@ -421,8 +418,6 @@ SimSam<-function(OMc,dat,code){
 GetDep<-function(OM,dat,code,cores=4){
   
   outlist<-DataStrip(dat,OM,code,simno=1)
-  #saveRDS(OM,"C:/temp/OM")
-  #saveRDS(outlist,"C:/temp/outlist")
   OMeff<-outlist$condition=="effort"
   options(warn=-1)
   out<-SRA_scope(OM=OM,
