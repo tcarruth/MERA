@@ -2,6 +2,7 @@ library(shinyalert)
 library(shiny)
 library(shinyjs)
 library(shinyWidgets)
+library(shinyBS)
 
 
 #js_code <<- "shinyjs.browseURL = function(url) {window.open(url,'_blank')}"
@@ -53,6 +54,9 @@ shinyUI(
                       #Fback{font-size: 13px;}
                       #Build_OM_Q{font-size: 13px;}
                       #FbackD{font-size: 13px;}
+                      #new_series{font-size: 13px;}
+                      #undo_last{font-size: 13px;}
+                      #reset_plot{font-size:13px;}
                       #Build_OM{font-size: 13px;}
                       #Build_Eval{font-size: 13px;}
                       #Build_AI{font-size: 13px;}
@@ -489,7 +493,7 @@ shinyUI(
                                   column(width=4,style="height:40px;padding:19px",
                                          h5("No. years:",style="font-weight:bold")),
                                   column(width=8,style="height:40px",
-                                         numericInput("nyears", "", 65,min=8,max=200,step=1)),
+                                         numericInput("nyears", "", 68,min=8,max=200,step=1)),
                                   column(width=4,style="height:40px;padding:19px",
                                          h5("Author:",style="font-weight:bold")),
                                   column(width=8,style="height:40px",
@@ -513,17 +517,32 @@ shinyUI(
                                 actionLink("All_h","UNKNOWN")),
 
                             conditionalPanel(width=4,condition="output.Fpanel==5",
-                              column(6,
-                                checkboxGroupInput("FP", label = h5("5. Historical effort pattern",style="color:black"),
-                                        choices = FP_list, selected = FP_list),
-                                actionLink("All_FP","UNKNOWN")),
+                                 column(12,
+                                   h5("5. Historical effort pattern",style="color:black"),
+                                   #plotOutput("effort_plot", click = "plot_click", hover = "plot_hover",height=220),
+                                   HTML("<br>"),
+                                   verbatimTextOutput("info"),
+                                   HTML("<br>"),
+                                   actionButton("new_series", "New Series"),
+                                   actionButton("undo_last", "Undo"),
+                                   actionButton("reset_plot", "Clear")
+                                   
+                                )            
+                            ),
+                                             
+                                             
+                                             
+                                          #   column(6,
+                                #checkboxGroupInput("FP", label = h5("5. Historical effort pattern",style="color:black"),
+                                 #       choices = FP_list, selected = FP_list),
+                                #actionLink("All_FP","UNKNOWN")),
 
-                              column(6,
+                              #column(6,
                                 #HTML("<br>"),
-                                div(style="height: 97px;",sliderInput("loc",label=h5("Skew"),min=0.2,max=1.8,value=1,step=0.05)),
-                                div(style="height: 97px;",sliderInput("stmag",label=h5("Magnitude of recent change"),min=0.2,max=1.8,value=1,step=0.05)),
-                                div(style="height: 97px;",sliderInput("co",label=h5("Truncation"),min=0.2,max=1,value=1,step=0.025)))
-                              ),
+                               # div(style="height: 97px;",sliderInput("loc",label=h5("Skew"),min=0.2,max=1.8,value=1,step=0.05)),
+                              #  div(style="height: 97px;",sliderInput("stmag",label=h5("Magnitude of recent change"),min=0.2,max=1.8,value=1,step=0.05)),
+                              #  div(style="height: 97px;",sliderInput("co",label=h5("Truncation"),min=0.2,max=1,value=1,step=0.025)))
+                              #),
 
                             conditionalPanel(width=4,condition="output.Fpanel==6",
                                  checkboxGroupInput("F", label = h5("6. Inter-annual variability in historical effort",style="color:black"),
@@ -775,11 +794,11 @@ shinyUI(
                       )),
 
                       conditionalPanel(condition="input.tabs1==1&output.Fpanel==5",
-                          column(6,plotOutput("plotFP",height=240)),
+                          #column(6,plotOutput("plotFP",height=240)),
+                          column(6,plotOutput("effort_plot", click = "plot_click", hover = "plot_hover",height=240)),       
                           column(6,
                             h5("What temporal pattern best describes the trend in historical annual fishing effort (e.g. boat-days per year, number of trips per year)?",style = "color:grey"),
                             h5("If more than one answer is given, historical fishing will be simulated subject to all trends in equal frequency.",style = "color:grey"),
-                            h5("If a very specific pattern of effort is required, you can use the sliders to warp the effort patterns.",style = "color:grey"),
                             h5("This question specifies the possible range of mean trends, you will have an opportunity to adjust the extent of inter-annual variability and changes in fishing efficiency (catchability) in the following questions.",style = "color:grey"),
                             h5("Here is an introduction to fishing effort courtesy of the ", a("UN FAO.", href="http://www.fao.org/docrep/x5685e/x5685e04.htm", target="_blank"),style = "color:grey")
                       )),

@@ -292,7 +292,28 @@ Ftrendfunc<-function(M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,co=1,start_m
 
 }
 
+
+
+
+
 plotFP <-function(dummy=1){
+  
+  par(mfrow=c(1,1), mar=c(3.5,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
+  FP_nams<-unlist(FP_list)#c("FP_s", "FP_gr","FP_bb","FP_gi","FP_ri","FP_rd")
+  
+  suppressWarnings({ny<-as.numeric(input$nyears)})
+  if(length(ny)==0){
+    ny<-68
+  }else if(is.na(ny)){
+    ny<-68
+  }
+  yrs<-Current_Year-(ny:1)
+
+  plot(1)
+}
+
+
+plotFP2 <-function(dummy=1){
 
   par(mfrow=c(1,1), mar=c(3.5,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
   FP_nams<-unlist(FP_list)#c("FP_s", "FP_gr","FP_bb","FP_gi","FP_ri","FP_rd")
@@ -336,6 +357,80 @@ plotFP <-function(dummy=1){
 
 
 plotF <- function(dummy=1){
+  
+  trends<-effort_mat()
+  nt<-dim(trends)[1]
+  yrs<-getyrs()
+  
+  F_nams<-unlist(F_list) 
+  cond2<-F_nams%in%input$F
+  par(mfrow=c(1,2),mai=c(0.3,0.5,0.01,0.01), omi=c(0.4,0.4,0.55,0.1),cex.main = 1.5, cex.lab=1.35 )
+  
+  #trends<-trends[cond,]
+  simbyt<-100
+  nsim<-simbyt*nt
+  
+  Esd_max<-max(F_maxes[cond2])
+  Esd_min<-min(F_mins[cond2])
+  Esdrand<-runif(nsim,Esd_min,Esd_max)
+  Emu<-(-0.5*Esdrand^2)
+  Esdarray<-array(exp(rnorm(nsim*ny,Emu,Esdrand)),c(nsim,ny))
+  Eind<-as.matrix(expand.grid(1:nsim,1:ny))
+  Tind<-cbind(rep(1:nt,each=simbyt),Eind[,2])
+  stochtrends<-array(NA,c(nsim,ny))
+  stochtrends[Eind]<-Esdarray[Eind]*trends[Tind]
+  stochtrends<-stochtrends/apply(stochtrends,1,mean)
+  
+  plot(range(yrs),c(0,quantile(stochtrends,0.98)),col="white",xlab="",ylab="",yaxs='i')
+  B90s<-apply(stochtrends,2,quantile,p=c(0.05,0.95))
+  B50s<-apply(stochtrends,2,quantile,p=c(0.25,0.75))
+  
+  #med<-apply(stochtrends,2,quantile,p=0.5)
+  #matplot(t(stochtrends),col="#99999920",type="l")
+  polygon(c(yrs,yrs[ny:1]),c(B90s[1,],B90s[2,ny:1]),border=NA,col=fcol)
+  polygon(c(yrs,yrs[ny:1]),c(B50s[1,],B50s[2,ny:1]),border=NA,col=icol)
+  #lines(1:ny,med,col='white',lwd=2)
+  legend('topleft',legend=c('90% PI',"50% PI"),fill=c(fcol,icol),bty='n',border='white')
+  mtext("Historical year",1,line=0.45,outer=T)
+  mtext("Relative fishing effort",2,line=2)
+  mtext("Range of simulations",3,line=0.8)
+  
+  # Example plots
+  maxind<-(((0:(nt-1))*100)+aggregate(Esdrand,by=list(rep(1:nt,each=simbyt)),which.max)$x)
+  minind<-(((0:(nt-1))*100)+aggregate(Esdrand,by=list(rep(1:nt,each=simbyt)),which.min)$x)
+  
+  cols<-c(fcol,'black','dark grey',palette(rainbow(20))) #rep(c(fcol,'black','dark grey'),2)
+  ltys<-1#rep(c(1,2),each=3)
+  
+  plot(range(yrs),c(0,quantile(stochtrends,0.98)),col="white",xlab="",ylab="")
+  if(nt==1){
+    lines(yrs,stochtrends[maxind,],col=cols,lty=ltys)
+    lines(yrs,stochtrends[minind,],col=cols,lty=ltys)
+  }else{
+    matplot(yrs,t(stochtrends[maxind,]),add=T,col=cols,lty=ltys,type='l')
+    matplot(yrs,t(stochtrends[minind,]),add=T,col=cols,lty=ltys,type='l')
+  }
+  
+  mtext("",1,line=2)
+  mtext("",2,line=2)
+  
+  #legend('topleft',legend=names(FP_list)[cond],text.col=cols[cond],lty=ltys[cond],col=cols[cond],bty='n',cex=0.8)
+  mtext("Individual simulations",3,line=0.8)
+    
+  #}else{
+  #  plot(c(1,ny),c(0,2),col="white",axes=FALSE,xlab="",ylab="")
+   # if(sum(cond)==0){
+    #  text(ny/2,1,"< Answer question 4 >",col="grey")
+    #}else{
+    #  text(ny/2,1,"< Unspecified >",col="grey")
+    #}
+    
+  #}
+  
+}
+
+
+plotFold <- function(dummy=1){
 
   FP_nams<-unlist(FP_list)#c("FP_s", "FP_gr","FP_bb","FP_gi","FP_ri","FP_rd")
 
