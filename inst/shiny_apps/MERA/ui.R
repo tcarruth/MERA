@@ -52,6 +52,9 @@ shinyUI(
                       #Fback{font-size: 13px;}
                       #Build_OM_Q{font-size: 13px;}
                       #FbackD{font-size: 13px;}
+                      #new_series{font-size: 13px;}
+                      #undo_last{font-size: 13px;}
+                      #reset_plot{font-size:13px;}
                       #Build_OM{font-size: 13px;}
                       #Build_Eval{font-size: 13px;}
                       #Build_AI{font-size: 13px;}
@@ -114,6 +117,40 @@ shinyUI(
     fluidRow(style = "background-color:#347ab6;",
       column(10,style="padding-left: 10px",
       
+             
+   # Options drop down ----------------------------------------------------------------------------------------------------------------       
+   tags$head(tags$style(HTML("#DD_options { border-color: #347ab6 }"))),
+   div(style="display: inline-block;vertical-align:top",
+       dropdownButton(
+         column(12,
+                h5(tags$b("MERA Mode",style="color:#347ab6")),
+                column(12,
+                       
+                       radioButtons("Mode",label=NULL,choiceValues=c("Management Planning","Management Performance","Risk Assessment","Status Determination"),
+                                    selected="Management Planning", choiceNames=list(
+                                      HTML("Management Planning &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;- calculate the expected future performance of management procedures"),
+                                      HTML("Management Performance &nbsp;&nbsp; - given a management procedure is in use, analyse new data and monitor performance"),
+                                      HTML("Risk Assessment &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- calculate the risk of status quo fishery management"),
+                                      HTML("Status Determination &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- use the questionnaire and data to estimate population status")))
+                )
+         ),
+         
+         column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
+                h5(tags$b("Presentation of results",style="color:#347ab6")),      
+                column(12,selectInput("Skin", label = NULL, choices=c("MSC"),selected="MSC",width="100px"))
+         ),
+         
+         
+         inputId = "DD_options",
+         label = "Options",
+         icon = icon("grip-horizontal"),
+         status = "primary",
+         circle = FALSE,
+         width="800px"
+         
+       )),
+             
+             
       # File drop down ----------------------------------------------------------------------------------------------------------------       
       tags$head(tags$style(HTML("#DD_file { border-color: #347ab6 }"))),
       div(style="display: inline-block;vertical-align:top",
@@ -159,42 +196,27 @@ shinyUI(
         
       )),
  
-      # Options drop down ----------------------------------------------------------------------------------------------------------------       
-      tags$head(tags$style(HTML("#DD_options { border-color: #347ab6 }"))),
-      div(style="display: inline-block;vertical-align:top",
-      dropdownButton(
-        column(12,
-          h5(tags$b("MERA Mode",style="color:#347ab6")),
-          column(12,
-                  
-                 radioButtons("Mode",label=NULL,choiceValues=c("Management Planning","Management Performance","Risk Assessment","Status Determination"),
-                              selected="Management Planning", choiceNames=list(
-                                HTML("Management Planning &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;- calculate the expected future performance of management procedures"),
-                                HTML("Management Performance &nbsp;&nbsp; - given a management procedure is in use, analyse new data and monitor performance"),
-                                HTML("Risk Assessment &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- calculate the risk of status quo fishery management"),
-                                HTML("Status Determination &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- use the questionnaire and data to estimate population status")))
-                )
-        ),
-       
-        column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
-               h5(tags$b("Presentation of results",style="color:#347ab6")),      
-               column(12,selectInput("Skin", label = NULL, choices=c("MSC"),selected="MSC",width="100px"))
-        ),
-        
-        
-        inputId = "DD_options",
-        label = "Options",
-        icon = icon("grip-horizontal"),
-        status = "primary",
-        circle = FALSE,
-        width="800px"
-        
-      )),
       
       # Settings drop down ----------------------------------------------------------------------------------------------------------------       
       tags$head(tags$style(HTML("#DD_settings { border-color: #347ab6 }"))),
       div(style="display: inline-block;vertical-align:top",
           dropdownButton(
+            
+            
+            column(12, 
+                   h5(tags$b("Sampling of operating models",style="color:#347ab6")), 
+                   
+                   column(5,    
+                          radioButtons("Distribution", label = "Sample from:", choices=c("Truncated Normal","Uniform"),selected="Truncated Normal")
+                   ),
+                   
+                   column(5,
+                          conditionalPanel('input.Distribution=="Truncated Normal"',
+                            h5("Range for truncation (central %)",style="height:15px"),
+                            numericInput("IQRange", label=NULL, value=90,min=50,max=99),
+                          )
+                   )
+            ),
             
             column(12, 
                    h5(tags$b("Closed-loop simulation",style="color:#347ab6")), 
@@ -477,7 +499,7 @@ shinyUI(
                                   column(width=4,style="height:40px;padding:19px",
                                          h5("No. years:",style="font-weight:bold")),
                                   column(width=8,style="height:40px",
-                                         numericInput("nyears", "", 65,min=8,max=200,step=1)),
+                                         numericInput("nyears", "", 68,min=8,max=200,step=1)),
                                   column(width=4,style="height:40px;padding:19px",
                                          h5("Author:",style="font-weight:bold")),
                                   column(width=8,style="height:40px",
@@ -501,17 +523,17 @@ shinyUI(
                                 actionLink("All_h","UNKNOWN")),
 
                             conditionalPanel(width=4,condition="output.Fpanel==5",
-                              column(6,
-                                checkboxGroupInput("FP", label = h5("5. Historical effort pattern",style="color:black"),
-                                        choices = FP_list, selected = FP_list),
-                                actionLink("All_FP","UNKNOWN")),
-
-                              column(6,
-                                #HTML("<br>"),
-                                div(style="height: 97px;",sliderInput("loc",label=h5("Skew"),min=0.2,max=1.8,value=1,step=0.05)),
-                                div(style="height: 97px;",sliderInput("stmag",label=h5("Magnitude of recent change"),min=0.2,max=1.8,value=1,step=0.05)),
-                                div(style="height: 97px;",sliderInput("co",label=h5("Truncation"),min=0.2,max=1,value=1,step=0.025))
-                              )
+                                 column(12,
+                                    h5("5. Historical effort pattern",style="color:black"),
+                                    #plotOutput("effort_plot", click = "plot_click", hover = "plot_hover",height=220),
+                                    HTML("<br>"),
+                                    verbatimTextOutput("info"),
+                                    HTML("<br>"),
+                                    actionButton("new_series", "New Series"),
+                                    actionButton("undo_last", "Undo"),
+                                    actionButton("reset_plot", "Clear")
+                                        
+                                 )            
                             ),
 
                             conditionalPanel(width=4,condition="output.Fpanel==6",
@@ -764,14 +786,15 @@ shinyUI(
                       )),
 
                       conditionalPanel(condition="input.tabs1==1&output.Fpanel==5",
-                          column(6,plotOutput("plotFP",height=240)),
-                          column(6,
-                            h5("What temporal pattern best describes the trend in historical annual fishing effort (e.g. boat-days per year, number of trips per year)?",style = "color:grey"),
-                            h5("If more than one answer is given, historical fishing will be simulated subject to all trends in equal frequency.",style = "color:grey"),
-                            h5("If a very specific pattern of effort is required, you can use the sliders to warp the effort patterns.",style = "color:grey"),
-                            h5("This question specifies the possible range of mean trends, you will have an opportunity to adjust the extent of inter-annual variability and changes in fishing efficiency (catchability) in the following questions.",style = "color:grey"),
-                            h5("Here is an introduction to fishing effort courtesy of the ", a("UN FAO.", href="http://www.fao.org/docrep/x5685e/x5685e04.htm", target="_blank"),style = "color:grey")
+                         
+                         column(6,plotOutput("effort_plot", click = "plot_click", hover = "plot_hover",height=240)),       
+                         column(6,
+                                h5("What temporal pattern best describes the trend in historical annual fishing effort (e.g. boat-days per year, number of trips per year)?",style = "color:grey"),
+                                h5("If more than one effort time series is specified, historical fishing will be simulated by sampling all series with equal probability.",style = "color:grey"),
+                                h5("This question specifies the possible range of mean trends, you will have an opportunity to adjust the extent of inter-annual variability and changes in fishing efficiency (catchability) in the following questions.",style = "color:grey"),
+                                h5("Here is an introduction to fishing effort courtesy of the ", a("UN FAO.", href="http://www.fao.org/docrep/x5685e/x5685e04.htm", target="_blank"),style = "color:grey")
                       )),
+                      
 
                       conditionalPanel(condition="input.tabs1==1&output.Fpanel==6",
                           column(6,plotOutput("plotF",height=240)),

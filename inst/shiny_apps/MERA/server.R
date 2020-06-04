@@ -28,6 +28,7 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Fishery_figs.R",local=TRUE)
   source("./Source/Questionnaire/Management_figs.R",local=TRUE)
   source("./Source/Questionnaire/Data_figs.R",local=TRUE)
+  source("./Source/Questionnaire/Effort_sketching.R",local=TRUE)
 
   # Presentation of results
   source("./Source/Skins/Generic.R",local=TRUE)
@@ -1474,5 +1475,130 @@ shinyServer(function(input, output, session) {
   
   # Tool tips
   for(i in 1:ntips)addTooltip(session,ids[[i]],title=titles[[i]])
+  
+  
+  # Effort sketching
+  
+  eff_values <- reactiveValues(df=data.frame(x=Current_Year-68, y=0, series=1),
+                               series=1,
+                               stack=data.frame(x=Current_Year-68, y=0, series=1))
+  
+  
+  output$info <- renderText({
+    xy_str <- function(e) {
+      if(is.null(e)) return("NULL\n")
+      paste0("Year = ", round(e$x, 1), " Relative effort = ", round(e$y, 3), "\n")
+    }
+    temp <- input$plot_hover
+    if(!is.null(temp$x) & !is.null(temp$y)) temp$x <- round(temp$x,0)
+    if(!is.null(temp)){
+      paste0(xy_str(temp))
+    }else{
+      " "
+    }
+  })
+  
+  output$effort_plot <- renderPlot({
+    # first series
+    tempyrs<-getyrs()
+    nyears <- length(tempyrs)
+    initYr <- tempyrs[1] # initial year
+    lstYr <- initYr + nyears-1
+    yvals <- 0 # initial effort
+    
+    cols <- c(fcol,'black','dark grey',palette(rainbow(20))) 
+    lwd <- 1.2
+    pch <- 16
+    pdat <- dplyr::filter(eff_values$df, series==1)
+    par(mai=c(0.5,0.5,0.15,0.2))
+    plot(pdat$x, pdat$y, type="b", col=cols[1], lwd=lwd, pch=pch,
+         xlim=c(initYr, lstYr), ylim=c(0,1),
+         xlab="Year",
+         ylab="Historical Effort",
+         bty="l",
+         xaxs="i",
+         yaxs="i", 
+         xpd=NA)
+    axis(3,c(0,1E10))
+    axis(4,c(0,1E10))
+    # additional series
+    series <- eff_values$df$series %>% unique()
+    series <- series[!series==1]
+    if (length(series>1)) {
+      for (i in series) {
+        pdat <- dplyr::filter(eff_values$df, series==i)
+        points(pdat$x, pdat$y, type="b", col=cols[i], lwd=lwd, pch=pch, xpd=NA)
+      }
+    }
+    
+    #print(eff_values$df) # for debugging & use elsewhere in the app
+  })
+  
+  observeEvent(input$plot_click$x, {
+    
+    newX <- round(input$plot_click$x,0)
+    newY <- input$plot_click$y
+    
+    # check if x value already exists
+    ind <- which(eff_values$df$x == newX & eff_values$df$series == eff_values$series)
+    if (length(ind)>0) eff_values$df <- eff_values$df[-ind,]
+    
+    eff_values$stack <- data.frame(x=c(eff_values$stack$x,newX),
+                                   y=c(eff_values$stack$y, newY),
+                                   series=c(eff_values$stack$series, eff_values$series))
+    
+    tempDF <- data.frame(x=c(eff_values$df$x, newX),
+                         y=c(eff_values$df$y, newY),
+                         series=c(eff_values$df$series, eff_values$series))
+    tempDF <- dplyr::arrange(tempDF, series, x)
+    
+    eff_values$df <- tempDF
+    #eff_val<-as.list(eff_values)
+    #saveRDS(eff_val,"C:/temp/eff_values.rda")
+  })
+  
+  
+  observeEvent(input$new_series, {
+    # check that last series is complete
+    lastX <- eff_values$df$x[nrow(eff_values$df)]
+    tempyrs<-getyrs()
+    nyears <- length(tempyrs)
+    initYr <- tempyrs[1] # initial year
+    lstYr <- initYr + nyears-1
+    yvals <- 0 # initial effort
+    if (lastX != lstYr) {
+      #showNotification("Series must include last historical year", type="error")
+      shinyalert("Incomplete effort series", paste0("Series must include last historical year (",CurrentYr,")"), type = "info")
+    } else {
+      eff_values$series <-eff_values$series+1
+      eff_values$df <- data.frame(x=c(eff_values$df$x, initYr),
+                                  y=c(eff_values$df$y, yvals),
+                                  series=c(eff_values$df$series, eff_values$series))
+    }
+  })
+  
+  observeEvent(input$undo_last, {
+    # remove the last point
+    if (nrow(eff_values$df)>1) {
+      nrows <- nrow(eff_values$stack)
+      last_vals <- eff_values$stack[nrows,]
+      eff_values$stack <- eff_values$stack[1:(nrows-1),]
+      eff_values$df <- dplyr::anti_join(eff_values$df, last_vals, by=c('x', 'y', 'series'))
+    }
+  })
+  
+  observeEvent(input$reset_plot, {
+    tempyrs<-getyrs()
+    nyears <- length(tempyrs)
+    initYr <- tempyrs[1] # initial year
+    lstYr <- initYr + nyears-1
+    yvals <- 0 # initial effort
+    eff_values$df <- data.frame(x=initYr, y=yvals, series=1)
+    eff_values$series <- 1
+    eff_values$stack <- data.frame(x=initYr, y=yvals, series=1)
+    
+  })
+  
+  
 
 })

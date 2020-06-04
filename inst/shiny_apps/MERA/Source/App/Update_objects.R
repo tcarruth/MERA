@@ -2,7 +2,7 @@
 checkQs<-function(){
   
   Qs<-unlist(lapply(PanelState[1:3],function(x)lapply(x,sum)))
-  
+  Qs[names(Qs)=="Fpanel4"]<-6
   Qnams<-c(paste0("F",2:19),paste0("M",1:7),paste0("D",1:4))
   
   list(error=any(Qs==0),probQs=Qnams[Qs==0])

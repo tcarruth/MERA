@@ -11,7 +11,7 @@ package_Questionnaire<-function(){
     PanelState$dat_ind<-dat_ind
   }
   
-  MSClog<-list(PanelState=PanelState, Just=Just, Des=Des,Version=Version)
+  MSClog<-list(PanelState=PanelState, Just=Just, Des=Des,eff_values=eff_values,Version=Version)
 }
 
 # for loading questionnaires
@@ -27,12 +27,13 @@ Update_Questionnaire<-function(MSClog){
     for(i in 1:2){
       for(j in 1:length(PanelState[[i]])) {
         
+        if(i!=1 & j!=4){ # not the defunct effort trend type
         state<-as.vector(unlist(PanelState[[i]][j]))
         choices<-as.vector(unlist(get(MasterList[[i]][j])))
         selected<-as.list(choices[state])
         choices<-as.list(choices)
         updateCheckboxGroupInput(session, as.character(inputnames[[i]][j]), selected = selected)
-        
+        }
       }
     }
     
@@ -48,9 +49,9 @@ Update_Questionnaire<-function(MSClog){
       
     }
     
-    for(j in 1:length(PanelState[[4]])){
-      updateSliderInput(session,as.character(inputnames[[4]][j]),value=as.numeric(PanelState[[4]][j]))
-    }
+    #for(j in 1:length(PanelState[[4]])){
+    #  updateSliderInput(session,as.character(inputnames[[4]][j]),value=as.numeric(PanelState[[4]][j]))
+    #}
     
     # update the radio button D4
     i<-3
@@ -102,6 +103,16 @@ Update_Questionnaire<-function(MSClog){
       AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
       updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
       updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
+    }
+    
+    if("eff_values"%in%names(MSClog)){
+      eff_values$stack<-MSClog$eff_values$stack
+      eff_values$df<-MSClog$eff_values$df
+      eff_values$series<-MSClog$eff_values$series
+    }else{
+      
+      eff_backwards(MSClog)
+      
     }
     
     

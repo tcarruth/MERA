@@ -146,21 +146,11 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     D<-runif(nsim,OM@D[1],OM@D[2])
     OM@h<-getminmax(1,"h",PanelState)                                                        # F4 -----------
    
-    # Ftrend and error                                                                       # F5 -----------
-    loc<-match("FP",inputnames[[1]])
-    cond<-(1:length(unlist(PanelState[[1]][loc])))[unlist(PanelState[[1]][loc])]
-    Ftype<<-sample(cond,nsim,replace=T)
-    M1sim<-M1s[Ftype]
-    M2sim<-M2s[Ftype]
-    sd1sim<-sd1s[Ftype]
-    sd2sim<-sd2s[Ftype]
-    h2sim<-h2s[Ftype]
-    locsim<-PanelState[[4]][[1]]
-    stmagsim<-PanelState[[4]][[2]]
-    cosim<-PanelState[[4]][[3]]
-    Find<-array(NA,c(nsim,nyears))
-      
-    for(i in 1:nsim)Find[i,]<-Ftrendfunc(M1=M1sim[i],M2=M2sim[i],sd1=sd1sim[i],sd2=sd2sim[i],h2=h2sim[i],ny=nyears,loc=locsim,start_mag=2-stmagsim,co=cosim,bm=F,plot=F)
+    # Ftrend and error 
+    # eff_values<-readRDS("C:/temp/eff_values.rda"); input<-list(ny=68); nyears=68; nsim=48; Esd_min=0.1; Esd_max=0.5 # F5 -----------
+    trends<-effort_mat()
+    trends<-trends/apply(trends,1,mean)
+    nt<-dim(trends)[1]
   
     Esd<-getminmax(1,"F",PanelState)                                                         # F6 ----------
     Esd_max<-Esd[2]
@@ -172,8 +162,10 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     qhs<-getminmax(1,"qh",PanelState)
     qhssim<-runif(nsim,qhs[1],qhs[2])
     qssim<-1+qhssim/100                                                   # F7 ----------
+    trendsamp<-ceiling(runif(nsim)*nt)
     
-    for(i in 1:nsim)Find[i,]<-Find[i,]*Esdarray[i,]* qssim[i]^((1:nyears)-(nyears/2))
+    Find<-array(NA,c(nsim,nyears))
+    for(i in 1:nsim)Find[i,]<-trends[trendsamp[i],]*Esdarray[i,]* qssim[i]^((1:nyears)-(nyears/2))
   
     # --- Future catchability ----------
   
@@ -354,7 +346,7 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       
     }
     
-    SampList<<-data.frame(Ftype,Esdrand,qhssim,Sel50sim,Ahsim,Vhsim,Asim,Vsim,initD,Cbias)
+    SampList<<-data.frame(Esdrand,qhssim,Sel50sim,Ahsim,Vhsim,Asim,Vsim,initD,Cbias)
     AM("Using questionnaire-based operating model")
   }
   AM("------------- New OM remade --------------")
