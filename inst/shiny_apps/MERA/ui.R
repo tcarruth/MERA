@@ -35,7 +35,7 @@ shinyUI(
                       output{ font-size:13px;}
                       tbody{ font-size:13px;}
                       style{ font-size:13px;}
-                      .fa-play{color:red}
+                      .fa-play{color:red;}
                       .datatables .display {margin-left: 0;}
                       [type = 'number'] {font-size:13px;height:30px;}
                       [type = 'text'] {font-size:13px;}
@@ -47,10 +47,12 @@ shinyUI(
                       #email{font-size: 13px;}
                       #emailsend{font-size: 13px;}
                       #calculate{font-size: 13px;}
+                      #Fcont_red{font-size: 13px;}
                       #Fcont{font-size: 13px;}
                       #FcontD{font-size: 13px;}
                       #Fback{font-size: 13px;}
                       #Build_OM_Q{font-size: 13px;}
+                      #Download_Log{font-size:12px;}
                       #FbackD{font-size: 13px;}
                       #new_series{font-size: 13px;}
                       #undo_last{font-size: 13px;}
@@ -118,21 +120,21 @@ shinyUI(
       column(10,style="padding-left: 10px",
       
    
-   tags$head(tags$style(HTML("#Start { border-color: #347ab6 }"))),
+   tags$head(tags$style(HTML("#Start { color:red; background-color: white; border-color: #347ab6; border-width:4px }"))),
    div(style="display: inline-block;vertical-align:top",    
-       conditionalPanel('output.Start==0',style='width:74px',
+       conditionalPanel('output.Start==0',style='width:77px',
                         dropdownButton(inputId="Start",
                           label ="START",
                           icon = icon("play"),
                           status = "primary",
                           circle = FALSE,
-                          width="74px")
+                          width="77px")
                         ),
-       conditionalPanel('output.Start==1',style='width:74px')
+       conditionalPanel('output.Start==1',style='width:77px')
    ),  
    
    # File drop down ----------------------------------------------------------------------------------------------------------------       
-   tags$head(tags$style(HTML("#DD_file { border-color: #347ab6 }"))),
+   tags$head(tags$style(HTML("#DD_file { border-color: #347ab6; border-width: 3px }"))),
    div(style="display: inline-block;vertical-align:top",
        dropdownButton(
          
@@ -226,7 +228,7 @@ shinyUI(
                                
                    )
             ),
-            column(12, 
+            column(12, tags$hr(style="margin-top: 12px; margin-bottom: 3px"),
                    h5(tags$b("Sampling of operating model parameters",style="color:#347ab6")), 
                    
                    column(5,   style="margin-top: 10px", 
@@ -240,12 +242,12 @@ shinyUI(
                           )
                    )
             ),
-            column(12, 
+            column(12, tags$hr(style="margin-top: 12px; margin-bottom: 3px"),
                    h5(tags$b("Closed-loop simulation",style="color:#347ab6")), 
            
                    column(5,    
                      numericInput("interval", label = h5("Management interval"), value=8,min=2,max=10),
-                     checkboxInput("Parallel", label = "Parallel comp.", value = FALSE)
+                     checkboxInput("Parallel", label = "Parallel comp.", value = TRUE)
                    ),
                    
                    column(7,
@@ -272,15 +274,10 @@ shinyUI(
                    column(12,checkboxInput("OM_L","Use Loaded OM for analyses",value=FALSE))
               )
             ),
-            conditionalPanel(condition="output.Data==1",
-              column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
-                   h5(tags$b("Status determination approach",style="color:#347ab6")),    
-                   column(6,selectInput("SDsel","",  choices=c("C"),selected="C", multiple = FALSE))
-              )
-            ),
+            
             conditionalPanel(condition="output.Data==1",
                   column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
-                   h5(tags$b("Operating model conditioning (fitting to data)",style="color:#347ab6")), 
+                   h5(tags$b("Operating model conditioning / Status Determination approach (fitting to data)",style="color:#347ab6")), 
                   
                      column(6,selectInput("Cond_ops", label = h5("Conditioning Model"), choices=c("None"),selected="None"),style="height:75px"),
                      column(6),
@@ -333,11 +330,11 @@ shinyUI(
           column(3,downloadButton("Build_Status",""))
         ),
         
-        conditionalPanel(condition="output.SD==0",
-          column(9,h5("Detailed Status Report (model fitting)",style="color:grey"))
+        conditionalPanel(condition="output.SD==0&output.CondOM==0",
+          column(9,h5("Detailed Status Determination / Conditioning Report (model fitting)",style="color:grey"))
         ),
-        conditionalPanel(condition="output.SD==1",
-          column(9,h5("Detailed Status Report (model fitting)",style="font-weight:bold;color:#347ab6")),
+        conditionalPanel(condition="output.SD==1|output.CondOM==1",
+          column(9,h5("Model fitting report (Status Determination / OM Conditioning)",style="font-weight:bold;color:#347ab6")),
           column(3, downloadButton("SDdet_rep",""))
         ),
         
@@ -1173,7 +1170,10 @@ shinyUI(
                  ),
 
                  column(width = 2,
-                   conditionalPanel(condition="(input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<2)",
+                   conditionalPanel(condition="output.Fpanel==0 & output.Mpanel==0 & output.Dpanel==0 & output.Opanel==0",
+                      actionButton("Fcont_red","Next >",style="color:red; border-color:red")                  
+                   ),     
+                   conditionalPanel(condition="((input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<2)) & !(output.Fpanel==0 & output.Mpanel==0 & output.Dpanel==0 & output.Opanel==0)",
                       actionButton("Fcont","Next >")
                    ),
                    conditionalPanel(condition="!((input.tabs1==1 & output.Fpanel<19)|(input.tabs1==2 & output.Mpanel<7)|(input.tabs1==3 & output.Dpanel<4)|(input.tabs1==4 & output.Opanel<2))",
@@ -1327,9 +1327,9 @@ shinyUI(
                   column(6,
                          
                          h5("Simulations can be run to test Multiple MPs over a certain number of projected years in which managment recommendations are updated every 'interval' years", style = "color:grey"),
+                         h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
                          h5("- Top 20: MPs that generally perform well in many cases but may not be appropriate for your operating model", style = "color:grey"),
                          h5("- All: an MSE is run for all available MPs (~100) which can take 20 minutes or more", style = "color:grey"),
-                         h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
                          h5("Users may wish not to include reference MPs (No ref. MPs) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
                          h5("In situations where operating models are built with more than 48 simulations it can be much faster to use parallel computing ('Parallel comp.)
                              although the progress bar will not longer work ",style="color:grey"),
@@ -1612,7 +1612,10 @@ shinyUI(
       column(1),
       column(10, verbatimTextOutput("Log",placeholder=T)), 
       bsTooltip("Log","Application Log"),       
-      
+      column(12,
+        column(1),
+        column(3,downloadButton("Download_Log","Download Log",style="height:28px"))
+      ),
        column(12),
        hr(),
        

@@ -2,39 +2,26 @@
 
 # Status Calcs
 Calc_Status<-function(){
-  Status<-Sim<-SimSams<-BCfit<-new('list')# Sim, SimSams and BCfit are redundant
-  Fit<<-new('list')
-  Est<<-new('list')
-  
-  nsim<-input$nsim
   
   if(LoadOM()==1&input$OM_L){ 
     OM<-OM_L
   }else{
     if(MadeOM()==0)OM<<-makeOM(PanelState)
   }
-  
-  #if(input$SDset=="Custom"){
-    codes<<-input$SDsel
-  #}else{
-  #  codes<<-getCodes(dat,maxtest=1)
-  #}
 
-  setup(cpus=4)
+  setup(cpus=ncpus)
   
   tryCatch({
     
     withProgress(message = "Running Status Determination", value = 0, {
       incProgress(1/2, detail = 50)
-      Fit[[1]]<-GetDep(OM,dat,code=codes,cores=4)
-      Est[[1]]<-Fit[[1]]@OM@cpars$D[Fit[[1]]@conv]
-      if(sum(Fit[[1]]@conv)==0)AM(paste(codes,"Did not return depletion"))
-      incProgress(2/2, detail = 50)  
+      dofit(OM,dat)
+      incProgress(2/2, detail = 50) 
     })
     
-    Status <<- list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit) 
     #saveRDS(list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit) ,"C:/temp/Status.rda")
     SD(1) 
+    CondOM(1)
     message("preredoSD")
     smartRedo()
     message("postredoSD")
@@ -62,11 +49,11 @@ Calc_Plan<-function(){
   }else{
     if(MadeOM()==0) OM<<-makeOM(PanelState)
   }
-  saveRDS(OM,file="C:/temp/OM.rda")
+  #saveRDS(OM,file="C:/temp/OM.rda")
   Fpanel(1)
   MPs<<-getMPs()
   
-  nsim<<-input$nsim_Plan
+  nsim<<-input$nsim
   parallel=F
   
   if(input$Parallel){

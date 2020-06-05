@@ -201,7 +201,7 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     OM@maxage<-maxage<-min(OM@maxage,input$plusgroup)
     
     # --- Life history imputation
-    OM<-LH2OM(OM, dist='norm',plot=F)
+    OM<-LH2OM(OM, dist='norm',plot=F,filterMK=T)
    
     OM@K<-quantile(OM@cpars$K,c(0.05,0.95))
     OM@L50<-quantile(OM@cpars$L50,c(0.05,0.95))
@@ -389,16 +389,17 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
         
         withProgress(message = "Conditioning Operating Model", value = 0, {
           incProgress(0.1)
-          CFit<<-GetDep(OM,dat,code=code,cores=4)
-          
+          dofit(OM,dat)
+          #saveRDS(Status,"C:/temp/Status.rda")
+          CFit<-Status$Fit[[1]] #GetDep(OM,dat,code=code,cores=4)
           if(sum(CFit@conv)==0)AM(paste0(code,": ",sum(CFit@conv), " of ",length(CFit@conv)," simulations converged"))
-          
           incProgress(0.8)
           
         })
         
-        OM<<-CFit@OM
+        OM<<-Sub_cpars(CFit@OM,CFit@conv)
         CondOM(1)
+        SD(1)
         
       },
       error = function(e){
@@ -431,4 +432,18 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
   MadeOM(1)  
   OM
   
+}
+
+dofit<-function(OM,dat){
+  nsim<-input$nsim
+  Status<-Sim<-SimSams<-BCfit<-new('list')# Sim, SimSams and BCfit are redundant
+  Fit<<-new('list')
+  Est<<-new('list')
+  codes<<-input$Cond_ops
+  saveRDS(dat,"C:/temp/dat.rda")
+  saveRDS(OM,"C:/temp/OM.rda")
+  Fit[[1]]<-GetDep(OM,dat,code=codes)
+  Est[[1]]<-Fit[[1]]@OM@cpars$D[Fit[[1]]@conv]
+  if(sum(Fit[[1]]@conv)!=0)AM(paste(sum(Fit[[1]]@conv),"of",length(Fit[[1]]@conv),"simulations did not converge and will not be used in other calculations"))
+  Status <<- list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit) 
 }

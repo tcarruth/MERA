@@ -13,6 +13,7 @@ library(DT)
 library(mvtnorm)
 library(cowplot)
 library(shinyBS)
+library(parallel)
 
 options(shiny.maxRequestSize=1000*1024^2)
 
@@ -221,7 +222,8 @@ shinyServer(function(input, output, session) {
   output$Log <- renderText(Log_text$text)
   
   # Variables
-  ncpus<-4 # how much parallel processing to use
+  ncpus<-min(12,detectCores()) # how much parallel processing to use
+  #AM(paste(ncpus,"processors available for computing"))
   FeaseMPs<<-NULL
   redoBlank() # make all the results plots with default sizes - seems to stabilize initial plotting and spacing
   
@@ -229,7 +231,7 @@ shinyServer(function(input, output, session) {
     c(
 "1. Describe the history and current status of the fishery, including fleets, sectors, vessel types and practices/gear by vessel type, landing ports, economics/markets, whether targeted/bycatch, other stocks caught in the fishery.
 
-2. Describe the stock’s ecosystem functions, dependencies, and habitat types.
+2. Describe the stocks ecosystem functions, dependencies, and habitat types.
 
 3. Provide all relevant reference materials, such as assessments, research, and other analysis.
 
@@ -344,6 +346,7 @@ shinyServer(function(input, output, session) {
 
         MSClog<-readRDS(file=filey$datapath)
         Update_Questionnaire(MSClog)
+        Start(1)
        
       },
       error = function(e){
@@ -456,6 +459,7 @@ shinyServer(function(input, output, session) {
       tryCatch({
         
         OM_L<<-readRDS(file=filey$datapath)
+        Start(1)
         
       },
       
@@ -476,6 +480,7 @@ shinyServer(function(input, output, session) {
         CondOM(0)
         Quest(0)
         AM(paste0("Operating model loaded: ", filey$datapath))
+        Start(1)
         
       }else{
         
@@ -530,15 +535,15 @@ shinyServer(function(input, output, session) {
     RAobj<<-listy$RAobj
     MSEobj_Eval<<-listy$MSEobj_Eval
     Status<<-listy$Status
-    Plan(0); Eval(0); SD(0); RA(0) # reset status switches
+    Plan(0); Eval(0); SD(0); CondOM(0); RA(0) # reset status switches
     redoBlank()
     #"Management Planning","Management Performance","Risk Assessment","Status Determination"
     if(!is.null(MSEobj_Eval)){Eval(1);AM("Management Performance results loaded");redoEval();updateRadioButtons(session=session,"Mode",selected="Management Performance")}
-    if(!is.null(Status)){SD(1);AM("Status Determination results loaded");redoSD();updateRadioButtons(session=session,"Mode",selected="Status Determination")}
+    if(!is.null(Status)){SD(1);CondOM(1);AM("Status Determination results loaded");redoSD();updateRadioButtons(session=session,"Mode",selected="Status Determination")}
     if(!is.null(RAobj)){RA(1);AM("Risk Assessment results loaded");redoRA();updateRadioButtons(session=session,"Mode",selected="Risk Assessment")}
     if(!is.null(MSEobj)){Plan(1);AM("Management Planning results loaded");redoPlan(); updateRadioButtons(session=session,"Mode",selected="Management Planning")}
     MadeOM(0)
-    CondOM(0)
+    Start(1)
     updateTabsetPanel(session,"Res_Tab",selected="1")
     #}else{
     #  AM("Planning object load failed: this does not appear to be a MERA planning object")
@@ -556,6 +561,7 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$sel_MP,{
     selectedMP<<-input$sel_MP
+    AM(paste("MP",selectedMP,"selected for management performance evalulation"))
   })
 
   observeEvent(input$Load_anything,{
@@ -590,8 +596,10 @@ shinyServer(function(input, output, session) {
     refMPs<-c("FMSYref","FMSYref75","FMSYref50","NFref")
     if(any(tempMPs%in%refMPs)){
       updateSelectInput(session=session,inputId="ManPlanMPsel",selected=tempMPs[!(tempMPs%in%refMPs)])
+      AM("Reference MPs excluded from Management Planning")
     }else{
       updateSelectInput(session=session,inputId="ManPlanMPsel",selected=unique(c(tempMPs,refMPs)))
+      AM("Reference MPs included in Management Planning")
     }
     
   })
@@ -601,8 +609,10 @@ shinyServer(function(input, output, session) {
     refMPs<-c("DDSS_4010","DDSS_MSY","SPSS_4010","SPSS_MSY","SCA_MSY","SCA_4010")
     if(any(tempMPs%in%refMPs)){
       updateSelectInput(session=session,inputId="ManPlanMPsel",selected=tempMPs[!(tempMPs%in%refMPs)])
+      AM("Data-rich MPs excluded from Management Planning")
     }else{
       updateSelectInput(session=session,inputId="ManPlanMPsel",selected=unique(c(tempMPs,refMPs)))
+      AM("Data-rich MPs included in Management Planning")
     }
     
   })
@@ -614,22 +624,27 @@ shinyServer(function(input, output, session) {
     
     if(any(refMPs%in%tempMPs)){
       updateSelectInput(session=session,inputId="ManPlanMPsel",selected=tempMPs[!(tempMPs%in%refMPs)])
+      AM("Status-quo MPs excluded from Management Planning")
     }else{
       updateSelectInput(session=session,inputId="ManPlanMPsel",selected=unique(c(tempMPs,refMPs)))
+      AM("Status-quo MPs included in Management Planning")
     }
     
   })
   
   observeEvent(input$Clear_MPs,{
     updateSelectInput(session=session,inputId="ManPlanMPsel",selected="")
+    AM("MP selection cleared for Management Planning")
   })
   
   observeEvent(input$DemoSims,{
     updateNumericInput(session=session,inputId="nsim",value=24)
+    AM("Demonstration number of operating model simulations selected (24)")
   })
   
   observeEvent(input$DefSims,{
     updateNumericInput(session=session,inputId="nsim",value=144)
+    AM("Default number of operating model simulations selected (144)")
   })
 
   observeEvent(input$RemakeOM,{
@@ -729,6 +744,7 @@ shinyServer(function(input, output, session) {
 
     filename =  function(){  paste0(namconv(input$Name),"_Questionnaire_Report.html") },
     content = function(file) {
+      AM("Building MERA questionnaire report")
       withProgress(message = "Building questionnaire report", value = 0, {
       if(checkQs()$error){shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered:",paste(temp$probQs,collapse=", ")), type = "warning");stop()}
       if(MadeOM()==0)OM<<-makeOM(PanelState)
@@ -773,6 +789,7 @@ shinyServer(function(input, output, session) {
     filename = function(){paste0(namconv(input$Name),"_data.html")}, #"report.html",
     
     content = function(file) {
+      AM("Building MERA Data report")
       withProgress(message = "Building data report", value = 0, {
         
         
@@ -806,56 +823,14 @@ shinyServer(function(input, output, session) {
   )
   
   
-  # Conditioning report
-  output$Build_Cond <- downloadHandler(
-    # For PDF output, change this to "report.pdf"
-    filename = function(){paste0(namconv(input$Name),"_Cond.html")}, #"report.html",
-
-    content = function(file) {
-      withProgress(message = "Building conditioning report", value = 0, {
-
-      incProgress(0.1)
-      src <- normalizePath('Source/Markdown/CondRep.Rmd')
-      src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
-     
-      Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-      MSClog<-list(PanelState, Just, Des)
-
-      owd <- setwd(tempdir())
-      on.exit(setwd(owd))
-      file.copy(src, 'CondRep.Rmd', overwrite = TRUE)
-      file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
-      
-      library(rmarkdown)
-      params <- list(test = input$Name,
-                     set_title=paste0("Operating Model Conditioning Report for ",input$Name),
-                     set_type=paste0("Demonstration Conditioning analysis"," (MERA version ",Version,")"),
-                     PanelState=MSClog[[1]],
-                     Just=MSClog[[2]],
-                     Des=MSClog[[3]],
-                     OM=OM_C,
-                     SRAinfo=SRAinfo,
-                     ntop=input$ntop,
-                     inputnames=inputnames,
-                     SessionID=SessionID,
-                     copyright=paste(Copyright,CurrentYr)
-      )
-      incProgress(0.1)
-      knitr::knit_meta(class=NULL, clean = TRUE) 
-      output<-render(input="CondRep.Rmd",output_format="html_document", params = params)
-      incProgress(0.8)
-      file.copy(output, file)
-      }) # end of progress
-    }
-  )
-
+ 
   # Full OM report
   output$Build_full_OM <- downloadHandler(
     # For PDF output, change this to "report.pdf"
     filename = function(){paste0(namconv(input$Name),"_full_OM.html")}, #"report.html",
 
     content = function(file) {
-      
+      AM("Building detailed MERA operating model report")
       tryCatch({
         withProgress(message = "Building operating model report", value = 0, {
           if(checkQs()$error){shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered:",paste(temp$probQs,collapse=", ")), type = "warning");stop()}
@@ -907,37 +882,6 @@ shinyServer(function(input, output, session) {
     }  # content
   )
 
-  # Conditioning report
-  output$Cond_rep <- downloadHandler(
-    # For PDF output, change this to "report.pdf"
-    filename = function(){paste0(namconv(input$Name),"_Det_Cond.html")}, #"report.html",
-    
-    content = function(file) {
-      withProgress(message = "Building Conditioning Report", value = 0, {
-        
-        incProgress(0.1)
-        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-        MSClog<-list(PanelState, Just, Des)
-        
-        owd <- setwd(tempdir())
-        on.exit(setwd(owd))
-        
-        library(rmarkdown)
-        
-        incProgress(0.1)
-        knitr::knit_meta(class=NULL, clean = TRUE) 
-        OM<-CFit@OM
-        output<-plot(CFit,open_file = FALSE)
-        
-        incProgress(0.8)
-        file.copy(output, file)
-      }) # end of progress
-    }
-  )
-  
-  
-  
-  
   output$Build_RA <-downloadHandler(
     
     filename = function(){paste0(namconv(input$Name),"_MERA_Risk_Assessment_Report.html")}, #"report.html",
@@ -1034,7 +978,7 @@ shinyServer(function(input, output, session) {
     filename = function(){paste0(namconv(input$Name),"_Det_Cond.html")}, #"report.html",
     
     content = function(file) {
-      withProgress(message = "Building detailed Status Determination report", value = 0, {
+      withProgress(message = "Building model fitting report", value = 0, {
         
         incProgress(0.1)
         Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
@@ -1048,9 +992,7 @@ shinyServer(function(input, output, session) {
         incProgress(0.1)
         knitr::knit_meta(class=NULL, clean = TRUE) 
         
-        #OM<-Status$Fit@OM
-        output<-plot(Status$Fit[[1]],open_file = FALSE)
-           
+        output<-plot(Status$Fit[[1]],sims=Status$Fit[[1]]@conv,open_file = FALSE)
         incProgress(0.8)
         file.copy(output, file)
       }) # end of progress
@@ -1142,7 +1084,16 @@ shinyServer(function(input, output, session) {
     }
     
   )
-  
+
+  output$Download_Log <-downloadHandler(
+    
+    filename = function(){paste0(namconv(input$Name),"_Log.txt")}, #"report.html",
+    
+    content = function(file) {
+      writeLines(paste(Log_text$text, collapse = ", "), file)
+    }
+    
+  )
  
   # Fishery panel reactions ============================================================================================================
 
@@ -1196,6 +1147,26 @@ shinyServer(function(input, output, session) {
     Des<<-list(Name=input$Name,Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
     #MSCsave_auto()
 
+  })
+  
+  observeEvent(input$Fcont_red,{
+    
+    if(input$tabs1==1 && Fpanel() < 19){
+      Fpanel(Fpanel()+1)
+    }else if(input$tabs1==2 && Mpanel() < 7){
+      Mpanel(Mpanel()+1)
+    }else if(input$tabs1==3 && Dpanel() < 4){
+      Dpanel(Dpanel()+1)
+    }else if(input$tabs1==4 && Opanel() < 1){
+      Opanel(Opanel()+1)
+    }
+    
+    # Write old values
+    UpJust()
+    
+    Des<<-list(Name=input$Name,Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+    #MSCsave_auto()
+    
   })
 
   # ---- Fishery all switches -----------------
@@ -1505,36 +1476,8 @@ shinyServer(function(input, output, session) {
   
   output$effort_plot <- renderPlot({
     # first series
-    tempyrs<-getyrs()
-    nyears <- length(tempyrs)
-    initYr <- tempyrs[1] # initial year
-    lstYr <- initYr + nyears-1
-    yvals <- 0 # initial effort
+    plotFP()
     
-    cols <- c(fcol,'black','dark grey',palette(rainbow(20))) 
-    lwd <- 1.2
-    pch <- 16
-    pdat <- dplyr::filter(eff_values$df, series==1)
-    par(mai=c(0.5,0.5,0.15,0.2))
-    plot(pdat$x, pdat$y, type="b", col=cols[1], lwd=lwd, pch=pch,
-         xlim=c(initYr, lstYr), ylim=c(0,1),
-         xlab="Year",
-         ylab="Historical Effort",
-         bty="l",
-         xaxs="i",
-         yaxs="i", 
-         xpd=NA)
-    axis(3,c(0,1E10))
-    axis(4,c(0,1E10))
-    # additional series
-    series <- eff_values$df$series %>% unique()
-    series <- series[!series==1]
-    if (length(series>1)) {
-      for (i in series) {
-        pdat <- dplyr::filter(eff_values$df, series==i)
-        points(pdat$x, pdat$y, type="b", col=cols[i], lwd=lwd, pch=pch, xpd=NA)
-      }
-    }
     
     #print(eff_values$df) # for debugging & use elsewhere in the app
   })

@@ -27,12 +27,12 @@ Update_Questionnaire<-function(MSClog){
     for(i in 1:2){
       for(j in 1:length(PanelState[[i]])) {
         
-        if(i!=1 & j!=4){ # not the defunct effort trend type
-        state<-as.vector(unlist(PanelState[[i]][j]))
-        choices<-as.vector(unlist(get(MasterList[[i]][j])))
-        selected<-as.list(choices[state])
-        choices<-as.list(choices)
-        updateCheckboxGroupInput(session, as.character(inputnames[[i]][j]), selected = selected)
+        if(!(i==1 & j==4)){ # not the defunct effort trend type
+          state<-as.vector(unlist(PanelState[[i]][j]))
+          choices<-as.vector(unlist(get(MasterList[[i]][j])))
+          selected<-as.list(choices[state])
+          choices<-as.list(choices)
+          updateCheckboxGroupInput(session, as.character(inputnames[[i]][j]), selected = selected)
         }
       }
     }

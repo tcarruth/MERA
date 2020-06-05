@@ -393,12 +393,25 @@ Scoping_parallel<-function(x,OMc,dat,code,DataStrip,getOMsim){
   outlist<-DataStrip(dat,OMc,code,simno=x)
   OMeff<-outlist$condition=="effort"
   OMp<-getOMsim(OMc,simno=x)
+  
+  if(input$Parallel){
+    
+    if(nsim>47){
+      
+      parallel=T
+      setup(cpus=ncpus)
+      
+    }
+    
+  }
+  
   out<-SRA_scope(OM=OMp,
                  data=outlist,
                  report=F,
-                 cores=1,
+                 cores=ncpus,
                  OMeff=OMeff,
-                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-6))
+                 plusgroup=T,
+                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-4))
   out@OM
   
 }
@@ -415,18 +428,31 @@ SimSam<-function(OMc,dat,code){
 }
 
 
-GetDep<-function(OM,dat,code,cores=4){
+GetDep<-function(OM,dat,code){
   
   outlist<-DataStrip(dat,OM,code,simno=1)
   OMeff<-outlist$condition=="effort"
   options(warn=-1)
+  
+  nsim<-input$nsim
+  if(input$Parallel){
+    
+    if(nsim>8){
+      
+      parallel=T
+      setup(cpus=ncpus)
+      
+    }
+    
+  }
   out<-SRA_scope(OM=OM,
                  data=outlist,
                  report=F,
                  mean_fit = TRUE,
-                 cores=cores,
+                 cores=ncpus,
+                 plusgroup=T,
                  OMeff=OMeff,
-                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-6))
+                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-4))
   options(warn=0)
   out
   

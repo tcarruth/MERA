@@ -292,7 +292,42 @@ Ftrendfunc<-function(M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,co=1,start_m
 
 }
 
-plotFP <-function(dummy=1){
+plotFP<-function(dummy=1){
+  
+  tempyrs<-getyrs()
+  nyears <- length(tempyrs)
+  initYr <- tempyrs[1] # initial year
+  lstYr <- initYr + nyears-1
+  yvals <- 0 # initial effort
+  
+  cols <- c(fcol,'black','dark grey',palette(rainbow(20))) 
+  lwd <- 1.2
+  pch <- 16
+  pdat <- dplyr::filter(eff_values$df, series==1)
+  par(mai=c(0.5,0.5,0.15,0.2))
+  plot(pdat$x, pdat$y, type="b", col=cols[1], lwd=lwd, pch=pch,
+       xlim=c(initYr, lstYr), ylim=c(0,1),
+       xlab="Year",
+       ylab="Historical Effort",
+       bty="l",
+       xaxs="i",
+       yaxs="i", 
+       xpd=NA)
+  axis(3,c(0,1E10))
+  axis(4,c(0,1E10))
+  # additional series
+  series <- eff_values$df$series %>% unique()
+  series <- series[!series==1]
+  if (length(series>1)) {
+    for (i in series) {
+      pdat <- dplyr::filter(eff_values$df, series==i)
+      points(pdat$x, pdat$y, type="b", col=cols[i], lwd=lwd, pch=pch, xpd=NA)
+    }
+  }
+  
+}
+
+plotFP_old <-function(dummy=1){
 
   par(mfrow=c(1,1), mar=c(3.5,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
   FP_nams<-unlist(FP_list)#c("FP_s", "FP_gr","FP_bb","FP_gi","FP_ri","FP_rd")

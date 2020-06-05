@@ -679,8 +679,8 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
       }
     }
     
-    conv<-round(unlist(lapply(Status$Est,length))/Status$nsim*100,2)
-    tab<-as.data.frame(cbind(Status$codes,qs,conv))
+    conv<-round(sum(Status$Fit[[1]]@conv)/length(Status$Fit[[1]]@conv)*100,2)
+    tab<-as.data.frame(matrix(c(Status$codes,qs,conv),nrow=1))
     names(tab)<-c("Method","2.5%","5%","Median","95%","97.5%","Conv %")
     datatable(tab,caption="Stock status estimates (SSB relative to 'unfished')",
               extensions = 'Buttons',
@@ -815,7 +815,7 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
     ind<-1+(0:1000*options$res)
     ind<-ind[ind<=min(burnin,proyears)]
     
-    LRP<-round(apply(MSEobj@B_BMSY[,,1:burnin,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind]
+    LRP<-round(apply(MSEobj@B_BMSY[,,1:burnin,drop=FALSE]>0.5,2:3,mean)*100,rnd)#[,ind]
     
     FT<<-FeaseLabs(MPs=MSEobj@MPs,dat=dat)
     MPcols<<-FT$MPcols  # just do FeaseLabs once or else this computationally costly code has to be reused
