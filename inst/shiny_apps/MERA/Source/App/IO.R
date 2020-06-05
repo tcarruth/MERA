@@ -87,6 +87,7 @@ Update_Questionnaire<-function(MSClog){
     SD(0) # Has a status determination been run yet?
     Plan(0) # Have run Planning (multi MP)
     Eval(0)
+    MadeOM(0)
     
     if(!is.null(MSClog[[1]]$dat)){
       dat<<-MSClog[[1]]$dat

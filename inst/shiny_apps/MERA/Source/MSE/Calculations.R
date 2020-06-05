@@ -62,7 +62,7 @@ Calc_Plan<-function(){
   }else{
     if(MadeOM()==0) OM<<-makeOM(PanelState)
   }
-  #saveRDS(OM,file="C:/temp/OM.rda")
+  saveRDS(OM,file="C:/temp/OM.rda")
   Fpanel(1)
   MPs<<-getMPs()
   
@@ -85,6 +85,7 @@ Calc_Plan<-function(){
   #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
   
   tryCatch({
+   #saveRDS(OM,"C:/temp/OM.rda")
     withProgress(message = "Running Planning Analysis", value = 0, {
       silent=T
       MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
@@ -106,8 +107,8 @@ Calc_Plan<-function(){
     #   MSEobj_reb <<- MSEobj
     # }
     
-    #saveRDS(MSEobj,file="C:/temp/MSEobj2.Rdata")
-    #saveRDS(MSEobj_reb,file="C:/temp/MSEobj_reb2.Rdata")
+    #saveRDS(MSEobj,file="C:/temp/MSEobj.rda")
+    #saveRDS(MSEobj_reb,file="C:/temp/MSEobj_reb.rda")
     
     # ==== Types of reporting ==========================================================
     

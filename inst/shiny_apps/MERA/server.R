@@ -21,7 +21,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"6.1.3"
+  Version<<-"6.1.4"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -97,6 +97,7 @@ shinyServer(function(input, output, session) {
   AdCalc<-reactiveVal(0) # Has advice been calculated
   Tweak<-reactiveVal(0)  # Have things affecting performance metrics been tweaked?
   SkinNo<-reactiveVal(0) # Skin selection
+  Start<-reactiveVal(0)  # Start App?
   
   output$Fpanel <- reactive({ Fpanel()})
   output$Mpanel <- reactive({ Mpanel()})
@@ -120,7 +121,9 @@ shinyServer(function(input, output, session) {
   output$AdCalc   <- reactive({ AdCalc()})
   output$Tweak    <- reactive({Tweak()})
   
-  output$SkinNo     <- reactive({SkinNo()})
+  output$SkinNo   <- reactive({SkinNo()})
+  
+  output$Start    <- reactive({Start()})
   
   outputOptions(output,"Fpanel",suspendWhenHidden=FALSE)
   outputOptions(output,"Mpanel",suspendWhenHidden=FALSE)
@@ -146,6 +149,8 @@ shinyServer(function(input, output, session) {
   outputOptions(output,"Tweak",suspendWhenHidden=FALSE)
   
   outputOptions(output,"SkinNo",suspendWhenHidden=FALSE)
+  
+  outputOptions(output,"Start",suspendWhenHidden=FALSE)
   
    
   #output$allMPs(getAllMPs())
@@ -1597,6 +1602,10 @@ shinyServer(function(input, output, session) {
     eff_values$series <- 1
     eff_values$stack <- data.frame(x=initYr, y=yvals, series=1)
     
+  })
+  
+  observeEvent(input$Start,{
+    Start(1)
   })
   
   

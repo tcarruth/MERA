@@ -10,6 +10,66 @@ getminmax<-function(panel,parameter,PanelState){
 }
 
 
+rnorm_T<-function(n=1,mean=0,sd=1,trunc=90){
+  
+  incomplete=T
+  ntrial<-n*10
+  out<-rep(NA,n)
+  fillind<-(1:n)[is.na(out)]
+  nfill<-length(fillind)
+  LB<-((100-trunc)/2)/100
+  UB<-1-LB
+  #i<-0
+  
+  while(incomplete){
+    #i<-i+1
+    #print(i)
+    samps<-rnorm(ntrial,mean,sd)
+    cond<-samps > qnorm(LB,mean,sd) & samps < qnorm(UB, mean, sd)
+    canfill<-sum(cond)
+    if(canfill >= nfill){
+      out[fillind]<-samps[cond][1:nfill]
+      incomplete=F
+    }else{
+      out[fillind[1:canfill]]<-samps[cond]
+      fillind<-(1:n)[is.na(out)]
+      nfill<-length(fillind)
+    }
+    
+  }
+  
+  if(all(out > qnorm(LB,mean,sd) & out < qnorm(UB, mean, sd))){
+    return(out)
+  }else{
+    message("An error in rnorm_T occurred")
+    return(NULL)
+  }
+  
+}
+
+#hist(rnorm_T(1000,0,1,10))
+
+
+samp_par<-function(n,type="Truncated normal",LB,UB,trunc=99){
+  
+  
+  if(LB==UB){
+    out<-rep(LB,n)
+  }else{
+    if(type=="Uniform"){
+      out<-runif(n,LB,UB)
+    }else{
+      mu<-mean(c(LB,UB))
+      UBtemp<-qnorm(1-(100-trunc)/200,mu,1)
+      sd<-(UB-mu)/(UBtemp-mu)
+      out<-rnorm_T(n,mu,sd,trunc)
+    }
+  }  
+  out
+  
+}
+
+
 trimOM<-function(OM,newsim=8,silent=T){
   
   if(newsim > OM@nsim)stop("You asked for more simulations than are available in the OM object")
@@ -61,7 +121,8 @@ whatOMmess<-function(){
 makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
-  nsim<-input$nsim
+   nsim<-input$nsim
+  
   if(input$OM_L & !UseQonly){
     OM<-OM_L
     SampList<<-NULL
@@ -71,7 +132,10 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     #SampList<<-NULL
     #AM("Using conditioned operating model")
   }else{
-
+    
+    type<-input$Distribution # sampling distribution
+    trunc<-input$IQRange     # inter quartile range (trunc, a % e.g. 90)
+    
     OM<-LowSlopes(DLMtool::testOM)
     if(!is.na(nsim)){
       OM@nsim<-nsim
@@ -130,10 +194,11 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     OM@L50<-getminmax(1,"LM",PanelState)                                                     # F9 ----------
   
     if(is.na(maxage)){
-      OM@maxage<-maxage<-ceiling(-log(0.02)/min(OM@M))
+      OM@maxage<-maxage<-ceiling(-log(0.1)/min(OM@M))
     }else{
       OM@maxage=maxage
     }
+    OM@maxage<-maxage<-min(OM@maxage,input$plusgroup)
     
     # --- Life history imputation
     OM<-LH2OM(OM, dist='norm',plot=F)
@@ -143,7 +208,6 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     OM@L50_95<-c(10,10)
     OM@Linf<-c(100,100)
     OM@D<-getminmax(1,"D",PanelState)                                                        # F3 -----------
-    D<-runif(nsim,OM@D[1],OM@D[2])
     OM@h<-getminmax(1,"h",PanelState)                                                        # F4 -----------
    
     # Ftrend and error 
@@ -155,12 +219,12 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     Esd<-getminmax(1,"F",PanelState)                                                         # F6 ----------
     Esd_max<-Esd[2]
     Esd_min<-Esd[1]
-    Esdrand<-runif(nsim,Esd_min,Esd_max)
+    Esdrand<-samp_par(nsim,type=type,Esd_min,Esd_max,trunc=trunc) #runif(nsim,Esd_min,Esd_max)
     Emu<-(-0.5*Esdrand^2)
     Esdarray<-array(exp(rnorm(nsim*nyears,Emu,Esdrand)),c(nsim,nyears))
     
     qhs<-getminmax(1,"qh",PanelState)
-    qhssim<-runif(nsim,qhs[1],qhs[2])
+    qhssim<-samp_par(nsim,type=type,qhs[1],qhs[2],trunc=trunc) #(nsim,qhs[1],qhs[2])
     qssim<-1+qhssim/100                                                   # F7 ----------
     trendsamp<-ceiling(runif(nsim)*nt)
     
@@ -174,7 +238,7 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     # --- Selectivity -----------------------
    
     Sel50<-getminmax(1,"sel",PanelState)                                                     # F10 ----------
-    Sel50sim<-runif(nsim,Sel50[1],Sel50[2])
+    Sel50sim<-samp_par(nsim,type=type,Sel50[1],Sel50[2],trunc=trunc) #runif(nsim,Sel50[1],Sel50[2])
   
     L5<-OM@cpars$Linf*Sel50sim*0.8
     LFS<-OM@cpars$Linf*Sel50sim*1.2
@@ -186,7 +250,9 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     
     # --- Discarding ------------------------
     
-    OM@DR<-getminmax(1,"DR",PanelState)                                                      # F12 ----------
+    OM@DR<-getminmax(1,"DR",PanelState) # F12 ----------
+    #DR<-matrix(samp_par(nsim,type=type,OM@DR[1],OM@DR[2],trunc=trunc),ncol=nsim,nrow=nyears+proyears,byrow=T)
+    
     OM@Fdisc<-getminmax(1,"PRM",PanelState)                                                  # F13 ----------
     
     # --- Recruitment deviations ------------
@@ -202,10 +268,10 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     Arng<-getminmax(1,"A",PanelState)   # size / frac habitat area 1                         # F17 ----------
     Vrng<-getminmax(1,"V",PanelState)   # prob staying in area 3                             # F18 ----------
     
-    Ahsim<-runif(nsim,Ahrng[1],Ahrng[2])
-    Vhsim<-runif(nsim,Vhrng[1],Vhrng[2])
-    Asim<-runif(nsim,Arng[1],Arng[2])
-    Vsim<-runif(nsim,Vrng[1],Vrng[2])
+    Ahsim<-samp_par(nsim,type=type,Ahrng[1],Ahrng[2],trunc=trunc) #runif(nsim,Ahrng[1],Ahrng[2])
+    Vhsim<-samp_par(nsim,type=type,Vhrng[1],Vhrng[2],trunc=trunc) #runif(nsim,Vhrng[1],Vhrng[2])
+    Asim<-samp_par(nsim,type=type,Arng[1],Arng[2],trunc=trunc) #runif(nsim,Arng[1],Arng[2])
+    Vsim<-samp_par(nsim,type=type,Vrng[1],Vrng[2],trunc=trunc) #runif(nsim,Vrng[1],Vrng[2])
     
     ilogit<-function(x)log(x/(1-x))
     logit<-function(x)exp(x)/(1+exp(x))
@@ -235,8 +301,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
  
     # Initial depletion                                                                      # F19 ----------
     initDrng<-getminmax(1,"Dh",PanelState)
-    
-    initD<-runif(nsim,initDrng[1],initDrng[2])
+    #print(initDrng)
+    initD<-samp_par(nsim,type=type,initDrng[1],initDrng[2],trunc=trunc) #runif(nsim,initDrng[1],initDrng[2])
     
     # ---- Management parameters -----------------------------------------------------------------------------------------------
     
@@ -253,14 +319,26 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     # ---- Data parameters -----------------------------------------------------------------------------------------------------
     
     CB_rng<-getminmax(3,"CB",PanelState)                                                     # D2 -----------
-    Cbias<-runif(nsim,CB_rng[1],CB_rng[2])
+    Cbias<-samp_par(nsim,type=type,CB_rng[1],CB_rng[2],trunc=trunc) #runif(nsim,CB_rng[1],CB_rng[2])
   
     OM@beta<-getminmax(3,"Beta",PanelState)                                                  # D3 -----------
    
     
     # ---- Custom parameters ---------------------------------------------------------------------------------------------------
    
-    OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias,D=D))
+    slots2cpars<-c("D","h","Esd","Vmaxlen","Fdisc","Perr","TACFrac","TACSD",
+      "TAEFrac","TAESD","SizeLimFrac","SizeLimSD","beta") # all slots that need making into cpars vectors
+    
+    makevec<-function(i,OM,slots2cpars,nsim,type,trunc){
+      LB<-slot(OM,slots2cpars[i])[1]
+      UB<-slot(OM,slots2cpars[i])[2]
+      OM@cpars[[slots2cpars[i]]]<-samp_par(nsim,type=type,LB,UB,trunc)
+      OM
+    }
+    
+    for(i in 1:length(slots2cpars))OM<-makevec(i,OM,slots2cpars,nsim,type,trunc)
+    
+    OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias))#,DR=DR))
    
     # ---- Bioeconomic parameters ----------------------------------------------------------------------------------------------
     #AM("TEST BE")

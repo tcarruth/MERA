@@ -519,8 +519,6 @@ FeaseLabs<-function(MPs,dat=NULL){
 }
 
 
-
-
 plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   
   styr=max(dat@Year)-min(dat@Year)+1
@@ -822,7 +820,12 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
     FT<<-FeaseLabs(MPs=MSEobj@MPs,dat=dat)
     MPcols<<-FT$MPcols  # just do FeaseLabs once or else this computationally costly code has to be reused
     
-    Tab1<-as.data.frame(cbind(MSEobj@MPs, FT$MP_Type, FT$feasible, LRP),stringsAsFactors = F)
+    if(MSEobj@nMPs==1){
+      temp<-c(MSEobj@MPs, FT$MP_Type, FT$feasible, LRP)
+      Tab1<-as.data.frame(matrix(temp,nrow=1),stringsAsFactors=F)
+    }else{
+      Tab1<-as.data.frame(cbind(MSEobj@MPs, FT$MP_Type, FT$feasible, LRP),stringsAsFactors = F)
+    }
     for(i in 4:ncol(Tab1))Tab1[,i]<-as.numeric(Tab1[,i])
     colnams<-c("MP","MP type","Feasibility",ind+Current_Year)
     names(Tab1)<-colnams
@@ -863,8 +866,12 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
     
     TRP<-round(apply(MSEobj@B_BMSY[,,1:burnin,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind]
     #FT<-FeaseLabs(MPs=MSEobj@MPs,dat=NA)
-    
-    Tab1<-as.data.frame(cbind(MSEobj@MPs, FT$MP_Type, FT$feasible, TRP),stringsAsFactors = F)
+    if(MSEobj@nMPs==1){
+      temp<-c(MSEobj@MPs, FT$MP_Type, FT$feasible, TRP)
+      Tab1<-as.data.frame(matrix(temp,nrow=1),stringsAsFactors=F)
+    }else{
+      Tab1<-as.data.frame(cbind(MSEobj@MPs, FT$MP_Type, FT$feasible, TRP),stringsAsFactors = F)
+    }
     for(i in 4:ncol(Tab1))Tab1[,i]<-as.numeric(Tab1[,i])
     colnams<-c("MP","MP type","Feasibility",ind+Current_Year)
     names(Tab1)<-colnams

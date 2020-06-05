@@ -35,8 +35,8 @@ shinyUI(
                       output{ font-size:13px;}
                       tbody{ font-size:13px;}
                       style{ font-size:13px;}
+                      .fa-play{color:red}
                       .datatables .display {margin-left: 0;}
-                      
                       [type = 'number'] {font-size:13px;height:30px;}
                       [type = 'text'] {font-size:13px;}
                       [type = 'textArea'] {font-size:13px;}
@@ -117,10 +117,70 @@ shinyUI(
     fluidRow(style = "background-color:#347ab6;",
       column(10,style="padding-left: 10px",
       
-             
+   
+   tags$head(tags$style(HTML("#Start { border-color: #347ab6 }"))),
+   div(style="display: inline-block;vertical-align:top",    
+       conditionalPanel('output.Start==0',style='width:74px',
+                        dropdownButton(inputId="Start",
+                          label ="START",
+                          icon = icon("play"),
+                          status = "primary",
+                          circle = FALSE,
+                          width="74px")
+                        ),
+       conditionalPanel('output.Start==1',style='width:74px')
+   ),  
+   
+   # File drop down ----------------------------------------------------------------------------------------------------------------       
+   tags$head(tags$style(HTML("#DD_file { border-color: #347ab6 }"))),
+   div(style="display: inline-block;vertical-align:top",
+       dropdownButton(
+         
+         column(12,h5(tags$b("MERA Questionnaire",style="color:#347ab6")),
+                
+                column(6,h5("Load (.mera)",style = "color:grey"), 
+                       
+                       tipify(fileInput("Load",label=NULL,accept=c("mera",".mera")),title="Load just the MERA questionnaire (small)")),
+                column(1),
+                column(5,h5("Save (.mera)",style = "color:grey"),downloadButton("Save",""))
+         ),
+         
+         column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
+                h5(tags$b("MERA Session",style="color:#347ab6")),
+                column(6,h5("Load (.merasession)",style = "color:grey"), tipify(fileInput("Load_session",label=NULL,accept=c("merasession",".merasession")),title="Load a previous session including calculated results (large)")),
+                column(1),
+                column(5,h5("Save (.merasession)",style = "color:grey"),    downloadButton("Save_session","",width="100px"))
+         ),
+         
+         column(12,
+                tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
+                h5(tags$b("Operating models",style="color:#347ab6")),
+                column(6,h5("Import",style="color:grey"), tipify(fileInput("Load_OM",label=NULL),title="Import just the operating model created by this MERA session")),
+                column(1),
+                conditionalPanel(condition="output.MadeOM==1|output.LoadOM==1",
+                                 column(2,h5("Export",style="color:grey"),downloadButton("Save_OM","",width=70))
+                )
+         ),
+         
+         column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
+                h5(tags$b("Load DLMtool and MSEtool source code",style="color:#347ab6")),
+                column(12,tipify(fileInput("Load_anything",label=NULL),title="Load custom management procedures, performance metrics and other DLMtool and MSEtool code"))
+         ),
+         
+         inputId = "DD_file",
+         label = "File",
+         icon = icon("file"),
+         status = "primary",
+         circle = FALSE,
+         width="700px"
+         
+       )),
+   
+   
    # Options drop down ----------------------------------------------------------------------------------------------------------------       
    tags$head(tags$style(HTML("#DD_options { border-color: #347ab6 }"))),
    div(style="display: inline-block;vertical-align:top",
+       
        dropdownButton(
          column(12,
                 h5(tags$b("MERA Mode",style="color:#347ab6")),
@@ -151,51 +211,7 @@ shinyUI(
        )),
              
              
-      # File drop down ----------------------------------------------------------------------------------------------------------------       
-      tags$head(tags$style(HTML("#DD_file { border-color: #347ab6 }"))),
-      div(style="display: inline-block;vertical-align:top",
-      dropdownButton(
-        
-        column(12,h5(tags$b("MERA Questionnaire",style="color:#347ab6")),
-           
-            column(6,h5("Load (.mera)",style = "color:grey"), 
-                   
-                       tipify(fileInput("Load",label=NULL,accept=c("mera",".mera")),title="Load just the MERA questionnaire (small)")),
-            column(1),
-            column(5,h5("Save (.mera)",style = "color:grey"),downloadButton("Save",""))
-        ),
       
-        column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
-               h5(tags$b("MERA Session",style="color:#347ab6")),
-          column(6,h5("Load (.merasession)",style = "color:grey"), tipify(fileInput("Load_session",label=NULL,accept=c("merasession",".merasession")),title="Load a previous session including calculated results (large)")),
-          column(1),
-          column(5,h5("Save (.merasession)",style = "color:grey"),    downloadButton("Save_session","",width="100px"))
-        ),
-        
-        column(12,
-          tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
-          h5(tags$b("Operating models",style="color:#347ab6")),
-          column(6,h5("Import",style="color:grey"), tipify(fileInput("Load_OM",label=NULL),title="Import just the operating model created by this MERA session")),
-          column(1),
-          conditionalPanel(condition="output.MadeOM==1|output.LoadOM==1",
-                           column(2,h5("Export",style="color:grey"),downloadButton("Save_OM","",width=70))
-          )
-        ),
-        
-        column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
-          h5(tags$b("Load DLMtool and MSEtool source code",style="color:#347ab6")),
-          column(12,tipify(fileInput("Load_anything",label=NULL),title="Load custom management procedures, performance metrics and other DLMtool and MSEtool code"))
-        ),
-         
-        inputId = "DD_file",
-        label = "File",
-        icon = icon("file"),
-        status = "primary",
-        circle = FALSE,
-        width="700px"
-        
-      )),
- 
       
       # Settings drop down ----------------------------------------------------------------------------------------------------------------       
       tags$head(tags$style(HTML("#DD_settings { border-color: #347ab6 }"))),
@@ -204,20 +220,26 @@ shinyUI(
             
             
             column(12, 
-                   h5(tags$b("Sampling of operating models",style="color:#347ab6")), 
+                   h5(tags$b("Calculation options",style="color:#347ab6")), 
+                   column(5, 
+                        numericInput("plusgroup", label=h5("Plus group"), value=40,min=10,max=200)
+                               
+                   )
+            ),
+            column(12, 
+                   h5(tags$b("Sampling of operating model parameters",style="color:#347ab6")), 
                    
-                   column(5,    
-                          radioButtons("Distribution", label = "Sample from:", choices=c("Truncated Normal","Uniform"),selected="Truncated Normal")
+                   column(5,   style="margin-top: 10px", 
+                          radioButtons("Distribution", label = NULL, choices=c("Truncated Normal","Uniform"),selected="Truncated Normal")
                    ),
                    
-                   column(5,
+                   column(7,style="height:35px",
                           conditionalPanel('input.Distribution=="Truncated Normal"',
-                            h5("Range for truncation (central %)",style="height:15px"),
-                            numericInput("IQRange", label=NULL, value=90,min=50,max=99),
+                                           h5("Range for truncation (central %)",style="height:15px"),
+                                           numericInput("IQRange", label=NULL, value=95,min=50,max=99),
                           )
                    )
             ),
-            
             column(12, 
                    h5(tags$b("Closed-loop simulation",style="color:#347ab6")), 
            
@@ -441,7 +463,9 @@ shinyUI(
     ),
     #tags$hr(style="margin-top: 2px; margin-bottom: 5px"),
     
-    
+    conditionalPanel('output.Start==0', column(12,style="height:1000px; margin-top:15px; margin-left:-10px")),
+    conditionalPanel('output.Start==1',
+                     
     fluidRow(
       column(12,style="height:20px; "),
       column(1,style="height:40px; "),
@@ -1580,8 +1604,8 @@ shinyUI(
               )# 9 column
             ) # fluid row
           ) # column
-      ), # end of Results
-   
+      ) # end of Results
+      ), # start conditional panel
       column(12),
       hr(),
       column(12),
@@ -1598,7 +1622,7 @@ shinyUI(
        column(2,style="height:40px", h6("Open Source, GPL-2, 2020"))
 
     ) # end of fluid page
-
+  
   ) # end of server
 
 
