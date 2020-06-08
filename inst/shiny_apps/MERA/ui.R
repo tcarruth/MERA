@@ -120,7 +120,7 @@ shinyUI(
       column(10,style="padding-left: 10px",
       
    
-   tags$head(tags$style(HTML("#Start { color:red; background-color: white; border-color: #347ab6; border-width:4px }"))),
+   tags$head(tags$style(HTML("#Start { color:red; background-color: white; border-color: #347ab6; border-width:4px; margin-right:20px}"))),
    div(style="display: inline-block;vertical-align:top",    
        conditionalPanel('output.Start==0',style='width:77px',
                         dropdownButton(inputId="Start",
@@ -133,6 +133,8 @@ shinyUI(
        conditionalPanel('output.Start==1',style='width:77px')
    ),  
    
+    
+
    # File drop down ----------------------------------------------------------------------------------------------------------------       
    tags$head(tags$style(HTML("#DD_file { border-color: #347ab6; border-width: 3px }"))),
    div(style="display: inline-block;vertical-align:top",
@@ -180,7 +182,7 @@ shinyUI(
    
    
    # Options drop down ----------------------------------------------------------------------------------------------------------------       
-   tags$head(tags$style(HTML("#DD_options { border-color: #347ab6 }"))),
+   tags$head(tags$style(HTML("#DD_options { border-color: #347ab6; border-width: 3px }"))),
    div(style="display: inline-block;vertical-align:top",
        
        dropdownButton(
@@ -216,7 +218,7 @@ shinyUI(
       
       
       # Settings drop down ----------------------------------------------------------------------------------------------------------------       
-      tags$head(tags$style(HTML("#DD_settings { border-color: #347ab6 }"))),
+      tags$head(tags$style(HTML("#DD_settings { border-color: #347ab6; border-width: 3px }"))),
       div(style="display: inline-block;vertical-align:top",
           dropdownButton(
             
@@ -296,7 +298,7 @@ shinyUI(
       
       
       # Report drop down ----------------------------------------------------------------------------------------------------------------       
-      tags$head(tags$style(HTML("#DD_reports { border-color: #347ab6 }"))),
+      tags$head(tags$style(HTML("#DD_reports { border-color: #347ab6; border-width: 3px }"))),
       div(style="display: inline-block;vertical-align:top",
       dropdownButton(
         
@@ -357,7 +359,7 @@ shinyUI(
       )),
       
       # Help drop down ----------------------------------------------------------------------------------------------------------------       
-      tags$head(tags$style(HTML("#DD_help { border-color: #347ab6 }"))),
+      tags$head(tags$style(HTML("#DD_help { border-color: #347ab6; border-width: 3px }"))),
       div(style="display: inline-block;vertical-align:top; width=150px",
       dropdownButton(
         fluidRow(

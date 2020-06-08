@@ -17,7 +17,7 @@ doprogress<-function(message,duration=1,n=20){
 MSCsave_auto<-function(){
 
   MSClog<-list(PanelState, Just, Des)
-  saveRDS(MSClog,file=paste0(USERID,"_autosave.mera"))
+  #saveRDS(MSClog,file=paste0(USERID,"_autosave.mera"))
 
 }
 

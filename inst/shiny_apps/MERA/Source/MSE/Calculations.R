@@ -19,7 +19,6 @@ Calc_Status<-function(){
       incProgress(2/2, detail = 50) 
     })
     
-    #saveRDS(list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit) ,"C:/temp/Status.rda")
     SD(1) 
     CondOM(1)
     message("preredoSD")
@@ -49,7 +48,7 @@ Calc_Plan<-function(){
   }else{
     if(MadeOM()==0) OM<<-makeOM(PanelState)
   }
-  #saveRDS(OM,file="C:/temp/OM.rda")
+ 
   Fpanel(1)
   MPs<<-getMPs()
   
@@ -72,7 +71,7 @@ Calc_Plan<-function(){
   #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
   
   tryCatch({
-   #saveRDS(OM,"C:/temp/OM.rda")
+  
     withProgress(message = "Running Planning Analysis", value = 0, {
       silent=T
       MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
@@ -94,8 +93,6 @@ Calc_Plan<-function(){
     #   MSEobj_reb <<- MSEobj
     # }
     
-    #saveRDS(MSEobj,file="C:/temp/MSEobj.rda")
-    #saveRDS(MSEobj_reb,file="C:/temp/MSEobj_reb.rda")
     
     # ==== Types of reporting ==========================================================
     
@@ -192,7 +189,7 @@ Calc_Perf<-function(){
   Fpanel(1)
   EvalMPs<-input$sel_MP
   
-  nsim<<-input$nsim_Eval
+  nsim<<-input$nsim
   parallel=F
   
   if(input$Parallel){
@@ -212,11 +209,9 @@ Calc_Perf<-function(){
   tryCatch({
     
     withProgress(message = "Running Performance Evaluation", value = 0, {
-      #saveRDS(OM_Eval,file="C:/temp/OM_Eval.Rdata")
-      #saveRDS(EvalMPs,file="C:/temp/EvalMPs.Rdata")
-      
+        
       EvalMPs<-input$sel_MP
-      MSEobj_Eval<<-runMSE(OM_Eval,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
+      MSEobj_Eval<<-runMSE(OM,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
       
     })
     
@@ -225,10 +220,6 @@ Calc_Perf<-function(){
     message("preredoEval")
     smartRedo()
     message("postredoEval")
-    
-    #saveRDS(MSEobj_Eval,file="C:/temp/MSEobj_Eval.Rdata")
-    #saveRDS(dat,file="C:/temp/dat.Rdata")
-    #saveRDS(dat_ind,file="C:/temp/dat_ind.Rdata")
     
   },
   error = function(e){

@@ -390,14 +390,13 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
         withProgress(message = "Conditioning Operating Model", value = 0, {
           incProgress(0.1)
           dofit(OM,dat)
-          #saveRDS(Status,"C:/temp/Status.rda")
           CFit<-Status$Fit[[1]] #GetDep(OM,dat,code=code,cores=4)
           if(sum(CFit@conv)==0)AM(paste0(code,": ",sum(CFit@conv), " of ",length(CFit@conv)," simulations converged"))
           incProgress(0.8)
           
         })
         
-        OM<<-Sub_cpars(CFit@OM,CFit@conv)
+        #OM<<-Sub_cpars(CFit@OM,CFit@conv)
         CondOM(1)
         SD(1)
         
@@ -440,10 +439,9 @@ dofit<-function(OM,dat){
   Fit<<-new('list')
   Est<<-new('list')
   codes<<-input$Cond_ops
-  saveRDS(dat,"C:/temp/dat.rda")
-  saveRDS(OM,"C:/temp/OM.rda")
   Fit[[1]]<-GetDep(OM,dat,code=codes)
   Est[[1]]<-Fit[[1]]@OM@cpars$D[Fit[[1]]@conv]
   if(sum(Fit[[1]]@conv)!=0)AM(paste(sum(Fit[[1]]@conv),"of",length(Fit[[1]]@conv),"simulations did not converge and will not be used in other calculations"))
   Status <<- list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit) 
+  AM("Operating model conditioned: Management Planning and Status Determination models available")
 }

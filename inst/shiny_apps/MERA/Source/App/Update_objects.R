@@ -28,7 +28,7 @@ UpPanelState<-function(){
   for(j in 1:length(Slider_names)) {
     PanelState[[4]][[j]] <<-sapply(inputnames[[4]][j],function(x) input[[x]])
   }
-  #saveRDS(PanelState,file="C:/temp/PanelState_autosave.rds")
+  
 }
 
 UpJust<-function(){
@@ -52,7 +52,7 @@ RecJust<-function(){
   }else if(input$tabs1==3 & Dpanel()>0 & Dpanel()<5){
     Just[[3]][Dpanel()]<<-input$Justification
   }
-  #saveRDS(Just,file="C:/temp/Just.rds")
+  
 
 }
 

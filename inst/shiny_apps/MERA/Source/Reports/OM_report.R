@@ -34,8 +34,6 @@ checkJs<-function(){
 plotJs<-function(){
   
   Jstats<-checkJs()
-  saveRDS(Just,"C:/temp/Just.rda")
-  saveRDS(Jstats,"C:/temp/Jstats.rda")
   dat<-matrix(c(Jstats$nprob,30-Jstats$nprob),ncol=1) #dat<-matrix(c(22,8),ncol=1)
   rownames(dat)<-c("Justified","Not justified")
   colfunc<-colorRampPalette(c("springgreen","yellow","red"))

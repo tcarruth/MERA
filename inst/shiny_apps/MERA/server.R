@@ -418,9 +418,6 @@ shinyServer(function(input, output, session) {
       }
       FeaseMPs<<-Fease(dat)
       
-      #saveRDS(dat_ind,"C:/temp/dat_ind.rda")
-      #saveRDS(dat,"C:/temp/dat.rda")
-      
       SD_codes<-getCodes(dat,maxtest=Inf)
       AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
       ndatyr<-ncol(dat@Cat)
@@ -505,7 +502,8 @@ shinyServer(function(input, output, session) {
       if(!exists("RAobj"))RAobj=NULL
       if(!exists("MSEobj_Eval"))MSEobj_Eval=NULL
       if(!exists("Status"))Status=NULL
-      saveRDS(list(MSEobj=MSEobj,MSEobj_reb=MSEobj_reb,RAobj=RAobj,MSEobj_Eval=MSEobj_Eval,MSClog=MSClog,Status=Status),file)
+      if(!exists("OM"))OM=NULL
+      saveRDS(list(MSEobj=MSEobj,MSEobj_reb=MSEobj_reb,RAobj=RAobj,MSEobj_Eval=MSEobj_Eval,MSClog=MSClog,Status=Status,OM=OM),file)
 
     }
 
@@ -535,6 +533,7 @@ shinyServer(function(input, output, session) {
     RAobj<<-listy$RAobj
     MSEobj_Eval<<-listy$MSEobj_Eval
     Status<<-listy$Status
+    OM<<-listy$OM
     Plan(0); Eval(0); SD(0); CondOM(0); RA(0) # reset status switches
     redoBlank()
     #"Management Planning","Management Performance","Risk Assessment","Status Determination"
@@ -542,6 +541,11 @@ shinyServer(function(input, output, session) {
     if(!is.null(Status)){SD(1);CondOM(1);AM("Status Determination results loaded");redoSD();updateRadioButtons(session=session,"Mode",selected="Status Determination")}
     if(!is.null(RAobj)){RA(1);AM("Risk Assessment results loaded");redoRA();updateRadioButtons(session=session,"Mode",selected="Risk Assessment")}
     if(!is.null(MSEobj)){Plan(1);AM("Management Planning results loaded");redoPlan(); updateRadioButtons(session=session,"Mode",selected="Management Planning")}
+    if(!is.null(OM)){
+      AM("Operating model loaded")
+      updateNumericInput(session,'nsim', value=OM@nsim)
+      nsim<<-OM@nsim
+    }
     MadeOM(0)
     Start(1)
     updateTabsetPanel(session,"Res_Tab",selected="1")
@@ -791,11 +795,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       AM("Building MERA Data report")
       withProgress(message = "Building data report", value = 0, {
-        
-        
-        
-        
-        # saveRDS(tempdir(),"C:/temp/tempdir.rda")
+         
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
         
@@ -1501,8 +1501,7 @@ shinyServer(function(input, output, session) {
     tempDF <- dplyr::arrange(tempDF, series, x)
     
     eff_values$df <- tempDF
-    #eff_val<-as.list(eff_values)
-    #saveRDS(eff_val,"C:/temp/eff_values.rda")
+    
   })
   
   
