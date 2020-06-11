@@ -86,7 +86,6 @@ Update_Questionnaire<-function(MSClog){
     updateTextInput(session, "Justification",value=Just[[1]][1])
     updateTabsetPanel(session,"tabs1",selected="1")
     
-    
     #=== DEBUGGING WINDOW =====================================================
     #updateTextAreaInput(session,"Debug",value=choices)
     #updateTextAreaInput(session,"Debug2",value=selected)

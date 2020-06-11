@@ -108,7 +108,7 @@ Calc_Plan<-function(){
 Calc_RA<-function(){
   Fpanel(1)
   MPs<-c('curE','CurC','FMSYref','NFref')
-  
+  nsim<-input$nsim
   if(LoadOM()==1&input$OM_L){ 
     OM<<-OM_L
   }else{
