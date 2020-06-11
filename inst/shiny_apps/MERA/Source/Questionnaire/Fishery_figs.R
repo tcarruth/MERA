@@ -44,7 +44,7 @@ plotD <- function(dummy=1){
 
   cond<-D_nams%in%input$D
 
-  suppressWarnings({ny<-as.numeric(input$nyears)})
+  suppressWarnings({ny<-as.numeric(input$Lyear-input$Syear+1)})
   if(length(ny)==0){
     ny<-68
   }else if(is.na(ny)){
@@ -293,26 +293,26 @@ Ftrendfunc<-function(M1=0.2,M2=1.2,sd1=0.1,sd2=0.3,h2=2,ny=68,loc=1,co=1,start_m
 }
 
 plotFP<-function(dummy=1){
-  
-  tempyrs<-getyrs()
-  nyears <- length(tempyrs)
-  initYr <- tempyrs[1] # initial year
-  lstYr <- initYr + nyears-1
-  yvals <- 0 # initial effort
-  
+  temp<-eff_values$df
   cols <- c(fcol,'black','dark grey',palette(rainbow(20))) 
   lwd <- 1.2
   pch <- 16
   pdat <- dplyr::filter(eff_values$df, series==1)
   par(mai=c(0.5,0.5,0.15,0.2))
+  
   plot(pdat$x, pdat$y, type="b", col=cols[1], lwd=lwd, pch=pch,
-       xlim=c(initYr, lstYr), ylim=c(0,1),
+       xlim=c(input$Syear, input$Lyear), ylim=c(0,1),
        xlab="Year",
        ylab="Historical Effort",
        bty="l",
        xaxs="i",
        yaxs="i", 
        xpd=NA)
+  
+  texty<-""
+  if(nrow(eff_values$df)==3)if(all(eff_values$df$x==c(input$Syear,floor(mean(c(input$Syear,input$Lyear))),input$Lyear) & eff_values$df$y==c(0,0.5,0.5)))texty="< Click here to sketch effort >"
+  legend('top',legend=texty,bty='n',text.col="red")
+  
   axis(3,c(0,1E10))
   axis(4,c(0,1E10))
   # additional series
@@ -332,7 +332,7 @@ plotFP_old <-function(dummy=1){
   par(mfrow=c(1,1), mar=c(3.5,3,0.01,0.01), cex.main = 1.5, cex.lab=1.35 )
   FP_nams<-unlist(FP_list)#c("FP_s", "FP_gr","FP_bb","FP_gi","FP_ri","FP_rd")
 
-  suppressWarnings({ny<-as.numeric(input$nyears)})
+  suppressWarnings({ny<-as.numeric(input$Lyear-input$Syear+1)})
   if(length(ny)==0){
     ny<-68
   }else if(is.na(ny)){
@@ -450,15 +450,8 @@ plotqh <- function(dummy=1){
 
   if(sum(cond)>0){
 
-    suppressWarnings({ny<-as.numeric(input$nyears)})
-    if(length(ny)==0){
-      ny<-68
-    }else if(is.na(ny)){
-      ny<-68
-    }
-    #ny<-50
-    yrs<-Current_Year-(ny:1)
-    #yrs<-2018-(ny:1)
+    yrs<-input$Syear:input$Lyear
+    ny<-length(yrs)
     maxcol<-fcol2
     mincol<-icol
     q_max<-max(q_maxes[cond])
@@ -1104,7 +1097,7 @@ plotDh <- function(dummy=1){
   Dh_nams<-unlist(Dh_list)#c("D_10", "D_10_20","D_20_30","D_30_60","D_60_80","D_80")
   condh<-Dh_nams%in%input$Dh
 
-  suppressWarnings({ny<-as.numeric(input$nyears)})
+  suppressWarnings({ny<-as.numeric(input$Lyear-input$Syear+1)})
   if(length(ny)==0){
     ny<-68
   }else if(is.na(ny)){

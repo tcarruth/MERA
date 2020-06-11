@@ -2,15 +2,12 @@
 
 Data_trimer<-function(Data){
 
-  if(is.na(Data@LHYear)|is.null(Data@LHYear)|Data@LHYear==Data@Year[length(Data@Year)]){
-    message("Data could not be trimmed, make sure LHYear is less than max(Year)")
-    return(NA)
-  }else if(Data@LHYear>(Data@Year[length(Data@Year)]-3)){
+  if(input$Lyear==max(Data@Year)){    
     return(NA)
   }else{
     DataT<-Data
     orglength<-length(Data@Year)
-    ind<-(1:length(Data@Year))[Data@Year<(Data@LHYear+1)]
+    ind<-1:(input$Lyear-input$Syear+1)
     newlength<-length(ind)
     slots<-slotNames(Data)
 

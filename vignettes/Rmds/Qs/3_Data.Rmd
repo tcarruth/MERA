@@ -20,7 +20,9 @@ output:
 
 The Data panel is a set of questions about what types of data are available and quality of the data that are available.
 These questions: 
+
 * identify what management procedures are feasible given the types of data available.
+
 * determine the relative success of the various management types that rely on differing types of data.
 
 

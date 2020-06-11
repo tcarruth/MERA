@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588103422387.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "AA152D46",
+    "lastKnownWriteTime" : 1588185143,
+    "last_content_update" : 1588185143305,
+    "path" : "C:/GitHub/MERA/inst/shiny_apps/MERA/Source/App/Update_objects.R",
+    "project_path" : "inst/shiny_apps/MERA/Source/App/Update_objects.R",
+    "properties" : {
+        "cursorPosition" : "54,3",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

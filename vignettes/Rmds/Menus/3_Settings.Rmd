@@ -1,0 +1,64 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+## The Settings dropdown menu
+
+The Settings dropdown includes controls for the various MERA calculations
+
+
+<br />
+
+<img src="./Images/Settings_dropdown.jpg" width="800">
+
+```{r settings_dropdown, include=FALSE}
+
+FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. The Settings dropdown menu. 
+
+
+### Calculation Options
+
+The DLMtool operating model allows for calculation of age-based dynamics using a so-called 'plus group' where numbers of fish aggregate in the oldest age class. This is computationally efficient but relies on age-based dynamics that are asymptotic at the plus group and older ages. The user can specify a maximum for the plus group in the Setting menu. MERA will override this if the plus group is higher than the age at 10% unfished survival.  
+
+### Sampling of operating model parameters
+
+MERA questions have answers that provide upper and lower bounds for operating model parameters. The user can select how these bounds are used to sample the parameters. The default is a truncated normal distribution with a 95% interquartile range (the lower bound is the 2.5th percentile of the distribution, the upper bound the 97.5th percentile). The user can change the width of the interquartile range or opt for a simple uniform range. 
+
+### Closed-loop simulation
+
+When MPs are evaluated in closed loop, they are used to provide new managment advice either every year or over a longer interval. The user can specify that interval here. 
+
+Operating models include a number of simulations which are individual realizations of the fishery system. The more simulations that are specified the longer it will take to performance calculations of MERA. However larger numbers of simulations provide more stable estimates of MP perfomrance and stock status. Typically 24 simulations are enough for a demonstration MSE, 96 are likely to rank MP performance reliably and 196 are required to get stable estimates of absolute MP performance. 
+
+### Rebuilding MSE
+
+In addition to the operating model described by the Questionnaire (and optionally, data) a second operating model is used for MSE analysis that starts the forward projection at a user-specified depletion that can be used to test rebuilding performance. The default level is half of BMSY (a typical biomass level for stock rebuilding). 
+
+### Operating model conditioning / Status Determination approach (fitting to data)
+
+If, alongside the MERA questionnaire, a user uploads fishery data (Data question 1), then an operating model is fitted using all of the data that were made available which could include any combination of: 
+
+* C - Annual Catch data (complete)
+* I - Annual relative abundance index data (can be patchy)
+* M - Annual mean length data (can be patchy)
+* L - Annual Length composition data (can be patchy)
+* A - Annual Age composition data (can be patchy)
+
+By default, if a data file is loaded, then an operating model is conditioned using as much data as possible. In this section the user can opt to use an operating model generated from just the questionnaire or alternatively choose to condition using fewer data. 
+

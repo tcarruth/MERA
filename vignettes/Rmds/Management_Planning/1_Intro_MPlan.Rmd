@@ -24,7 +24,7 @@ Given what is currently known (and not known) about a stock, its fishery and res
 * what data collection processes are most important in determining management performance (Value of information)?
 * which current uncertainties have the greatest influence of management performance (Cost of current uncertainties)?
 
-Management Planning is the most complex use-case of MERA and provides closed-loop simulation testing of numerous management procedures and diagnostics to help managers identify research priorities. 
+Management Planning is the most complex MERA mode and provides closed-loop simulation testing of numerous management procedures and diagnostics to help managers identify research priorities. 
 
 
 

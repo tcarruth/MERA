@@ -1,0 +1,512 @@
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea",selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+onevent("mouseenter", "SkinArea", shinyjs::hide("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::show("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id = "date", "Click me to see the date"),
+p(id = "coords", "Click me to see the mouse coordinates"),
+p(id = "disappear", "Move your mouse here to make the text below disappear"),
+p(id = "text", "Hello")
+),
+server = function(input, output) {
+onclick("date", alert(date()))
+onclick("coords", function(event) { alert(event) })
+onevent("mouseenter", "disappear", hide("text"))
+onevent("mouseleave", "disappear", show("text"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+selectInput("Skin", label = "Skin", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+onevent("mouseenter", "SkinArea", shinyjs::hide("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::show("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+selectInput("Skin", label = "Skin", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea",    selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea",   column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None")))
+),
+server = function(input, output) {
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test")
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea",    column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None")))
+),
+server = function(input, output) {
+shinyjs::hidden("Skin")
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+shinyjs::hidden("Skin")
+onevent("mouseenter", "Skin", shinyjs::show("Skin"))
+onevent("mouseleave", "Skin", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+shinyjs::hidden("Skin")
+onevent("mouseenter", "Skin", shinyjs::show("Skin"))
+onevent("mouseleave", "Skin", shinyjs::hide("Skin"))
+}
+)
+library(shiny)
+library(shinyjs)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+shinyjs::hidden("Skin")
+onevent("mouseenter", "Skin", shinyjs::show("Skin"))
+onevent("mouseleave", "Skin", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+shinyjs::hidden("Skin")
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+#shinyjs::hidden("Skin")
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+shinyjs::hide("Skin")
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+shinyjs::hide("Skin")
+onevent("mouseenter", "Skin", shinyjs::show("Skin"))
+onevent("mouseleave", "Skin", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+#shinyjs::hide("Skin")
+onevent("mouseenter", "Skin", shinyjs::show("Skin"))
+onevent("mouseleave", "Skin", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+#shinyjs::hide("Skin")
+onevent("mouseenter", "Skin", shinyjs::show("Skin"))
+onevent("mouseleave", "Skin", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None")))
+),
+server = function(input, output) {
+#shinyjs::hide("Skin")
+onevent("mouseenter", "Skin", shinyjs::show("Skin"))
+onevent("mouseleave", "Skin", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea",div(
+selectInput("Skin", label = "Skin", choices=c("None"),selected="None")))
+),
+server = function(input, output) {
+shinyjs::hide("Skin")
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea",
+selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+shinyjs::hide("Skin")
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea","test"),
+column(3, selectInput("Skin", label = "Skin", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+shinyjs::hide("Skin")
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+?p
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="Area","Area"),
+selectInput("A_widget", label = "A_widget", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+shinyjs::hide("Skin")
+onevent("mouseenter", "Area", shinyjs::show("A_widget"))
+onevent("mouseleave", "Area", shinyjs::hide("A_widget"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="Area","Area"),
+selectInput("A_widget", label = "A_widget", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+shinyjs::hide("A_widget")
+onevent("mouseenter", "Area", shinyjs::show("A_widget"))
+onevent("mouseleave", "Area", shinyjs::hide("A_widget"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="Area","Area"),
+selectInput("A_widget", label = "A widget", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+shinyjs::hide("A_widget")
+onevent("mouseenter", "Area", shinyjs::show("A_widget"))
+onevent("mouseleave", "Area", shinyjs::hide("A_widget"))
+}
+)
+library(shiny)
+library(shinyjs)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="Area","Area"),
+selectInput("A_widget", label = "A widget", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+shinyjs::hide("A_widget")
+onevent("mouseenter", "Area", shinyjs::show("A_widget"))
+onevent("mouseleave", "Area", shinyjs::hide("A_widget"))
+}
+)
+runApp()
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+actionButton("btn", "Click me"),
+p(id = "element", "Watch what happens to me")
+),
+server = function(input, output) {
+observeEvent(input$btn, {
+# Change the following line for more examples
+html("element", paste0("The date is ", date()))
+})
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="SkinArea", div(selectInput("Skin", label = "Skin", choices=c("None"),selected="None")))
+),
+server = function(input, output) {
+shinyjs::hide("Skin")
+onevent("mouseenter", "SkinArea", shinyjs::show("Skin"))
+onevent("mouseleave", "SkinArea", shinyjs::hide("Skin"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+p(id="Area","Area"),
+selectInput("A_widget", label = "A widget", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+shinyjs::hide("A_widget")
+onevent("mouseenter", "Area", shinyjs::show("A_widget"))
+onevent("mouseleave", "Area", shinyjs::hide("A_widget"))
+}
+)
+runApp()
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+selectInput("A_widget", label = "A widget", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+shinyjs::hide("A_widget")
+onevent("mouseenter", "A_widget", shinyjs::show("A_widget"))
+onevent("mouseleave", "A_widget", shinyjs::hide("A_widget"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+selectInput("A_widget", label = "A widget", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+#shinyjs::hide("A_widget")
+onevent("mouseenter", "A_widget", shinyjs::show("A_widget"))
+onevent("mouseleave", "A_widget", shinyjs::hide("A_widget"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+div("Area",selectInput("A_widget", label = "A widget", choices=c("None"),selected="None"))
+),
+server = function(input, output) {
+#shinyjs::hide("A_widget")
+onevent("mouseenter", "Area", shinyjs::show("A_widget"))
+onevent("mouseleave", "Area", shinyjs::hide("A_widget"))
+}
+)
+shinyApp(
+ui = fluidPage(
+useShinyjs(),  # Set up shinyjs
+selectInput("A_widget", label = "A widget", choices=c("None"),selected="None")
+),
+server = function(input, output) {
+#shinyjs::hide("A_widget")
+onevent("mouseenter", "A_widget", shinyjs::enable("A_widget"))
+onevent("mouseleave", "A_widget", shinyjs::disable("A_widget"))
+}
+)
+runApp()
+runApp()
+runApp()
+runApp()
+?datatable
+source('~/GitHub/MERA/inst/shiny_apps/MERA/Source/Skins/MSC.R', echo=TRUE)
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+shiny::runApp()
+runApp()
+runApp()
+params$MSEobj
+params<-list(MSEobj=MSEobj,MSEobj_reb=MSEobj_reb,options=options)
+Skin$Risk_Assessment$Figs[[i]](params$MSEobj,params$MSEobj_reb,params$options)
+Skin<-FAO
+source('~/GitHub/MERA/inst/shiny_apps/MERA/Source/Skins/testskin.R', echo=TRUE)
+source('~/GitHub/MERA/inst/shiny_apps/MERA/Source/Skins/testskin.R', echo=TRUE)
+test<-function()
+test<-function()()
+test<-function(){}
+is.null(test())
+test
+getmethod(test)
+getMethod(test)
+getMethod("test")
+toString(test)
+library(DLMtool)
+Can
+DLMdiag
+DLMtool::ReqData
+Needed
+Tabs[[1]]<- function(MSE, MSEobj_reb,options=list(res=5),rnd=1) {
+}
+body(Tabs[[1]])
+test<-Tabs[[1]]
+Tabs <- Figs <- Tab_title <- Tab_text <- Fig_title <- Fig_text <- Fig_dim <- options <- Intro_title <- Intro_text <- new('list')
+#
+Tabs[[1]]<- function(MSE, MSEobj_reb,options=list(res=5),rnd=1) {
+}
+body(Tabs[[1]])
+Tabs[[4]]<- function(MSEobj, MSEobj_reb,options=list(res=5),rnd=1) {
+nMPs<-MSEobj@nMPs
+Labels <- list(curE="Current Effort", curC="Current Catch", FMSYref="FMSY Fishing", NFref="No Fishing")
+PMlist <- c('P50_1', 'P50_2')
+nPM <- length(PMlist)
+runPM <- vector("list", length(PMlist))
+MGT <- round(mean(MSEobj@OM$MGT),0)
+Yrs <- list(c(MGT, MSEobj@proyears), c(-10))
+for (X in 1:length(PMlist)) {
+runPM[[X]] <- eval(call(PMlist[X], MSEobj, Yrs=Yrs[[X]]))
+}
+df <- data.frame(MP=lapply(runPM, function(x) x@MPs) %>% unlist(),
+prob=lapply(runPM, function(x) x@Mean) %>% unlist(),
+PM=rep(1:nPM, each=nMPs))
+df$prob <- round(df$prob,2)
+temp <- df %>% dplyr::group_by(MP) %>% dplyr::summarize(min=min(prob))
+df <- dplyr::left_join(df, temp, by='MP') %>% dplyr::arrange(MP)
+df$MP <- as.character(df$MP)
+df$url <- sapply(df$MP, MPurl) %>% unlist()
+types <- MPtype(df$MP)
+df$Type <- NA
+ind <- match(df$MP, types[,1])
+df$Type <- types[ind,2]
+labels <- MSEobj@MPs
+if (class(Labels) == "list") {
+repnames <- names(Labels)
+invalid <- repnames[!repnames %in% labels]
+if (length(invalid >0)) {
+warning("Labels: ", paste(invalid, collapse=", "), " are not MPs in MSE")
+Labels[invalid] <- NULL
+repnames <- names(Labels)
+}
+labels[labels %in% repnames] <- Labels %>% unlist()
+}
+df$MP <- labels[match(df$MP,MSEobj@MPs)]
+Prob <- 0# .8
+TabDF <- tidyr::spread(df, PM, prob)
+TabDF <- TabDF %>% dplyr::arrange(desc(min))
+MPwithurl <- !is.na(TabDF$url)
+# fail.ind <- TabDF$min <=Prob
+# TabDF$MP[!fail.ind&MPwithurl] <-
+#   paste0("<a href='", TabDF$url[!fail.ind&MPwithurl],"' style='color: #008000' ' target='_blank'>", TabDF$MP[!fail.ind&MPwithurl],"</a>")
+# TabDF$MP[fail.ind&MPwithurl] <-
+#   paste0("<a href='", TabDF$url[fail.ind&MPwithurl],"' style='color: #FF0000' ' target='_blank'>", TabDF$MP[fail.ind&MPwithurl],"</a>")
+TabDF$MP[MPwithurl] <- paste0("<a href='", TabDF$url[MPwithurl]," ' target='_blank'>", TabDF$MP[MPwithurl],"</a>")
+TabDF$url <- NULL; TabDF$Type = NULL; TabDF$min <- NULL
+caption <- ""
+DT::datatable(TabDF, escape=FALSE, caption=caption, rownames=FALSE,
+extensions = 'Buttons',
+colnames=c("MP", runPM[[1]]@Caption, runPM[[2]]@Caption),
+class = 'display',
+options = list(
+buttons =
+list('copy', list(
+extend = 'collection',
+buttons = c('csv', 'excel', 'pdf'),
+text = 'Download'
+)),
+dom = 'Brti',
+autoWidth = TRUE,
+columnDefs = list(list(width = '200px', targets = "_all"),
+list(searchable  = 'false', targets = 0))))
+}
+body(Tabs[[4]])
+length(body(Tabs[[1]]))
+length(body(Tabs[[4]]))
+test<-function(x)x^2
+length(body(test))
+body(test)
+test<-function(x){}
+body(test)
+length(body(test))
+runApp()
+shiny::runApp()
+install.packages(c("DLMtool", "MSEtool", "shinyalert", "shinyjs"))
+install.packages(c("DLMtool", "MSEtool", "shinyalert", "shinyjs"))

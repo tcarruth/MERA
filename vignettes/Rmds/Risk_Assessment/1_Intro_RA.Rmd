@@ -18,7 +18,7 @@ output:
 
 ## Background to risk assessment  
 
-The risk assessment use-case is the simplest of the four options and directly takes the operating model generated from the questionnaire to project four management scenarios: status quo catches (e.g. tonnes of fish), status quo fishing effort (e.g. days of fishing), ‘optimal’ fishing mortality rate commensurate with maximum sustainable yield (FMSY) and zero catches. The output from this analysis is a summary of biological risk (Figure 3) over projected years.  
+The risk assessment mode is the simplest of the four options and directly takes the operating model generated from the questionnaire to project four management scenarios: status quo catches (e.g. tonnes of fish), status quo fishing effort (e.g. days of fishing), ‘optimal’ fishing mortality rate commensurate with maximum sustainable yield (FMSY) and zero catches. The output from this analysis is a summary of biological risk (Figure 3) over projected years.  
 
 The purpose of the risk assessment use case is to provide an alternative to contemporary subjective scoring systems such as productivity susceptibility analysis (PSA, Hobday et al. 2011) that may not necessarily accurately quantify biological risk (Carruthers and Hordyk 2018).
 

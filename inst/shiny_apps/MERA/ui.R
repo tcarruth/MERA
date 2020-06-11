@@ -121,6 +121,7 @@ shinyUI(
       
    
    tags$head(tags$style(HTML("#Start { color:red; background-color: white; border-color: #347ab6; border-width:4px; margin-right:20px}"))),
+   
    div(style="display: inline-block;vertical-align:top",    
        conditionalPanel('output.Start==0',style='width:77px',
                         dropdownButton(inputId="Start",
@@ -240,7 +241,7 @@ shinyUI(
                    column(7,style="height:35px",
                           conditionalPanel('input.Distribution=="Truncated Normal"',
                                            h5("Range for truncation (central %)",style="height:15px"),
-                                           numericInput("IQRange", label=NULL, value=95,min=50,max=99),
+                                           numericInput("IQRange", label=NULL, value=95,min=50,max=99)
                           )
                    )
             ),
@@ -254,7 +255,7 @@ shinyUI(
                    
                    column(7,
                           h5("Number of simulations:",style="height:15px"),
-                          numericInput("nsim", label=NULL, value=144,min=2,max=512),
+                          numericInput("nsim", label=NULL, value=64,min=2,max=512),
                           column(6,
                                  actionButton("DemoSims",h5("DEMO",style="color:grey")),
                                  actionButton("DefSims",h5("DEFAULT",style="color:grey"))
@@ -270,6 +271,7 @@ shinyUI(
                    column(9, sliderInput("Dep_reb",label=h5("Starting % BMSY from which to evaluate rebuilding"),min=10,max=100,value=c(50,50))),
                    column(2, HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey")))
             ),
+            
             conditionalPanel(condition="output.LoadOM==1",
               column(12,  tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
                    h5(tags$b("Custom Operating Models",style="color:#347ab6")),   
@@ -302,7 +304,7 @@ shinyUI(
       div(style="display: inline-block;vertical-align:top",
       dropdownButton(
         
-        column(9,h5("Build MERA Questionnaire Report",style="font-weight:bold;color:#347ab6")),
+        column(9,h5("MERA Questionnaire Report",style="font-weight:bold;color:#347ab6")),
         column(3,downloadButton("Build_OM"," ")),
         
         column(9,h5("Detailed OM Report",style="font-weight:bold;color:#347ab6")),
@@ -325,15 +327,15 @@ shinyUI(
         ),
         
         conditionalPanel(condition="output.SD==0",
-          column(9,h5("Status Report",style="color:grey"))
+          column(9,h5("Status Determination",style="color:grey"))
         ),                 
         conditionalPanel(condition="output.SD==1",
-          column(9,h5("Status Report",style="font-weight:bold;color:#347ab6")),
+          column(9,h5("Status Determination",style="font-weight:bold;color:#347ab6")),
           column(3,downloadButton("Build_Status",""))
         ),
         
         conditionalPanel(condition="output.SD==0&output.CondOM==0",
-          column(9,h5("Detailed Status Determination / Conditioning Report (model fitting)",style="color:grey"))
+          column(9,h5("Model fitting report (Status Determination / OM Conditioning)",style="color:grey"))
         ),
         conditionalPanel(condition="output.SD==1|output.CondOM==1",
           column(9,h5("Model fitting report (Status Determination / OM Conditioning)",style="font-weight:bold;color:#347ab6")),
@@ -384,7 +386,7 @@ shinyUI(
         
         column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
                h5(tags$b("Manuals and Documentation",style="color:#347ab6")),
-          column(12,h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html", target="_blank"),style = "color:grey"),
+          column(12,h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_v6.html", target="_blank"),style = "color:grey"),
           h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"), style = "color:grey"),
           h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"))
           
@@ -458,7 +460,6 @@ shinyUI(
       ))
       )# end of column 10
       
-     
     ),
     #tags$hr(style="margin-top: 2px; margin-bottom: 5px"),
     
@@ -475,7 +476,8 @@ shinyUI(
         HTML('<hr style="border-color: #347ab6;">')
       ),
       column(1)
-    ),  
+    ),
+    
     fluidRow(  
       column(1),
       column(11,style="height:20px"),
@@ -498,7 +500,7 @@ shinyUI(
                                  h5(" - vulnerability to fishing of various size classes",style="color:grey"),
                                  h5(""),
                                  h5("More detailed help on the Fishery questions can be found in the
-                                         MERA User Guide: ", a("Section 2.1.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#21_fishery_questions", target="_blank"),style="color:grey")),
+                                         MERA User Guide: ", a("Section 2.1.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_v6.html#21_fishery_questions", target="_blank"),style="color:grey")),
 
                             conditionalPanel(width=4,condition="output.Fpanel==1",#|output.Fpanel==undefined",
                                 fluidRow(
@@ -520,9 +522,13 @@ shinyUI(
                                   column(width=8,style="height:40px",
                                          textInput("Agency","","e.g. ICCAT")),
                                   column(width=4,style="height:40px;padding:19px",
-                                         h5("No. years:",style="font-weight:bold")),
-                                  column(width=8,style="height:40px",
-                                         numericInput("nyears", "", 68,min=8,max=200,step=1)),
+                                         h5("Fishery start:",style="font-weight:bold")),
+                                  column(width=3,style="height:40px",
+                                         numericInput("Syear", "", 1951,min=1800,max=2018,step=1)),
+                                  column(width=2,style="height:40px;padding:19px",
+                                         h5("End:",style="font-weight:bold")),
+                                  column(width=3,style="height:40px",
+                                         numericInput("Lyear", "", 2018,min=1980,max=2020,step=1)),
                                   column(width=4,style="height:40px;padding:19px",
                                          h5("Author:",style="font-weight:bold")),
                                   column(width=8,style="height:40px",
@@ -548,13 +554,15 @@ shinyUI(
                             conditionalPanel(width=4,condition="output.Fpanel==5",
                                  column(12,
                                     h5("5. Historical effort pattern",style="color:black"),
+                                    h5("Click on the plot to sketch the historical pattern of relative fishing effort"),
                                     #plotOutput("effort_plot", click = "plot_click", hover = "plot_hover",height=220),
                                     HTML("<br>"),
-                                    verbatimTextOutput("info"),
-                                    HTML("<br>"),
-                                    actionButton("new_series", "New Series"),
+                                    column(6),
+                                    column(6,h5("Entry coordinates:")),
+                                    column(6,actionButton("new_series", "New"),
                                     actionButton("undo_last", "Undo"),
-                                    actionButton("reset_plot", "Clear")
+                                    actionButton("reset_plot", "Clear")),
+                                    column(6,verbatimTextOutput("info"))
                                         
                                  )            
                             ),
@@ -643,7 +651,7 @@ shinyUI(
                                       h5(" - determine the relative success of management procedures that provide various types of advice.",style="color:grey"),
                                       h5(""),
                                       h5("More detailed help on the Management questions can be found in the MERA manual
-                                         : ", a("Section 2.2.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#22_management_questions", target="_blank"),style="color:grey")),
+                                         : ", a("Section 2.2.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_v6.html#22_management_questions", target="_blank"),style="color:grey")),
 
 
                                  conditionalPanel(width=4,condition="output.Mpanel==1",
@@ -695,7 +703,7 @@ shinyUI(
                                   h5(" - determine the relative success of the management approaches that rely on differing types of data.",style="color:grey"),
                                   h5(""),
                                   h5("More detailed help on the data questions can be found in the MERA manual
-                                         : ", a("Section 2.3.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#23_data_questions", target="_blank"),style="color:grey")),
+                                         : ", a("Section 2.3.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_v6.html#23_data_questions", target="_blank"),style="color:grey")),
 
                                  conditionalPanel(width=4,condition="output.Dpanel==1",
                                                   
@@ -735,7 +743,7 @@ shinyUI(
                                   h5("Currently these include the specification of bio-economic model parameters.",style="color:grey"),
                                   h5(""),
                                   h5("More detailed help on Extra features can be found in the MERA manual
-                                      : ", a("Section 2.4.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_5_1.html#24_extra", target="_blank"),style="color:grey")
+                                      : ", a("Section 2.4.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_v6.html#24_extra", target="_blank"),style="color:grey")
                                   
                                 ),
                          
@@ -772,7 +780,8 @@ shinyUI(
 
                           column(12,
                             h5("Describe the fishery you are modelling and identify yourself and the relevant management agency.",style = "color:grey"),
-                            h5("'No. years' specifies the number of historical years the fishery has been operating for. For example, if the fishery ran from 1951 to 2019 you would enter 69 in this box.",style = "color:grey"),
+                            h5("'Fishery start' specifies the first year of exploitation and 'End' is the last year for the operating model. If users upload data they must match these years.
+                               Uploaded data indexex after the End year will be used as indicator data in the Management Performance mode",style = "color:grey"),
                             h5("To provide futher context for this analysis, please include additional introductory details or background references in the text box below.",style = "color:grey")
 
                       )),

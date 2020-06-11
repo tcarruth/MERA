@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588259921509.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "A55A89C7",
+    "lastKnownWriteTime" : 1588178418,
+    "last_content_update" : 1588178418,
+    "path" : "C:/Users/tcar_/Dropbox/abft-mse/manuals_and_design_documents/CMP Developers Guide.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "128,3",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

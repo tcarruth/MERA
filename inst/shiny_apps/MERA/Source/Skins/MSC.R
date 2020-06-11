@@ -1098,60 +1098,7 @@ Subsequent panels show the 90th (light grey), 50th (dark grey) and median estima
   Fig_title[[4]] <- "Figure 3. Posterior predicted data versus those observed"
   Fig_text[[4]] <- "The 'cloud' of posterior predicted data are represented by the grey shaded areas that"
   
-  Figs[[4]]<-function(MSEobj_Eval,dat,dat_ind,options=list()){
-    
-    YIU=length(dat_ind@Year)-length(dat@Year)
-    styr=max(dat@Year)-min(dat@Year)
-    PPD<-MSEobj_Eval@Misc$Data[[1]]
-    
-    # Standardization
-    predCat<-(PPD@Cat/PPD@Cat[,styr])[,styr+(1:YIU),drop=F]
-    predInd<-(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
-    predML<-(PPD@ML/PPD@ML[,styr])[,styr+(1:YIU),drop=F]
-    
-    # Standardization
-    obsCat<-(dat_ind@Cat/dat_ind@Cat[,styr])[styr+(1:YIU)]
-    obsInd<-(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
-    obsML<-(dat_ind@ML/dat_ind@ML[,styr])[styr+(1:YIU)]
-    yrlab<-dat_ind@Year[styr+(1:YIU)]
-    
-    ppdplot<-function(pred,obs,yrlab,p=c(0.025,0.05,0.25,0.75,0.95,0.975),pcols=c("grey90","grey78","grey66"),lab="",pcex=1.3){
-      
-      qmat<-apply(pred,2,quantile,p)
-      nobs<-length(obs)
-      ylim<-range(pred,obs)
-      plot(range(yrlab),ylim,col="white")
-      yind<-c(1:nobs,nobs:1)
-      rind<-nobs:1
-      polygon(yrlab[yind],c(qmat[1,],qmat[6,rind]),col=pcols[1],border=pcols[1])
-      polygon(yrlab[yind],c(qmat[2,],qmat[5,rind]),col=pcols[2],border=pcols[2])
-      polygon(yrlab[yind],c(qmat[3,],qmat[4,rind]),col=pcols[3],border=pcols[3])
-      
-      #obs<-qmat[cbind(1:nobs,1:nobs)]-0.02
-      ocol<-rep("black",nobs)
-      ocol[obs<qmat[2,]|obs>qmat[5,]]<-"orange"
-      ocol[obs<qmat[1,]|obs>qmat[6,]]<-"red"
-      
-      points(yrlab,obs,col=ocol,pch=19,cex=pcex)
-      
-      #points(yrlab,obs,pch=1,cex=pcex)
-      
-      mtext(lab,3,line=0.6,font=2)
-      
-    }
-    
-    par(mfrow=c(1,3),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
-    ppdplot(pred=predCat,obs=obsCat,yrlab,lab="Catch")
-    ppdplot(pred=predML,obs=obsML,yrlab,lab="Mean Length in Catch")
-    ppdplot(pred=predInd,obs=obsInd,yrlab,lab="Index of Abundance")
-    mtext("Year",1,line=1.5,outer=T)
-    mtext(paste("Data relative to",yrlab[1]-1),2,line=1.5,outer=T)
-    
-    legend('topleft',legend=c("95% PI","90% PI","50% PI"),fill=c("grey90","grey78","grey66"),title="Pred. Data")
-    legend('topright',legend=c("Consistent","Borderline","Inconsistent"),pch=19,col=c("black","orange","red"),title="Obs. Data",text.col=c("black","orange","red"))
-    
-  } 
-  
+  Figs[[4]]<-  function(MSEobj_Eval,dat,dat_ind,options=list())post_marg_plot(MSEobj_Eval,dat,dat_ind,options=list())
   Fig_dim[[4]] <- function(dims)list(height=400,width=800)
  
   Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 

@@ -18,14 +18,16 @@ output:
 
 Please note that MERA is currently under development. MERA is beta software and subject to ongoing testing. 
 
-If you find a bug or have a suggestion please contact <t.carruthers@oceans.ubc.ca>  
+If you find a bug or have a suggestion please contact <tom@bluematterscience.com>  
 
 
 ## Overview
 
-Fisheries managers are in need of tools to inform decision making often in the face of imperfect information and high uncertainty. By linking a simple user interface and questionnaire (Figure `r paste(SecInd,FigInd+1,sep=".")`) to an operating model and sophisticated simulation software, MERA provides managers with an accessible and powerful tool for identifying species at risk, selecting management procedures that can achieve their performance objectives, and calculating stock status. 
+Fisheries managers are in need of tools to inform decision making often in the face of imperfect information and high uncertainty. 
 
-MERA is intended to better account for uncertainty in the fishery system, prioritizing robust management options and identifying value in alternative data collection and research programs. By focusing on operational modelling, MERA can provide quantitative outputs that are central to fishery legal frameworks and eco-certification standards, for example probabilistic estimates of stock status relative to reference levels. MERA lessens the reliance on subjective, qualitative scoring systems, increasing transparency and accountability in decision making. 
+By linking a simple user interface and questionnaire (Figure `r paste(SecInd,FigInd+1,sep=".")`) to an operating model and sophisticated simulation software, MERA provides managers with an accessible and powerful tool for selecting management procedures that can achieve their performance objectives, checking that a management procedure that is in use is identifying species at risk, and calculating stock status. 
+
+MERA is intended to better account for uncertainty in the fishery system, prioritizing robust management options and identifying value in alternative data collection and research programs. By focusing on operating models, MERA can provide quantitative outputs that are central to fishery legal frameworks and eco-certification standards, for example probabilistic estimates of stock status relative to reference levels. MERA lessens the reliance on subjective, qualitative scoring systems, increasing transparency and accountability in decision making. 
 
 Furthermore since the App is compatible with the R statistical software operating models, management procedures and diagnostics are all customizable allowing for bespoke state-of-the art closed-loop simulation including MSE. 
 

@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588177885193.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "A05C0DFC",
+    "lastKnownWriteTime" : 1588260276,
+    "last_content_update" : 1588260276485,
+    "path" : "C:/Users/tcar_/Dropbox/abft-mse/RScripts/Tests/Test report.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "94,0",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

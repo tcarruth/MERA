@@ -1,15 +1,8 @@
 
-
 # Effort sketching functions
 
 getyrs<-function(){
-  suppressWarnings({ny<-as.numeric(input$nyears)})
-  if(length(ny)==0){
-    ny<-68
-  }else if(is.na(ny)){
-    ny<-68
-  }
-  Current_Year-(ny:1)
+  Syear:Lyear
 } 
 
 # Get effort matrix
@@ -41,7 +34,8 @@ effort_mat<-function(){
         df<-rbind(df,data.frame(x=lyr,y=df$y[nrow(df)],series=df$series[nrow(df)]))
       }
       
-    }  
+    }
+    
     effmat[i,]<-mat_inter(df)
     if(all(effmat[i,]==0))effmat[i,]<-0.5
     
@@ -53,11 +47,16 @@ effort_mat<-function(){
 
 eff_backwards<-function(MSClog){
   
-  nyears<-MSClog[[3]]$nyears
-  yrs<-Current_Year-(nyears:1)
- 
+  if("nyears"%in%names(MSClog[[3]])){
+    nyears<-MSClog[[3]]$nyears
+    yrs<-Current_Year-(nyears:1)
+  }else{
+    yrs<-MSClog[[3]]$Syear:MSClog[[3]]$Lyear
+    nyears<-length(yrs)
+  }
   loc<-match("FP",inputnames[[1]])
-  cond<-(1:length(unlist(PanelState[[1]][loc])))[unlist(PanelState[[1]][loc])]
+  sels<-unlist(PanelState[[1]][loc])
+  cond<-(1:length(sels))[sels]
   nt<-length(cond)
   M1sim<-M1s[cond]
   M2sim<-M2s[cond]

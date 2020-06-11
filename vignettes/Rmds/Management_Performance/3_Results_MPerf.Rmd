@@ -26,8 +26,8 @@ When an MP was tested using closed-loop simulation, for every simulation, in eve
 Since an MP is codified, the only explanations for the observation of data that differ from those of the simulation is that either the operating model is misspecfied (either historically and/or in the future) or the operating model is correct and by chance atypical data have been collected. 
 
 
-```{r MPerf_Chunk1, echo=F,warning=F,error=F,message=F,results='asis',fig.width=10,fig.height=10}
 
+```{r MPerf_Chunk1, echo=F,warning=F,error=F,message=F,results='asis',fig.width=10,fig.height=10}
 
   styr=100
   PPD<-MSEobj2@Misc$Data[[1]]
@@ -42,6 +42,17 @@ Since an MP is codified, the only explanations for the observation of data that 
  
   indPPD<-indData<-getinds(PPD,styr=styr,res=5,tsd=tsd,stat=stat)
 
+  post_marg_plot(MSEobj_Eval,dat,dat_ind)
+
+  FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. Posterior predicted data (48 simulations) for catch, mean length and a relative abundance index for the base operating model over the first 5 years of a projection (shaded regions) compared with observed (points) data over the same time period during which the DCAC MP was in use. 
+
+
+```{r MPerf_Chunk2, echo=F,warning=F,error=F,message=F,results='asis',fig.width=10,fig.height=10}
+
   CC(indPPD,indData,pp=1,res=res)
 
   FigInd<-FigInd+1
@@ -55,7 +66,7 @@ Figure `r paste(SecInd,FigInd,sep=".")`. Posterior predicted (blue) data cross-c
 
 The blue simulated data points of Figure `r paste(SecInd,FigInd,sep=".")` have a mean in multivariate space. It is possible to quantify the distance over all dimensions (data types) and simplify the problem into a univariate test of similarity. This is the basis for common methods of multivariate outlier detection and relies on a calculation of Mahalanobis distance which is similar to standard Euclidean distance but accounts for correlations among variables (observed data types). It sounds more complicated than it is - for more information see Carruthers and Hordyk (2018). 
 
-```{r MPerf_Chunk2, echo=F,warning=F,error=F,message=F,results='asis',fig.width=8,fig.height=7}
+```{r MPerf_Chunk3, echo=F,warning=F,error=F,message=F,results='asis',fig.width=8,fig.height=7}
 
 plot_mdist(indPPD,indData,alpha=0.05)
 

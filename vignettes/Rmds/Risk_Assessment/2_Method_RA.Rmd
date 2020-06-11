@@ -20,8 +20,18 @@ output:
 
 Running the risk assessment is straightforward. An operating model is constructed directly from the questionnaire and future projections are carried out for 
 
-* 196 simulations 
 * for a standard 50 year projection 
 * for 4 alternative management scenarios: status quo fishing effort, status quo annual catches, zero catch and fishing exactly at FMSY. 
 
 Since it involves a relatively large number of simulations, the risk assessment can take a couple of minutes to run. 
+
+
+<img src="./Images/Risk_assessment_mode.jpg" width="600">
+
+```{r figplus_RiskAssess, include=FALSE}
+
+FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. The controls for the risk assessment mode.  

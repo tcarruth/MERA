@@ -16,7 +16,7 @@ output:
     toc_float: true
 ---
 
-# Status Determination Use Case
+# Status Determination Mode
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```

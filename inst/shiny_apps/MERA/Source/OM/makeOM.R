@@ -127,10 +127,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     OM<-OM_L
     SampList<<-NULL
     AM("Using loaded operating model")
-  #}else if(input$OM_C & !UseQonly){
-   # OM<-OM_C
-    #SampList<<-NULL
-    #AM("Using conditioned operating model")
+    
+  
   }else{
     
     type<-input$Distribution # sampling distribution
@@ -142,6 +140,7 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     }else{
       OM<-trimOM(OM,input$nsim)
     }
+    
     OM@R0<-1e9
     OM@Linf<-c(100,100)
     OM@L50<-NaN
@@ -152,17 +151,9 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     OM@Species<-input$Species
     OM@Region<-input$Region
     OM@Agency<-input$Agency
-    if(is.na(nyears)){
-      if(is.na(as.integer(input$nyears))){
-        OM@nyears<-68
-      }else{
-        OM@nyears<-as.integer(input$nyears)
-      }
-    }else{
-      OM@nyears<-nyears
-    }
-    nyears<-OM@nyears
-  
+    nyears<-input$Lyear-input$Syear+1
+    OM@nyears<-nyears
+    
     OM@Source<-input$Author
     OM@interval<-input$interval
     if(is.na(proyears)){
@@ -186,7 +177,6 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     }
     
     OM<-Replace(OM,temp,Sub="Obs")
-    
     
     # ---- Fishery characteristics ---------------------------------------------------------------------------
     
@@ -339,7 +329,9 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     for(i in 1:length(slots2cpars))OM<-makevec(i,OM,slots2cpars,nsim,type,trunc)
     
     OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias))#,DR=DR))
-   
+    
+    SampList<<-data.frame(Esdrand,qhssim,Sel50sim,Ahsim,Vhsim,Asim,Vsim,initD,Cbias)
+    
     # ---- Bioeconomic parameters ----------------------------------------------------------------------------------------------
     #AM("TEST BE")
     
@@ -350,15 +342,13 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
                                 Response=rep(input$Response/100,OM@nsim), 
                                 CostInc=rep(input$CostInc,OM@nsim), 
                                 RevInc=rep(input$RevInc,OM@nsim)))
-      
-      #AM("Using bioeconomic model parameters")
+      AM("Using bioeconomic model parameters")
       
     }
     
     # ---- Data overwriting ---------------------------------------------------------------------------------------------------
     if(Data()==1){
-      
-      
+      AM("Questionnaire growth and mortality overwritten by those specified in uploaded data")
       if(!is.na(dat@vbLinf[1])){
         ratio<-dat@vbLinf[1]/mean(OM@cpars$Linf)
         
@@ -377,6 +367,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       if(!is.null(dat@Mort) & !is.na(dat@Mort)) OM@cpars$M <- OM@cpars$M * dat@Mort / mean(OM@cpars$M) 
      
     }
+    
+    # AM("Using questionnaire-based operating model")
     
     if(Data()==1&input$OM_C){
       
@@ -397,40 +389,38 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
         })
         
         #OM<<-Sub_cpars(CFit@OM,CFit@conv)
+        OM<-CFit@OM
         CondOM(1)
         SD(1)
+        AM("------------- New conditioned OM made --------------")
+        MadeOM(1) 
+       
         
       },
       error = function(e){
         AM(paste0(e,sep="\n"))
-        shinyalert("Computational error", "Operating model conditionin returned an error. Try using a different model for conditioning.", type = "info")
+        shinyalert("Computational error", "Operating model conditioning returned an error. Try using a different model for conditioning.", type = "info")
         CondOM(0)
-        return(0)
       }
      )
-    }
+    AM("------------- New OM made --------------")
+    MadeOM(1)  
+ 
+    #testing=F
+    #if(testing){
+    # MSEobj<-runMSE(OM,"DCAC")
+    #  OM_reb<-OM
+    #  OM_reb@proyears<-max(OM@proyears,20+2) # only have to compute to this year
+    #  Dep_reb<-runif(OM@nsim,50,50)#input$Dep_reb[1],input$Dep_reb[2]) # is a %
+    #  OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0#apply(MSEobj@SSB_hist[,,MSEobj@nyears,],1, sum)/(MSEobj@OM$SSB0*2) # start from half BMSY
+    #  MSEobj_reb<-runMSE(OM_reb,"DCAC")
+    #  Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
+   #}
     
-    testing=F
-    
-    if(testing){
-      
-      MSEobj<-runMSE(OM,"DCAC")
-      OM_reb<-OM
-      OM_reb@proyears<-max(OM@proyears,20+2) # only have to compute to this year
-      Dep_reb<-runif(OM@nsim,50,50)#input$Dep_reb[1],input$Dep_reb[2]) # is a %
-      OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0#apply(MSEobj@SSB_hist[,,MSEobj@nyears,],1, sum)/(MSEobj@OM$SSB0*2) # start from half BMSY
-      MSEobj_reb<-runMSE(OM_reb,"DCAC")
-      Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
-      
-    }
-    
-    SampList<<-data.frame(Esdrand,qhssim,Sel50sim,Ahsim,Vhsim,Asim,Vsim,initD,Cbias)
-    AM("Using questionnaire-based operating model")
-  }
-  AM("------------- New OM remade --------------")
-  MadeOM(1)  
-  OM
-  
+    } #
+  } # #end of loaded OM or not
+  OM # OM
+
 }
 
 dofit<-function(OM,dat){

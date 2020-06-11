@@ -13,7 +13,7 @@ library(DT)
 library(mvtnorm)
 library(cowplot)
 library(shinyBS)
-library(parallel)
+#library(parallel)
 
 options(shiny.maxRequestSize=1000*1024^2)
 
@@ -22,7 +22,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"6.1.4"
+  Version<<-"6.1.5"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -32,13 +32,12 @@ shinyServer(function(input, output, session) {
   source("./Source/Questionnaire/Effort_sketching.R",local=TRUE)
 
   # Presentation of results
+  source("./Source/AI/AI_results.R",local=TRUE)
   source("./Source/Skins/Generic.R",local=TRUE)
   source("./Source/Skins/ABNJ.R",local=TRUE)
   source("./Source/Skins/MSC.R",local=TRUE)
-
-  source("./Source/AI/AI_results.R",local=TRUE)
-
-    # OM construction / translation
+  
+  # OM construction / translation
   source("./Source/OM/makeOM.R",local=TRUE)
   source("./Source/OM/ML2D.R",local=TRUE)
   source('./Source/OM/Backwards.R',local=TRUE) # Stochastic SRA until progress bar update comes to DLMtool
@@ -70,6 +69,7 @@ shinyServer(function(input, output, session) {
   source("./Source/App/Debug.R",local=TRUE) # functions that update stored objects, panelstate justification etc
   source("./Source/App/IO.R",local=TRUE)  # functions that deal with input/output of objects (file load/save)
   source("./Source/App/Tooltips.R",local=TRUE)  # tooltip info
+  source("./Source/App/Data_gate.R",local=TRUE) # Data gate keeper for ensuring compatability with questionnaire
   
 
   # Miscellaneous
@@ -214,7 +214,9 @@ shinyServer(function(input, output, session) {
   SessionID<-paste0(USERID,"-",strsplit(as.character(Sys.time())," ")[[1]][1],"-",strsplit(as.character(Sys.time())," ")[[1]][2])
   output$SessionID<-renderText(SessionID)
 
-  CurrentYr<-as.integer(substr(as.character(Sys.time()),1,4))
+  CurrentYr<<-2018 # as.integer(input$Lyear) #as.integer(substr(as.character(Sys.time()),1,4))
+  Syear<<-1951
+  Lyear<<-2018
   Copyright<-"Open Source, GPL-2"
   
   # Log stuff
@@ -222,7 +224,7 @@ shinyServer(function(input, output, session) {
   output$Log <- renderText(Log_text$text)
   
   # Variables
-  ncpus<-min(12,detectCores()) # how much parallel processing to use
+  ncpus<-8 # min(12,detectCores()) # how much parallel processing to use
   #AM(paste(ncpus,"processors available for computing"))
   FeaseMPs<<-NULL
   redoBlank() # make all the results plots with default sizes - seems to stabilize initial plotting and spacing
@@ -264,7 +266,7 @@ shinyServer(function(input, output, session) {
 
 
   # Default simulation attributes --------------------------------------------------------------------------------
-  nyears<-68 # 1950-2018
+  nyears<<-68#input$Lyear-input$Syear+1 # 1950-2018
   #nsim<-48
 
   makeState<-function(x)rep(T,length(get(x)))
@@ -326,9 +328,9 @@ shinyServer(function(input, output, session) {
   output$Save<- downloadHandler(
 
     filename = function()paste0(namconv(input$Name),".mera"),
-
+    
     content=function(file){
-      
+      #saveRDS(as.list(eff_Values),"C:/temp/eff_values.rda")
       MSClog<-package_Questionnaire()
       doprogress("Saving Questionnaire")
       saveRDS(MSClog,file)
@@ -362,19 +364,19 @@ shinyServer(function(input, output, session) {
   observeEvent(input$Load_Data,{
 
     filey<-input$Load_Data
-
+    dattest=NULL
     if(grepl(".csv",filey$datapath)){ # if it is a .csv file
 
       tryCatch(
         {
-         dat<<-new('Data',filey$datapath)
-         Data(1) 
+         dattest<-new('Data',filey$datapath)
+         #saveRDS(dattest,'C:/temp2/dattest.rda')
         
          AM(paste0(".csv data loaded:", filey$datapath))
         },
         error = function(e){
           AM(paste0(e,"\n"))
-          shinyalert("Not a properly formatted DLMtool Data .csv file", "Trying to load as an object of class 'Data'", type = "error")
+          shinyalert("Not a properly formatted DLMtool Data .csv file", paste("Trying to load as an object of class 'Data'",e,collapse="\n"), type = "error")
           Data(0)
           loaded=F
         }
@@ -384,14 +386,14 @@ shinyServer(function(input, output, session) {
 
       tryCatch(
         {
-          dat<<-readRDS(filey$datapath)
+          dattest<-readRDS(filey$datapath)
          
           AM(paste0("Data object loaded:", filey$datapath))
-          Data(1)
+         
         },
         error = function(e){
           AM(paste0(e,"\n"))
-          shinyalert("Could not load object", "Failed to load this file as a formatted data object", type = "error")
+          shinyalert("Could not load object", paste("Failed to load this file as a formatted data object",e), type = "error")
           Data(0)
         }
       )
@@ -402,32 +404,49 @@ shinyServer(function(input, output, session) {
         Data(0)
       }
     }
+    #saveRDS("C:/temp2/dattest.rda")
+    # now see whether trimmed data work with the questionnaire
     
-    if(Data()==1){
-      dat_test<-Data_trimer(dat)
-  
-      if(class(dat_test)!='Data'){
-        DataInd(0)
-  
-      }else{
-        dat_ind<<-dat
-        dat<<-dat_test
-        AM(paste0("Data object contains ", length(dat_ind@Year)-length(dat@Year)," years of indicator data after LHYear"))
-  
-        DataInd(1)
-      }
-      FeaseMPs<<-Fease(dat)
+    if(!is.null(dattest)){
       
+      dat_trim<-Data_trimer(dattest)
+      
+      if(class(dat_trim)!='Data'){ # indicator data not availble
+        DataInd(0)
+        dat_temp<-dattest
+        AM("No indicator data included (since MP adoption delineated by dat@LHYear)")
+      }else{                       # indicator data available
+        dat_ind<<-dattest
+        DataInd(1)
+        AM(paste0("Data object contains ", length(dat_ind@Year)-length(dat@Year)," years of indicator data after LHYear"))
+        dat_temp<-dat_trim
+      }
+      
+      daterrs<-Data_gate(dat_temp) # do the trimmed (historical data) have errors?
+      
+      if(length(daterrs)!=0){
+        shinyalert(title="Data not imported due to formatting inconsistencies", text=paste(unlist(daterrs),collapse="/n"), type="error")
+        Data(0)
+        DataInd(1)
+      }else{
+        dat<<-dat_temp
+        Data(1) 
+      }
+      
+    }
+  
+    if(Data()==1){
+         
+      FeaseMPs<<-Fease(dat)
       SD_codes<-getCodes(dat,maxtest=Inf)
       AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
-      ndatyr<-ncol(dat@Cat)
-      if(ndatyr!=input$nyears){
-        AM(paste("Stated number of historical years in Questionnaire (F1) updated from",input$nyears,"to",ndatyr,"- as specified by the data loaded"))
-        updateNumericInput(session,'nyears',value=ndatyr)
-      }  
       updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
       updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
+      
     }
+    
+    #saveRDS(dat,"C:/temp/dat.rda")
+    #saveRDS(dat_ind,"C:/temp/dat_ind.rda")
     
   })
 
@@ -438,6 +457,7 @@ shinyServer(function(input, output, session) {
     filename = function()paste0(namconv(input$Name),".OM"),
 
     content=function(file){
+      
       if(checkQs()$error){shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered:",paste(temp$probQs,collapse=", ")), type = "warning");stop()}
       if(MadeOM()==0)OM<-makeOM(PanelState,nsim=input$nsim)
       AM(paste0("Operating model saved: ", file))
@@ -556,7 +576,6 @@ shinyServer(function(input, output, session) {
 
   })
 
-  
   observeEvent(input$getMPhelp,{
     js$browseURL(MPurl(input$help_MP))
   })
@@ -704,6 +723,7 @@ shinyServer(function(input, output, session) {
       }  
     })
   }) 
+  
   P_Tab_3_track = observe({
     input$P_Tab_3_rows_selected
     isolate({
@@ -755,8 +775,7 @@ shinyServer(function(input, output, session) {
       src <- normalizePath('Source/Markdown/OMRep.Rmd')
       src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
      
-      Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-      MSClog<-list(PanelState, Just, Des)
+      MSClog<<-package_MSClog()
 
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
@@ -839,8 +858,7 @@ shinyServer(function(input, output, session) {
           src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
           incProgress(0.1)
         
-          Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-          MSClog<-list(PanelState, Just, Des)
+          MSClog<<-package_MSClog()
     
           owd <- setwd(tempdir())
           on.exit(setwd(owd))
@@ -893,8 +911,7 @@ shinyServer(function(input, output, session) {
           src <- normalizePath('Source/Markdown/RA.Rmd')
           src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
          
-          Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-          MSClog<-list(PanelState, Just, Des)
+          MSClog<<-package_MSClog()
           owd <- setwd(tempdir())
           on.exit(setwd(owd))
           file.copy(src, 'RA.Rmd', overwrite = TRUE)
@@ -938,8 +955,7 @@ shinyServer(function(input, output, session) {
           src <- normalizePath('Source/Markdown/SD.Rmd')
           src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
           
-          Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-          MSClog<-list(PanelState, Just, Des)
+          MSClog<<-package_MSClog()
           owd <- setwd(tempdir())
           on.exit(setwd(owd))
           file.copy(src, 'SD.Rmd', overwrite = TRUE)
@@ -981,8 +997,7 @@ shinyServer(function(input, output, session) {
       withProgress(message = "Building model fitting report", value = 0, {
         
         incProgress(0.1)
-        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-        MSClog<-list(PanelState, Just, Des)
+        MSClog<<-package_MSClog()
         
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
@@ -1010,8 +1025,7 @@ shinyServer(function(input, output, session) {
         src <- normalizePath('Source/Markdown/Plan.Rmd')
         src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
       
-        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-        MSClog<-list(PanelState, Just, Des)
+        MSClog<<-package_MSClog()
         
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
@@ -1054,8 +1068,7 @@ shinyServer(function(input, output, session) {
         src <- normalizePath('Source/Markdown/Eval.Rmd')
         src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
        
-        Des<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
-        MSClog<-list(PanelState, Just, Des)
+        MSClog<<-package_MSClog()
         owd <- setwd(tempdir())
         on.exit(setwd(owd))
         file.copy(src, 'Eval.Rmd', overwrite = TRUE)
@@ -1104,7 +1117,8 @@ shinyServer(function(input, output, session) {
   observeEvent(input$tabs1, {
 
     UpJust()
-    Des<<-list(Name=input$Name, Species=input$Species, Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+    Des<<-package_MSClog()$Des
+    
     #MSCsave_auto()
     #getMPs()
     #selectedMP<<-MPs[2]
@@ -1124,7 +1138,7 @@ shinyServer(function(input, output, session) {
     }  
     UpJust()
 
-    Des<<-list(Name=input$Name,Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+    Des<<-package_MSClog()
     #MSCsave_auto()
 
   })
@@ -1144,7 +1158,7 @@ shinyServer(function(input, output, session) {
     # Write old values
     UpJust()
 
-    Des<<-list(Name=input$Name,Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+    Des<<-package_MSClog()$Des
     #MSCsave_auto()
 
   })
@@ -1164,7 +1178,7 @@ shinyServer(function(input, output, session) {
     # Write old values
     UpJust()
     
-    Des<<-list(Name=input$Name,Region=input$Region, Agency=input$Agency, nyears=input$nyears, Author=input$Author)
+    Des<<-package_MSClog()$Des
     #MSCsave_auto()
     
   })
@@ -1455,15 +1469,20 @@ shinyServer(function(input, output, session) {
   
   # Effort sketching
   
-  eff_values <- reactiveValues(df=data.frame(x=Current_Year-68, y=0, series=1),
+  eff_values <- reactiveValues(df=data.frame(x=c(1951,1980,2018), y=c(0,0.5,0.5), series=rep(1,3)),
                                series=1,
-                               stack=data.frame(x=Current_Year-68, y=0, series=1))
+                               stack=data.frame(x=c(1951,1980,2018), y=c(0,0.5,0.5), series=rep(1,3)))
   
+  reset_eff_values<-function(){
+    eff_values$df=data.frame(x=c(input$Syear,floor(mean(c(input$Syear,input$Lyear))),input$Lyear), y=c(0,0.5,0.5), series=rep(1,3))
+    eff_values$series=1
+    eff_values$stack=data.frame(x=c(input$Syear,floor(mean(c(input$Syear,input$Lyear))),input$Lyear), y=c(0,0.5,0.5), series=rep(1,3))
+  }
   
   output$info <- renderText({
     xy_str <- function(e) {
       if(is.null(e)) return("NULL\n")
-      paste0("Year = ", round(e$x, 1), " Relative effort = ", round(e$y, 3), "\n")
+      paste0("Yr. = ", round(e$x, 1), " Eff. = ", round(e$y, 3), "\n")
     }
     temp <- input$plot_hover
     if(!is.null(temp$x) & !is.null(temp$y)) temp$x <- round(temp$x,0)
@@ -1477,8 +1496,6 @@ shinyServer(function(input, output, session) {
   output$effort_plot <- renderPlot({
     # first series
     plotFP()
-    
-    
     #print(eff_values$df) # for debugging & use elsewhere in the app
   })
   
@@ -1498,6 +1515,7 @@ shinyServer(function(input, output, session) {
     tempDF <- data.frame(x=c(eff_values$df$x, newX),
                          y=c(eff_values$df$y, newY),
                          series=c(eff_values$df$series, eff_values$series))
+    
     tempDF <- dplyr::arrange(tempDF, series, x)
     
     eff_values$df <- tempDF
@@ -1508,20 +1526,28 @@ shinyServer(function(input, output, session) {
   observeEvent(input$new_series, {
     # check that last series is complete
     lastX <- eff_values$df$x[nrow(eff_values$df)]
-    tempyrs<-getyrs()
-    nyears <- length(tempyrs)
-    initYr <- tempyrs[1] # initial year
-    lstYr <- initYr + nyears-1
+    lstYr<-input$Lyear
+    initYr<-input$Syear
+    #tempyrs<-getyrs()
+    #nyears <- length(tempyrs)
+    #initYr <- tempyrs[1] # initial year
+    #lstYr <- initYr + nyears-1
     yvals <- 0 # initial effort
+    AM(paste("lastX",lastX))
+    AM(paste("lstYr",lstYr))
     if (lastX != lstYr) {
       #showNotification("Series must include last historical year", type="error")
-      shinyalert("Incomplete effort series", paste0("Series must include last historical year (",CurrentYr,")"), type = "info")
-    } else {
-      eff_values$series <-eff_values$series+1
-      eff_values$df <- data.frame(x=c(eff_values$df$x, initYr),
-                                  y=c(eff_values$df$y, yvals),
-                                  series=c(eff_values$df$series, eff_values$series))
+      #shinyalert("Incomplete effort series", paste0("Series must include last historical year (",CurrentYr,")"), type = "info")
+      vec<-c(input$Lyear,eff_values$df$y[nrow(eff_values$df)],eff_values$df$series[nrow(eff_values$df)])
+      eff_values$df<-rbind(eff_values$df,vec)
+      eff_values$stack<-rbind(eff_values$stack,vec)
     }
+    
+    eff_values$series <-eff_values$series+1
+    eff_values$df <- data.frame(x=c(eff_values$df$x, initYr),
+                                y=c(eff_values$df$y, yvals),
+                                series=c(eff_values$df$series, eff_values$series))
+    
   })
   
   observeEvent(input$undo_last, {
@@ -1535,15 +1561,19 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$reset_plot, {
-    tempyrs<-getyrs()
-    nyears <- length(tempyrs)
-    initYr <- tempyrs[1] # initial year
-    lstYr <- initYr + nyears-1
-    yvals <- 0 # initial effort
-    eff_values$df <- data.frame(x=initYr, y=yvals, series=1)
-    eff_values$series <- 1
-    eff_values$stack <- data.frame(x=initYr, y=yvals, series=1)
-    
+    reset_eff_values()
+  })
+  
+  observeEvent(input$Syear,{
+    nyears<<-input$Lyear-input$Syear+1
+    Syear<<-input$Syear
+    #reset_eff_values()
+  })
+  
+  observeEvent(input$Lyear,{
+    nyears<<-input$Lyear-input$Syear+1
+    Lyear<<-input$Lyear
+    #reset_eff_values()
   })
   
   observeEvent(input$Start,{

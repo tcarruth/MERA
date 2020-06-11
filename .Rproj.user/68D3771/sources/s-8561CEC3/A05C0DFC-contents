@@ -1,0 +1,110 @@
+---
+title: "Testing and diagnostics for ABTMSE R package"
+author: "Tom Carruthers (<t.carruthers@fisheries.ubc.ca>)"
+date: "`r Sys.Date()`"
+output:
+  word_document:
+    toc: yes
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+  rmarkdown::html_vignette:
+    number_sections: yes
+    toc: yes
+  rmarkdown::pdf_vignette:
+    number_sections: yes
+    toc: yes
+  pdf_document:
+    toc: yes
+subtitle: ICCAT Atlantic Wide Research Programme for Bluefin Tuna (GBYP)
+vignette: |
+  %\VignetteIndexEntry{ABT-MSE} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+---
+
+<style type="text/css">
+
+body{ /* Normal  */
+   font-size: 12px;
+}
+td {  /* Table  */
+   font-size: 8px;
+}
+h1 { /* Header 1 */
+ font-size: 18px;
+ color: DarkBlue;
+}
+h2 { /* Header 2 */
+ font-size: 15px;
+ color: DarkBlue;
+}
+h3 { /* Header 3 */
+ font-size: 14px;
+ color: DarkBlue;
+}
+code.r{ /* Code block */
+  font-size: 10px;
+}
+pre { /* Code block */
+  font-size: 10px
+}
+</style>
+
+
+```{r set options, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(dpi=85)
+options(width = 650)
+```
+
+<br>
+
+# OMs evaluated in this document
+
+The total set of reference operating models are:
+
+<img src="Ref_OMs.jpg" width="560">
+
+The operating models used for testing are all for the higher length composition weighting (H) the Low mixing (I) and all three recruitment scenarios (1,2,3) for the most optimistic and pessimistic compbinations of the remaining factors namely:
+
+Pessimistic (B --):
+
+* #52 1BI--H 
+* #53 2BI--H
+* #54 3BI--H
+
+Optimistic (A ++):
+
+* #85 1AI++H
+* #86 2AI++H
+* #87 3AI++H
+
+# Calculations
+
+```{r load_library, eval=T}
+library(ABTMSE)
+
+
+MSE52<-new('MSE',OM=OM_52d,Obs=Good_Obs,MPs=list(c('CurC100','CurC100')),interval=2)
+MSE53<-new('MSE',OM=OM_52d,Obs=Good_Obs,MPs=list(c('CurC100','CurC100')),interval=2)
+MSE54<-new('MSE',OM=OM_52d,Obs=Good_Obs,MPs=list(c('CurC100','CurC100')),interval=2)
+MSE85<-new('MSE',OM=OM_52d,Obs=Good_Obs,MPs=list(c('CurC100','CurC100')),interval=2)
+MSE86<-new('MSE',OM=OM_52d,Obs=Good_Obs,MPs=list(c('CurC100','CurC100')),interval=2)
+MSE87<-new('MSE',OM=OM_52d,Obs=Good_Obs,MPs=list(c('CurC100','CurC100')),interval=2)
+
+
+
+```
+
+
+
+# Projection of recruitment
+
+
+# Index projections
+
+
+# Catch projections
+
+
+

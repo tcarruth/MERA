@@ -1,5 +1,5 @@
 ---
-title: "MERA User Guide (v5.1)"
+title: "MERA User Guide (v6)"
 subtitle: "Method Evaluation and Risk Assessment"
 author: "T. Carruthers (UBC)"
 date: "`r Sys.Date()`"
@@ -41,9 +41,18 @@ source("../inst/shiny_apps/MERA/Source/AI/AI_results.r")
 
 load("./dat/MSEobj")
 MSEobj2<-readRDS("./dat/MSEobj_2.Rdata")
+MSClog<-readRDS("./dat/MSClog.mera")
+PanelState<-MSClog[[1]]
 load("./dat/MSEobj_reb")
 #load("./dat/MSEobj_reb2")
 MSEobj_reb2<-readRDS("./dat/MSEobj_reb_2.Rdata")
+MSEobj_Eval<-MSEobj2
+eff_values<-readRDS("./dat/eff_values.rda")
+Syear=eff_values$df$x[1]
+Lyear=eff_values$df$x[nrow(eff_values$df)]
+input<-c(input,list(Syear=Syear,Lyear=Lyear))
+dat<-readRDS("./dat/dat.rda")
+dat_ind<-readRDS("./dat/dat_ind.rda")
 FT<-FeaseLabs(MPs=MSEobj2@MPs) # uses panel state
 MPcols<-FT$MPcols  # needed for planning color coding
 
@@ -87,11 +96,13 @@ nDat<-4      # number of data questions
 ```{r echo=FALSE, include=FALSE}
 library(knitr)
 rmd.files <- c("Rmds/Introductory/Intro_M.Rmd",
+               "Rmds/Menus/Menus_M.Rmd",
                "Rmds/Qs/Qs_M.Rmd",
-               "Rmds/Risk_Assessment/Risk_Assessment_M.Rmd",
                "Rmds/Management_Planning/Management_Planning_M.Rmd",
                "Rmds/Management_Performance/Management_Performance_M.Rmd",
+               "Rmds/Risk_Assessment/Risk_Assessment_M.Rmd",
                "Rmds/Status_Determination/Status_Determination_M.Rmd",
+               "Rmds/Data/Data_M.Rmd",
                "Rmds/Support/Support_M.Rmd",
                "Rmds/Acknowledgements/Acknowledgements_M.Rmd",
                "Rmds/References/References_M.Rmd",

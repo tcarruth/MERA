@@ -1,0 +1,54 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+## The File dropdown menu
+
+The file dropdown includes functions to load and save the various objects that are created during a MERA session. 
+
+
+<br />
+
+<img src="./Images/File_dropdown.jpg" width="800">
+
+```{r file_dropdown, include=FALSE}
+
+FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. The File dropdown menu. 
+
+
+### MERA Questionnaire
+
+The MERA questionnaire is the 30 Fishery, Management and Data questions required to specify an operating model. This is a terse blueprint for generating an operating model providing a compact and easily shared backup.
+
+If data are loaded during the MERA session, these data are generally also very compact and are automatically appended when a questionnaire is saved or loaded. 
+
+### MERA Session
+
+The MERA questionnaire (and optionally, data) are converted to an operating model that is used in calculations during a MERA session. These calculations can be time consuming and create a very large amount of simulation data. 
+
+Users can load and save their entire MERA session including all operating models and results to allow for reproduction of figures and tables without recalculation. However these files are relatively large (e.g. ~30Mb) 
+
+### Operating models
+
+MERA is compatible with any DLMtool or MSEtool operating model. These can be loaded directly to MERA, bypassing the questionnaire entirely. 
+
+### Load DLMtool and MSEtool source code
+
+Custom DLMtool and MSEtool code can be loaded into the current MERA session. The most common use of this feature is to load a custom management procedure for testing in the management planning mode or for evaluating in management performance mode. 
+

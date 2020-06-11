@@ -1,0 +1,59 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+## The Options dropdown menu
+
+The Options dropdown allows the user to choose the type of calculations and results provided by MERA and the way in which results are presented. 
+
+
+<br />
+
+<img src="./Images/Options_dropdown.jpg" width="800">
+
+```{r options_dropdown, include=FALSE}
+
+FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. The Options dropdown menu. 
+
+
+### MERA Mode
+
+MERA includes four modes:
+
+* Management Planning
+* Management Performance
+* Risk Assessment
+* Status Determination
+
+Each is described in much greater detail below. 
+
+Management Planning mode is the MERA default. This is a streamlined closed-loop simulation testing mode used to evaluate candidate management procedures. 
+
+Management Performance mode compares the data collected while an MP is in use, to the posterior data projected at the point of MP adoption. Sometimes referred to as 'exceptional circumstances' this mode is used to check that an MP is working as expected. 
+
+The Risk Assessment mode projects status-quo fishing effort and catches in order to evaluate biological outcomes given operating model specification. 
+
+Status Determination mode combines the answers of the questionnaire with a formatted data file to condition an operating model. The operating model conditioning provides an estimate of current stock status. 
+
+### Presentation of Results
+
+The outputs of the various MERA modes can be presented in various ways. These are organized as 'skins' which the user can switch between. The default is the preliminary MSC skin. 
+
+
+

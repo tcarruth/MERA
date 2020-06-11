@@ -27,3 +27,14 @@ If a suitably formatted data file is uploaded to MERA, the option to calculate a
 
 
 
+<img src="./Images/Management_performance_mode.jpg" width="600">
+
+```{r figplus_MPerf, include=FALSE}
+
+FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. The controls for the management performance mode.  
+
+

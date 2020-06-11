@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588260206061.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "A381B396",
+    "lastKnownWriteTime" : 1588193089,
+    "last_content_update" : 1588193089,
+    "path" : "C:/Users/tcar_/Dropbox/abft-mse/RScripts/Debugging/MSE test v3.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "50,82",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

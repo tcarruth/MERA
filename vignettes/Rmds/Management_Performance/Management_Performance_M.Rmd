@@ -18,7 +18,7 @@ output:
 
 ***
 
-# Management Performance Use Case
+# Management Performance Mode
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 SecInd<-SecInd+1

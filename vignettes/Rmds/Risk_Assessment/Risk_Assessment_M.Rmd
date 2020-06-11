@@ -18,7 +18,7 @@ output:
 
 ***
 
-# Risk Assessment Use Case
+# Risk Assessment Mode
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 SecInd<-SecInd+1

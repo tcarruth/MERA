@@ -1,0 +1,51 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+## The Reports dropdown menu
+
+MERA calculations provide a range of outputs that can be downloaded in formatted reports. Some of these reports are only available after calculations have been run. 
+
+
+<br />
+
+<img src="./Images/Reports_dropdown.jpg" width="800">
+
+```{r reports_dropdown, include=FALSE}
+
+FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. The Reports dropdown menu. 
+
+
+### MERA Questionnaire report
+
+All answers and justifications for these can be compiled in a single questionnaire report. This report also summarizes how many questions were answered without written justification. This report can be built at any time.  
+
+### Detailed OM Report
+
+In addition to the answers of the questionnaire, the operating model is constructed subject to a number of other assumptions. To see all aspects of the operating model including observation error parameters (that control how data are simulated) a full, detailed operating model report is available. 
+
+### Management Planning - Management Performance - Status Determination - Risk Assessment Reports
+
+For any MERA mode, the outputs provided live in the App are available in a formal report.  
+
+### Model fitting report
+
+When a user also loads data and an operating model is conditioned on those data, detailed model fitting report is also available describing model estimates and the statistical properties of operating model conditioning.  
+
+

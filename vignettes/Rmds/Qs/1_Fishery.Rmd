@@ -24,7 +24,7 @@ The Fishery panel is a set of questions about the characteristics of the fish po
 
 Describe the fishery you are modelling and identify yourself and the relevant management agency.
 
-The 'number of years' is important and will be used to simulate your historical fishery. It is the total number of years that substantive fishing (that could impact the stock) has been operating for. So for example, if it is 2020 this year, and the fishery began in 1981, this would be 40. 
+The 'Fishery start' and 'End' dates are important and will be used to simulate your historical fishery. These are the years where there has been substantive fishing (that could impact the stock). The 'End' year after which an MP has been in use. When loading fishery data they must include this range of year. If indicator data are to be uploaded for the Management Performance mode, these data can be in years after the End year.
 
 The text input box provides a place for you to document important qualitative aspects of the fishery that provide necessary context for the questionnaire including 
 
@@ -101,9 +101,9 @@ Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified recruitmen
 
 What temporal pattern best describes the trend in historical annual fishing effort (e.g. boat-days per year, number of trips per year)?
 
-If more than one answer is given, historical fishing will be simulated subject to all trends in equal frequency
+Here the user clicks on the Figure to shape a historical pattern in effort. 
 
-If a very specific pattern of effort is required, you can use the sliders to warp the effort patterns.
+If more than one times series of historical effort is given, historical fishing will be simulated subject to all trends in equal frequency.
 
 This question specifies the possible range of mean trends, you will have an opportunity to adjust the extent of inter-annual variability and changes in fishing efficiency (catchability) in the following questions.
 
@@ -122,7 +122,7 @@ Figure `r paste(SecInd,FigInd,sep=".")`. An example of MERA specified historical
 
 ### Inter-annual variability in historical effort
 
-The extent of interannual variability in historical exploitation rates around the mean trend(s) specified in Fishery question #5. Again, here is the introduction to effort and exploitation rate by the [UN FAO.](http://www.fao.org/docrep/x5685e/x5685e04.htm).
+The extent of inter-annual variability in historical exploitation rates around the mean trend(s) specified in Fishery question #5. Again, here is the introduction to effort and exploitation rate by the [UN FAO.](http://www.fao.org/docrep/x5685e/x5685e04.htm).
 
 ```{r Qs_F6, echo=F,warning=F,error=F,message=F,results='asis', fig.width=Qwidth, fig.height=Qheight,fig.retina=Qretina,out.height=Qout.height, out.width=Qout.width}
 FigInd<-FigInd+1

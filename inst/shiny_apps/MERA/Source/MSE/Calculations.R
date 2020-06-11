@@ -40,15 +40,8 @@ Calc_Status<-function(){
 Calc_Plan<-function(){
   
   doprogress("Building OM from Questionnaire",1)
-  
-  if(LoadOM()==1&input$OM_L){ 
-    OM<<-OM_L
-  #}else if(CondOM()==1&input$OM_C){ 
-    #OM<<-OM_C
-  }else{
-    if(MadeOM()==0) OM<<-makeOM(PanelState)
-  }
- 
+
+  OM<-makeOM(PanelState)
   Fpanel(1)
   MPs<<-getMPs()
   
@@ -65,13 +58,14 @@ Calc_Plan<-function(){
     }
     
   }
+  
   MSClog<<-list(PanelState, Just, Des)
   
   Update_Options()
   #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
   
   tryCatch({
-  
+    AM("Starting MSE projections")
     withProgress(message = "Running Planning Analysis", value = 0, {
       silent=T
       MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
@@ -89,21 +83,14 @@ Calc_Plan<-function(){
     })
     
     MSEobj_reb@Misc[[4]]<<-SampList
-    # } else {
-    #   MSEobj_reb <<- MSEobj
-    # }
-    
     
     # ==== Types of reporting ==========================================================
     
-    message("preredoPlan")
+    AM("preredoPlan")
     Plan(1)
     smartRedo()
-    message("postredoPlan")
-    
-    #Tweak(0)
-    #updateTabsetPanel(session,"Res_Tab",selected="1")
-    
+    AM("postredoPlan")
+ 
   },
   error = function(e){
     AM(paste0(e,"\n"))

@@ -1,0 +1,36 @@
+---
+params: 
+    title: ""
+    Pars: "`r list()`"
+    plotPars: "`r list()`"
+    tabs: "`r TRUE`"
+    its: " `r numeric()`"
+    nyears: " `r numeric()`"
+    proyears: " `r numeric()`"
+    date: "`r Sys.Date()`"
+title: "`r params$title`"
+date: "`r params$date`"
+output:
+  html_document
+---
+
+## The Help dropdown menu
+
+From this menu the user can access this manual and also individual descriptions of the various management procedures that are currently available in MERA. 
+
+
+<br />
+
+<img src="./Images/Help_dropdown.jpg" width="800">
+
+```{r help_dropdown, include=FALSE}
+
+FigInd<-FigInd+1
+
+```
+
+Figure `r paste(SecInd,FigInd,sep=".")`. The Help dropdown menu. 
+
+
+
+
