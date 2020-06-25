@@ -228,8 +228,9 @@ shinyUI(
                    h5(tags$b("Calculation options",style="color:#347ab6")), 
                    column(5, 
                         numericInput("plusgroup", label=h5("Plus group"), value=40,min=10,max=200)
-                               
                    )
+                   
+            
             ),
             column(12, tags$hr(style="margin-top: 12px; margin-bottom: 3px"),
                    h5(tags$b("Sampling of operating model parameters",style="color:#347ab6")), 
@@ -249,8 +250,8 @@ shinyUI(
                    h5(tags$b("Closed-loop simulation",style="color:#347ab6")), 
            
                    column(5,    
-                     numericInput("interval", label = h5("Management interval"), value=8,min=2,max=10),
-                     checkboxInput("Parallel", label = "Parallel comp.", value = TRUE)
+                     numericInput("interval", label = h5("Management interval"), value=4,min=2,max=10),
+                     checkboxInput("Parallel", label = "Parallel comp.", value = FALSE)
                    ),
                    
                    column(7,
@@ -285,7 +286,9 @@ shinyUI(
                   
                      column(6,selectInput("Cond_ops", label = h5("Conditioning Model"), choices=c("None"),selected="None"),style="height:75px"),
                      column(6),
-                     column(6, checkboxInput("OM_C","Use conditioned OM for analyses",value=TRUE),style="height:75px")
+                     column(6, checkboxInput("OM_C","Use conditioned OM for analyses",value=TRUE),style="height:75px"),
+                     column(6,checkboxInput("C_eq",label="First year of catches is equilibrium catch",0))
+                   
                    )
             ),
             
@@ -1324,7 +1327,11 @@ shinyUI(
                           # column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
                       fluidRow( 
                           column(12, selectInput("ManPlanMPsel","MPs for testing",  choices=c("DCAC","matlenlim","MRreal","curE75","IT10"),selected=c("DCAC","matlenlim","MRreal","curE75","IT10"), multiple = TRUE)),
-                          column(12, radioButtons('MPset',label="Presets",choices=c("Demo","Top 20","All"),selected="Demo",inline=T)),
+                          column(12, h5("Presets",style="font-weight:bold")),
+                          column(12, actionButton("DemoMPs", label = "Demo"),
+                                 actionButton("Top20MPs", label = "Top 20"),
+                                 actionButton("AllMPs", label = "All")
+                          ),
                           column(12, h5("Toggles",style="font-weight:bold")),
                           column(12,style="padding-left:13px",
                             actionButton("Ex_Ref_MPs", label = "Reference"),

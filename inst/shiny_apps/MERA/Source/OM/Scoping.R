@@ -130,21 +130,22 @@ getCodes<-function(dat,maxtest=6){
 
 DataStrip<-function(dat,OM,code,simno=1){
 
-  datTypes<-c("C","E","I","A","L","M")
-  slotnams<-c("Cat","Effort","Ind","CAA","CAL","ML")
-  listnams<-c("Chist","Ehist","Index","CAA","CAL","ML")
-  slotnams2<-c("Cat","Effort","Ind","CAA","ML","ML")  # hack for current SRAscope limitation
-  listnams2<-c("Chist","Ehist","Index","CAA","ML","ML") # hack for current SRAscope limitation
+  # OM<-testOM; code="C_I"; simno=1; dat<-new('Data',"C:/Users/tcar_/Dropbox/MSC Data Limited Methods Project - Japan/MERA_Japan_workshop/ys_flounder2_TC/Yellow_striped_flounder2.csv")
   
+  datTypes<-c("C","E","A","L","M")
+  # slotnams<-c("Cat","Effort","Ind","CAA","CAL","ML")
+  #listnams<-c("Chist","Ehist","Index","CAA","CAL","ML")
+  #slotnams2<-c("Cat","Effort","Ind","CAA","ML","ML")  # hack for current SRAscope limitation
+  #listnams2<-c("Chist","Ehist","Index","CAA","ML","ML") # hack for current SRAscope limitation
+  slotnams<-c("Cat","Effort","CAA","CAL","ML")
+  listnams<-c("Chist","Ehist","CAA","CAL","ML")
   nD<-length(datTypes)
   outlist<-list()
   
   dat@ML<-dat@ML/dat@vbLinf*100 # ML conversion
 
   for(i in 1:nD){
-    
     outlist[[listnams[i]]]<-NULL
-    
   }
 
   for(i in 1:nD){
@@ -161,22 +162,11 @@ DataStrip<-function(dat,OM,code,simno=1){
        
       }
       
-      #temp<-slot(dat,slotnams2[i])
-      
-      #if(length(dim(temp))==2){
-        
-       # outlist[[listnams2[i]]]<-slot(dat,slotnams2[i])[simno,]
-      #}else{
-       
-      #  outlist[[listnams2[i]]]<-slot(dat,slotnams2[i])[simno,,]
-      #}
-
     }
 
   }
-  
-  #muE<-apply(OM@cpars$Find,2,mean)
-  #muE<-muE/mean(muE)
+   
+  # total stock (1, default), spawning stock (2), or vulnerable stock (3)
 
   if(grepl("E",code)){
      outlist[['condition']]<-"effort"
@@ -200,23 +190,13 @@ DataStrip<-function(dat,OM,code,simno=1){
     outlist[['length_bin']]<-(dat@CAL_bins[1:(NL-1)]+dat@CAL_bins[2:NL])/2
   }
   
-  # Cut out projection PPD years
-  #yrs<-1:OM@nyears
-  
-  #for(i in 1:length(outlist)){
-    
-   # if(names(outlist)[i]%in%c("Chist","Ehist","Index","ML")){
-    #  outlist[[i]]<-outlist[[i]][yrs]
-      
-    #}else if(names(outlist)[i]%in%c("CAA","CAL")))
-
-    #}
-    
-  #}
+  if(grepl("I",code)) outlist<-c(outlist, Process_Indices(dat,OM))
+  if(input$C_eq) outlist<-c(outlist, C_eq=outlist$Chist[1])
   
   outlist
 
 }
+
 
 
 makesimsamOM<-function(OM,ndeps=40,DepLB=0.05, DepUB=0.8){
@@ -237,7 +217,7 @@ goodslot<-function(x,LHy){
 
 }
 
-Detect_scope<-function(dat,simno=1,minndat=20){
+Detect_scope<-function(dat,simno=1,minndat=5){
 
   ny<-ncol(dat@Cat)
 
@@ -259,11 +239,14 @@ Detect_scope<-function(dat,simno=1,minndat=20){
   }
   yind<-1:LHy
 
-  Cat<-Ind<-Eff<-CAA<-CAL<-ML<-NA
+  Cat<-Ind<-Eff<-CAA<-CAL<-ML<-NULL
   nL<-length(dat@CAL_bins)-1
 
   if(goodslot(dat@Cat,LHy)) Cat<-dat@Cat[simno,yind]
-  if(goodslot(dat@Ind,LHy)) Ind <-dat@Ind[simno,yind]
+  if(goodslot(dat@Ind,LHy)) Ind <-c(Ind,dat@Ind[simno,yind])
+  if(goodslot(dat@SpInd,LHy)) Ind <-c(Ind,dat@SpInd[simno,yind])
+  if(goodslot(dat@VInd,LHy)) Ind <-c(Ind,dat@VInd[simno,yind])
+  if(!all(is.na(dat@AddInd))) Ind <-c(Ind,as.vector(dat@AddInd[simno,,]))
   if(goodslot(dat@Effort,LHy))     Eff<-dat@Effort[simno,yind]
 
   # need to make sure CAL data is the right dimensions
@@ -388,35 +371,6 @@ getOMsim<-function(OM,simno=1,silent=T){
 }
 
 
-Scoping_parallel<-function(x,OMc,dat,code,DataStrip,getOMsim){
-  
-  outlist<-DataStrip(dat,OMc,code,simno=x)
-  OMeff<-outlist$condition=="effort"
-  OMp<-getOMsim(OMc,simno=x)
-  
-  if(input$Parallel){
-    
-    if(nsim>47){
-      
-      parallel=T
-      setup(cpus=ncpus)
-      
-    }
-    
-  }
-  
-  out<-SRA_scope(OM=OMp,
-                 data=outlist,
-                 report=F,
-                 cores=ncpus,
-                 OMeff=OMeff,
-                 plusgroup=T,
-                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-4))
-  out@OM
-  
-}
-
-
 SimSam<-function(OMc,dat,code){
   
   #sfExport('getOMsim')
@@ -430,10 +384,15 @@ SimSam<-function(OMc,dat,code){
 
 GetDep<-function(OM,dat,code){
   
-  outlist<-DataStrip(dat,OM,code,simno=1)
-  OMeff<-outlist$condition=="effort"
-  options(warn=-1)
+  data<-DataStrip(dat,OM,code,simno=1)
   
+  # saveRDS(data,"C:/temp/data.rda") 
+  # saveRDS(dat,"C:/temp/dat.rda")  
+  # saveRDS(OM,"C:/temp/OM.rda")     
+  # saveRDS(code,"C:/temp/code.rda") 
+  
+  OMeff<-data$condition=="effort"
+
   nsim<-input$nsim
   if(input$Parallel){
     
@@ -446,17 +405,155 @@ GetDep<-function(OM,dat,code){
     
   }
   out<-SRA_scope(OM=OM,
-                 data=outlist,
-                 report=F,
+                 data=data,
                  mean_fit = TRUE,
                  cores=ncpus,
                  plusgroup=T,
                  OMeff=OMeff,
+                 s_selectivity = data$s_selectivity, 
+                 selectivity = data$selectivity,
+                 s_vul_par = data$s_vul_par, s_map_vul_par = data$s_map_vul_par,
+                 vul_par=data$vul_par, map_vul_par=data$map_vul_par,
                  control=list(eval.max=5000, iter.max=5000, abs.tol=1e-4))
-  options(warn=0)
+  
   out
   
 }
+
+
+
+
+
+Process_Indices<-function(dat,OM){  
+  
+  # https://cran.r-project.org/web/packages/MSEtool/vignettes/SRA_scope_sel.html
+  # Index stacking ---------------------------
+  Index<-NULL
+  I_sd<-NULL
+  Itype<-NULL
+  sel_block<-NULL
+  vul_par<-NULL
+  map_vul_par<-NULL
+  s_vul_par<-NULL
+  s_map_vul_par<-NULL
+  s_selectivity<-NULL
+  
+  fleetno<-0
+  # Total biomass index -------------
+  temp<-slot(dat,"Ind")
+  if(!all(is.na(temp))){
+    Index<-rbind(Index,temp)
+    temp<-slot(dat,"CV_Ind")
+    if(!all(is.na(temp))){
+      I_sd<-rbind(I_sd,temp)
+    }else{
+      I_sd<-rbind(I_sd,rep(mean(OM@Iobs),length(temp)))
+    }    
+    Itype<-c(Itype,"B")
+    
+    #selectivity
+    temp<-rep(NA,dat@MaxAge)
+    s_vul_par<-cbind(s_vul_par,temp)
+    
+    sel_block<-cbind(sel_block,rep(fleetno,ny))
+    s_selectivity<-c(s_selectivity,"log")
+  }
+  
+  # Total spawning biomass index ---
+  temp<-slot(dat,"SpInd")
+  if(!all(is.na(temp))){
+    Index<-rbind(Index,temp)
+    temp<-slot(dat,"CV_SpInd")
+    if(!all(is.na(temp))){
+      I_sd<-rbind(I_sd,temp)
+    }else{
+      I_sd<-rbind(I_sd,rep(mean(OM@Iobs),length(temp)))
+    }    
+    Itype<-c(Itype,"SSB")
+    
+    # selectivity
+    temp<-rep(NA,dat@MaxAge)
+    s_vul_par<-cbind(s_vul_par,temp)
+    
+    sel_block<-cbind(sel_block,rep(fleetno,ny))
+    s_selectivity<-c(s_selectivity,"log")
+  }
+  
+  # Vulnerable biomass (according to pars in the data sheet)
+  
+  temp<-slot(dat,"VInd")
+  if(!all(is.na(temp))){
+    
+    ny<-ncol(temp)
+    Index<-rbind(Index,temp)
+    temp<-slot(dat,"CV_VInd")
+    
+    if(!all(is.na(temp))){
+      I_sd<-rbind(I_sd,temp)
+    }else{
+      I_sd<-rbind(I_sd,rep(mean(OM@Iobs),length(temp)))
+    }    
+    fleetno<-fleetno+1
+    Itype<-c(Itype,fleetno)
+    
+    # selectivity
+    temp<-c(mean(OM@LFS),mean(OM@L5),mean(OM@Vmaxlen))
+    vul_par<-cbind(vul_par,temp)
+    
+    temp<-rep(NA,dat@MaxAge)
+    s_vul_par<-cbind(s_vul_par,temp)
+    sel_block<-cbind(sel_block,rep(fleetno,ny))
+    s_selectivity<-c(s_selectivity,"dome")
+    
+  }
+  
+  temp<-slot(dat,"AddInd")[1,,]
+  if(!all(is.na(temp))){
+    ny<-ncol(temp)
+    nadd<-nrow(temp)
+    Index<-rbind(Index,temp)
+    temp<-slot(dat,"CV_AddInd")[1,,]
+    I_sd<-rbind(I_sd,temp)
+    temp<-slot(dat,"AddIndV")[1,,]
+    s_vul_par<-rbind(s_vul_par,t(temp))
+    temp<-slot(dat,"AddIndType")
+    
+    if(is.na(temp))temp<-rep(3,nadd) # default to 3 (vulnerable index type)
+    for(i in 1:length(temp)){
+      #fleetno<-fleetno+1
+      #s_selectivity<-c(s_selectivity,"free")
+      #sel_block<-cbind(sel_block,rep(fleetno,ny))
+      if(temp[i]==1){
+        Itype<-c(Itype,"B")
+      }else if(temp[i]==2){
+        Itype<-c(Itype,"SSB")
+      }else{
+        Itype<-c(Itype,fleetno)
+      }
+    } 
+  }
+  
+  if(all(is.na(s_vul_par)))s_vul_par=NULL
+  if(all(is.na(vul_par)))vul_par=NULL
+  
+  if(!is.null(s_vul_par))s_map_vul_par=array(NA,dim(s_vul_par))
+  if(!is.null(vul_par))map_vul_par=array(NA,dim(vul_par))
+  
+  selectivity="dome"
+  
+  list(Index=t(Index), I_sd=t(I_sd), I_type=Itype, 
+       s_vul_par=s_vul_par, s_map_vul_par=s_map_vul_par,
+       vul_par=vul_par, map_vul_par=map_vul_par,
+       #nsel_block=ncol(sel_block), sel_block=sel_block, 
+       s_selectivity = s_selectivity, selectivity=selectivity)
+  
+}
+
+
+
+
+
+
 
 getCodes<-function(dat,maxtest=6){
   

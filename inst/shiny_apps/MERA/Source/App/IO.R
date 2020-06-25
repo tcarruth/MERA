@@ -126,6 +126,7 @@ Update_Questionnaire<-function(MSClog){
         updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
       #} # if not a data formatting error
     }
+   
     
     if("eff_values"%in%names(MSClog)){
       eff_values$df=MSClog$eff_values$df

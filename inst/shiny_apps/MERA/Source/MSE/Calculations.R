@@ -63,7 +63,7 @@ Calc_Plan<-function(){
   
   Update_Options()
   #tags$audio(src = "RunMSE.mp3", type = "audio/mp3", autoplay = NA, controls = NA)
-  
+  #saveRDS(OM,"C:/temp/OM.rda") 
   tryCatch({
     AM("Starting MSE projections")
     withProgress(message = "Running Planning Analysis", value = 0, {
@@ -85,6 +85,8 @@ Calc_Plan<-function(){
     MSEobj_reb@Misc[[4]]<<-SampList
     
     # ==== Types of reporting ==========================================================
+    #saveRDS(MSEobj,"C:/temp/MSEobj.rda") 
+    #saveRDS(MSEobj_reb,"C:/temp/MSEobj_reb.rda") 
     
     AM("preredoPlan")
     Plan(1)
@@ -168,9 +170,9 @@ Calc_Perf<-function(){
   YIU=length(dat_ind@Year)-length(dat@Year)
   
   if(LoadOM()==1&input$OM_L){ 
-    OM_Eval<<-OM_L
+    OM<<-OM_L
   }else{
-    if(MadeOM()==0)OM_Eval<<-makeOM(PanelState,proyears=YIU*2) # project to 2 x years in use
+    if(MadeOM()==0)OM<<-makeOM(PanelState,proyears=YIU*2) # project to 2 x years in use
   }  
   
   Fpanel(1)
@@ -199,7 +201,9 @@ Calc_Perf<-function(){
         
       EvalMPs<-input$sel_MP
       MSEobj_Eval<<-runMSE(OM,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
-      
+      # saveRDS(MSEobj_Eval,"C:/temp/MSEobj_Eval.rda") #
+      # saveRDS(dat,"C:/temp/dat.rda") # 
+      # saveRDS(dat_ind,"C:/temp/dat_ind.rda") # 
     })
     
     Eval(1)

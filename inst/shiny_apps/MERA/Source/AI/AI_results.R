@@ -170,7 +170,7 @@ ppdplot<-function(pred,obs,yrlab,p=c(0.025,0.05,0.25,0.75,0.95,0.975),pcols=c("g
   
   qmat<-apply(pred,2,quantile,p)
   nobs<-length(obs)
-  ylim<-range(pred,obs)
+  ylim<-range(pred,obs,na.rm=T)
   plot(range(yrlab),ylim,col="white")
   yind<-c(1:nobs,nobs:1)
   rind<-nobs:1
@@ -199,14 +199,14 @@ post_marg_plot<-function(MSEobj_Eval,dat,dat_ind,options=list()){
   PPD<-MSEobj_Eval@Misc$Data[[1]]
   
   # Standardization
-  predCat<-(PPD@Cat/PPD@Cat[,styr])[,styr+(1:YIU),drop=F]
-  predInd<-(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
-  predML<-(PPD@ML/PPD@ML[,styr])[,styr+(1:YIU),drop=F]
+  predCat<-PPD@Cat[,styr+(1:YIU),drop=F] #(PPD@Cat/PPD@Cat[,styr])
+  predInd<-PPD@AddInd[,1,] [,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
+  predML<-PPD@ML[,styr+(1:YIU),drop=F] #(PPD@ML/PPD@ML[,styr])[,styr+(1:YIU),drop=F]
   
   # Standardization
-  obsCat<-(dat_ind@Cat/dat_ind@Cat[,styr])[styr+(1:YIU)]
-  obsInd<-(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
-  obsML<-(dat_ind@ML/dat_ind@ML[,styr])[styr+(1:YIU)]
+  obsCat<-dat_ind@Cat[1,styr+(1:YIU)] #(dat_ind@Cat/dat_ind@Cat[,styr])[styr+(1:YIU)]
+  obsInd<-dat_ind@VInd[1,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
+  obsML<-dat_ind@ML[1,styr+(1:YIU)] #(dat_ind@ML/dat_ind@ML[,styr])[styr+(1:YIU)]
   yrlab<-dat_ind@Year[styr+(1:YIU)]
   
   

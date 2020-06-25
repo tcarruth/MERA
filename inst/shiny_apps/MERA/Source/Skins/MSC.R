@@ -472,6 +472,8 @@ FeaseLabs<-function(MPs,dat=NULL){
   }
 
   tempdat0<-DLMtool::SimulatedData
+  tempdat0@AddInd<-array(NA,c(dim(tempdat0@Ind)[1],5,dim(tempdat0@Ind)[2]))
+  for(i in 1:5)tempdat0@AddInd[,i,]<-tempdat0@Ind
   
   # TAC TAE Feasibility
   cond<-unlist(PanelState[[2]][1]) # cond=rep(T,4) cond=c(F,T,T,T)
@@ -525,9 +527,9 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   PPD<-MSEobj_Eval@Misc$Data[[1]]
   
   # Standardization
-  PPD@Cat<-PPD@Cat/PPD@Cat[,styr]
-  PPD@Ind<-PPD@Ind/PPD@Ind[,styr]
-  PPD@ML<-PPD@ML/PPD@ML[,styr]
+  #PPD@Cat<-PPD@Cat/PPD@Cat[,styr]
+  #PPD@Ind<-PPD@Ind/PPD@Ind[,styr]
+  #PPD@ML<-PPD@ML/PPD@ML[,styr]
   
   tsd= c("Cat","Cat","Cat","Ind","Ind","ML")
   stat=c("slp","AAV","mu","slp","mu", "slp")
@@ -537,9 +539,9 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   indPPD<-getinds(PPD,styr=styr,res=res,tsd=tsd,stat=stat)
   
   # Standardization
-  dat_ind@Cat<-dat_ind@Cat/dat_ind@Cat[,styr]
-  dat_ind@Ind<-dat_ind@Ind/dat_ind@Ind[,styr]
-  dat_ind@ML<-dat_ind@ML/dat_ind@ML[,styr]
+  #dat_ind@Cat<-dat_ind@Cat/dat_ind@Cat[,styr]
+  #dat_ind@Ind<-dat_ind@Ind/dat_ind@Ind[,styr]
+  #dat_ind@ML<-dat_ind@ML/dat_ind@ML[,styr]
   
   indData<-getinds(dat_ind,styr=styr,res=res,tsd=tsd,stat=stat)
   

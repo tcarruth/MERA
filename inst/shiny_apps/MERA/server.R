@@ -22,7 +22,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"6.1.5"
+  Version<<-"6.1.7"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -224,7 +224,7 @@ shinyServer(function(input, output, session) {
   output$Log <- renderText(Log_text$text)
   
   # Variables
-  ncpus<-8 # min(12,detectCores()) # how much parallel processing to use
+  ncpus<-4 # min(12,detectCores()) # how much parallel processing to use
   #AM(paste(ncpus,"processors available for computing"))
   FeaseMPs<<-NULL
   redoBlank() # make all the results plots with default sizes - seems to stabilize initial plotting and spacing
@@ -304,8 +304,7 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$Mode,{
     
-    #updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Evaluation
-    #updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
+   
     Update_Options()
     AM(paste0("Mode selected: ", input$Mode))
     smartRedo()
@@ -404,7 +403,7 @@ shinyServer(function(input, output, session) {
         Data(0)
       }
     }
-    #saveRDS("C:/temp2/dattest.rda")
+   
     # now see whether trimmed data work with the questionnaire
     
     if(!is.null(dattest)){
@@ -445,8 +444,8 @@ shinyServer(function(input, output, session) {
       
     }
     
-    #saveRDS(dat,"C:/temp/dat.rda")
-    #saveRDS(dat_ind,"C:/temp/dat_ind.rda")
+    #saveRDS(dat,"C:/temp/dat.rda") # 
+    #saveRDS(dat_ind,"C:/temp/dat_ind.rda") #
     
   })
 
@@ -554,7 +553,7 @@ shinyServer(function(input, output, session) {
     MSEobj_Eval<<-listy$MSEobj_Eval
     Status<<-listy$Status
     OM<<-listy$OM
-    Plan(0); Eval(0); SD(0); CondOM(0); RA(0) # reset status switches
+    Plan(0); Eval(0); SD(0); CondOM(0); RA(0); MadeOM(0) # reset status switches
     redoBlank()
     #"Management Planning","Management Performance","Risk Assessment","Status Determination"
     if(!is.null(MSEobj_Eval)){Eval(1);AM("Management Performance results loaded");redoEval();updateRadioButtons(session=session,"Mode",selected="Management Performance")}
@@ -565,8 +564,10 @@ shinyServer(function(input, output, session) {
       AM("Operating model loaded")
       updateNumericInput(session,'nsim', value=OM@nsim)
       nsim<<-OM@nsim
+      updateNumericInput(session,'interval',value=OM@interval)
+      MadeOM(1)
     }
-    MadeOM(0)
+   
     Start(1)
     updateTabsetPanel(session,"Res_Tab",selected="1")
     #}else{
@@ -593,6 +594,8 @@ shinyServer(function(input, output, session) {
         filey<-input$Load_anything
         AM(paste0("Source file loaded: ",filey$datapath))
         source(file=filey$datapath)
+        updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Evaluation
+        updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
         
 
     },
@@ -604,15 +607,18 @@ shinyServer(function(input, output, session) {
 
   })
   
-  observeEvent(input$MPset,{
-    if(input$MPset=="Demo"){
-      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","matlenlim","MRreal","curE75","IT10"),choices=getAllMPs())
-    }else if(input$MPset=="Top 20"){
-      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","DBSRA", "DBSRA4010", "DD","DDe","DDe75",  "DD4010","MCD","MCD4010","IT10","IT5",  "MRreal","MRnoreal","matlenlim","matlenlim2","DCAC_40", "DBSRA_40","Fratio","HDAAC","ITe10"),choices=getAllMPs())
-    }else if(input$MPset=="All"){
-      updateSelectInput(session=session,inputId="ManPlanMPsel",selected = getAllMPs())
-    }
-  })  
+  observeEvent(input$DemoMPs,{
+    updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","matlenlim","MRreal","curE75","IT10"),choices=getAllMPs())
+  })
+  
+  observeEvent(input$Top20MPs,{
+    updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("DCAC","DBSRA", "DBSRA4010", "DD","DDe","DDe75",  "DD4010","MCD","MCD4010","IT10","IT5",  "MRreal","MRnoreal","matlenlim","matlenlim2","DCAC_40", "DBSRA_40","Fratio","HDAAC","ITe10"),choices=getAllMPs())
+  })
+  
+  observeEvent(input$AllMPs,{
+    updateSelectInput(session=session,inputId="ManPlanMPsel",selected = getAllMPs())
+  })
+  
   
   observeEvent(input$Ex_Ref_MPs,{
     tempMPs<-input$ManPlanMPsel
@@ -666,8 +672,8 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$DefSims,{
-    updateNumericInput(session=session,inputId="nsim",value=144)
-    AM("Default number of operating model simulations selected (144)")
+    updateNumericInput(session=session,inputId="nsim",value=64)
+    AM("Default number of operating model simulations selected (64)")
   })
 
   observeEvent(input$RemakeOM,{

@@ -122,7 +122,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
    nsim<-input$nsim
-  
+   
+   
   if(input$OM_L & !UseQonly){
     OM<-OM_L
     SampList<<-NULL
@@ -347,12 +348,13 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     }
     
     # ---- Data overwriting ---------------------------------------------------------------------------------------------------
+    #saveRDS(OM,"C:/temp/OMpost.rda")
+    #saveRDS(dat,"C:/temp/datpost.rda")
+    
     if(Data()==1){
       AM("Questionnaire growth and mortality overwritten by those specified in uploaded data")
       if(!is.na(dat@vbLinf[1])){
         ratio<-dat@vbLinf[1]/mean(OM@cpars$Linf)
-        
-       
         OM@Linf<-rep(dat@vbLinf,2)
         OM@cpars$Linf<-OM@cpars$Linf*ratio
         OM@cpars$LFS<-OM@cpars$LFS*ratio
@@ -363,12 +365,18 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       if(!is.na(dat@wla))OM@a<-dat@wla
       if(!is.na(dat@wlb))OM@b<-dat@wlb
       if(!is.na(dat@vbt0[1])) OM@t0<-rep(dat@vbt0[1],2)
-      if(!is.na(dat@vbK[1])) OM@K<-rep(dat@vbK[1],2); OM@cpars$K<-OM@cpars$K*dat@vbK/mean(OM@cpars$K)
+      if(!is.na(dat@vbK[1])){ OM@K<-rep(dat@vbK[1],2); OM@cpars$K<-OM@cpars$K*dat@vbK/mean(OM@cpars$K)}
       if(!is.null(dat@Mort) & !is.na(dat@Mort)) OM@cpars$M <- OM@cpars$M * dat@Mort / mean(OM@cpars$M) 
+      
+      if(!is.na(dat@LFC))OM@L5<-rep(dat@LFC,2)
+      if(!is.na(dat@LFS))OM@LFS<-rep(dat@LFS,2)
+      if(!is.na(dat@Vmaxlen))OM@Vmaxlen<-rep(dat@Vmaxlen,2)
      
     }
     
     # AM("Using questionnaire-based operating model")
+  
+    
     
     if(Data()==1&input$OM_C){
       
@@ -381,6 +389,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
         
         withProgress(message = "Conditioning Operating Model", value = 0, {
           incProgress(0.1)
+          #saveRDS(OM,"C:/temp/OM.rda")
+          #saveRDS(dat,"C:/temp/dat.rda")
           dofit(OM,dat)
           CFit<-Status$Fit[[1]] #GetDep(OM,dat,code=code,cores=4)
           if(sum(CFit@conv)==0)AM(paste0(code,": ",sum(CFit@conv), " of ",length(CFit@conv)," simulations converged"))
@@ -388,24 +398,23 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
           
         })
         
-        #OM<<-Sub_cpars(CFit@OM,CFit@conv)
-        OM<-CFit@OM
+        OM<-Sub_cpars(CFit@OM,CFit@conv) # subset operating model by converged runs
+        SampList<<-SampList[CFit@conv,]  # subset other question parameter samples
+        updateNumericInput(session=session, "nsim",value=sum(CFit@conv)) # make sure OM nsim matches the text box
+        
+        #OM<-CFit@OM
         CondOM(1)
         SD(1)
         AM("------------- New conditioned OM made --------------")
         MadeOM(1) 
        
-        
       },
       error = function(e){
         AM(paste0(e,sep="\n"))
         shinyalert("Computational error", "Operating model conditioning returned an error. Try using a different model for conditioning.", type = "info")
-        CondOM(0)
       }
      )
-    AM("------------- New OM made --------------")
-    MadeOM(1)  
- 
+    
     #testing=F
     #if(testing){
     # MSEobj<-runMSE(OM,"DCAC")
@@ -415,9 +424,11 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     #  OM_reb@cpars$D<-(Dep_reb/100)*MSEobj@OM$SSBMSY_SSB0#apply(MSEobj@SSB_hist[,,MSEobj@nyears,],1, sum)/(MSEobj@OM$SSB0*2) # start from half BMSY
     #  MSEobj_reb<-runMSE(OM_reb,"DCAC")
     #  Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
-   #}
+    #}
     
-    } #
+    } # end of OM conditioning 
+    AM("------------- New OM made --------------")
+    MadeOM(1) 
   } # #end of loaded OM or not
   OM # OM
 
