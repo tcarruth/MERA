@@ -388,10 +388,10 @@ GetDep<-function(OM,dat,code){
   
   data<-DataStrip(dat,OM,code,simno=1)
   
-  saveRDS(data,"C:/temp/data.rda") # ! ALERT
-  saveRDS(dat,"C:/temp/dat.rda")  
-  saveRDS(OM,"C:/temp/OM.rda")     # ! ALERT
-  saveRDS(code,"C:/temp/code.rda") 
+  #saveRDS(data,"C:/temp/data.rda") 
+  #saveRDS(dat,"C:/temp/dat.rda")  
+  #saveRDS(OM,"C:/temp/OM.rda")     
+  #saveRDS(code,"C:/temp/code.rda") 
   
   OMeff<-data$condition=="effort"
 

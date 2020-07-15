@@ -371,7 +371,7 @@ shinyServer(function(input, output, session) {
       tryCatch(
         {
          dattest<-new('Data',filey$datapath)
-         saveRDS(dattest,'C:/temp2/dattest.rda') # ! ALERT
+         #saveRDS(dattest,'C:/temp2/dattest.rda') # 
         
          AM(paste0(".csv data loaded:", filey$datapath))
         },
@@ -422,7 +422,7 @@ shinyServer(function(input, output, session) {
       }
       updateNumericInput(session,"Syear",value=min(dattest@Year),min=min(dattest@Year),max=min(dattest@Year))
       AM("Data slot Year used to specify fishery start year in Fishery Question 1")
-      saveRDS(LHYear,"C:/temp/LHYear.rda") # ! ALERT
+      #saveRDS(LHYear,"C:/temp/LHYear.rda") #
       dat_trim<-Data_trimer(dattest,Syear=min(dattest@Year),LHYear)
       
       if(class(dat_trim)!='Data'){ # indicator data not availble
@@ -459,8 +459,8 @@ shinyServer(function(input, output, session) {
       
     }
     
-    saveRDS(dat,"C:/temp/dat.rda") # ! ALERT
-    saveRDS(dat_ind,"C:/temp/dat_ind.rda") # ! ALERT
+    #saveRDS(dat,"C:/temp/dat.rda") # 
+    #saveRDS(dat_ind,"C:/temp/dat_ind.rda") # 
   })
 
  

@@ -387,8 +387,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
         
         withProgress(message = "Conditioning Operating Model", value = 0, {
           incProgress(0.1)
-          saveRDS(OM,"C:/temp/OM.rda") # ! ALERT
-          saveRDS(dat,"C:/temp/dat.rda") # ! ALERT
+          #saveRDS(OM,"C:/temp/OM.rda") 
+          #saveRDS(dat,"C:/temp/dat.rda")
           dofit(OM,dat)
           CFit<-Status$Fit[[1]] #GetDep(OM,dat,code=code,cores=4)
           if(sum(CFit@conv)==0)AM(paste0(code,": ",sum(CFit@conv), " of ",length(CFit@conv)," simulations converged"))
