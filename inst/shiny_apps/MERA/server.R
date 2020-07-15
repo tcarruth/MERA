@@ -22,7 +22,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"6.1.7"
+  Version<<-"6.1.9"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -99,6 +99,8 @@ shinyServer(function(input, output, session) {
   Tweak<-reactiveVal(0)  # Have things affecting performance metrics been tweaked?
   SkinNo<-reactiveVal(0) # Skin selection
   Start<-reactiveVal(0)  # Start App?
+ 
+  #LHYear<<-2018          # Starting value for the global variable that divides conditioning and indicator data
   
   output$Fpanel <- reactive({ Fpanel()})
   output$Mpanel <- reactive({ Mpanel()})
@@ -159,7 +161,7 @@ shinyServer(function(input, output, session) {
   output$Fpanelout <- renderText({ paste("Fishery",Fpanel(),"/ 19")})
   output$Mpanelout <- renderText({ paste("Management",Mpanel(),"/ 7")})
   output$Dpanelout <- renderText({ paste("Data",Dpanel(),"/ 4")})
-  output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 1")})
+  #output$Opanelout <- renderText({ paste("Extra",Opanel(),"/ 1")})
 
   # Update UI
   output$Version<-renderText(paste0("MSC-DLMtool App v", Version)) 
@@ -369,7 +371,7 @@ shinyServer(function(input, output, session) {
       tryCatch(
         {
          dattest<-new('Data',filey$datapath)
-         #saveRDS(dattest,'C:/temp2/dattest.rda')
+         saveRDS(dattest,'C:/temp2/dattest.rda') # ! ALERT
         
          AM(paste0(".csv data loaded:", filey$datapath))
         },
@@ -407,8 +409,21 @@ shinyServer(function(input, output, session) {
     # now see whether trimmed data work with the questionnaire
     
     if(!is.null(dattest)){
+      LHYear<<-input$Lyear
       
-      dat_trim<-Data_trimer(dattest)
+      if(!is.null(dattest@LHYear)){
+        updateNumericInput(session,"Lyear",value=dattest@LHYear,min=min(dattest@Year)+5,max=max(dattest@Year))
+        LHYear<-dattest@LHYear
+        AM("Data slot LHYear used to set end year in Fishery Question 1 (years before and including this are used for conditioning after which data are used in Management Performance mode) ")
+      }else{
+        updateNumericInput(session,"Lyear",value=max(dattest@Year),min=min(dattest@Year)+5,max=max(dattest@Year))
+        LHYear<-max(dattest@Year)
+        AM("Data slot Year used to specify fishery end year in Fishery Question 1")
+      }
+      updateNumericInput(session,"Syear",value=min(dattest@Year),min=min(dattest@Year),max=min(dattest@Year))
+      AM("Data slot Year used to specify fishery start year in Fishery Question 1")
+      saveRDS(LHYear,"C:/temp/LHYear.rda") # ! ALERT
+      dat_trim<-Data_trimer(dattest,Syear=min(dattest@Year),LHYear)
       
       if(class(dat_trim)!='Data'){ # indicator data not availble
         DataInd(0)
@@ -417,14 +432,14 @@ shinyServer(function(input, output, session) {
       }else{                       # indicator data available
         dat_ind<<-dattest
         DataInd(1)
-        AM(paste0("Data object contains ", length(dat_ind@Year)-length(dat@Year)," years of indicator data after LHYear"))
+        AM(paste0("Data object contains ", max(dat_ind@Year)-LHYear," years of indicator data after LHYear"))
         dat_temp<-dat_trim
       }
       
       daterrs<-Data_gate(dat_temp) # do the trimmed (historical data) have errors?
       
       if(length(daterrs)!=0){
-        shinyalert(title="Data not imported due to formatting inconsistencies", text=paste(unlist(daterrs),collapse="/n"), type="error")
+        shinyalert(title="Data not imported due to formatting inconsistencies", text=paste(unlist(daterrs),collapse="\n"), type="error")
         Data(0)
         DataInd(1)
       }else{
@@ -438,15 +453,14 @@ shinyServer(function(input, output, session) {
          
       FeaseMPs<<-Fease(dat)
       SD_codes<-getCodes(dat,maxtest=Inf)
-      AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
+      AM(paste0("Data object is compatible with the following status determination methods: ", paste(SD_codes,collapse=",")))
       updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
       updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
       
     }
     
-    #saveRDS(dat,"C:/temp/dat.rda") # 
-    #saveRDS(dat_ind,"C:/temp/dat_ind.rda") #
-    
+    saveRDS(dat,"C:/temp/dat.rda") # ! ALERT
+    saveRDS(dat_ind,"C:/temp/dat_ind.rda") # ! ALERT
   })
 
  
@@ -619,6 +633,10 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session=session,inputId="ManPlanMPsel",selected = getAllMPs())
   })
   
+  observeEvent(input$ Status_Quo,{
+    updateSelectInput(session=session,inputId="ManPlanMPsel",selected = c("curE","CurC","FMSYref"),choices=getAllMPs())
+  })
+ 
   
   observeEvent(input$Ex_Ref_MPs,{
     tempMPs<-input$ManPlanMPsel
@@ -678,7 +696,6 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$RemakeOM,{
     OM<<-makeOM(PanelState)
-    
   })
   
   
@@ -692,7 +709,7 @@ shinyServer(function(input, output, session) {
     temp<-checkQs()
     if(temp$error){
       
-      shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered:",paste(temp$probQs,collapse=", ")), type = "warning")
+      shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered or answered incorrectly:",paste(temp$probQs,collapse=", ")), type = "warning")
      
     }else{
     
@@ -1067,7 +1084,7 @@ shinyServer(function(input, output, session) {
   
   output$Build_Eval <-downloadHandler(
     
-    filename = function(){paste0(namconv(input$Name),"_MERA_Evaluation_Report.html")}, #"report.html",
+    filename = function(){paste0(namconv(input$Name),"_MERA_Performance_Report.html")}, #"report.html",
     
     content = function(file) {
       withProgress(message = "Building evaluation report", value = 0, {

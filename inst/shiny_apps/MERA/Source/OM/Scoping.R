@@ -191,8 +191,10 @@ DataStrip<-function(dat,OM,code,simno=1){
   }
   
   if(grepl("I",code)) outlist<-c(outlist, Process_Indices(dat,OM))
-  if(input$C_eq) outlist<-c(outlist, C_eq=outlist$Chist[1])
-  
+  if(input$C_eq) outlist<-c(outlist, C_eq=input$C_eq_val)
+  outlist[['ESS']]<-rep(input$ESS,2)
+  outlist[['LWT']]<-list(CAA=input$Wt_comp,CAL=input$Wt_comp)
+  outlist[['max_F']]<-input$max_F
   outlist
 
 }
@@ -386,10 +388,10 @@ GetDep<-function(OM,dat,code){
   
   data<-DataStrip(dat,OM,code,simno=1)
   
-  # saveRDS(data,"C:/temp/data.rda") 
-  # saveRDS(dat,"C:/temp/dat.rda")  
-  # saveRDS(OM,"C:/temp/OM.rda")     
-  # saveRDS(code,"C:/temp/code.rda") 
+  saveRDS(data,"C:/temp/data.rda") # ! ALERT
+  saveRDS(dat,"C:/temp/dat.rda")  
+  saveRDS(OM,"C:/temp/OM.rda")     # ! ALERT
+  saveRDS(code,"C:/temp/code.rda") 
   
   OMeff<-data$condition=="effort"
 
@@ -404,17 +406,20 @@ GetDep<-function(OM,dat,code){
     }
     
   }
-  out<-SRA_scope(OM=OM,
-                 data=data,
+  out<-SRA_scope(OM = OM,
+                 data = data,
                  mean_fit = TRUE,
-                 cores=ncpus,
-                 plusgroup=T,
-                 OMeff=OMeff,
+                 cores = ncpus,
+                 plusgroup = T,
+                 OMeff = OMeff,
+                 ESS = data$ESS,
                  s_selectivity = data$s_selectivity, 
                  selectivity = data$selectivity,
                  s_vul_par = data$s_vul_par, s_map_vul_par = data$s_map_vul_par,
-                 vul_par=data$vul_par, map_vul_par=data$map_vul_par,
-                 control=list(eval.max=5000, iter.max=5000, abs.tol=1e-4))
+                 vul_par = data$vul_par, map_vul_par = data$map_vul_par,
+                 LWT = data$LWT,
+                 max_F=data$max_F,
+                 control=list(eval.max=1E4, iter.max=1E4, abs.tol=1e-6))
   
   out
   
@@ -437,14 +442,16 @@ Process_Indices<-function(dat,OM){
   s_vul_par<-NULL
   s_map_vul_par<-NULL
   s_selectivity<-NULL
-  
+  ny<-length(dat@Year)
   fleetno<-0
+  
   # Total biomass index -------------
   temp<-slot(dat,"Ind")
   if(!all(is.na(temp))){
     Index<-rbind(Index,temp)
     temp<-slot(dat,"CV_Ind")
     if(!all(is.na(temp))){
+      temp[is.na(temp)]<-mean(temp,na.rm=T)
       I_sd<-rbind(I_sd,temp)
     }else{
       I_sd<-rbind(I_sd,rep(mean(OM@Iobs),length(temp)))
@@ -456,7 +463,11 @@ Process_Indices<-function(dat,OM){
     s_vul_par<-cbind(s_vul_par,temp)
     
     sel_block<-cbind(sel_block,rep(fleetno,ny))
-    s_selectivity<-c(s_selectivity,"log")
+    if(all(PanelState[[1]][[10]]==c(T,F,F,F))){
+      s_selectivity<-c(s_selectivity,"log")
+    }else{
+      s_selectivity<-c(s_selectivity,"dome")
+    }
   }
   
   # Total spawning biomass index ---
@@ -539,7 +550,13 @@ Process_Indices<-function(dat,OM){
   if(!is.null(s_vul_par))s_map_vul_par=array(NA,dim(s_vul_par))
   if(!is.null(vul_par))map_vul_par=array(NA,dim(vul_par))
   
-  selectivity="dome"
+  if(all(PanelState[[1]][[10]]==c(T,F,F,F))){
+    selectivity='logistic'
+    AM("Conditioning operating model estimating logistic ('flat-topped') selectivity based on Fishery Question 11")
+  }else{  
+    selectivity='dome'
+    AM("Conditioning operating model allowing for the estimation of dome shaped selectivity based on Fishery Question 11")
+  }  
   
   list(Index=t(Index), I_sd=t(I_sd), I_type=Itype, 
        s_vul_par=s_vul_par, s_map_vul_par=s_map_vul_par,
@@ -548,11 +565,6 @@ Process_Indices<-function(dat,OM){
        s_selectivity = s_selectivity, selectivity=selectivity)
   
 }
-
-
-
-
-
 
 
 getCodes<-function(dat,maxtest=6){

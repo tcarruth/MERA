@@ -5,12 +5,18 @@ checkQs<-function(){
   Qs[names(Qs)=="Fpanel4"]<-6
   Qnams<-c(paste0("F",2:19),paste0("M",1:7),paste0("D",1:4))
   
+  #input$
+  #eff_values$df$x
+ # eff_values<-readRDS("C:/Users/tcar_/Dropbox/MERA/MERA_TESTS/TokyoBaySeaBass_TC/Japanese_Seabas.mera")$eff_values 
+  if(any(!(eff_values$df$x %in% input$Syear:input$Lyear))){
+    Qs[names(Qs)=="Fpanel4"]<-0 # error in effort prescription
+    AM("Error. Inconsistency in Questionnaire specification: The years specified in Fishery Question 1 do not match the effort drawn in Fishery Question 5")
+  }  
   list(error=any(Qs==0),probQs=Qnams[Qs==0])
   
 }
 
 
-  
 
 UpPanelState<-function(){
   for(i in 1:2){

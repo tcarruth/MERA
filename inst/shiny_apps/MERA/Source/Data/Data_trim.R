@@ -1,13 +1,13 @@
 
 
-Data_trimer<-function(Data){
+Data_trimer<-function(Data,Syear,LHYear){
 
-  if(input$Lyear==max(Data@Year)){    
+  if(LHYear>=max(Data@Year)){    
     return(NA)
   }else{
     DataT<-Data
     orglength<-length(Data@Year)
-    ind<-1:(input$Lyear-input$Syear+1)
+    ind<-1:(LHYear-Syear+1)
     newlength<-length(ind)
     slots<-slotNames(Data)
 

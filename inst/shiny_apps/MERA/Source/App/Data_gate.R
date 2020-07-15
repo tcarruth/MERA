@@ -34,7 +34,9 @@ MERA_Q_consis<-function(dattest){
   
   errlist<-new('list')
   Year<-dattest@Year
-  if((min(Year)!=input$Syear)|(max(Year)!=input$Lyear)) errlist$Q_year = "The years in the data file must match the Fishery Start and End years in Fishery Question 1"
+  #if((min(Year)!=input$Syear)) errlist$S_year = "The first year in the data file must match the Fishery Start year in Fishery Question 1"
+  #if(!(input$Lyear%in%Year)) errlist$L_year = "The last year in the data file must equal or exceed the Fishery End year in Fishery Question 1"
+  
   errlist
 }
 
@@ -53,7 +55,7 @@ Data_self_consis<-function(dattest){
   
   if(length(min(Year):max(Year))!=length(Year)) errlist$MissYr="The data file is missing years of data (the Year index and data must have an entry for each year 
                                                                 - use NAs for catch and other data if these are missing for certain years"
-  
+  if(any(is.na(Cat))) errlist$CatNA="You have specified missing (NA) values in your catch time series - this must have a value for each year of your dataset"
   if(!all(is.na(Cat))) if(length(Cat)!=length(Year)) errlist$CatLen="Catches (Cat) are not of the same length as the Year (Year) index"
   if(!all(is.na(Ind))) if(length(Ind)!=length(Year)) errlist$IndLen="Index (Ind) data are not of the same length as the Year (Year) index"
   if(!all(is.na(SpInd))) if(length(SpInd)!=length(Year)) errlist$SpIndLen="Spawning Index (SpInd) data are not of the same length as the Year (Year) index"
@@ -64,6 +66,8 @@ Data_self_consis<-function(dattest){
   
   if(!all(is.na(CAL))) if(dim(CAL)[2]!=(length(CALbins)-1)) errlist$CALbins ="Catch at length (CAL) data do not match length of the CAL bin definitions 
                                                          (CALbins should be longer by 1 as these define the upper and lower breakpoints of the CAL data)"
+  if(!all(is.na(CAL))) if(is.na(dattest@vbLinf))errlist$CALnoLinf ="Catch at length (CAL) data are provided without specifying the von Bertalanffy Linf parameter (asymptotic length)"
+  
   errlist
   
 }

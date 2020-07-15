@@ -10,7 +10,7 @@ package_MSClog<-function(){
   if(Data()==0)dat<-NULL
   if(DataInd()==0)dat_ind<-NULL
    
-  list(PanelState=PanelState, Just=Just, Des=Des, dat=dat, dat_ind=dat_ind, eff_values=reactiveValuesToList(eff_values))
+  list(PanelState=PanelState, Just=Just, Des=Des, dat=dat, dat_ind=dat_ind, eff_values=reactiveValuesToList(eff_values),settings=save_settings())
 }
 
 # for saving questionnaires
@@ -115,13 +115,15 @@ Update_Questionnaire<-function(MSClog){
         DataInd(0)
         FeaseMPs<<-Fease(dat)
         AM("Data loaded with questionnaire")
+        updateNumericInput(session,"C_eq_val",value=dat@Cat[1,1])
+        AM(paste0("Suggested equilibrium catch is catch in first year:",dat@Cat[1,1]))
         if(!is.null(MSClog$dat_ind)){
           dat_ind<<-MSClog$dat_ind
           DataInd(1)
           AM("Additional indicator data loaded since MP was adopted")
         }
         SD_codes<-getCodes(dat,maxtest=Inf)
-        AM(paste0("Data object is compatible with the following status determination methods: ", SD_codes))
+        AM(paste0("Data object is compatible with the following status determination methods: ", paste(SD_codes,collapse=",")))
         updateSelectInput(session,'SDsel',choices=SD_codes,selected=SD_codes[1])
         updateSelectInput(session,'Cond_ops',choices=SD_codes,selected=SD_codes[1])
       #} # if not a data formatting error
@@ -139,7 +141,7 @@ Update_Questionnaire<-function(MSClog){
       eff_backwards(MSClog)
       
     }
-    
+    if(!is.null(MSClog$settings))load_settings(MSClog$settings)
     
   }else{
     AM("Questionnaire failed to load")
@@ -147,5 +149,48 @@ Update_Questionnaire<-function(MSClog){
   }
 }
 
-
+save_settings<-function(){
+  
+  settings<-list()
+  settings[['plusgroup']]<-input$plusgroup
+  settings[['Distribution']]<-input$Distribution
+  settings[['IQRange']]<-input$IQRange
+  settings[['interval']]<-input$interval
+  settings[['Parallel']]<-input$Parallel
+  settings[['nsim']]<-input$nsim
+  settings[['Dep_reb']]<-input$Dep_reb
+  settings[['Cond_ops']]<-input$Cond_ops
+  settings[['OM_C']]<-input$OM_C
+  settings[['C_eq_val']]<-input$C_eq_val
+  settings[['C_eq']]<-input$C_eq
+  settings[['ESS']]<-input$ESS
+  settings[['Wt_comp']]<-input$Wt_comp
+  settings[['max_F']]<-input$max_F
+  settings[['Mode']]<-input$Mode
+  settings[['Skin']]<-input$Skin
+  
+  settings
+}
+  
+load_settings<-function(settings){
+  
+  updateNumericInput(session,'plusgroup',value=settings$plusgroup)
+  updateRadioButtons(session,'Distribution',selected=settings$Distribution)
+  updateNumericInput(session,'IQRange',value=settings$IQRange)
+  updateNumericInput(session,'interval',value=settings$interval)
+  updateCheckboxInput(session,'Parallel',value=settings$Parallel)
+  updateNumericInput(session,'nsim',value=settings$nsim)
+  updateSliderInput(session,'Dep_reb',value=settings$Dep_reb)
+  updateSelectInput(session,'Cond_ops',selected=settings$Cond_ops)
+  updateCheckboxInput(session,'OM_C',value=settings$OM_C)
+  updateNumericInput(session,'C_eq_val',value=settings$C_eq_val)
+  updateCheckboxInput(session,'C_eq',value=settings$C_eq)
+  updateNumericInput(session,'ESS',value=settings$ESS)
+  updateNumericInput(session,'Wt_comp',value=settings$Wt_comp)
+  updateNumericInput(session,'max_F',value=settings$max_F)
+  updateRadioButtons(session,'Mode',selected=settings$Mode)
+  updateSelectInput(session,'Skin',selected=settings$Skin)
+  
+}  
+  
 

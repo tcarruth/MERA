@@ -191,11 +191,11 @@ shinyUI(
                 h5(tags$b("MERA Mode",style="color:#347ab6")),
                 column(12,
                        
-                       radioButtons("Mode",label=NULL,choiceValues=c("Management Planning","Management Performance","Risk Assessment","Status Determination"),
+                       radioButtons("Mode",label=NULL,choiceValues=c("Management Planning","Management Performance","Status Determination"), #"Risk Assessment",
                                     selected="Management Planning", choiceNames=list(
                                       HTML("Management Planning &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;- calculate the expected future performance of management procedures"),
                                       HTML("Management Performance &nbsp;&nbsp; - given a management procedure is in use, analyse new data and monitor performance"),
-                                      HTML("Risk Assessment &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- calculate the risk of status quo fishery management"),
+                                      #HTML("Risk Assessment &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- calculate the risk of status quo fishery management"),
                                       HTML("Status Determination &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- use the questionnaire and data to estimate population status")))
                 )
          ),
@@ -255,14 +255,13 @@ shinyUI(
                    ),
                    
                    column(7,
-                          h5("Number of simulations:",style="height:15px"),
-                          numericInput("nsim", label=NULL, value=64,min=2,max=512),
+                          numericInput("nsim", label=h5("Number of simulations"), value=64,min=2,max=512),
                           column(6,
                                  actionButton("DemoSims",h5("DEMO",style="color:grey")),
                                  actionButton("DefSims",h5("DEFAULT",style="color:grey"))
                           ),
                           column(6,
-                                 conditionalPanel('output.MadeOM==1',actionButton("RemakeOM","Remake Operating Model",icon=icon('cogs')))
+                                 actionButton("RemakeOM","Make Operating Model",icon=icon('cogs'))
                           )
                    )
             ),
@@ -283,11 +282,14 @@ shinyUI(
             conditionalPanel(condition="output.Data==1",
                   column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
                    h5(tags$b("Operating model conditioning / Status Determination approach (fitting to data)",style="color:#347ab6")), 
-                  
+                    
                      column(6,selectInput("Cond_ops", label = h5("Conditioning Model"), choices=c("None"),selected="None"),style="height:75px"),
-                     column(6),
                      column(6, checkboxInput("OM_C","Use conditioned OM for analyses",value=TRUE),style="height:75px"),
-                     column(6,checkboxInput("C_eq",label="First year of catches is equilibrium catch",0))
+                     column(6,numericInput("C_eq_val",label=h5("Equilibrium catches"),value=0,min=0,max=Inf),style="height:75px"),
+                     column(6,checkboxInput("C_eq",label="Assume equilibrium catches in conditioning",value=FALSE),style="height:75px"),
+                     column(4,numericInput("ESS",label=h5("Maximum No. Ind. Comp."),100,min=5,max=Inf),style="height:75px"),
+                     column(4,numericInput("Wt_comp",label=h5("Composition nLL multiplier"),value=1,min=0.01,max=10),style="height:75px"),
+                     column(4,numericInput("max_F",label=h5("Maximum apical F"),value=3,min=0.1,max=50),style="height:75px")
                    
                    )
             ),
@@ -314,18 +316,18 @@ shinyUI(
         column(3,downloadButton("Build_full_OM","")),
         
         conditionalPanel(condition="output.Plan==0",
-          column(9,h5("Management Planning Report",style="color:grey"))
+          column(9,h5("Management Planning",style="color:grey"))
         ),                 
         conditionalPanel(condition="output.Plan==1",
-           column(9,h5("Management Planning Report",style="font-weight:bold;color:#347ab6")),
+           column(9,h5("Management Planning",style="font-weight:bold;color:#347ab6")),
            column(3,downloadButton("Build_Plan",""))
         ),
         
         conditionalPanel(condition="!(output.DataInd==1 & output.Eval==1)",
-          column(9,h5("Management Performance Report",style="color:grey"))
+          column(9,h5("Management Performance",style="color:grey"))
         ),                 
         conditionalPanel(condition="output.DataInd==1 & output.Eval==1",
-          column(9,h5("Management Performance Report",style="font-weight:bold;color:#347ab6")),
+          column(9,h5("Management Performance",style="font-weight:bold;color:#347ab6")),
           column(3,downloadButton("Build_Eval"," "))
         ),
         
@@ -338,22 +340,21 @@ shinyUI(
         ),
         
         conditionalPanel(condition="output.SD==0&output.CondOM==0",
-          column(9,h5("Model fitting report (Status Determination / OM Conditioning)",style="color:grey"))
+          column(9,h5("Model fitting (Status Determination / OM Conditioning)",style="color:grey"))
         ),
         conditionalPanel(condition="output.SD==1|output.CondOM==1",
-          column(9,h5("Model fitting report (Status Determination / OM Conditioning)",style="font-weight:bold;color:#347ab6")),
+          column(9,h5("Model fitting (Status Determination / OM Conditioning)",style="font-weight:bold;color:#347ab6")),
           column(3, downloadButton("SDdet_rep",""))
         ),
         
-        conditionalPanel(condition="output.RA==0", 
-          column(9,h5("Risk Assessment Report",style="color:grey"))
-        ),
-        conditionalPanel(condition="output.RA==1", 
-          column(9,h5("Risk Assessment Report",style="font-weight:bold;color:#347ab6")),
-          column(3,downloadButton("Build_RA",""))
-        ),
+        #conditionalPanel(condition="output.RA==0", 
+        #  column(9,h5("Risk Assessment Report",style="color:grey"))
+        #),
+        #conditionalPanel(condition="output.RA==1", 
+        #  column(9,h5("Risk Assessment Report",style="font-weight:bold;color:#347ab6")),
+        #  column(3,downloadButton("Build_RA",""))
+        #),
         
-      
         inputId = "DD_reports",
         label = "Reports",
         icon = icon("newspaper"),
@@ -735,36 +736,36 @@ shinyUI(
                                                   radioButtons("Err", label = h5("4. Overall data quality",style="color:black"),
                                                                      choices = Err_list, selected = "Err_bad"),
                                                   actionLink("All_Err","DEFAULT")),
-                                 value=3),
+                                 value=3)#,
                         
-                        tabPanel(h4("Extra",style = "color:grey"),
+                        #tabPanel(h4("Extra",style = "color:grey"),
                                  
-                                conditionalPanel(width=4,condition="output.Opanel==undefined|output.Opanel==0",
+                         #       conditionalPanel(width=4,condition="output.Opanel==undefined|output.Opanel==0",
                                  
-                                  HTML("<br>"),
-                                  h5("The Extra panel contains a number of optional features for characterising your fishery system.",style="color:grey"),
-                                  h5("Currently these include the specification of bio-economic model parameters.",style="color:grey"),
-                                  h5(""),
-                                  h5("More detailed help on Extra features can be found in the MERA manual
-                                      : ", a("Section 2.4.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_v6.html#24_extra", target="_blank"),style="color:grey")
+                        #          HTML("<br>"),
+                         #         h5("The Extra panel contains a number of optional features for characterising your fishery system.",style="color:grey"),
+                        #          h5("Currently these include the specification of bio-economic model parameters.",style="color:grey"),
+                        #          h5(""),
+                         #         h5("More detailed help on Extra features can be found in the MERA manual
+                          #            : ", a("Section 2.4.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_v6.html#24_extra", target="_blank"),style="color:grey")
                                   
-                                ),
+                           #     ),
                          
-                                conditionalPanel(width=4,condition="output.Opanel==1",
+                            #    conditionalPanel(width=4,condition="output.Opanel==1",
                                                  
-                                   HTML("<br>"),
-                                   h5("Bioeconomic dynamics <alpha>",style="color:grey"),
-                                   selectInput("EC_Model",h5("Economic Model"),choices=c("None","Simple response"),selected="None"),
-                                   conditionalPanel(condition="input.EC_Model!='None'",
-                                     column(4,numericInput("CostCurr",label="Current Cost",min=0,value=1)),
-                                     column(4,numericInput("RevCurr",label="Current Revenue.",min=0,value=1)),   
-                                     column(4,numericInput("Response",label="% chng given current profit",value=0.0001)),
-                                     column(4,numericInput("CostInc",label="% annual cost inc",value=0)), 
-                                     column(4,numericInput("RevInc",label="% annual revenue inc",value=0)) 
-                                   )
-                                ),
+                             #      HTML("<br>"),
+                            #       h5("Bioeconomic dynamics <alpha>",style="color:grey"),
+                             #      selectInput("EC_Model",h5("Economic Model"),choices=c("None","Simple response"),selected="None"),
+                              #     conditionalPanel(condition="input.EC_Model!='None'",
+                              #       column(4,numericInput("CostCurr",label="Current Cost",min=0,value=1)),
+                              #       column(4,numericInput("RevCurr",label="Current Revenue.",min=0,value=1)),   
+                              #       column(4,numericInput("Response",label="% chng given current profit",value=0.0001)),
+                              #       column(4,numericInput("CostInc",label="% annual cost inc",value=0)), 
+                              #       column(4,numericInput("RevInc",label="% annual revenue inc",value=0)) 
+                               #    )
+                              #  ),
                                 
-                                value=4)
+                              #  value=4)
                       )
                ),
 
@@ -1041,7 +1042,7 @@ shinyUI(
                       conditionalPanel(condition="input.tabs1==3&output.Dpanel==1",
                           h5("Users have the option of loading fishery data to unlock various MERA features",style = "color:grey"),
                           h5("When formatted into a DLMtool/MSEtool csv data file, fishery data can be used to:",style = "color:grey"),
-                          h5(" - condition operating models (Extra panel 3)",style = "color:grey"),
+                          h5(" - condition operating models",style = "color:grey"),
                           h5(" - determine feasible MPs (Management Planning mode)", style = "color:grey"),
                           h5(" - assess the fishery status (Status Determination mode)", style = "color:grey"),
                           h5(" - test for exceptional circumstances (Management Performance mode).",style = "color:grey"),
@@ -1204,11 +1205,11 @@ shinyUI(
                         )
                  ),
                  
-                 column(width=3,#style="height:180px",
-                        conditionalPanel(condition="output.Fpanel>0|output.Ppanel>0|output.Dpanel>0|output.Fpanel!=undefined|output.Mpanel!=undefined|output.Dpanel!=undefined",
-                               textOutput("Opanelout")
-                        )
-                 )
+                 #column(width=3,#style="height:180px",
+                #        conditionalPanel(condition="output.Fpanel>0|output.Ppanel>0|output.Dpanel>0|output.Fpanel!=undefined|output.Mpanel!=undefined|output.Dpanel!=undefined",
+                 #              textOutput("Opanelout")
+                #        )
+                # )
                  
                    
               )
@@ -1330,13 +1331,14 @@ shinyUI(
                           column(12, h5("Presets",style="font-weight:bold")),
                           column(12, actionButton("DemoMPs", label = "Demo"),
                                  actionButton("Top20MPs", label = "Top 20"),
-                                 actionButton("AllMPs", label = "All")
+                                 actionButton("AllMPs", label = "All"),
+                                 actionButton("Status_Quo",label="Status quo")
                           ),
                           column(12, h5("Toggles",style="font-weight:bold")),
                           column(12,style="padding-left:13px",
                             actionButton("Ex_Ref_MPs", label = "Reference"),
                             actionButton("Data_Rich", label = "Data-rich"),
-                            actionButton("StatusQuo_MPs", label = "Status Quo"),
+                            actionButton("StatusQuo_MPs", label = "Current"),
                             actionButton("Clear_MPs", label = "Clear")
                           )
                       )
@@ -1344,14 +1346,15 @@ shinyUI(
                   
                   column(6,
                          
-                         h5("Simulations can be run to test Multiple MPs over a certain number of projected years in which managment recommendations are updated every 'interval' years", style = "color:grey"),
+                         h5("Simulations can be run to test Multiple MPs over a certain number of projected years", style = "color:grey"),
                          h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
                          h5("- Top 20: MPs that generally perform well in many cases but may not be appropriate for your operating model", style = "color:grey"),
                          h5("- All: an MSE is run for all available MPs (~100) which can take 20 minutes or more", style = "color:grey"),
-                         h5("Users may wish not to include reference MPs (No ref. MPs) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
+                         h5("- Status quo: an MSE is run for current catches and current fishing effort with FMSY fishing as a reference", style = "color:grey"),
+                         h5("Users may wish not to include reference MPs (Reference) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
                          h5("In situations where operating models are built with more than 48 simulations it can be much faster to use parallel computing ('Parallel comp.)
                              although the progress bar will not longer work ",style="color:grey"),
-                         h5("Documentation of the various MPs can be found as links in the results tables, below in the help section or online ",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
+                         h5("Documentation of the various MPs are linked in the results tables, above in the help menu or ",a("online", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
                          
                   )
                 )

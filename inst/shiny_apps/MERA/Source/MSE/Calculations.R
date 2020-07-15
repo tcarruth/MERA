@@ -41,7 +41,12 @@ Calc_Plan<-function(){
   
   doprogress("Building OM from Questionnaire",1)
 
-  OM<-makeOM(PanelState)
+  if(LoadOM()==1&input$OM_L){ 
+    OM<<-OM_L
+  }else{
+    if(MadeOM()==0)OM<<-makeOM(PanelState)
+  }
+  
   Fpanel(1)
   MPs<<-getMPs()
   

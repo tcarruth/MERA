@@ -336,16 +336,16 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     # ---- Bioeconomic parameters ----------------------------------------------------------------------------------------------
     #AM("TEST BE")
     
-    if(input$EC_Model!="None"){
+   # if(input$EC_Model!="None"){
       
-      OM@cpars<-c(OM@cpars,list(CostCurr=rep(input$CostCurr,OM@nsim), 
-                                RevCurr=rep(input$RevCurr,OM@nsim), 
-                                Response=rep(input$Response/100,OM@nsim), 
-                                CostInc=rep(input$CostInc,OM@nsim), 
-                                RevInc=rep(input$RevInc,OM@nsim)))
-      AM("Using bioeconomic model parameters")
+    #  OM@cpars<-c(OM@cpars,list(CostCurr=rep(input$CostCurr,OM@nsim), 
+     #                           RevCurr=rep(input$RevCurr,OM@nsim), 
+    #                            Response=rep(input$Response/100,OM@nsim), 
+     #                           CostInc=rep(input$CostInc,OM@nsim), 
+      #                          RevInc=rep(input$RevInc,OM@nsim)))
+      #AM("Using bioeconomic model parameters")
       
-    }
+    #}
     
     # ---- Data overwriting ---------------------------------------------------------------------------------------------------
     #saveRDS(OM,"C:/temp/OMpost.rda")
@@ -376,8 +376,6 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     
     # AM("Using questionnaire-based operating model")
   
-    
-    
     if(Data()==1&input$OM_C){
       
       code<-input$Cond_ops
@@ -389,8 +387,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
         
         withProgress(message = "Conditioning Operating Model", value = 0, {
           incProgress(0.1)
-          #saveRDS(OM,"C:/temp/OM.rda")
-          #saveRDS(dat,"C:/temp/dat.rda")
+          saveRDS(OM,"C:/temp/OM.rda") # ! ALERT
+          saveRDS(dat,"C:/temp/dat.rda") # ! ALERT
           dofit(OM,dat)
           CFit<-Status$Fit[[1]] #GetDep(OM,dat,code=code,cores=4)
           if(sum(CFit@conv)==0)AM(paste0(code,": ",sum(CFit@conv), " of ",length(CFit@conv)," simulations converged"))
@@ -407,6 +405,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
         SD(1)
         AM("------------- New conditioned OM made --------------")
         MadeOM(1) 
+        redoSD()
+        AM("Updating status determination outputs following OM rebuilding")
        
       },
       error = function(e){
