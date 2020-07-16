@@ -153,6 +153,8 @@ save_settings<-function(){
   
   settings<-list()
   settings[['plusgroup']]<-input$plusgroup
+  settings[['seed']]<-input$seed
+  settings[['use_seed']]<-input$use_seed
   settings[['Distribution']]<-input$Distribution
   settings[['IQRange']]<-input$IQRange
   settings[['interval']]<-input$interval
@@ -174,22 +176,24 @@ save_settings<-function(){
   
 load_settings<-function(settings){
   
-  updateNumericInput(session,'plusgroup',value=settings$plusgroup)
-  updateRadioButtons(session,'Distribution',selected=settings$Distribution)
-  updateNumericInput(session,'IQRange',value=settings$IQRange)
-  updateNumericInput(session,'interval',value=settings$interval)
-  updateCheckboxInput(session,'Parallel',value=settings$Parallel)
-  updateNumericInput(session,'nsim',value=settings$nsim)
-  updateSliderInput(session,'Dep_reb',value=settings$Dep_reb)
-  updateSelectInput(session,'Cond_ops',selected=settings$Cond_ops)
-  updateCheckboxInput(session,'OM_C',value=settings$OM_C)
-  updateNumericInput(session,'C_eq_val',value=settings$C_eq_val)
-  updateCheckboxInput(session,'C_eq',value=settings$C_eq)
-  updateNumericInput(session,'ESS',value=settings$ESS)
-  updateNumericInput(session,'Wt_comp',value=settings$Wt_comp)
-  updateNumericInput(session,'max_F',value=settings$max_F)
-  updateRadioButtons(session,'Mode',selected=settings$Mode)
-  updateSelectInput(session,'Skin',selected=settings$Skin)
+  if(!is.null(settings$plusgroup))updateNumericInput(session,'plusgroup',value=settings$plusgroup)
+  if(!is.null(settings$seed))updateNumericInput(session,'seed',value=settings$seed)
+  if(!is.null(settings$use_seed))updateCheckboxInput(session,'use_seed',value=settings$use_seed)
+  if(!is.null(settings$Distribution))updateRadioButtons(session,'Distribution',selected=settings$Distribution)
+  if(!is.null(settings$IQRange))updateNumericInput(session,'IQRange',value=settings$IQRange)
+  if(!is.null(settings$interval))updateNumericInput(session,'interval',value=settings$interval)
+  if(!is.null(settings$Parallel))updateCheckboxInput(session,'Parallel',value=settings$Parallel)
+  if(!is.null(settings$nsim))updateNumericInput(session,'nsim',value=settings$nsim)
+  if(!is.null(settings$Dep_reb))updateSliderInput(session,'Dep_reb',value=settings$Dep_reb)
+  if(!is.null(settings$Cond_ops))updateSelectInput(session,'Cond_ops',selected=settings$Cond_ops)
+  if(!is.null(settings$OM_C))updateCheckboxInput(session,'OM_C',value=settings$OM_C)
+  if(!is.null(settings$C_eq_val))updateNumericInput(session,'C_eq_val',value=settings$C_eq_val)
+  if(!is.null(settings$C_eq))updateCheckboxInput(session,'C_eq',value=settings$C_eq)
+  if(!is.null(settings$ESS))updateNumericInput(session,'ESS',value=settings$ESS)
+  if(!is.null(settings$Wt_comp))updateNumericInput(session,'Wt_comp',value=settings$Wt_comp)
+  if(!is.null(settings$max_F))updateNumericInput(session,'max_F',value=settings$max_F)
+  if(!is.null(settings$Mode))updateRadioButtons(session,'Mode',selected=settings$Mode)
+  if(!is.null(settings$Skin))updateSelectInput(session,'Skin',selected=settings$Skin)
   
 }  
   

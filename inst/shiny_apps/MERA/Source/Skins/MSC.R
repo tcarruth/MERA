@@ -724,7 +724,7 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   
   Fig_title[[2]] <- "Figure 2. Spawning stock depletion relative to equilibrium SSB in initial year "
   Fig_text[[2]] <-"The first panel shows median estimated depletion trend for all status determination methods. 
-Subsequent panels show the 90th (light grey), 50th (dark grey) and median estimates (white line) for each Status determination method"
+Subsequent panels show the 90th (light blue), 50th (dark blue) and median estimates (white line) for each Status determination method"
   
   Figs[[2]]<-function(Status,options=list()){
     

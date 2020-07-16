@@ -116,7 +116,7 @@ shinyUI(
       column(12,style="height:7px; background-color:'white'")
     ),
     
-    fluidRow(style = "background-color:#347ab6;",
+    fluidRow(style = "background-color:#347ab6;",  #=================================================================================================================================
       column(10,style="padding-left: 10px",
       
    
@@ -196,7 +196,8 @@ shinyUI(
                                       HTML("Management Planning &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;- calculate the expected future performance of management procedures"),
                                       HTML("Management Performance &nbsp;&nbsp; - given a management procedure is in use, analyse new data and monitor performance"),
                                       #HTML("Risk Assessment &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- calculate the risk of status quo fishery management"),
-                                      HTML("Status Determination &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- use the questionnaire and data to estimate population status")))
+                                      HTML("Status Determination &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- use the questionnaire and data to estimate population status"))
+                                    )
                 )
          ),
          
@@ -214,23 +215,24 @@ shinyUI(
          width="800px"
          
        )),
-             
-             
-      
-      
+        
       # Settings drop down ----------------------------------------------------------------------------------------------------------------       
       tags$head(tags$style(HTML("#DD_settings { border-color: #347ab6; border-width: 3px }"))),
       div(style="display: inline-block;vertical-align:top",
           dropdownButton(
-            
-            
+             
             column(12, 
                    h5(tags$b("Calculation options",style="color:#347ab6")), 
                    column(5, 
                         numericInput("plusgroup", label=h5("Plus group"), value=40,min=10,max=200)
+                   ),
+                   column(1),
+                   column(3,
+                        numericInput("seed",label=h5("Random seed"),value=0,min=-1000,max=1000)  
+                   ),
+                   column(3,
+                        checkboxInput("use_seed",label=h5('Use seed'),value=F)
                    )
-                   
-            
             ),
             column(12, tags$hr(style="margin-top: 12px; margin-bottom: 3px"),
                    h5(tags$b("Sampling of operating model parameters",style="color:#347ab6")), 
@@ -461,10 +463,11 @@ shinyUI(
         circle = FALSE,
         width="800px"
         
-      ))
+      )# end of dropdown
+      )# end of div
       )# end of column 10
       
-    ),
+    ), # end of fluidrow =================================================================================================================================
     #tags$hr(style="margin-top: 2px; margin-bottom: 5px"),
     
     conditionalPanel('output.Start==0', column(12,style="height:1000px; margin-top:15px; margin-left:-10px")),
@@ -1203,7 +1206,7 @@ shinyUI(
                                textOutput("Mpanelout"),
                                textOutput("Dpanelout")
                         )
-                 ),
+                 )
                  
                  #column(width=3,#style="height:180px",
                 #        conditionalPanel(condition="output.Fpanel>0|output.Ppanel>0|output.Dpanel>0|output.Fpanel!=undefined|output.Mpanel!=undefined|output.Dpanel!=undefined",

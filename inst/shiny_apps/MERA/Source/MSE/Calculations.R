@@ -73,7 +73,7 @@ Calc_Plan<-function(){
     AM("Starting MSE projections")
     withProgress(message = "Running Planning Analysis", value = 0, {
       silent=T
-      MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
+      MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel,ntrials=1000,fracD=0.2)
     })
     
     # if (input$Skin !="Train") { # don't run rebuild for Train skin
@@ -84,7 +84,7 @@ Calc_Plan<-function(){
     
     withProgress(message = "Rebuilding Analysis", value = 0, {
       if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
-      MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel)
+      MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel,ntrials=1000,fracD=0.2)
     })
     
     MSEobj_reb@Misc[[4]]<<-SampList
@@ -205,7 +205,7 @@ Calc_Perf<-function(){
     withProgress(message = "Running Performance Evaluation", value = 0, {
         
       EvalMPs<-input$sel_MP
-      MSEobj_Eval<<-runMSE(OM,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel)
+      MSEobj_Eval<<-runMSE(OM,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel,ntrials=1000,fracD=0.2)
       # saveRDS(MSEobj_Eval,"C:/temp/MSEobj_Eval.rda") #
       # saveRDS(dat,"C:/temp/dat.rda") # 
       # saveRDS(dat_ind,"C:/temp/dat_ind.rda") # 

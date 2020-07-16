@@ -142,6 +142,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       OM<-trimOM(OM,input$nsim)
     }
     
+    if(input$use_seed)OM@seed<-input$seed
+    
     OM@R0<-1e9
     OM@Linf<-c(100,100)
     OM@L50<-NaN
@@ -348,7 +350,7 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     #}
     
     # ---- Data overwriting ---------------------------------------------------------------------------------------------------
-    #saveRDS(OM,"C:/temp/OMpost.rda")
+    #saveRDS(OM,"C:/temp/OMpost.rda") 
     #saveRDS(dat,"C:/temp/datpost.rda")
     
     if(Data()==1){
@@ -395,9 +397,9 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
           incProgress(0.8)
           
         })
-        
-        OM<-Sub_cpars(CFit@OM,CFit@conv) # subset operating model by converged runs
-        SampList<<-SampList[CFit@conv,]  # subset other question parameter samples
+        #saveRDS(CFit,"C:/temp/CFit.rda")
+        OM<-Sub_cpars(CFit@OM,CFit@conv & CFit@OM@cpars$D<1.5) # subset operating model by converged runs and final depletion below 150% unfished
+        SampList<<-SampList[CFit@conv& CFit@OM@cpars$D<1.5,]  # subset other question parameter samples
         updateNumericInput(session=session, "nsim",value=sum(CFit@conv)) # make sure OM nsim matches the text box
         
         #OM<-CFit@OM
@@ -442,7 +444,8 @@ dofit<-function(OM,dat){
   codes<<-input$Cond_ops
   Fit[[1]]<-GetDep(OM,dat,code=codes)
   Est[[1]]<-Fit[[1]]@OM@cpars$D[Fit[[1]]@conv]
-  if(sum(Fit[[1]]@conv)!=0)AM(paste(sum(Fit[[1]]@conv),"of",length(Fit[[1]]@conv),"simulations did not converge and will not be used in other calculations"))
+  if(sum(Fit[[1]]@conv)!=0)AM(paste(sum(Fit[[1]]@conv),"of",length(Fit[[1]]@conv),"simulations converged, the rest will removed and not be used in other calculations"))
   Status <<- list(codes=codes, Est=Est, Sim=Sim, Fit=Fit, nsim=nsim, Years=dat@Year, SimSams=SimSams, BCfit=BCfit) 
+  #saveRDS(Status,"C:/temp/Status.rda")# 
   AM("Operating model conditioned: Management Planning and Status Determination models available")
 }

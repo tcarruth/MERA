@@ -128,78 +128,6 @@ getCodes<-function(dat,maxtest=6){
   
 }
 
-DataStrip<-function(dat,OM,code,simno=1){
-
-  # OM<-testOM; code="C_I"; simno=1; dat<-new('Data',"C:/Users/tcar_/Dropbox/MSC Data Limited Methods Project - Japan/MERA_Japan_workshop/ys_flounder2_TC/Yellow_striped_flounder2.csv")
-  
-  datTypes<-c("C","E","A","L","M")
-  # slotnams<-c("Cat","Effort","Ind","CAA","CAL","ML")
-  #listnams<-c("Chist","Ehist","Index","CAA","CAL","ML")
-  #slotnams2<-c("Cat","Effort","Ind","CAA","ML","ML")  # hack for current SRAscope limitation
-  #listnams2<-c("Chist","Ehist","Index","CAA","ML","ML") # hack for current SRAscope limitation
-  slotnams<-c("Cat","Effort","CAA","CAL","ML")
-  listnams<-c("Chist","Ehist","CAA","CAL","ML")
-  nD<-length(datTypes)
-  outlist<-list()
-  
-  dat@ML<-dat@ML/dat@vbLinf*100 # ML conversion
-
-  for(i in 1:nD){
-    outlist[[listnams[i]]]<-NULL
-  }
-
-  for(i in 1:nD){
-
-    if(grepl(datTypes[i],code)){
-
-      temp<-slot(dat,slotnams[i])
-
-      if(length(dim(temp))==2){
-        outlist[[listnams[i]]]<-slot(dat,slotnams[i])[simno,]
-        
-      }else{
-        outlist[[listnams[i]]]<-slot(dat,slotnams[i])[simno,,]
-       
-      }
-      
-    }
-
-  }
-   
-  # total stock (1, default), spawning stock (2), or vulnerable stock (3)
-
-  if(grepl("E",code)){
-     outlist[['condition']]<-"effort"
-  }else{
-    if(!grepl("C",code)){
-      outlist[['Ehist']]<-rep(1,length(dat@Year))
-      outlist[['condition']]<-"effort"
-    }else{
-      outlist[['condition']]<-"catch2"  # catch 1 is F estimated, catch 2 is true sra with newton solving for Baranov
-    }
-
-  }
-  
-  if(code=="C"){
-    outlist[['Ehist']]<-rep(1,length(dat@Year))
-    outlist[['condition']]<-"effort" # exception for catch only methods
-  } 
-
-  if(length(dat@CAL_bins)>1){
-    NL<-length(dat@CAL_bins)
-    outlist[['length_bin']]<-(dat@CAL_bins[1:(NL-1)]+dat@CAL_bins[2:NL])/2
-  }
-  
-  if(grepl("I",code)) outlist<-c(outlist, Process_Indices(dat,OM))
-  if(input$C_eq) outlist<-c(outlist, C_eq=input$C_eq_val)
-  outlist[['ESS']]<-rep(input$ESS,2)
-  outlist[['LWT']]<-list(CAA=input$Wt_comp,CAL=input$Wt_comp)
-  outlist[['max_F']]<-input$max_F
-  outlist
-
-}
-
-
 
 makesimsamOM<-function(OM,ndeps=40,DepLB=0.05, DepUB=0.8){
   OM_s<-trimOM(OM,ndeps)
@@ -386,13 +314,14 @@ SimSam<-function(OMc,dat,code){
 
 GetDep<-function(OM,dat,code){
   
+  #saveRDS(dat,"C:/temp/dat.rda") 
+  #saveRDS(OM,"C:/temp/OM.rda")     
+  #saveRDS(code,"C:/temp/code.rda")
+  
   data<-DataStrip(dat,OM,code,simno=1)
   
   #saveRDS(data,"C:/temp/data.rda") 
-  #saveRDS(dat,"C:/temp/dat.rda")  
-  #saveRDS(OM,"C:/temp/OM.rda")     
-  #saveRDS(code,"C:/temp/code.rda") 
-  
+   
   OMeff<-data$condition=="effort"
 
   nsim<-input$nsim
@@ -406,6 +335,7 @@ GetDep<-function(OM,dat,code){
     }
     
   }
+  
   out<-SRA_scope(OM = OM,
                  data = data,
                  mean_fit = TRUE,
@@ -415,7 +345,7 @@ GetDep<-function(OM,dat,code){
                  ESS = data$ESS,
                  s_selectivity = data$s_selectivity, 
                  selectivity = data$selectivity,
-                 s_vul_par = data$s_vul_par, s_map_vul_par = data$s_map_vul_par,
+                 s_vul_par = data$s_vul_par, map_s_vul_par = data$map_s_vul_par,
                  vul_par = data$vul_par, map_vul_par = data$map_vul_par,
                  LWT = data$LWT,
                  max_F=data$max_F,
@@ -425,6 +355,78 @@ GetDep<-function(OM,dat,code){
   
 }
 
+
+
+DataStrip<-function(dat,OM,code,simno=1){
+  
+  # OM<-testOM; code="C_I"; simno=1; dat<-new('Data',"C:/Users/tcar_/Dropbox/MSC Data Limited Methods Project - Japan/MERA_Japan_workshop/ys_flounder2_TC/Yellow_striped_flounder2.csv")
+  
+  datTypes<-c("C","E","A","L","M")
+  # slotnams<-c("Cat","Effort","Ind","CAA","CAL","ML")
+  #listnams<-c("Chist","Ehist","Index","CAA","CAL","ML")
+  #slotnams2<-c("Cat","Effort","Ind","CAA","ML","ML")  # hack for current SRAscope limitation
+  #listnams2<-c("Chist","Ehist","Index","CAA","ML","ML") # hack for current SRAscope limitation
+  slotnams<-c("Cat","Effort","CAA","CAL","ML")
+  listnams<-c("Chist","Ehist","CAA","CAL","ML")
+  nD<-length(datTypes)
+  outlist<-list()
+  
+  dat@ML<-dat@ML/dat@vbLinf*100 # ML conversion
+  
+  for(i in 1:nD){
+    outlist[[listnams[i]]]<-NULL
+  }
+  
+  for(i in 1:nD){
+    
+    if(grepl(datTypes[i],code)){
+      
+      temp<-slot(dat,slotnams[i])
+      
+      if(length(dim(temp))==2){
+        outlist[[listnams[i]]]<-slot(dat,slotnams[i])[simno,]
+        
+      }else{
+        outlist[[listnams[i]]]<-slot(dat,slotnams[i])[simno,,]
+        
+      }
+      
+    }
+    
+  }
+  
+  # total stock (1, default), spawning stock (2), or vulnerable stock (3)
+  
+  if(grepl("E",code)){
+    outlist[['condition']]<-"effort"
+  }else{
+    if(!grepl("C",code)){
+      outlist[['Ehist']]<-rep(1,length(dat@Year))
+      outlist[['condition']]<-"effort"
+    }else{
+      outlist[['condition']]<-"catch2"  # catch 1 is F estimated, catch 2 is true sra with newton solving for Baranov
+    }
+    
+  }
+  
+  if(code=="C"){
+    outlist[['Ehist']]<-rep(1,length(dat@Year))
+    outlist[['condition']]<-"effort" # exception for catch only methods
+  } 
+  
+  if(length(dat@CAL_bins)>1){
+    NL<-length(dat@CAL_bins)
+    outlist[['length_bin']]<-(dat@CAL_bins[1:(NL-1)]+dat@CAL_bins[2:NL])/2
+  }
+  
+  if(grepl("I",code)) outlist<-c(outlist, Process_Indices(dat,OM))
+  if(input$C_eq) outlist<-c(outlist, C_eq=input$C_eq_val)
+  outlist[['ESS']]<-rep(input$ESS,2)
+  outlist[['LWT']]<-list(CAA=input$Wt_comp,CAL=input$Wt_comp)
+  outlist[['max_F']]<-input$max_F
+  outlist
+  
+}
 
 
 
@@ -440,14 +442,17 @@ Process_Indices<-function(dat,OM){
   vul_par<-NULL
   map_vul_par<-NULL
   s_vul_par<-NULL
-  s_map_vul_par<-NULL
+  map_s_vul_par<-NULL
   s_selectivity<-NULL
   ny<-length(dat@Year)
   fleetno<-0
   
   # Total biomass index -------------
+  
   temp<-slot(dat,"Ind")
+  
   if(!all(is.na(temp))){
+    
     Index<-rbind(Index,temp)
     temp<-slot(dat,"CV_Ind")
     if(!all(is.na(temp))){
@@ -526,20 +531,20 @@ Process_Indices<-function(dat,OM){
     temp<-slot(dat,"CV_AddInd")[1,,]
     I_sd<-rbind(I_sd,temp)
     temp<-slot(dat,"AddIndV")[1,,]
-    s_vul_par<-rbind(s_vul_par,t(temp))
+    s_vul_par<-cbind(s_vul_par,t(temp))
     temp<-slot(dat,"AddIndType")
     
     if(is.na(temp))temp<-rep(3,nadd) # default to 3 (vulnerable index type)
     for(i in 1:length(temp)){
       #fleetno<-fleetno+1
-      #s_selectivity<-c(s_selectivity,"free")
+      s_selectivity<-c(s_selectivity,"free")
       #sel_block<-cbind(sel_block,rep(fleetno,ny))
       if(temp[i]==1){
         Itype<-c(Itype,"B")
       }else if(temp[i]==2){
         Itype<-c(Itype,"SSB")
       }else{
-        Itype<-c(Itype,fleetno)
+        Itype<-c(Itype,'est')
       }
     } 
   }
@@ -547,19 +552,19 @@ Process_Indices<-function(dat,OM){
   if(all(is.na(s_vul_par)))s_vul_par=NULL
   if(all(is.na(vul_par)))vul_par=NULL
   
-  if(!is.null(s_vul_par))s_map_vul_par=array(NA,dim(s_vul_par))
+  if(!is.null(s_vul_par))map_s_vul_par=array(NA,dim(s_vul_par))
   if(!is.null(vul_par))map_vul_par=array(NA,dim(vul_par))
   
   if(all(PanelState[[1]][[10]]==c(T,F,F,F))){
     selectivity='logistic'
-    AM("Conditioning operating model estimating logistic ('flat-topped') selectivity based on Fishery Question 11")
+    #AM("Conditioning operating model estimating logistic ('flat-topped') selectivity based on Fishery Question 11")
   }else{  
     selectivity='dome'
-    AM("Conditioning operating model allowing for the estimation of dome shaped selectivity based on Fishery Question 11")
+    #AM("Conditioning operating model allowing for the estimation of dome shaped selectivity based on Fishery Question 11")
   }  
   
   list(Index=t(Index), I_sd=t(I_sd), I_type=Itype, 
-       s_vul_par=s_vul_par, s_map_vul_par=s_map_vul_par,
+       s_vul_par=s_vul_par, map_s_vul_par=map_s_vul_par,
        vul_par=vul_par, map_vul_par=map_vul_par,
        #nsel_block=ncol(sel_block), sel_block=sel_block, 
        s_selectivity = s_selectivity, selectivity=selectivity)
