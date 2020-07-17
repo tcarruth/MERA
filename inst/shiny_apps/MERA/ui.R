@@ -226,13 +226,16 @@ shinyUI(
                    column(5, 
                         numericInput("plusgroup", label=h5("Plus group"), value=40,min=10,max=200)
                    ),
-                   column(1),
-                   column(3,
-                        numericInput("seed",label=h5("Random seed"),value=0,min=-1000,max=1000)  
+                   column(2),
+                   column(2,
+                          checkboxInput("use_seed",label=h5('Use seed'),value=F)
                    ),
                    column(3,
-                        checkboxInput("use_seed",label=h5('Use seed'),value=F)
+                        conditionalPanel('input.use_seed',
+                        numericInput("seed",label=h5("Random seed"),value=0,min=-1000,max=1000)
+                        )
                    )
+                   
             ),
             column(12, tags$hr(style="margin-top: 12px; margin-bottom: 3px"),
                    h5(tags$b("Sampling of operating model parameters",style="color:#347ab6")), 
@@ -284,11 +287,13 @@ shinyUI(
             conditionalPanel(condition="output.Data==1",
                   column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"),
                    h5(tags$b("Operating model conditioning / Status Determination approach (fitting to data)",style="color:#347ab6")), 
-                    
-                     column(6,selectInput("Cond_ops", label = h5("Conditioning Model"), choices=c("None"),selected="None"),style="height:75px"),
+                     
                      column(6, checkboxInput("OM_C","Use conditioned OM for analyses",value=TRUE),style="height:75px"),
-                     column(6,numericInput("C_eq_val",label=h5("Equilibrium catches"),value=0,min=0,max=Inf),style="height:75px"),
+                     column(6,conditionalPanel("input.OM_C",selectInput("Cond_ops", label = h5("Conditioning Model"), choices=c("None"),selected="None")),style="height:75px"),
+                     
                      column(6,checkboxInput("C_eq",label="Assume equilibrium catches in conditioning",value=FALSE),style="height:75px"),
+                     column(6,conditionalPanel("input.C_eq",numericInput("C_eq_val",label=h5("Equilibrium catches"),value=0,min=0,max=Inf)),style="height:75px"),
+                     
                      column(4,numericInput("ESS",label=h5("Maximum No. Ind. Comp."),100,min=5,max=Inf),style="height:75px"),
                      column(4,numericInput("Wt_comp",label=h5("Composition nLL multiplier"),value=1,min=0.01,max=10),style="height:75px"),
                      column(4,numericInput("max_F",label=h5("Maximum apical F"),value=3,min=0.1,max=50),style="height:75px")

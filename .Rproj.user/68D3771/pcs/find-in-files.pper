@@ -5,7 +5,7 @@
         ],
         "path" : "",
         "projectRelative" : true,
-        "query" : "did not converge",
+        "query" : "saveRDS",
         "regex" : false
     }
 }

@@ -373,6 +373,7 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
       if(!is.na(dat@LFC))OM@L5<-rep(dat@LFC,2)
       if(!is.na(dat@LFS))OM@LFS<-rep(dat@LFS,2)
       if(!is.na(dat@Vmaxlen))OM@Vmaxlen<-rep(dat@Vmaxlen,2)
+      if(!is.na(dat@LenCV))OM@LenCV<-rep(dat@LenCV,2)
      
     }
     

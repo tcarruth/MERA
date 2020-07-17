@@ -39,12 +39,18 @@ Calc_Status<-function(){
 
 Calc_Plan<-function(){
   
-  doprogress("Building OM from Questionnaire",1)
-
   if(LoadOM()==1&input$OM_L){ 
     OM<<-OM_L
+    doprogress("Using loaded OM",1)
   }else{
-    if(MadeOM()==0)OM<<-makeOM(PanelState)
+    
+    if(MadeOM()==0){
+      doprogress("Building new OM",1)
+      OM<<-makeOM(PanelState)
+    }else{
+      doprogress("Using the OM that has been built",1)
+    }  
+      
   }
   
   Fpanel(1)

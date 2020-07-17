@@ -22,7 +22,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"6.1.9"
+  Version<<-"6.1.10"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -363,7 +363,7 @@ shinyServer(function(input, output, session) {
 
   # Data load
   observeEvent(input$Load_Data,{
-
+    #filey=list(datapath=paste0(getwd(),"/Data_from_SS.rda"))
     filey<-input$Load_Data
     dattest=NULL
     if(grepl(".csv",filey$datapath)){ # if it is a .csv file
@@ -399,7 +399,7 @@ shinyServer(function(input, output, session) {
         }
       )
 
-      if(class(dat)!="Data"){
+      if(class(dattest)!="Data"){
         shinyalert("Data load error!", "Failed to load this file as either a formatted .csv datafile or a DLMtool object of class 'Data'", type = "error")
         AM(paste0("Data object failed to load:", filey$datapath))
         Data(0)
@@ -695,7 +695,17 @@ shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$RemakeOM,{
-    OM<<-makeOM(PanelState)
+    temp<-checkQs()
+    if(temp$error){
+      
+      shinyalert("Incomplete Questionnaire", text=paste("The following questions have not been answered or answered incorrectly:",paste(temp$probQs,collapse=", ")), type = "warning")
+      
+    }else{
+      doprogress("Building OM",1)
+      OM<<-makeOM(PanelState)
+      
+    }
+    
   })
   
   

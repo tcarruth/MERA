@@ -123,6 +123,7 @@ biasplot<-function(fitout,lab=""){
 getCodes<-function(dat,maxtest=6){
   
   codes<-Detect_scope(dat)                             # what scoping methods are possible?
+  codes<-codes[order(codes)]
   ord<-order(nchar(codes),decreasing = T)
   codes[ord][1:min(maxtest,length(codes))]
   
@@ -314,7 +315,7 @@ SimSam<-function(OMc,dat,code){
 
 GetDep<-function(OM,dat,code){
   
-  #saveRDS(dat,"C:/temp/dat.rda") 
+  #saveRDS(dat,"C:/temp/dat.rda") # 
   #saveRDS(OM,"C:/temp/OM.rda")     
   #saveRDS(code,"C:/temp/code.rda")
   
