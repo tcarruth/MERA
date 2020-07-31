@@ -455,11 +455,12 @@ class(LTY2)<<-'PM'
 
 Tplot<-function(MSEobj, MSEobj_reb, controls=list()){
  
-  TradePlot(MSEobj,'PB50', 'LTY2', 'PB100','LTY2',fill=rgb(0.4,0.8,0.95),Show='plots')
+  TradePlot(MSEobj,PMlist=list('PB50', 'LTY2', 'PB100','LTY2'),fill=rgb(0.4,0.8,0.95),Show='plots') #TradePlotMERA
 }
 
 
 # generic functions
+
 
 FeaseLabs<-function(MPs,dat=NULL){
   
@@ -472,6 +473,7 @@ FeaseLabs<-function(MPs,dat=NULL){
   }
 
   tempdat0<-DLMtool::SimulatedData
+  tempdat0@Misc<-rep(list(0),2)
   tempdat0@AddInd<-array(NA,c(dim(tempdat0@Ind)[1],5,dim(tempdat0@Ind)[2]))
   for(i in 1:5)tempdat0@AddInd[,i,]<-tempdat0@Ind
   
@@ -549,7 +551,6 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   if(!pCC)plot_mdist(indPPD,indData,alpha=0.05)
   
 }
-
 
 
 
@@ -660,13 +661,14 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   options<-list()
   
   Intro_title[[1]] <- "Introduction"
-  Intro_text[[1]] <- "Status determination provides estimates of spawning stock biomass relative to asymptotic unfished conditions for various combinations of data types."
+  Intro_text[[1]] <- "Status determination provides estimates of spawning stock biomass relative to asymptotic unfished conditions."
   
   # --- Tables --- 
+  
   Tab_title[[1]] <- "Table 1. Depletion estimates (SSB relative to unfished)"
   Tab_text[[1]] <-"Quantiles of the depletion estimates of various methods. Method refers to a stochastic 
-  stock reduction analysis fitted to various combinations of data types (C Catch, I Index, M mean length, CAA Catch at age composition, CAL Catch at length composition).
-  'Conv' is the fraction of runs that converged."
+  stock reduction analysis fitted to various combinations of data types (C = Catch, I = Index, M = mean length, 
+  A = Catch at age composition, L = Catch at length composition). 'Conv' is the fraction of runs that converged."
   
   Tabs[[1]]<-function(Status,options=list()){
     
@@ -684,7 +686,7 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
     conv<-round(sum(Status$Fit[[1]]@conv)/length(Status$Fit[[1]]@conv)*100,2)
     tab<-as.data.frame(matrix(c(Status$codes,qs,conv),nrow=1))
     names(tab)<-c("Method","2.5%","5%","Median","95%","97.5%","Conv %")
-    datatable(tab,caption="Stock status estimates (SSB relative to 'unfished')",
+    datatable(tab,caption=paste("Stock status estimates (SSB relative to 'unfished') in",Lyear),
               extensions = 'Buttons',
               options=list(buttons = 
                              list('copy', list(
@@ -696,6 +698,35 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
     )
     
   }
+  
+  Tab_title[[2]] <- "Table 2. Probability of SSB exceeding various fractions of SSB0"
+  Tab_text[[2]] <-"Probability of spawning stock biomass (SSB) in the most recent year, exceeding various fractions of unfished spawnign biomass (SSB0). Method refers to a stochastic 
+  stock reduction analysis fitted to various combinations of data types (C = Catch, I = Index, M = mean length, 
+  A = Catch at age composition, L = Catch at length composition). 'Conv' is the fraction of runs that converged."
+  
+  
+  Tabs[[2]]<-function(Status,options=list()){
+    
+    ncode<-length(Status$codes)
+    
+    ps<-c(sum(Status$Est[[1]]>0.1),sum(Status$Est[[1]]>0.2),sum(Status$Est[[1]]>0.3),sum(Status$Est[[1]]>0.4),sum(Status$Est[[1]]>0.5))/length(Status$Est[[1]])
+    
+    tab<-as.data.frame(matrix(c(Status$codes,round(ps,3)),nrow=1))
+    names(tab)<-c("Method","P(SSB > 0.1 SSB0)","P(SSB > 0.2 SSB0)","P(SSB > 0.3 SSB0)","P(SSB > 0.4 SSB0)","P(SSB > 0.5 SSB0)")
+    datatable(tab,caption=paste("Probability that SSB exceeds various fractions of SSB0 in ",Lyear),
+              extensions = 'Buttons',
+              options=list(buttons = 
+                             list('copy', list(
+                               extend = 'collection',
+                               buttons = c('csv', 'excel', 'pdf'),
+                               text = 'Download'
+                             )),
+                           dom = 'Brti')
+    )
+    
+  }
+  
+  
   
   
   # --- Figures --- 
@@ -712,10 +743,10 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
     
     SDdat<-data.frame(y=unlist(Est),x=rep(Status$codes[keep],unlist(lapply(Est,length))))
     
-    boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='i',ylab="Estimated Status (%, SSB relative to unfished)")
+    boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='i',ylab=paste("Estimated Status (%, SSB relative to unfished) in ",Lyear))
     #legend('topright',legend=Status$codes[keep],text.col=cols,bty='n',cex=0.9)
     abline(h=seq(0.1,1,length.out=10),col="grey")
-    boxplot(y~x,SDdat,col=cols,xlab="Status Determination Method",yaxs='n',
+    boxplot(y~x,SDdat,col=cols,xlab=Status$codes,yaxs='n',
             ylab="Estimated Status (SSB relative to unfished)",add=T)
     
     
@@ -724,7 +755,7 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   
   Fig_title[[2]] <- "Figure 2. Spawning stock depletion relative to equilibrium SSB in initial year "
   Fig_text[[2]] <-"The first panel shows median estimated depletion trend for all status determination methods. 
-Subsequent panels show the 90th (light blue), 50th (dark blue) and median estimates (white line) for each Status determination method"
+Subsequent panels show the 90th (light blue), 50th (dark blue) and median estimates (white line) for each status determination method. "
   
   Figs[[2]]<-function(Status,options=list()){
     
@@ -765,7 +796,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     
     qplot<-function(mat,xlab=1:ny,main=""){ #qcol=rgb(0.4,0.8,0.95), lcol= "dodgerblue4"
       
-      plot(c(0,ny),c(0,1),col="white",yaxs='i',ylab="",xlab="")
+      plot(range(xlab),c(0,1),col="white",yaxs='i',ylab="",xlab="")
       abline(h=seq(0.1,1,length.out=10),col="light grey")
       
       polygon(c(xlab,xlab[length(xlab):1]),c(mat[1,],mat[5,ncol(mat):1]),col=rgb(0.4,0.8,0.95),border=rgb(0.4,0.8,0.95))
@@ -777,11 +808,11 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     
     for(i in keep_ind){
       
-      qplot(Dqs[[i]],xlab=1:ny,main=Status$codes[[i]])
+      qplot(Dqs[[i]],xlab=Syear:Lyear,main=Status$codes[[i]])
       
     }
     
-    mtext("Historical Year",1,line=0.5,outer=T)
+    mtext("Year",1,line=0.5,outer=T)
     mtext("Stock Depletion (SSB relative to unfished)",2,line=0.5,outer=T)
     
   }
@@ -953,8 +984,6 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
   
   
  
-  
-  
 
 # ============= Evaluation =======================
 
@@ -978,12 +1007,12 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     YIU<-length(dat_ind@Year)-length(dat@Year)
     nMPs<-MSEobj_Eval@nMPs
     proyears<-MSEobj_Eval@proyears
-    ind<-1:min(5,proyears)
+    ind<-1:min(YIU,proyears)
     
     LRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,1:YIU,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
     Tab1<-as.data.frame(cbind(MSEobj_Eval@MPs,LRP))
    
-    colnams<-c("MP",Current_Year-((YIU-1):0))
+    colnams<-c("MP",max(dat@Year)+(1:YIU))
     names(Tab1)<-colnams
     Tab1$MP<-as.character(Tab1$MP)
     
@@ -1021,7 +1050,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     
     TRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
     Tab2<-as.data.frame(cbind(MSEobj_Eval@MPs,TRP))
-    colnams<-c("MP",Current_Year-((YIU-1):0))
+    colnams<-c("MP",max(dat@Year)+(1:YIU))
     names(Tab2)<-colnams
     Tab2$MP<-as.character(Tab2$MP)
     
@@ -1058,7 +1087,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     ind<-1:min(YIU,proyears)
     RP<-matrix(round(apply(B_B0[,,ind,drop=F]>0.2,2:3,mean)*100,rnd),nrow=nMPs)
     Tab3<-as.data.frame(cbind(MSEobj_Eval@MPs,RP))
-    colnams<-c("MP",Current_Year-((YIU-1):0))
+    colnams<-c("MP",max(dat@Year)+(1:YIU))
     names(Tab3)<-colnams
     Tab3$MP<-as.character(Tab3$MP)
     
@@ -1101,7 +1130,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
   Fig_text[[4]] <- "The 'cloud' of posterior predicted data are represented by the grey shaded areas that"
   
   Figs[[4]]<-  function(MSEobj_Eval,dat,dat_ind,options=list())post_marg_plot(MSEobj_Eval,dat,dat_ind,options=list())
-  Fig_dim[[4]] <- function(dims)list(height=400,width=800)
+  Fig_dim[[4]] <- function(dims)list(height=800,width=800)
  
   Evaluation<-list(Tabs=Tabs, Figs=Figs, Tab_title=Tab_title, Tab_text=Tab_text, Fig_title=Fig_title, 
                    Fig_text=Fig_text, Fig_dim=Fig_dim, Intro_title=Intro_title, Intro_text=Intro_text, options=options)

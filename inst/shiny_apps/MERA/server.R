@@ -22,7 +22,7 @@ source("./global.R")
 # Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output, session) {
 
-  Version<<-"6.1.10"
+  Version<<-"6.1.12"
   
   # -------------------------------------------------------------
   # Explanatory figures
@@ -74,6 +74,7 @@ shinyServer(function(input, output, session) {
 
   # Miscellaneous
   source("./Source/Misc/Misc.R",local=TRUE)
+  source("./Source/Misc/Extra_Figures.R",local=TRUE)
  
   incProgress<-shiny::incProgress
 
@@ -216,9 +217,9 @@ shinyServer(function(input, output, session) {
   SessionID<-paste0(USERID,"-",strsplit(as.character(Sys.time())," ")[[1]][1],"-",strsplit(as.character(Sys.time())," ")[[1]][2])
   output$SessionID<-renderText(SessionID)
 
-  CurrentYr<<-2018 # as.integer(input$Lyear) #as.integer(substr(as.character(Sys.time()),1,4))
-  Syear<<-1951
-  Lyear<<-2018
+  
+  
+ 
   Copyright<-"Open Source, GPL-2"
   
   # Log stuff
@@ -411,6 +412,7 @@ shinyServer(function(input, output, session) {
     if(!is.null(dattest)){
       LHYear<<-input$Lyear
       
+      
       if(!is.null(dattest@LHYear)){
         updateNumericInput(session,"Lyear",value=dattest@LHYear,min=min(dattest@Year)+5,max=max(dattest@Year))
         LHYear<-dattest@LHYear
@@ -459,7 +461,7 @@ shinyServer(function(input, output, session) {
       
     }
     
-    #saveRDS(dat,"C:/temp/dat.rda") # 
+   # saveRDS(dat,"C:/temp/dat.rda") #
     #saveRDS(dat_ind,"C:/temp/dat_ind.rda") # 
   })
 
@@ -536,7 +538,12 @@ shinyServer(function(input, output, session) {
       if(!exists("MSEobj_Eval"))MSEobj_Eval=NULL
       if(!exists("Status"))Status=NULL
       if(!exists("OM"))OM=NULL
-      saveRDS(list(MSEobj=MSEobj,MSEobj_reb=MSEobj_reb,RAobj=RAobj,MSEobj_Eval=MSEobj_Eval,MSClog=MSClog,Status=Status,OM=OM),file)
+      if(!exists("SampList"))SampList=NULL
+      MPnams<-avail('MP')
+      MPnams<-MPnams[!(MPnams%in%c(ls("package:MSEtool"),ls("package:DLMtool")))]
+      MPList<-list()
+      for(i in 1:length(MPnams))MPList[[MPnams[i]]]<-get(MPnams[i])
+      saveRDS(list(MSEobj=MSEobj,MSEobj_reb=MSEobj_reb,RAobj=RAobj,MSEobj_Eval=MSEobj_Eval,MSClog=MSClog,Status=Status,OM=OM,SampList=SampList,MPList=MPList),file)
 
     }
 
@@ -567,6 +574,8 @@ shinyServer(function(input, output, session) {
     MSEobj_Eval<<-listy$MSEobj_Eval
     Status<<-listy$Status
     OM<<-listy$OM
+    if(!is.null(listy$SampList))SampList<<-list$Samplist
+    if(!is.null(listy$MPList))for(i in 1:length(listy$MPList))assign(names(listy$MPList)[i],listy$MPList[[i]],envir=.GlobalEnv);AM(paste("Custom MPs loaded:",paste(names(listy$MPList),collapse=", ")))
     Plan(0); Eval(0); SD(0); CondOM(0); RA(0); MadeOM(0) # reset status switches
     redoBlank()
     #"Management Planning","Management Performance","Risk Assessment","Status Determination"
@@ -584,11 +593,7 @@ shinyServer(function(input, output, session) {
    
     Start(1)
     updateTabsetPanel(session,"Res_Tab",selected="1")
-    #}else{
-    #  AM("Planning object load failed: this does not appear to be a MERA planning object")
-     # shinyalert("File read error", "This does not appear to be a MERA planning object", type = "error")
-    #}
-
+    
   })
 
   observeEvent(input$getMPhelp,{
@@ -609,7 +614,7 @@ shinyServer(function(input, output, session) {
         AM(paste0("Source file loaded: ",filey$datapath))
         source(file=filey$datapath)
         updateSelectInput(session=session,inputId="sel_MP",choices=getAllMPs()) # update MP selection in Evaluation
-        updateSelectInput(session=session,inputId="ManPlanMPsel",choices=getAllMPs(),selected="curE") 
+        updateSelectInput(session=session,inputId="ManPlanMPsel",selected=c("DCAC","matlenlim","MRreal","curE75","IT10"),choices=getAllMPs()) 
         
 
     },
@@ -630,7 +635,7 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$AllMPs,{
-    updateSelectInput(session=session,inputId="ManPlanMPsel",selected = getAllMPs())
+    updateSelectInput(session=session,inputId="ManPlanMPsel",selected = getAllMPs(),choices=getAllMPs())
   })
   
   observeEvent(input$ Status_Quo,{

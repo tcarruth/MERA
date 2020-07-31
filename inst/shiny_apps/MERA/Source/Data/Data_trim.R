@@ -13,13 +13,13 @@ Data_trimer<-function(Data,Syear,LHYear){
 
     for(i in 1:length(slots)){
       temp<-slot(Data,slots[i])
-      if((orglength%in%dim(temp)|length(temp)==orglength)&!(slots[i]%in%c("CV_AddInd","AddIndV","AddIunits","AddIndType"))){
+      if((orglength%in%dim(temp)|length(temp)==orglength)&!(slots[i]%in%c("AddIndV","AddIunits","AddIndType"))){
         dims<-dim(temp)
         ndim<-length(dims)
         if(ndim==2){
           slot(DataT,slots[i])<-array(slot(Data,slots[i])[,ind],c(dim(temp)[1],newlength))
         }else if(ndim==3){
-          if(slots[i]=="AddInd"){
+          if(slots[i]%in%c("AddInd","CV_AddInd")){
             slot(DataT,slots[i])<-array(slot(Data,slots[i])[,,ind],c(dim(temp)[1],dim(temp)[2],newlength))
           }else{    
             slot(DataT,slots[i])<-array(slot(Data,slots[i])[,ind,],c(dim(temp)[1],newlength,dim(temp)[3]))

@@ -168,9 +168,9 @@ plot_mdist<-function(indPPD,indData,alpha=0.05){
 
 ppdplot<-function(pred,obs,yrlab,p=c(0.025,0.05,0.25,0.75,0.95,0.975),pcols=c("grey90","grey78","grey66"),lab="",pcex=1.3){
   
-  qmat<-apply(pred,2,quantile,p)
+  qmat<-apply(pred,2,quantile,p,na.rm=T)
   nobs<-length(obs)
-  ylim<-range(pred,obs,na.rm=T)
+  ylim<-quantile(c(pred,obs),p=c(0.01,0.99),na.rm=T)
   plot(range(yrlab),ylim,col="white")
   yind<-c(1:nobs,nobs:1)
   rind<-nobs:1
@@ -195,29 +195,50 @@ ppdplot<-function(pred,obs,yrlab,p=c(0.025,0.05,0.25,0.75,0.95,0.975),pcols=c("g
 post_marg_plot<-function(MSEobj_Eval,dat,dat_ind,options=list()){
   
   YIU=length(dat_ind@Year)-length(dat@Year)
-  styr=max(dat@Year)-min(dat@Year)
+  styr=max(dat@Year)-min(dat@Year)+1
   PPD<-MSEobj_Eval@Misc$Data[[1]]
   
   # Standardization
   predCat<-PPD@Cat[,styr+(1:YIU),drop=F] #(PPD@Cat/PPD@Cat[,styr])
-  predInd<-PPD@AddInd[,1,] [,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
   predML<-PPD@ML[,styr+(1:YIU),drop=F] #(PPD@ML/PPD@ML[,styr])[,styr+(1:YIU),drop=F]
   
   # Standardization
   obsCat<-dat_ind@Cat[1,styr+(1:YIU)] #(dat_ind@Cat/dat_ind@Cat[,styr])[styr+(1:YIU)]
-  obsInd<-dat_ind@VInd[1,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
   obsML<-dat_ind@ML[1,styr+(1:YIU)] #(dat_ind@ML/dat_ind@ML[,styr])[styr+(1:YIU)]
   yrlab<-dat_ind@Year[styr+(1:YIU)]
   
+  ninds<-as.integer(!all(is.na(dat_ind@Ind))) + as.integer(!all(is.na(dat_ind@AddInd)))*dim(PPD@AddInd)[2]
   
-  par(mfrow=c(1,3),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
+  par(mfrow=c(ceiling((2+ninds)/2),2),mai=c(0.3,0.3,0.2,0.01),omi=c(0.3,0.3,0.05,0.05))
   ppdplot(pred=predCat,obs=obsCat,yrlab,lab="Catch")
-  ppdplot(pred=predML,obs=obsML,yrlab,lab="Mean Length in Catch")
-  ppdplot(pred=predInd,obs=obsInd,yrlab,lab="Index of Abundance")
-  mtext("Year",1,line=1.5,outer=T)
-  mtext(paste("Data relative to",yrlab[1]-1),2,line=1.5,outer=T)
   
   legend('topleft',legend=c("95% PI","90% PI","50% PI"),fill=c("grey90","grey78","grey66"),title="Pred. Data")
   legend('topright',legend=c("Consistent","Borderline","Inconsistent"),pch=19,col=c("black","orange","red"),title="Obs. Data",text.col=c("black","orange","red"))
-
+  
+  ppdplot(pred=predML,obs=obsML,yrlab,lab="Mean Length in Catch")
+  
+  indy<-0
+  if(!all(is.na(dat_ind@Ind))){
+    indy<-1
+    predInd<-PPD@Ind[,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
+    obsInd<-dat_ind@Ind[1,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
+    ppdplot(pred=predInd,obs=obsInd,yrlab,lab="Index of Abundance")
+    
+  }
+  
+  if(!all(is.na(dat_ind@AddInd))){
+  for(i in 1:dim(dat_ind@AddInd)[2]){
+    indy<-indy+1
+    predInd<-PPD@AddInd[,indy,] [,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
+    obsInd<-dat_ind@AddInd[1,i,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
+    
+    ppdplot(pred=predInd,obs=obsInd,yrlab,lab="Index of Abundance")
+  
+    #mtext(paste("Data relative to",yrlab[1]-1),2,line=1.5,outer=T)
+  }
+  }
+  
+  mtext("Year",1,line=1.5,outer=T)
+  
+ 
 } 

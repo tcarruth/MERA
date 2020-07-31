@@ -273,7 +273,7 @@ shinyUI(
             
             column(12, tags$hr(style="margin-top: 12px; margin-bottom: 3px"),
                    h5(tags$b("Rebuilding MSE",style="color:#347ab6")),   
-                   column(9, sliderInput("Dep_reb",label=h5("Starting % BMSY from which to evaluate rebuilding"),min=10,max=100,value=c(50,50))),
+                   column(9, sliderInput("Dep_reb",label=h5("Starting % BMSY from which to evaluate rebuilding"),min=10,max=150,value=c(50,50))),
                    column(2, HTML("<br><br>"),actionButton("Dep_reb_def",h5("DEFAULT",style="color:grey")))
             ),
             

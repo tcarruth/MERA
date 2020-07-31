@@ -420,7 +420,18 @@ DataStrip<-function(dat,OM,code,simno=1){
     outlist[['length_bin']]<-(dat@CAL_bins[1:(NL-1)]+dat@CAL_bins[2:NL])/2
   }
   
-  if(grepl("I",code)) outlist<-c(outlist, Process_Indices(dat,OM))
+  if(grepl("I",code)){
+    outlist<-c(outlist, Process_Indices(dat,OM))
+  }else{
+    if(all(PanelState[[1]][[10]]==c(T,F,F,F))){
+      outlist<-c(outlist,selectivity='logistic')
+      #AM("Conditioning operating model estimating logistic ('flat-topped') selectivity based on Fishery Question 11")
+    }else{  
+      outlist<-c(outlist,selectivity='dome')
+      #AM("Conditioning operating model allowing for the estimation of dome shaped selectivity based on Fishery Question 11")
+    }  
+  } 
+  
   if(input$C_eq) outlist<-c(outlist, C_eq=input$C_eq_val)
   outlist[['ESS']]<-rep(input$ESS,2)
   outlist[['LWT']]<-list(CAA=input$Wt_comp,CAL=input$Wt_comp)
@@ -524,14 +535,15 @@ Process_Indices<-function(dat,OM){
     
   }
   
-  temp<-slot(dat,"AddInd")[1,,]
+  temp<-array(slot(dat,"AddInd")[1,,],dim(slot(dat,"AddInd"))[2:3])
+  
   if(!all(is.na(temp))){
     ny<-ncol(temp)
     nadd<-nrow(temp)
     Index<-rbind(Index,temp)
-    temp<-slot(dat,"CV_AddInd")[1,,]
+    temp<-array(slot(dat,"CV_AddInd")[1,,],dim(slot(dat,"CV_AddInd"))[2:3])
     I_sd<-rbind(I_sd,temp)
-    temp<-slot(dat,"AddIndV")[1,,]
+    temp<-array(slot(dat,"AddIndV")[1,,],dim(slot(dat,"AddIndV"))[2:3])
     s_vul_par<-cbind(s_vul_par,t(temp))
     temp<-slot(dat,"AddIndType")
     
@@ -576,6 +588,8 @@ Process_Indices<-function(dat,OM){
 getCodes<-function(dat,maxtest=6){
   
   codes<-Detect_scope(dat)                            # what scoping methods are possible?
+  ord<-order(codes,decreasing = F)
+  codes<-codes[ord]
   ord<-order(nchar(codes),decreasing = T)
   codes[ord][1:min(maxtest,length(codes))]
   

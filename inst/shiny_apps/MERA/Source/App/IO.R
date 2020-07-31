@@ -77,9 +77,13 @@ Update_Questionnaire<-function(MSClog){
     if("nyears" %in% names(MSClog[[3]])){
       updateNumericInput(session, "Lyear",   value= 2018)
       updateNumericInput(session, "Syear",   value= 2018-MSClog[[3]]$nyears+1)
+      Lyear<<-2018
+      Syear<<-2018-MSClog[[3]]$nyears+1
     }else{
       updateNumericInput(session, "Lyear",   value= MSClog[[3]]$Lyear)
       updateNumericInput(session, "Syear",   value= MSClog[[3]]$Syear)
+      Lyear<<-MSClog[[3]]$Lyear
+      Syear<<-MSClog[[3]]$Syear
     }
     
     updateTextInput(session, "Author",   value= MSClog[[3]]$Author)
