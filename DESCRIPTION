@@ -19,6 +19,7 @@ Imports: corpcor,
          shinyalert,
          MSEtool,
          tinytex,
+         rfishbase,
          cowplot,
          DT
 RoxygenNote: 6.1.1

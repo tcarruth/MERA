@@ -597,7 +597,7 @@ shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$getMPhelp,{
-    js$browseURL(MPurl(input$help_MP))
+    #js$browseURL(MPurl(input$help_MP))
   })
 
   # End of file I/O ===================================================================================
