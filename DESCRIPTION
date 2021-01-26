@@ -3,7 +3,7 @@ Type: Package
 Title: Method Evaluation and Risk Assessment
 Version: 1.0.0
 Authors@R: person("Tom", "Carruthers",, "t.carruthers@fisheries.ubc.ca", role=c("aut", "cre"))
-Maintainer: Tom Carruthers <t.carruthers@oceans.ubc.ca>
+Maintainer: Tom Carruthers <tom@bluematterscienc.com>
 Description: A population risk assessment framework that links a Shiny GUI to the DLMtool/MSEtool operating model OMx
 License: GPL-2
 Encoding: UTF-8
