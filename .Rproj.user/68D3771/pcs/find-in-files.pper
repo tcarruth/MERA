@@ -5,7 +5,7 @@
         ],
         "path" : "",
         "projectRelative" : true,
-        "query" : "You have specified missing (NA)",
+        "query" : "alert",
         "regex" : false
     }
 }

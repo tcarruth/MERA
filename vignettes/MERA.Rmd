@@ -9,7 +9,7 @@ output:
     toc_float: true
     number_sections: true
 ---
-<img src="./Images/DLMtool.png" width="150" align="left">
+<img src="./Images/openMSE.png" width="150" align="left">
 
 
 <br><br><br>
