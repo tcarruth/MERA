@@ -5,6 +5,6 @@ account: msc-dlmtool
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 866302
-bundleId: 3542319
+bundleId: 3542711
 url: https://msc-dlmtool.shinyapps.io/mera/
-when: 1598024712.81495
+when: 1598031892.38962

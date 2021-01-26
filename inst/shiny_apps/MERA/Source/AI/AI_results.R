@@ -170,7 +170,9 @@ ppdplot<-function(pred,obs,yrlab,p=c(0.025,0.05,0.25,0.75,0.95,0.975),pcols=c("g
   
   qmat<-apply(pred,2,quantile,p,na.rm=T)
   nobs<-length(obs)
-  ylim<-quantile(c(pred,obs),p=c(0.01,0.99),na.rm=T)
+  ylim1<-quantile(pred,p=c(0.01,0.99),na.rm=T)
+  ylim2<-range(obs)
+  ylim<-c(min(ylim1[1],ylim2[1]),max(ylim1[2],ylim2[2]))
   plot(range(yrlab),ylim,col="white")
   yind<-c(1:nobs,nobs:1)
   rind<-nobs:1
@@ -196,7 +198,7 @@ post_marg_plot<-function(MSEobj_Eval,dat,dat_ind,options=list()){
   
   YIU=length(dat_ind@Year)-length(dat@Year)
   styr=max(dat@Year)-min(dat@Year)+1
-  PPD<-MSEobj_Eval@Misc$Data[[1]]
+  PPD<-MSEobj_Eval@PPD[[1]]
   
   # Standardization
   predCat<-PPD@Cat[,styr+(1:YIU),drop=F] #(PPD@Cat/PPD@Cat[,styr])
@@ -207,38 +209,60 @@ post_marg_plot<-function(MSEobj_Eval,dat,dat_ind,options=list()){
   obsML<-dat_ind@ML[1,styr+(1:YIU)] #(dat_ind@ML/dat_ind@ML[,styr])[styr+(1:YIU)]
   yrlab<-dat_ind@Year[styr+(1:YIU)]
   
-  ninds<-as.integer(!all(is.na(dat_ind@Ind))) + as.integer(!all(is.na(dat_ind@AddInd)))*dim(PPD@AddInd)[2]
+ # ninds<-as.integer(!all(is.na(dat_ind@Ind))) + as.integer(!all(is.na(dat_ind@AddInd)))*dim(PPD@AddInd)[2]
   
-  par(mfrow=c(ceiling((2+ninds)/2),2),mai=c(0.3,0.3,0.2,0.01),omi=c(0.3,0.3,0.05,0.05))
+  # Indices
+  indy<-0
+  IndNam<-predInd<-obsInd<-list()
+  
+  # Standard vulnerable biomass index 
+  if(!all(is.na(dat_ind@Ind))){ 
+    indy<-1
+    predInd[[indy]]<-PPD@Ind[,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
+    obsInd[[indy]]<-dat_ind@Ind[1,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
+    IndNam[[indy]]<-"Index of population biomass"
+  }
+  
+  # Vulnerable indices
+  if(!all(is.na(dat_ind@VInd))){ 
+    indy<-indy+1
+    predInd[[indy]]<-PPD@VInd[,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
+    obsInd[[indy]]<-dat_ind@VInd[1,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
+    IndNam[[indy]]<-"Index of population biomass"
+  }
+  
+  # Spawning stock biomass
+  if(!all(is.na(dat_ind@SpInd))){ 
+    indy<-indy+1
+    predInd[[indy]]<-PPD@SpInd[,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
+    obsInd[[indy]]<-dat_ind@SpInd[1,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
+    IndNam[[indy]]<-"Index of population biomass"
+    
+  }
+  
+  # Additional indices
+  if(!all(is.na(dat_ind@AddInd))){
+    Aind<-0
+    for(i in 1:dim(dat_ind@AddInd)[2]){
+      indy<-indy+1
+      predInd[[indy]]<-PPD@AddInd[,i,] [,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
+      obsInd[[indy]]<-dat_ind@AddInd[1,i,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
+      IndNam[[indy]]<-"Custom Index of Abundance"
+    }
+  }
+  
+  
+  par(mfrow=c(ceiling((2+indy)/2),2),mai=c(0.3,0.3,0.35,0.01),omi=c(0.35,0.3,0.05,0.05))
   ppdplot(pred=predCat,obs=obsCat,yrlab,lab="Catch")
   
-  legend('topleft',legend=c("95% PI","90% PI","50% PI"),fill=c("grey90","grey78","grey66"),title="Pred. Data")
-  legend('topright',legend=c("Consistent","Borderline","Inconsistent"),pch=19,col=c("black","orange","red"),title="Obs. Data",text.col=c("black","orange","red"))
+  legend('topleft',legend=c("95% PI","90% PI","50% PI"),fill=c("grey90","grey78","grey66"),title="Pred. Data",bg="#ffffff20",box.col="#ffffff20")
+  legend('topright',legend=c("Consistent","Borderline","Inconsistent"),pch=19,col=c("black","orange","red"),title="Obs. Data",text.col=c("black","orange","red"),bg="#ffffff20",box.col="#ffffff20")
   
   ppdplot(pred=predML,obs=obsML,yrlab,lab="Mean Length in Catch")
   
-  indy<-0
-  if(!all(is.na(dat_ind@Ind))){
-    indy<-1
-    predInd<-PPD@Ind[,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
-    obsInd<-dat_ind@Ind[1,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
-    ppdplot(pred=predInd,obs=obsInd,yrlab,lab="Index of Abundance")
-    
-  }
+  for(i in 1:indy) ppdplot(pred=predInd[[i]],obs=obsInd[[i]],yrlab,lab=IndNam[[i]])
   
-  if(!all(is.na(dat_ind@AddInd))){
-  for(i in 1:dim(dat_ind@AddInd)[2]){
-    indy<-indy+1
-    predInd<-PPD@AddInd[,indy,] [,styr+(1:YIU),drop=F]#(PPD@Ind/PPD@Ind[,styr])[,styr+(1:YIU),drop=F]
-    obsInd<-dat_ind@AddInd[1,i,styr+(1:YIU)] #(dat_ind@Ind/dat_ind@Ind[,styr])[styr+(1:YIU)]
-    
-    ppdplot(pred=predInd,obs=obsInd,yrlab,lab="Index of Abundance")
-  
-    #mtext(paste("Data relative to",yrlab[1]-1),2,line=1.5,outer=T)
-  }
-  }
-  
-  mtext("Year",1,line=1.5,outer=T)
-  
+  mtext("Year",1,line=1.2,outer=T)
+
  
 } 

@@ -119,7 +119,6 @@ biasplot<-function(fitout,lab=""){
 
 
 
-
 getCodes<-function(dat,maxtest=6){
   
   codes<-Detect_scope(dat)                             # what scoping methods are possible?
@@ -178,7 +177,7 @@ Detect_scope<-function(dat,simno=1,minndat=5){
   if(goodslot(dat@SpInd,LHy)) Ind <-c(Ind,dat@SpInd[simno,yind])
   if(goodslot(dat@VInd,LHy)) Ind <-c(Ind,dat@VInd[simno,yind])
   if(!all(is.na(dat@AddInd))) Ind <-c(Ind,as.vector(dat@AddInd[simno,,]))
-  if(goodslot(dat@Effort,LHy))     Eff<-dat@Effort[simno,yind]
+  #if(goodslot(dat@Effort,LHy))     Eff<-dat@Effort[simno,yind]
 
   # need to make sure CAL data is the right dimensions
   CAL<-array(0,c(1,ny,nL))
@@ -223,7 +222,7 @@ Detect_scope<-function(dat,simno=1,minndat=5){
   if(goodslot(dat@ML,LHy))  ML<-dat@ML[simno,yind]
 
   condC<-sum(!is.na(Cat))==LHy
-  condE<-sum(!is.na(Eff))==LHy
+  condE<-TRUE#sum(!is.na(Eff))==LHy # always possible from sketched effort  
   condI<-sum(!is.na(Ind))>1
   condA<-sum(!is.na(CAA))>minndat
   condL<-sum(!is.na(CAL))>minndat
@@ -231,15 +230,7 @@ Detect_scope<-function(dat,simno=1,minndat=5){
 
   # Possible data combinations
   datTypes<-c("C","E","I","A","L","M")
-  #Tcond<-expand.grid(rep(list(c("TRUE","FALSE")),length(datTypes)))
-  #for(c in 1:ncol(Tcond))Tcond[,c]<-as.logical(Tcond[,c])
-  #names(Tcond)<-datTypes
-  #Tcond<-Tcond[!((Tcond$C|Tcond$E) & apply(Tcond,1,sum)==1),] # remove only Catch and only Effort
-
-  # condC<- condI<- condA<- condL <- FALSE
-  # condI<- condA<- condL <- FALSE
-  # condA<- condL <- FALSE
-
+  
   # Available data combinations
   Alist<-list()
   Alist[[1]]<-unique(c(condC,FALSE))
@@ -251,10 +242,11 @@ Detect_scope<-function(dat,simno=1,minndat=5){
 
   Acond<-expand.grid(Alist)
   names(Acond)<-datTypes
-  Acond<-Acond[!(Acond$E & apply(Acond,1,sum)==1),]    # remove only effort 
+  Acond<-Acond[apply(Acond,1,sum)!=1,]    # remove any single data type run
+  #Acond<-Acond[!((Acond$E & Acond$I) & apply(Acond,1,sum)>2),] # remove anything with E and I that has something else
   Acond<-Acond[!(Acond$A&Acond$L),]                    # remove age + length conditioning
   Acond<-Acond[!(Acond$L&Acond$M),]                    # remove length + mean length conditioning
-
+  
   nA<-nrow(Acond)
   DataCode<-rep(NA,nA-1)
   for(i in 1:(nA-1)){
@@ -319,38 +311,37 @@ GetDep<-function(OM,dat,code){
   #saveRDS(OM,"C:/temp/OM.rda")     
   #saveRDS(code,"C:/temp/code.rda")
   
-  data<-DataStrip(dat,OM,code,simno=1)
+  datS<-DataStrip2(dat,OM,code,simno=1)
   
-  #saveRDS(data,"C:/temp/data.rda") 
-   
-  OMeff<-data$condition=="effort"
-
   nsim<-input$nsim
   if(input$Parallel){
-    
-    if(nsim>8){
-      
-      parallel=T
-      setup(cpus=ncpus)
-      
-    }
-    
+     if(nsim>8){
+        parallel=T
+        setup(cpus=ncpus)
+        AM(paste0("Using parallel processing for conditioning (",ncpus,") cpus"))
+     }
   }
   
-  out<-SRA_scope(OM = OM,
-                 data = data,
-                 mean_fit = TRUE,
-                 cores = ncpus,
-                 plusgroup = T,
-                 OMeff = OMeff,
-                 ESS = data$ESS,
-                 s_selectivity = data$s_selectivity, 
-                 selectivity = data$selectivity,
-                 s_vul_par = data$s_vul_par, map_s_vul_par = data$map_s_vul_par,
-                 vul_par = data$vul_par, map_vul_par = data$map_vul_par,
-                 LWT = data$LWT,
-                 max_F=data$max_F,
-                 control=list(eval.max=1E4, iter.max=1E4, abs.tol=1e-6))
+  selectivity="dome"
+  if(all(PanelState[[1]][[10]]==c(T,F,F,F))) selectivity='logistic'; AM("Assuming logistic selectivity according to MERA question F11")
+  
+  condition="catch2"
+  if(grepl("E",code))  condition<-"effort"; AM("Conditioning on effort")
+  
+  #saveRDS(datS,"C:/temp/datS.rda") # 
+  #saveRDS(OM,"C:/temp/OM.rda")      #
+  #saveRDS(code,"C:/temp/code.rda") # 
+  
+  out<-RCM(OM,datS,
+           ESS = rep(input$ESS,2),
+           LWT = list(CAA=input$Wt_comp,CAL=input$Wt_comp),
+           max_F = input$max_F,
+           C_eq=input$C_eq_val,
+           selectivity=selectivity,
+           condition=condition,
+           cores = ncpus,
+           mean_fit=TRUE,
+           control=list(eval.max=1E4, iter.max=1E4, abs.tol=1e-6))
   
   out
   
@@ -358,232 +349,38 @@ GetDep<-function(OM,dat,code){
 
 
 
-DataStrip<-function(dat,OM,code,simno=1){
+
+DataStrip2<-function(dat,OM,code,simno=1){
   
   # OM<-testOM; code="C_I"; simno=1; dat<-new('Data',"C:/Users/tcar_/Dropbox/MSC Data Limited Methods Project - Japan/MERA_Japan_workshop/ys_flounder2_TC/Yellow_striped_flounder2.csv")
-  
-  datTypes<-c("C","E","A","L","M")
-  # slotnams<-c("Cat","Effort","Ind","CAA","CAL","ML")
-  #listnams<-c("Chist","Ehist","Index","CAA","CAL","ML")
-  #slotnams2<-c("Cat","Effort","Ind","CAA","ML","ML")  # hack for current SRAscope limitation
-  #listnams2<-c("Chist","Ehist","Index","CAA","ML","ML") # hack for current SRAscope limitation
-  slotnams<-c("Cat","Effort","CAA","CAL","ML")
-  listnams<-c("Chist","Ehist","CAA","CAL","ML")
-  nD<-length(datTypes)
-  outlist<-list()
-  
-  dat@ML<-dat@ML/dat@vbLinf*100 # ML conversion
-  
-  for(i in 1:nD){
-    outlist[[listnams[i]]]<-NULL
-  }
-  
-  for(i in 1:nD){
-    
-    if(grepl(datTypes[i],code)){
-      
-      temp<-slot(dat,slotnams[i])
-      
-      if(length(dim(temp))==2){
-        outlist[[listnams[i]]]<-slot(dat,slotnams[i])[simno,]
-        
-      }else{
-        outlist[[listnams[i]]]<-slot(dat,slotnams[i])[simno,,]
-        
-      }
-      
-    }
-    
-  }
-  
-  # total stock (1, default), spawning stock (2), or vulnerable stock (3)
-  
-  if(grepl("E",code)){
-    outlist[['condition']]<-"effort"
-  }else{
-    if(!grepl("C",code)){
-      outlist[['Ehist']]<-rep(1,length(dat@Year))
-      outlist[['condition']]<-"effort"
-    }else{
-      outlist[['condition']]<-"catch2"  # catch 1 is F estimated, catch 2 is true sra with newton solving for Baranov
-    }
-    
-  }
-  
-  if(code=="C"){
-    outlist[['Ehist']]<-rep(1,length(dat@Year))
-    outlist[['condition']]<-"effort" # exception for catch only methods
-  } 
-  
-  if(length(dat@CAL_bins)>1){
-    NL<-length(dat@CAL_bins)
-    outlist[['length_bin']]<-(dat@CAL_bins[1:(NL-1)]+dat@CAL_bins[2:NL])/2
-  }
-  
-  if(grepl("I",code)){
-    outlist<-c(outlist, Process_Indices(dat,OM))
-  }else{
-    if(all(PanelState[[1]][[10]]==c(T,F,F,F))){
-      outlist<-c(outlist,selectivity='logistic')
-      #AM("Conditioning operating model estimating logistic ('flat-topped') selectivity based on Fishery Question 11")
-    }else{  
-      outlist<-c(outlist,selectivity='dome')
-      #AM("Conditioning operating model allowing for the estimation of dome shaped selectivity based on Fishery Question 11")
-    }  
-  } 
-  
-  if(input$C_eq) outlist<-c(outlist, C_eq=input$C_eq_val)
-  outlist[['ESS']]<-rep(input$ESS,2)
-  outlist[['LWT']]<-list(CAA=input$Wt_comp,CAL=input$Wt_comp)
-  outlist[['max_F']]<-input$max_F
-  outlist
-  
-}
+ 
+  # Add effort to the data template
+  datS<-dat
 
-
-
-
-Process_Indices<-function(dat,OM){  
-  
-  # https://cran.r-project.org/web/packages/MSEtool/vignettes/SRA_scope_sel.html
-  # Index stacking ---------------------------
-  Index<-NULL
-  I_sd<-NULL
-  Itype<-NULL
-  sel_block<-NULL
-  vul_par<-NULL
-  map_vul_par<-NULL
-  s_vul_par<-NULL
-  map_s_vul_par<-NULL
-  s_selectivity<-NULL
-  ny<-length(dat@Year)
-  fleetno<-0
-  
-  # Total biomass index -------------
-  
-  temp<-slot(dat,"Ind")
-  
-  if(!all(is.na(temp))){
+  # If there is no effort data in the imported dat file - file this with the effort from the OM
+  if(sum(is.na(dat@Effort))>1){
+    AM("Effort data not reported in imported data file - using effort sketched in MERA question F5")
+    datS@Effort <- OM@cpars$Find
     
-    Index<-rbind(Index,temp)
-    temp<-slot(dat,"CV_Ind")
-    if(!all(is.na(temp))){
-      temp[is.na(temp)]<-mean(temp,na.rm=T)
-      I_sd<-rbind(I_sd,temp)
-    }else{
-      I_sd<-rbind(I_sd,rep(mean(OM@Iobs),length(temp)))
-    }    
-    Itype<-c(Itype,"B")
-    
-    #selectivity
-    temp<-rep(NA,dat@MaxAge)
-    s_vul_par<-cbind(s_vul_par,temp)
-    
-    sel_block<-cbind(sel_block,rep(fleetno,ny))
-    if(all(PanelState[[1]][[10]]==c(T,F,F,F))){
-      s_selectivity<-c(s_selectivity,"log")
-    }else{
-      s_selectivity<-c(s_selectivity,"dome")
-    }
-  }
-  
-  # Total spawning biomass index ---
-  temp<-slot(dat,"SpInd")
-  if(!all(is.na(temp))){
-    Index<-rbind(Index,temp)
-    temp<-slot(dat,"CV_SpInd")
-    if(!all(is.na(temp))){
-      I_sd<-rbind(I_sd,temp)
-    }else{
-      I_sd<-rbind(I_sd,rep(mean(OM@Iobs),length(temp)))
-    }    
-    Itype<-c(Itype,"SSB")
-    
-    # selectivity
-    temp<-rep(NA,dat@MaxAge)
-    s_vul_par<-cbind(s_vul_par,temp)
-    
-    sel_block<-cbind(sel_block,rep(fleetno,ny))
-    s_selectivity<-c(s_selectivity,"log")
-  }
-  
-  # Vulnerable biomass (according to pars in the data sheet)
-  
-  temp<-slot(dat,"VInd")
-  if(!all(is.na(temp))){
-    
-    ny<-ncol(temp)
-    Index<-rbind(Index,temp)
-    temp<-slot(dat,"CV_VInd")
-    
-    if(!all(is.na(temp))){
-      I_sd<-rbind(I_sd,temp)
-    }else{
-      I_sd<-rbind(I_sd,rep(mean(OM@Iobs),length(temp)))
-    }    
-    fleetno<-fleetno+1
-    Itype<-c(Itype,fleetno)
-    
-    # selectivity
-    temp<-c(mean(OM@LFS),mean(OM@L5),mean(OM@Vmaxlen))
-    vul_par<-cbind(vul_par,temp)
-    
-    temp<-rep(NA,dat@MaxAge)
-    s_vul_par<-cbind(s_vul_par,temp)
-    sel_block<-cbind(sel_block,rep(fleetno,ny))
-    s_selectivity<-c(s_selectivity,"dome")
-    
-  }
-  
-  temp<-array(slot(dat,"AddInd")[1,,],dim(slot(dat,"AddInd"))[2:3])
-  
-  if(!all(is.na(temp))){
-    ny<-ncol(temp)
-    nadd<-nrow(temp)
-    Index<-rbind(Index,temp)
-    temp<-array(slot(dat,"CV_AddInd")[1,,],dim(slot(dat,"CV_AddInd"))[2:3])
-    I_sd<-rbind(I_sd,temp)
-    temp<-array(slot(dat,"AddIndV")[1,,],dim(slot(dat,"AddIndV"))[2:3])
-    s_vul_par<-cbind(s_vul_par,t(temp))
-    temp<-slot(dat,"AddIndType")
-    
-    if(is.na(temp))temp<-rep(3,nadd) # default to 3 (vulnerable index type)
-    for(i in 1:length(temp)){
-      #fleetno<-fleetno+1
-      s_selectivity<-c(s_selectivity,"free")
-      #sel_block<-cbind(sel_block,rep(fleetno,ny))
-      if(temp[i]==1){
-        Itype<-c(Itype,"B")
-      }else if(temp[i]==2){
-        Itype<-c(Itype,"SSB")
-      }else{
-        Itype<-c(Itype,'est')
-      }
-    } 
-  }
-  
-  if(all(is.na(s_vul_par)))s_vul_par=NULL
-  if(all(is.na(vul_par)))vul_par=NULL
-  
-  if(!is.null(s_vul_par))map_s_vul_par=array(NA,dim(s_vul_par))
-  if(!is.null(vul_par))map_vul_par=array(NA,dim(vul_par))
-  
-  if(all(PanelState[[1]][[10]]==c(T,F,F,F))){
-    selectivity='logistic'
-    #AM("Conditioning operating model estimating logistic ('flat-topped') selectivity based on Fishery Question 11")
-  }else{  
-    selectivity='dome'
-    #AM("Conditioning operating model allowing for the estimation of dome shaped selectivity based on Fishery Question 11")
   }  
   
-  list(Index=t(Index), I_sd=t(I_sd), I_type=Itype, 
-       s_vul_par=s_vul_par, map_s_vul_par=map_s_vul_par,
-       vul_par=vul_par, map_vul_par=map_vul_par,
-       #nsel_block=ncol(sel_block), sel_block=sel_block, 
-       s_selectivity = s_selectivity, selectivity=selectivity)
+  datTypes<-c("C","E","A","L","M")
+  slotnams<-c("Cat","Effort","CAA","CAL","ML")
+  nD<-length(datTypes)
+  
+  for(i in 1:nD) if(!(grepl(datTypes[i],code)))slot(datS,slotnams[i])[]<-NA
+  
+  if(!(grepl("I",code))){
+    datS@Ind[]<-NA
+    datS@Abun[]<-NA
+    datS@SpAbun[]<-NA
+    datS@SpInd[]<-NA
+    datS@VInd[]<-NA
+  }
+  
+  datS
   
 }
-
 
 getCodes<-function(dat,maxtest=6){
   

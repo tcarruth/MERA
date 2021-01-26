@@ -55,7 +55,7 @@ Data_self_consis<-function(dattest){
   
   if(length(min(Year):max(Year))!=length(Year)) errlist$MissYr="The data file is missing years of data (the Year index and data must have an entry for each year 
                                                                 - use NAs for catch and other data if these are missing for certain years"
-  if(any(is.na(Cat))) errlist$CatNA="You have specified missing (NA) values in your catch time series - this must have a value for each year of your dataset"
+  #if(any(is.na(Cat))) errlist$CatNA="You have specified missing (NA) values in your catch time series - this must have a value for each year of your dataset"
   if(!all(is.na(Cat))) if(length(Cat)!=length(Year)) errlist$CatLen="Catches (Cat) are not of the same length as the Year (Year) index"
   if(!all(is.na(Ind))) if(length(Ind)!=length(Year)) errlist$IndLen="Index (Ind) data are not of the same length as the Year (Year) index"
   if(!all(is.na(SpInd))) if(length(SpInd)!=length(Year)) errlist$SpIndLen="Spawning Index (SpInd) data are not of the same length as the Year (Year) index"

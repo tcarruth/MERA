@@ -122,20 +122,18 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
 
   # ---- Misc OM building ------------------------------------------------------------------------------------
    nsim<-input$nsim
-   
-   
+ 
   if(input$OM_L & !UseQonly){
     OM<-OM_L
     SampList<<-NULL
     AM("Using loaded operating model")
-    
-  
+
   }else{
     
     type<-input$Distribution # sampling distribution
     trunc<-input$IQRange     # inter quartile range (trunc, a % e.g. 90)
     
-    OM<-LowSlopes(DLMtool::testOM)
+    OM<-LowSlopes(MSEtool::testOM)
     if(!is.na(nsim)){
       OM@nsim<-nsim
     }else{
@@ -193,11 +191,15 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     }
     OM@maxage<-maxage<-min(OM@maxage,input$plusgroup)
     
+    
     # --- Life history imputation
-    OM<-LH2OM(OM, dist='norm',plot=F,filterMK=T)
-   
-    OM@K<-quantile(OM@cpars$K,c(0.05,0.95))
-    OM@L50<-quantile(OM@cpars$L50,c(0.05,0.95))
+    OMtemp<-OM
+    OMtemp@nsim<-1000
+    OMtemp<-LH2OM(OMtemp, dist='norm',plot=F,filterMK=T) # get sample
+    OM@K<-quantile(OMtemp@cpars$K,c(0.1,0.9)) # 80th percentile from LH2OM
+    OM<-LH2OM(OM, dist='norm',plot=F,filterMK=T) # truncated sample
+    
+    OM@L50<-quantile(OM@cpars$L50,c(0.1,0.90))
     OM@L50_95<-c(10,10)
     OM@Linf<-c(100,100)
     OM@D<-getminmax(1,"D",PanelState)                                                        # F3 -----------
@@ -278,7 +280,7 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
      
     V2<-apply(cbind(mov1[,2,2], # staying in areas 2 and 3 minus staying in area 3
                     mov2[,2,2]), # staying in areas 2 and 3 minus staying in area 1
-              1,mean) # an WRONG GUESS of the prob_staying in area 2 - need to do the linear equation modelling for this. 
+              1,mean) # a WRONG GUESS of the prob_staying in area 2 - need to do the linear equation modelling for this. 
     
     Sz2<-1-(Ahsim+Asim)
     Asize<-cbind(Asim,Sz2,Ahsim) # area 1 is Asim as future MPs close area 1
@@ -286,11 +288,15 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
    
     # plot(Ahsim,Vhsim,type='l',xlim=c(0,0.9)); lines(Asim,Vsim,col="grey"); lines(Sz2,V2,col="red")
    
-    mov<-array(NA,c(nsim, maxage, nareas, nareas, nyears+proyears))
-    for(i in 1:nsim)mov[i,,,,]<-array(rep(makemov(fracs=Asize[i,], prob=probs[i,]),each=maxage),c(maxage,nareas,nareas,nyears+proyears))
+    mov<-array(NA,c(nsim, maxage+1, nareas, nareas, nyears+proyears))
+    for(i in 1:nsim)mov[i,,,,]<-array(rep(makemov(fracs=Asize[i,], prob=probs[i,]),each=maxage+1),c(maxage+1,nareas,nareas,nyears+proyears))
     
-    OM@MPA<-matrix(c(1,1,1,0,                                            # year1, area1 open, area2 open, area3 shut
-                     nyears-1,0,1,1),ncol=nareas+1,byrow=T)              # nyears-1, area1 shut, area2 open, area3 open              
+    # OM@MPA<-matrix(c(1,1,1,0,                                            # year1, area1 open, area2 open, area3 shut
+    #                 nyears-1,0,1,1),ncol=nareas+1,byrow=T)              # nyears-1, area1 shut, area2 open, area3 open 
+    
+    OM@cpars$MPA<-matrix(1,nrow=OM@nyears+OM@proyears,ncol=3)
+    OM@cpars$MPA[1:(nyears-1),3]<-0
+    OM@cpars$MPA[nyears:proyears,1]<-0
  
     # Initial depletion                                                                      # F19 ----------
     initDrng<-getminmax(1,"Dh",PanelState)
@@ -319,7 +325,7 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     
     # ---- Custom parameters ---------------------------------------------------------------------------------------------------
    
-    slots2cpars<-c("D","h","Esd","Vmaxlen","Fdisc","Perr","TACFrac","TACSD",
+    slots2cpars<-c("D","h","Vmaxlen","Fdisc","Perr","TACFrac","TACSD",
       "TAEFrac","TAESD","SizeLimFrac","SizeLimSD","beta") # all slots that need making into cpars vectors
     
     makevec<-function(i,OM,slots2cpars,nsim,type,trunc){
@@ -331,14 +337,15 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     
     for(i in 1:length(slots2cpars))OM<-makevec(i,OM,slots2cpars,nsim,type,trunc)
     
-    OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias))#,DR=DR))
+    OM@cpars<-c(OM@cpars,list(Find=Find,L5=L5,LFS=LFS,Asize=Asize,mov=mov,initD=initD,Cbias=Cbias,
+                              control=list(progress=T,ntrials=1000,fracD=0.2)))#,DR=DR))
     
     SampList<<-data.frame(Esdrand,qhssim,Sel50sim,Ahsim,Vhsim,Asim,Vsim,initD,Cbias)
     
     # ---- Bioeconomic parameters ----------------------------------------------------------------------------------------------
     #AM("TEST BE")
     
-   # if(input$EC_Model!="None"){
+    # if(input$EC_Model!="None"){
       
     #  OM@cpars<-c(OM@cpars,list(CostCurr=rep(input$CostCurr,OM@nsim), 
      #                           RevCurr=rep(input$RevCurr,OM@nsim), 
@@ -350,8 +357,8 @@ makeOM<-function(PanelState,nyears=NA,maxage=NA,proyears=NA,UseQonly=F){
     #}
     
     # ---- Data overwriting ---------------------------------------------------------------------------------------------------
-    #saveRDS(OM,"C:/temp/OMpost.rda") 
-    #saveRDS(dat,"C:/temp/datpost.rda")
+    #saveRDS(OM,"C:/temp/OMpost.rda") # 
+    #saveRDS(dat,"C:/temp/datpost.rda") # 
     
     if(Data()==1){
       AM("Questionnaire growth and mortality overwritten by those specified in uploaded data")
@@ -443,6 +450,7 @@ dofit<-function(OM,dat){
   Fit<<-new('list')
   Est<<-new('list')
   codes<<-input$Cond_ops
+ 
   Fit[[1]]<-GetDep(OM,dat,code=codes)
   Est[[1]]<-Fit[[1]]@OM@cpars$D[Fit[[1]]@conv]
   if(sum(Fit[[1]]@conv)!=0)AM(paste(sum(Fit[[1]]@conv),"of",length(Fit[[1]]@conv),"simulations converged, the rest will removed and not be used in other calculations"))

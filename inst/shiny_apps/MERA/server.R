@@ -1,8 +1,9 @@
 quick <- FALSE # switch to use 3 sims for quick test runs in RA mode
 
 library(shiny)
-library(DLMtool)
 library(MSEtool)
+library(DLMtool)
+library(SAMtool)
 library(kableExtra)
 library(formattable)
 library(knitr)
@@ -99,7 +100,7 @@ shinyServer(function(input, output, session) {
   AdCalc<-reactiveVal(0) # Has advice been calculated
   Tweak<-reactiveVal(0)  # Have things affecting performance metrics been tweaked?
   SkinNo<-reactiveVal(0) # Skin selection
-  Start<-reactiveVal(0)  # Start App?
+  #Start<-reactiveVal(0)  # Start App?
  
   #LHYear<<-2018          # Starting value for the global variable that divides conditioning and indicator data
   
@@ -127,7 +128,7 @@ shinyServer(function(input, output, session) {
   
   output$SkinNo   <- reactive({SkinNo()})
   
-  output$Start    <- reactive({Start()})
+  #output$Start    <- reactive({Start()})
   
   outputOptions(output,"Fpanel",suspendWhenHidden=FALSE)
   outputOptions(output,"Mpanel",suspendWhenHidden=FALSE)
@@ -154,7 +155,7 @@ shinyServer(function(input, output, session) {
   
   outputOptions(output,"SkinNo",suspendWhenHidden=FALSE)
   
-  outputOptions(output,"Start",suspendWhenHidden=FALSE)
+  #outputOptions(output,"Start",suspendWhenHidden=FALSE)
   
    
   #output$allMPs(getAllMPs())
@@ -190,7 +191,7 @@ shinyServer(function(input, output, session) {
        
   dat<-dat_int<-NULL
       
-  Skin_nams<<-c("MSC","ABNJ","Generic") # unlist(strsplit(list.files(path="./Source/Skins"),".R"))
+  Skin_nams<<-c("MSC")#,"ABNJ","Generic") # unlist(strsplit(list.files(path="./Source/Skins"),".R"))
   updateSelectInput(session=session,inputId="Skin",choices=Skin_nams[length(Skin_nams):1],selected=skin)
   
   observe({
@@ -234,35 +235,35 @@ shinyServer(function(input, output, session) {
   
   Just<-list(
     c(
-"1. Describe the history and current status of the fishery, including fleets, sectors, vessel types and practices/gear by vessel type, landing ports, economics/markets, whether targeted/bycatch, other stocks caught in the fishery.
+      "1. Describe the history and current status of the fishery, including fleets, sectors, vessel types and practices/gear by vessel type, landing ports, economics/markets, whether targeted/bycatch, other stocks caught in the fishery.
 
-2. Describe the stocks ecosystem functions, dependencies, and habitat types.
+      2. Describe the stocks ecosystem functions, dependencies, and habitat types.
 
-3. Provide all relevant reference materials, such as assessments, research, and other analysis.
+      3. Provide all relevant reference materials, such as assessments, research, and other analysis.
 
       ",
       rep("No justification was provided",18)),
 
      c(
-"1. Describe what, if any, current management measures are used to constrain catch/effort.
+        "1. Describe what, if any, current management measures are used to constrain catch/effort.
 
-2. Describe historical management measures, if any.
+        2. Describe historical management measures, if any.
 
-3. Describe main strengths and weaknesses of current monitoring and enforcement capacity.
+        3. Describe main strengths and weaknesses of current monitoring and enforcement capacity.
 
-4. Describe and reference any legal/policy requirements for management, monitoring and enforcement.
+        4. Describe and reference any legal/policy requirements for management, monitoring and enforcement.
 
        ",
        rep("No justification was provided",6)),
 
     c(
-"1. Provide the time series (specify years, if possible) that exist for catch, effort, and CPUE/abundance indices.
+      "1. Provide the time series (specify years, if possible) that exist for catch, effort, and CPUE/abundance indices.
 
-2. Describe how these data collected (e.g., log books, dealer reporting, observers).
+      2. Describe how these data collected (e.g., log books, dealer reporting, observers).
 
-3. Describe what types of sampling programs and methodologies exist for data collection, including the time-series of available sampling data and quality.
+      3. Describe what types of sampling programs and methodologies exist for data collection, including the time-series of available sampling data and quality.
 
-4. Describe all sources of uncertainty in the status, biology, life history and data sources of the fishery.	Include links to documentation, reports.
+      4. Describe all sources of uncertainty in the status, biology, life history and data sources of the fishery.	Include links to documentation, reports.
 
       "
       , rep("No justification was provided",3)))
@@ -306,12 +307,9 @@ shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$Mode,{
-    
-   
     Update_Options()
     AM(paste0("Mode selected: ", input$Mode))
     smartRedo()
- 
   })
 
   observeEvent(input$OM_L,{               # reset the MSE results if you change the OM type
@@ -321,8 +319,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$OM_C,{               # reset the MSE results if you change the OM type
     RA(0); SD(0); Plan(0); Eval()
   })
-  
-  
+
   
   # == File I/O ==========================================================================
 
@@ -350,7 +347,7 @@ shinyServer(function(input, output, session) {
 
         MSClog<-readRDS(file=filey$datapath)
         Update_Questionnaire(MSClog)
-        Start(1)
+        #Start(1)
        
       },
       error = function(e){
@@ -367,24 +364,25 @@ shinyServer(function(input, output, session) {
     #filey=list(datapath=paste0(getwd(),"/Data_from_SS.rda"))
     filey<-input$Load_Data
     dattest=NULL
-    if(grepl(".csv",filey$datapath)){ # if it is a .csv file
+   
+    if(grepl(".csv",filey$datapath)|grepl(".xlsx",filey$datapath)){ # if it is a .csv file
 
       tryCatch(
         {
-         dattest<-new('Data',filey$datapath)
+         dattest<-XL2Data(filey$datapath)
          #saveRDS(dattest,'C:/temp2/dattest.rda') # 
         
-         AM(paste0(".csv data loaded:", filey$datapath))
+         AM(paste0("data loaded:", filey$datapath))
         },
         error = function(e){
           AM(paste0(e,"\n"))
-          shinyalert("Not a properly formatted DLMtool Data .csv file", paste("Trying to load as an object of class 'Data'",e,collapse="\n"), type = "error")
+          shinyalert("Not a properly formatted MSEtool Data .csv or .xlsx file", paste("Trying to load as an object of class 'Data'",e,collapse="\n"), type = "error")
           Data(0)
           loaded=F
         }
       )
 
-    }else{
+     }else{
 
       tryCatch(
         {
@@ -401,7 +399,7 @@ shinyServer(function(input, output, session) {
       )
 
       if(class(dattest)!="Data"){
-        shinyalert("Data load error!", "Failed to load this file as either a formatted .csv datafile or a DLMtool object of class 'Data'", type = "error")
+        shinyalert("Data load error!", "Failed to load this file as either a formatted .csv datafile or a MSEtool object of class 'Data'", type = "error")
         AM(paste0("Data object failed to load:", filey$datapath))
         Data(0)
       }
@@ -411,7 +409,6 @@ shinyServer(function(input, output, session) {
     
     if(!is.null(dattest)){
       LHYear<<-input$Lyear
-      
       
       if(!is.null(dattest@LHYear)){
         updateNumericInput(session,"Lyear",value=dattest@LHYear,min=min(dattest@Year)+5,max=max(dattest@Year))
@@ -461,7 +458,7 @@ shinyServer(function(input, output, session) {
       
     }
     
-   # saveRDS(dat,"C:/temp/dat.rda") #
+    # saveRDS(dat,"C:/temp/dat.rda") #
     #saveRDS(dat_ind,"C:/temp/dat_ind.rda") # 
   })
 
@@ -491,13 +488,13 @@ shinyServer(function(input, output, session) {
       tryCatch({
         
         OM_L<<-readRDS(file=filey$datapath)
-        Start(1)
+        #Start(1)
         
       },
       
       error = function(e){
         AM(paste0(e,"\n"))
-        shinyalert("File read error", "This does not appear to be a DLMtool OM object, saved by saveRDS()", type = "error")
+        shinyalert("File read error", "This does not appear to be a MSEtool OM object, saved by saveRDS()", type = "error")
         AM(paste0("Operating model failed to load: ", filey$datapath))
         return(0)
       
@@ -512,11 +509,11 @@ shinyServer(function(input, output, session) {
         CondOM(0)
         Quest(0)
         AM(paste0("Operating model loaded: ", filey$datapath))
-        Start(1)
+        #Start(1)
         
       }else{
         
-        shinyalert("Incorrect class of object", "This file should be an object of DLMtool class 'OM'", type = "error")
+        shinyalert("Incorrect class of object", "This file should be an object of MSEtool class 'OM'", type = "error")
         AM(paste0("Object not of class 'OM'", filey$datapath))
         
       }
@@ -555,26 +552,23 @@ shinyServer(function(input, output, session) {
     filey<-input$Load_session
 
     tryCatch({
-      listy<<-readRDS(file=filey$datapath)
-      
-    },
-    error = function(e){
-      AM(paste0(e,"\n"))
-      shinyalert("File read error", "This does not appear to be a MERA evaluation object", type = "error")
-      return(0)
-    }
+        listy<<-readRDS(file=filey$datapath)
+      },
+      error = function(e){
+        AM(paste0(e,"\n"))
+        shinyalert("File read error", "This does not appear to be a MERA evaluation object", type = "error")
+        return(0)
+      }
     )
     Update_Questionnaire(listy$MSClog)
-    #cond<-class(listy[[1]])=="MSE" & class(listy[[2]])=="MSE" & listy[[1]]@nMPs>1
-
-    #if(cond){
+    
     MSEobj<<-listy$MSEobj
     MSEobj_reb<<-listy$MSEobj_reb
     RAobj<<-listy$RAobj
     MSEobj_Eval<<-listy$MSEobj_Eval
     Status<<-listy$Status
     OM<<-listy$OM
-    if(!is.null(listy$SampList))SampList<<-list$Samplist
+    if(!is.null(listy$SampList))SampList<<-listy$SampList
     if(!is.null(listy$MPList))for(i in 1:length(listy$MPList))assign(names(listy$MPList)[i],listy$MPList[[i]],envir=.GlobalEnv);AM(paste("Custom MPs loaded:",paste(names(listy$MPList),collapse=", ")))
     Plan(0); Eval(0); SD(0); CondOM(0); RA(0); MadeOM(0) # reset status switches
     redoBlank()
@@ -591,7 +585,7 @@ shinyServer(function(input, output, session) {
       MadeOM(1)
     }
    
-    Start(1)
+    #Start(1)
     updateTabsetPanel(session,"Res_Tab",selected="1")
     
   })
@@ -718,7 +712,6 @@ shinyServer(function(input, output, session) {
 ### Calculation functions
 #############################################################################################################################################################################
 
-  
   observeEvent(input$Calculate,{
     
     temp<-checkQs()
@@ -732,8 +725,6 @@ shinyServer(function(input, output, session) {
         Calc_Plan()
       }else if(input$Mode=="Management Performance"){
         Calc_Perf()       
-      }else if(input$Mode=="Risk Assessment"){
-        Calc_RA()
       }else{
         Calc_Status()
       }
@@ -923,6 +914,7 @@ shinyServer(function(input, output, session) {
                          proyears=OM@proyears
                            
           )
+          #saveRDS(params,"C:/temp/params.rda") # ! alert
           incProgress(0.1)
           knitr::knit_meta(class=NULL, clean = TRUE) 
           output<-render(input="OM_full_Rep.Rmd",output_format="html_document", params = params)
@@ -938,51 +930,7 @@ shinyServer(function(input, output, session) {
     }  # content
   )
 
-  output$Build_RA <-downloadHandler(
-    
-    filename = function(){paste0(namconv(input$Name),"_MERA_Risk_Assessment_Report.html")}, #"report.html",
-    
-    content = function(file) {
-      
-      tryCatch({
-        withProgress(message = "Building Risk Assessment report", value = 0, {
-          src <- normalizePath('Source/Markdown/RA.Rmd')
-          src2 <-normalizePath(paste0('www/',input$Skin,'.png'))
-         
-          MSClog<<-package_MSClog()
-          owd <- setwd(tempdir())
-          on.exit(setwd(owd))
-          file.copy(src, 'RA.Rmd', overwrite = TRUE)
-          file.copy(src2, 'logo.png', overwrite = TRUE) #NEW
-          
-          options=Skin$Risk_Assessment$options
-          library(rmarkdown)
-          options()
-          params <- list(test = input$Name,
-                         set_title=paste0("Risk Assessment Report for ",input$Name),
-                         set_type=paste0("Risk Assessment of Status Quo Management "," (MERA version ",Version,")"),
-                         Skin=Skin,
-                         MSEobj=RAobj,
-                         OM=OM,
-                         MSEobj_reb=RAobj,
-                         OM=OM,
-                         options=options,
-                         SessionID=SessionID,
-                         copyright=paste(Copyright,CurrentYr)
-          )
-          knitr::knit_meta(class=NULL, clean = TRUE) 
-          out<-render("RA.Rmd", output_format="html_document", params = params)
-          file.rename(out, file)
-        })
-      },
-      error = function(e){
-        AM(paste0(e,"\n"))
-        shinyalert("Risk Assessment Report build error", paste(e), type = "info")
-      })  
-    }
-    
-  )
-  
+
   output$Build_Status <-downloadHandler(
     
     filename = function(){paste0(namconv(input$Name),"_MERA_Status_Determination_Report.html")}, #"report.html",
@@ -1614,9 +1562,9 @@ shinyServer(function(input, output, session) {
     #reset_eff_values()
   })
   
-  observeEvent(input$Start,{
-    Start(1)
-  })
+  #observeEvent(input$Start,{
+   # Start(1)
+  #})
   
   
 

@@ -339,7 +339,7 @@ for(ff in 2:19){
 
 # Version Notes
 
-The package is subject to ongoing testing. If you find a bug or a problem please send a report to <t.carruthers@oceans.ubc.ca> so that it can be fixed!  
+The package is subject to ongoing testing. If you find a bug or a problem please send a report to <tom@bluematterscience.com> so that it can be fixed!  
 
 <br clear="both"/>
 <br clear="both"/>

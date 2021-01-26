@@ -102,7 +102,7 @@ shinyUI(
       
       column(3,style="padding-top: 16px",
                
-          column(6,tags$a(img(src = "DLMtool.png", height = 45, width = 145),href="https://www.datalimitedtoolkit.org",target='_blank')),
+          column(6,tags$a(img(src = "openMSE.png", height = 45, width = 145),href="https://www.openmse.com",target='_blank')),
           column(6,tags$a(img(src = "MSC_logo.png", height = 50, width = 140),href="https://www.msc.org",target='_blank'))
               
       )
@@ -120,19 +120,19 @@ shinyUI(
       column(10,style="padding-left: 10px",
       
    
-   tags$head(tags$style(HTML("#Start { color:red; background-color: white; border-color: #347ab6; border-width:4px; margin-right:20px}"))),
+   #tags$head(tags$style(HTML("#Start { color:red; background-color: white; border-color: #347ab6; border-width:4px; margin-right:20px}"))),
    
-   div(style="display: inline-block;vertical-align:top",    
-       conditionalPanel('output.Start==0',style='width:77px',
-                        dropdownButton(inputId="Start",
-                          label ="START",
-                          icon = icon("play"),
-                          status = "primary",
-                          circle = FALSE,
-                          width="77px")
-                        ),
-       conditionalPanel('output.Start==1',style='width:77px')
-   ),  
+   #div(style="display: inline-block;vertical-align:top",    
+    #   conditionalPanel('output.Start==0',style='width:77px',
+     #                   dropdownButton(inputId="Start",
+      #                    label ="START",
+       #                   icon = icon("play"),
+        #                  status = "primary",
+         #                 circle = FALSE,
+          #                width="77px")
+           #             ),
+       #conditionalPanel('output.Start==1',style='width:77px')
+   #),  
    
     
 
@@ -168,7 +168,7 @@ shinyUI(
          ),
          
          column(12,tags$hr(style="margin-top: 3px; margin-bottom: 3px"), 
-                h5(tags$b("Load DLMtool and MSEtool source code",style="color:#347ab6")),
+                h5(tags$b("Load DLMtool/MSEtool source code",style="color:#347ab6")),
                 column(12,tipify(fileInput("Load_anything",label=NULL),title="Load custom management procedures, performance metrics and other DLMtool and MSEtool code"))
          ),
          
@@ -291,7 +291,7 @@ shinyUI(
                      column(6, checkboxInput("OM_C","Use conditioned OM for analyses",value=TRUE),style="height:75px"),
                      column(6,conditionalPanel("input.OM_C",selectInput("Cond_ops", label = h5("Conditioning Model"), choices=c("None"),selected="None")),style="height:75px"),
                      
-                     column(6,checkboxInput("C_eq",label="Assume equilibrium catches in conditioning",value=FALSE),style="height:75px"),
+                     column(6,checkboxInput("C_eq",label="Assume initial equilibrium catches in conditioning",value=FALSE),style="height:75px"),
                      column(6,conditionalPanel("input.C_eq",numericInput("C_eq_val",label=h5("Equilibrium catches"),value=0,min=0,max=Inf)),style="height:75px"),
                      
                      column(4,numericInput("ESS",label=h5("Maximum No. Ind. Comp."),100,min=5,max=Inf),style="height:75px"),
@@ -384,14 +384,14 @@ shinyUI(
           ),
           column(2),
           column(4,style="padding-top: 16px",
-                 column(6,tags$a(img(src = "DLMtool.png", height = 32, width = 105),href="https://www.datalimitedtoolkit.org",target='_blank')),
+                 column(6,tags$a(img(src = "openMSE.png", height = 32, width = 105),href="https://www.openmse.com",target='_blank')),
                  column(6,tags$a(img(src = "MSC_logo.png", height = 34, width = 100),href="https://www.msc.org",target='_blank'))
           )
         ),
         hr(),
         
         column(12,h5(tags$b("About",style="color:#347ab6")),
-          column(12,h5("MERA links a graphical questionnaire to the powerful DLMtool and MSEtool libraries to calculate population status and management performance. ",style = "color:grey")),
+          column(12,h5("MERA links a graphical questionnaire to the powerful openMSE libraries to calculate population status and management performance. ",style = "color:grey")),
           hr()
         ),
         
@@ -399,7 +399,7 @@ shinyUI(
                h5(tags$b("Manuals and Documentation",style="color:#347ab6")),
           column(12,h5("For further information visit the ", a("MERA website",href="https://merafish.org",target="blank"), " or check the ", a("manual.", href="https://dlmtool.github.io/DLMtool/MERA/MERA_User_Guide_v6.html", target="_blank"),style = "color:grey"),
           h5("The DLMtool paper is also available ", a("here.", href="https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13081", target="_blank"), style = "color:grey"),
-          h5("For technical questions or bug reports please contact ", a("t.carruthers@oceans.ubc.ca", href="mailto:t.carruthers@ubc.ca", target="_blank"),style = "color:grey"))
+          h5("For technical questions or bug reports please contact ", a("tom@bluematterscience.com", href="mailto:tom@bluematterscience.com", target="_blank"),style = "color:grey"))
           
         ),
         
@@ -475,27 +475,23 @@ shinyUI(
     ), # end of fluidrow =================================================================================================================================
     #tags$hr(style="margin-top: 2px; margin-bottom: 5px"),
     
-    conditionalPanel('output.Start==0', column(12,style="height:1000px; margin-top:15px; margin-left:-10px")),
-    conditionalPanel('output.Start==1',
+    #conditionalPanel('output.Start==0', column(12,style="height:1000px; margin-top:15px; margin-left:-10px")),
+    #conditionalPanel('output.Start==1',
                      
     fluidRow(
       column(12,style="height:20px; "),
-      column(1,style="height:40px; "),
-      column(10, style="height:40px; ",
+      column(12, style="height:40px; ",
  
         h4("1. CHARACTERIZE FISHERY SYSTEM",style='color:#347ab6'),
 
         HTML('<hr style="border-color: #347ab6;">')
-      ),
-      column(1)
+      )
+      
     ),
     
     fluidRow(  
-      column(1),
-      column(11,style="height:20px"),
-
-      column(1),
-      column(11,
+      
+      column(12,style="padding-top:30px;padding-left:50px;padding-right:50px;padding-bottom:30px;",
              fluidRow(
 
                column(width = 4, style="height:360px",
@@ -793,7 +789,7 @@ shinyUI(
                           column(12,
                             h5("Describe the fishery you are modelling and identify yourself and the relevant management agency.",style = "color:grey"),
                             h5("'Fishery start' specifies the first year of exploitation and 'End' is the last year for the operating model. If users upload data they must match these years.
-                               Uploaded data indexex after the End year will be used as indicator data in the Management Performance mode",style = "color:grey"),
+                               Uploaded data indexed after the 'End' year will be used as indicator data in the Management Performance mode",style = "color:grey"),
                             h5("To provide futher context for this analysis, please include additional introductory details or background references in the text box below.",style = "color:grey")
 
                       )),
@@ -1157,8 +1153,8 @@ shinyUI(
              )
         ),
 
-       column(1),
-       column(10,style="height:180px",
+       
+       column(12,style="height:180px;padding-top:30px;padding-left:50px;padding-right:50px;padding-bottom:30px;",
              fluidRow(
 
                column(width = 12,
@@ -1176,9 +1172,9 @@ shinyUI(
         ),
       
        
-        column(12,
+        column(12,style="padding-top:30px;padding-left:50px;padding-right:50px;padding-bottom:30px;",
           fluidRow(
-          column(1),
+         
           column(6,style="height:80px",
               fluidRow(
 
@@ -1226,423 +1222,343 @@ shinyUI(
         )
     ), # end of Step 1 fluid row
 
-       
-    HTML("<br>"),
-   
-    
     column(12,style="height:15px"),
-    
-    # =============== Risk Assessment ================================================================================================================================================
-    conditionalPanel(condition="input.Mode=='Risk Assessment'",
-                     column(12,style="height:15px"),
-                     fluidRow(
-                       column(1),
-                       column(10,
-                            h4("2. CALCULATE RISK OF STATUS QUO MANAGEMENT",style="color:#347ab6"),
-                     
-                            HTML('<hr style="border-color: #347ab6;">')
-                       )
-                     ),
-                     column(12,style="height:5px"),
-                     
-                     fluidRow(
-                       column(1),
-                       column(11,
-                              fluidRow(
-                                
-                                column(12,
-                                       
-                                       h5("Current fishing effort, current catches, FMSY fishing and zero catches are projected to evaluate status-quo fishery risk", style = "color:grey"),
-                                       
-                                       h5("A guide to the Risk Assessment mode can be found",a("here", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
-                                       
-                                )
-                              )
-                              
-                       )
-                     )
-                     
-    ),           
-    
- 
-    # =============== Status Determination ===========================================================================================================
-    
-    conditionalPanel(condition="input.Mode=='Status Determination'",
-       column(12,style="height:15px"),                
-       
-       fluidRow(
-         column(1),
-         column(10,
-                h4("2. CALCULATE POPULATION STATUS",style="color:#347ab6"),
-                
-                HTML('<hr style="border-color: #347ab6;">')
-         )
-       ),
-      
-       column(12,style="height:5px"),
-       
-       fluidRow(
-         column(1),
-         column(11,
-                column(4,
-                  
-                  conditionalPanel(condition="output.Data==0",
-                         HTML("<br>"),
-                         h5("To calculate stock status you must first load data (Data question 1)", style = "color:grey")
-                  )
-                ),
-                  
-                column(6,
-                         
-                         h5("Status determination mode automatically detects what data types are available and identifies those 
-                            status estimation models that are compatible. The model that uses the most data is selected by default. 
-                            The user can override this by selecting a particular model from the options menu. The models are named according to the data types detected: ", style = "color:grey"),
-                         h5("C: catch data (annual)", style = "color:grey"),
-                         h5("I: index of relative abundance (annual)", style = "color:grey"),
-                         h5("M: mean length of fish in the catch (annual)", style = "color:grey"),
-                         h5("L: length composition data (year by length class)", style = "color:grey"),
-                         h5("A: age composition data (year by age)", style = "color:grey"),
-                         h5("Approaches that use only catch data or length compositions assume a pattern in annual 
-                             fishing mortality rate defined by the annual fishing effort of Fishery
-                             Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey"),
-                         h5("For further information on the stock reduction analysis used to quantify population status see
-                            the", a(" detailed guide.", href="https://dlmtool.github.io/DLMtool/MERA/SRA_scope_vignette.html", 
-                                    target="_blank"),style = "color:grey")
-                  )
-                )
-           )
-     ),                 
-
+   
     # =============== Planning =======================================================================================================================================================          
     
     conditionalPanel(condition="input.Mode=='Management Planning'",
-       column(12,style="height:15px"), 
-       fluidRow(
-         column(1),
-         column(10,
-                h4("2. CALCULATE EXPECTED PERFORMANCE OF MANAGEMENT OPTIONS",style='color: #347ab6'),
-                
-                HTML('<hr style="border-color: #347ab6;">')
-         )
-       ),
-       column(12,style="height:15px"),
-       
-       fluidRow(
-         column(1),
-         column(11,
-                fluidRow(
-                  column(4,
-                          # column(6,numericInput("proyears", label = "Projected years", value=50,min=25,max=100)),
-                          # column(4,checkboxInput("Demo", label = "Demo mode", value=TRUE)),
-                      fluidRow( 
-                          column(12, selectInput("ManPlanMPsel","MPs for testing",  choices=c("DCAC","matlenlim","MRreal","curE75","IT10"),selected=c("DCAC","matlenlim","MRreal","curE75","IT10"), multiple = TRUE)),
-                          column(12, h5("Presets",style="font-weight:bold")),
-                          column(12, actionButton("DemoMPs", label = "Demo"),
-                                 actionButton("Top20MPs", label = "Top 20"),
-                                 actionButton("AllMPs", label = "All"),
-                                 actionButton("Status_Quo",label="Status quo")
-                          ),
-                          column(12, h5("Toggles",style="font-weight:bold")),
-                          column(12,style="padding-left:13px",
-                            actionButton("Ex_Ref_MPs", label = "Reference"),
-                            actionButton("Data_Rich", label = "Data-rich"),
-                            actionButton("StatusQuo_MPs", label = "Current"),
-                            actionButton("Clear_MPs", label = "Clear")
-                          )
-                      )
-                    ),
+      
+         column(12,style="padding-left:0px",
+            h4("2. CALCULATE EXPECTED PERFORMANCE OF MANAGEMENT OPTIONS",style='color: #347ab6'),
+            HTML('<hr style="border-color: #347ab6;">')
+         ),
+      
+         column(12,style="padding-top:15px;padding-left:10px;padding-right:30px;padding-bottom:70px;",
+               
+            column(4,
                   
-                  column(6,
-                         
-                         h5("Simulations can be run to test Multiple MPs over a certain number of projected years", style = "color:grey"),
-                         h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
-                         h5("- Top 20: MPs that generally perform well in many cases but may not be appropriate for your operating model", style = "color:grey"),
-                         h5("- All: an MSE is run for all available MPs (~100) which can take 20 minutes or more", style = "color:grey"),
-                         h5("- Status quo: an MSE is run for current catches and current fishing effort with FMSY fishing as a reference", style = "color:grey"),
-                         h5("Users may wish not to include reference MPs (Reference) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
-                         h5("In situations where operating models are built with more than 48 simulations it can be much faster to use parallel computing ('Parallel comp.)
-                             although the progress bar will not longer work ",style="color:grey"),
-                         h5("Documentation of the various MPs are linked in the results tables, above in the help menu or ",a("online", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
-                         
-                  )
-                )
-          )
-       )
-    ),                 
+              column(12, selectInput("ManPlanMPsel","MPs for testing",  choices=c("DCAC","matlenlim","MRreal","curE75","IT10"),selected=c("DCAC","matlenlim","MRreal","curE75","IT10"), multiple = TRUE)),
+              column(12, h5("Presets",style="font-weight:bold")),
+              column(12, actionButton("DemoMPs", label = "Demo"),
+                     actionButton("Top20MPs", label = "Top 20"),
+                     actionButton("AllMPs", label = "All"),
+                     actionButton("Status_Quo",label="Status quo")
+              ),
+              column(12, h5("Toggles",style="font-weight:bold")),
+              column(12,style="padding-left:13px",
+                actionButton("Ex_Ref_MPs", label = "Reference"),
+                actionButton("Data_Rich", label = "Data-rich"),
+                actionButton("StatusQuo_MPs", label = "Current"),
+                actionButton("Clear_MPs", label = "Clear")
+              )
+                
+              ),
+            
+            column(6,
+                   
+             h5("Simulations can be run to test Multiple MPs over a certain number of projected years", style = "color:grey"),
+             h5("- Demo: a small selection of fast-running MPs for MERA demonstration purposes only", style = "color:grey"),
+             h5("- Top 20: MPs that generally perform well in many cases but may not be appropriate for your operating model", style = "color:grey"),
+             h5("- All: an MSE is run for all available MPs (~100) which can take 20 minutes or more", style = "color:grey"),
+             h5("- Status quo: an MSE is run for current catches and current fishing effort with FMSY fishing as a reference", style = "color:grey"),
+             h5("Users may wish not to include reference MPs (Reference) that include perfect FMSY management and zero catches. Alternatively they may wish to test data-rich MPs that are slower to run", style = "color:grey"),
+             h5("In situations where operating models are built with more than 48 simulations it can be much faster to use parallel computing ('Parallel comp.)
+                 although the progress bar will not longer work ",style="color:grey"),
+             h5("Documentation of the various MPs are linked in the results tables, above in the help menu or ",a("online", href="https://dlmtool.github.io/DLMtool/reference/index.html", target="_blank"),style = "color:grey")
+             
+            ) # end of column 6
+        ) # end of column 12 
+    ),  # end of conditional panel              
 
     # ====================== Evaluation ========================================================================
 
     conditionalPanel(condition="input.Mode=='Management Performance'",
-      column(12,style="height:15px"),          
- 
-      fluidRow(
-        column(1),
-        column(10,
-               h4("2. MANAGEMENT PERFORMANCE",style='color:#347ab6'),
-               HTML('<hr style="border-color: #347ab6;">')
-        )
+      
+      column(12,style="padding-left:0px",
+         h4("2. MANAGEMENT PERFORMANCE",style='color:#347ab6'),
+         HTML('<hr style="border-color: #347ab6;">')
       ),
-     
-      fluidRow(
-        column(1),
-        column(11,#style="height:285px",
-      
-               fluidRow(
-      
-                 column(3,style="padding:7px;padding-left:14px",
-      
-                        conditionalPanel(condition="output.DataInd==0",
-                              h5("Data file must be loaded (Data question 1) that has indicator data", style = "color:grey")
-                        ),
-                        
-                        conditionalPanel(condition="output.DataInd==1",
-                            selectInput("sel_MP", label = h5("Selected MP"), choices=character(0),selected=character(0))
-                        )
-      
-                 ),
-                 column(1),
-                 column(6,style="padding:19px",
-                      h5("A data file can be loaded with indicator data for years after operating model conditioning (after LHYear)",style = "color:grey"),
-                      h5("These data can be compared against the future predicted data of the operating model and used to detect exceptional
-                           circumstances ",a("Carruthers and Hordyk (2018)", href="https://www.nrcresearchpress.com/doi/abs/10.1139/cjfas-2018-0223?journalCode=cjfas#.XZeG7kZKhPY", target="_blank"),style = "color:grey")
-                      #h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
-                 )
-             )
-        )
-      )
-    
-    ),
-    
-    # ====================================================================================================================================================================
-    
-    HTML("<br><br><br>"),
-    tags$style(HTML('#Calculate{ border-color: #347ab6;}')),
- 
-    column(1,style="background-color:white"),
-    
-    column(10,style = "background-color:#347ab6",
-      column(12,style = "background-color:#347ab6; height=2px"),
-      column(4),
-      column(4,
-          actionBttn("Calculate","CALCULATE",icon("cogs"),block=T, style="fill",color='danger',size='sm')
-      ),
-      column(4),
-      column(12,style = "background-color:#347ab6; height=2px")
-    ),
-    
-    HTML("<br><br><br>"),
-    # ====================================================================================================================================================================
-    
-    
-    column(12,style="height:15px"),
 
-       fluidRow(
+      column(12,style="padding-top:15px;padding-left:10px;padding-right:30px;padding-bottom:70px;",
+         column(3,
+
+            conditionalPanel(condition="output.DataInd==0",
+              h5("Data file must be loaded (Data question 1) that has indicator data", style = "color:grey")
+            ),
+            
+            conditionalPanel(condition="output.DataInd==1",
+              selectInput("sel_MP", label = h5("Selected MP"), choices=character(0),selected=character(0))
+            )
+
+         ),
          column(1),
-         column(10,
-                h4("RESULTS",style='color: #347ab6'),
-                
-                HTML('<hr style="border-color: #347ab6;">')
+         column(6,
+              h5("A data file can be loaded with indicator data for years after operating model conditioning (after LHYear)",style = "color:grey"),
+              h5("These data can be compared against the future predicted data of the operating model and used to detect exceptional
+                   circumstances ",a("Carruthers and Hordyk (2018)", href="https://www.nrcresearchpress.com/doi/abs/10.1139/cjfas-2018-0223?journalCode=cjfas#.XZeG7kZKhPY", target="_blank"),style = "color:grey")
+              #h5("Resolution refers to the size of time block over which the indicator is evaluated. For example, the default, 6 years, calculates slopes and means in quantities such as catch and abundance indices over the first 6 years (you need new data for at least this many years)",style = "color:grey")
          )
-       ),
+      ) # end of column 12
+     
+    ),
+    
+   
+   # =============== Status Determination ===========================================================================================================
+   
+   conditionalPanel(condition="input.Mode=='Status Determination'",
        
-
-        fluidRow(
-          column(1),
-          column(10,
-
-            fluidRow(
-              column(2,
-                conditionalPanel(width=4,condition="output.Plan==1|output.Eval==1",
-                  column(12,HTML("<br>")),
-                  h4("Options",style="font-weight:bold"),
-                  column(12,HTML("<br>")),
-                  #actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red")),
-                  #column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
-                  #column(12,HTML("<br>","<br>")),
-                  
-                  # --- Reporting Options ---------------------------------------------
-                  numericInput("burnin", label = "Burn-in years", value=10,min=5,max=20), # burnin- some initial spool up time period
-                  numericInput("YIU",label="Years in use",value=6,min=2,max=30),          # years in use - how long the MP has been used for   
-                  numericInput("res", label = "Reporting resolution", value=1,min=1,max=10), # resolution of reporting (years)
-                  # sliderInput("minProb", label = "Minimum Probability Limit", value=0.8,min=0, max=1, step=0.05), # minimum prob. limit to be considered acceptable (planning)
-                  #numericInput("ntop", label = "Number of top MPs to display", value=10,min=1,max=80),
-                  #checkboxInput("LTL", label = "Low Trophic Level PIs", value = FALSE),
-                  #column(12,conditionalPanel(condition="output.Data==1",checkboxInput("Fease", label = "Advanced data feasibility", value = FALSE))),
-                  column(12,HTML("<br>","<br>"))
-        
-                ), # end of app or eval control panel
-
-                conditionalPanel(width=4,condition="output.Ind==1&input.Res_Tab==3",
-                  #sliderInput("Ind_Res","Resolution (yrs)",min=3,max=15,value=3,step=1),
-                  sliderInput("Ind_Alpha","Type I error (Prob false positive rejection, alpha)",min=0.01,max=0.25,value=0.05,step=0.01)
-                ),# end of indicator control panel
-
-                conditionalPanel(condition="input.Mode=='Risk Assessment' & output.RA==0",
-                                 h5("Risk Assessment calculations have not been run yet",style = "color:grey")              
-                ),  
-                conditionalPanel(condition="input.Mode=='Status Determination' & output.SD==0",
-                                 h5("Status Determination calculation have not been run yet",style = "color:grey")              
-                ),   
-                conditionalPanel(condition="input.Mode=='Management Planning' & output.Plan==0",
-                                 h5("Management Planning calculations have not been run yet",style = "color:grey")              
-                ),   
-                conditionalPanel(condition="input.Mode=='Management Performance' & output.Eval==0",
-                                 h5("Management Performance calculations have not been run yet",style = "color:grey")              
-                )   
-                 
-              ),
-              column(9,
-              div(style='height:1000px; overflow-y: scroll; width: 110%', 
-                  
-                 conditionalPanel(condition="(input.Mode=='Management Planning' & output.Plan==1)|(input.Mode=='Management Performance'&output.Eval==1)|(input.Mode=='Risk Assessment'&output.RA==1)|(input.Mode=='Status Determination'&output.SD==1)",
-
-                    fluidRow(
-                      column(width = 12,
-                        
-                        HTML("<br>"),
-                       
-                        h4(htmlOutput("P_Intro_title"),style="font-weight:bold"),
-                        htmlOutput("P_Intro_text"),
-                       
-                        HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Tab_1_title"),style="font-weight:bold"),
-                        htmlOutput("P_Tab_1_text"),
-                        DT::dataTableOutput('P_Tab_1'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_1_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_1_text")),
-                        plotOutput("P_Fig_1",height="auto"),
-                        
-                        #HTML("<br>"),
-                       
-                        h4(htmlOutput("P_Tab_2_title"),style="font-weight:bold"),
-                        htmlOutput("P_Tab_2_text"),
-                        DT::dataTableOutput('P_Tab_2'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_2_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_2_text")),
-                        plotOutput("P_Fig_2",height="auto"),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Tab_3_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_3_text")),
-                        DT::dataTableOutput('P_Tab_3'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_3_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_3_text")),
-                        plotOutput("P_Fig_3",height="auto"),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Tab_4_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_4_text")),
-                        DT::dataTableOutput('P_Tab_4'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_4_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_4_text")),
-                        plotOutput("P_Fig_4",height="auto"),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Tab_5_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_5_text")),
-                        DT::dataTableOutput('P_Tab_5'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_5_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_5_text")),
-                        plotOutput("P_Fig_5",height="auto"),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Tab_6_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_6_text")),
-                        DT::dataTableOutput('P_Tab_6'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_6_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_6_text")),
-                        plotOutput("P_Fig_6",height="auto"),  
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Tab_7_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_7_text")),
-                        DT::dataTableOutput('P_Tab_7'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_7_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_7_text")),
-                        plotOutput("P_Fig_7",height="auto"), 
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Tab_8_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_8_text")),
-                        DT::dataTableOutput('P_Tab_8'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_8_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_8_text")),
-                        plotOutput("P_Fig_8",height="auto"), 
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Tab_9_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_9_text")),
-                        DT::dataTableOutput('P_Tab_9'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_9_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_9_text")),
-                        plotOutput("P_Fig_9",height="auto"),
-                        
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Tab_10_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Tab_10_text")),
-                        DT::dataTableOutput('P_Tab_10'),
-                        
-                        #HTML("<br>"),
-                        
-                        h4(htmlOutput("P_Fig_10_title"),style="font-weight:bold"),
-                        h5(htmlOutput("P_Fig_10_text")),
-                        plotOutput("P_Fig_10",height="auto")
-                        
+      column(12,style="padding-left:0px",
+         h4("2. CALCULATE POPULATION STATUS",style="color:#347ab6"),
          
-                      ) # column
-                    ) # fluid row
-                  ) # conditional panel
-              )# end of scrollable window
-              )# 9 column
-            ) # fluid row
+         HTML('<hr style="border-color: #347ab6;">')
+      ),
+      
+      column(12,style="padding-top:15px;padding-left:10px;padding-right:30px;padding-bottom:70px;",
+         column(4,
+        
+            conditionalPanel(condition="output.Data==0",
+               HTML("<br>"),
+               h5("To calculate stock status you must first load data (Data question 1)", style = "color:grey")
+            )
+         ),
+             
+         column(6,
+                
+            h5("Status determination mode automatically detects what data types are available and identifies those 
+                status estimation models that are compatible. The model that uses the most data is selected by default. 
+                The user can override this by selecting a particular model from the options menu. The models are named according to the data types detected: ", style = "color:grey"),
+            h5("C: catch data (annual)", style = "color:grey"),
+            h5("I: index of relative abundance (annual)", style = "color:grey"),
+            h5("M: mean length of fish in the catch (annual)", style = "color:grey"),
+            h5("L: length composition data (year by length class)", style = "color:grey"),
+            h5("A: age composition data (year by age)", style = "color:grey"),
+            h5("Approaches that use only catch data or length compositions assume a pattern in annual 
+                fishing mortality rate defined by the annual fishing effort of Fishery
+                Question 5 and the catchability changes of Fishery Question 7.", style = "color:grey"),
+            h5("For further information on the stock reduction analysis used to quantify population status see
+                the", a(" detailed guide.", href="https://dlmtool.github.io/DLMtool/MERA/SRA_scope_vignette.html", 
+                target="_blank"),style = "color:grey")
+            
+         ) # column 6
+     ) # column 12
+
+   ),   # conditional panel               
+   
+   
+    # === CALCULATION BUTTON ====================================================================================================================================================================
+    fluidRow(
+      tags$style(HTML('#Calculate{ border-color: #347ab6;}')),
+   
+      column(12,style = "background-color:#347ab6;", 
+        column(12,style = "background-color:#347ab6; height=2px"),
+        column(4),
+        column(4,
+            actionBttn("Calculate","CALCULATE",icon("cogs"),block=T, style="fill",color='danger',size='sm')
+        ),
+        column(4),
+        column(12,style = "background-color:#347ab6; height=2px")
+      ),
+   
+    ),
+    # === RESULTS ====================================================================================================================================================================
+    
+  # column(12,style="height:135px"),
+   
+   fluidRow(
+    
+    column(12, style="padding-top:40px",
+          h4("3. RESULTS",style='color: #347ab6'),
+          
+          HTML('<hr style="border-color: #347ab6;">')
+    ),
+   
+    column(12,
+
+            
+      conditionalPanel(width=4,condition="output.Plan==1000",#condition="output.Plan==1|output.Eval==1",
+        column(12,HTML("<br>")),
+        h4("Options",style="font-weight:bold"),
+        column(12,HTML("<br>")),
+        #actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red")),
+        #column(12,conditionalPanel(condition="output.Tweak==1",actionButton("Redo",h5(" REFRESH RESULTS ",style="color:red"))),style="height:45px"),
+        #column(12,HTML("<br>","<br>")),
+        
+        # --- Reporting Options ---------------------------------------------
+        numericInput("burnin", label = "Burn-in years", value=10,min=5,max=20), # burnin- some initial spool up time period
+        numericInput("YIU",label="Years in use",value=6,min=2,max=30),          # years in use - how long the MP has been used for   
+        numericInput("res", label = "Reporting resolution", value=1,min=1,max=10), # resolution of reporting (years)
+        # sliderInput("minProb", label = "Minimum Probability Limit", value=0.8,min=0, max=1, step=0.05), # minimum prob. limit to be considered acceptable (planning)
+        #numericInput("ntop", label = "Number of top MPs to display", value=10,min=1,max=80),
+        #checkboxInput("LTL", label = "Low Trophic Level PIs", value = FALSE),
+        #column(12,conditionalPanel(condition="output.Data==1",checkboxInput("Fease", label = "Advanced data feasibility", value = FALSE))),
+        column(12,HTML("<br>","<br>"))
+
+      ), # end of app or eval control panel
+
+      conditionalPanel(width=4,condition="output.Ind==1&input.Res_Tab==3",
+        #sliderInput("Ind_Res","Resolution (yrs)",min=3,max=15,value=3,step=1),
+        sliderInput("Ind_Alpha","Type I error (Prob false positive rejection, alpha)",min=0.01,max=0.25,value=0.05,step=0.01)
+      ),# end of indicator control panel
+
+      conditionalPanel(condition="input.Mode=='Management Planning' & output.Plan==0",
+                       h5("Management Planning calculations have not been run yet",style = "color:grey; padding-left:30px")              
+      ),   
+      conditionalPanel(condition="input.Mode=='Management Performance' & output.Eval==0",
+                       h5("Management Performance calculations have not been run yet",style = "color:grey; padding-left:30px")              
+      ), 
+      conditionalPanel(condition="input.Mode=='Status Determination' & output.SD==0",
+                       h5("Status Determination calculation have not been run yet",style = "color:grey; padding-left:30px")              
+      ),   
+    
+      div(style='height:1000px; overflow-y: scroll; width: 110%', 
+          
+         conditionalPanel(condition="(input.Mode=='Management Planning' & output.Plan==1)|(input.Mode=='Management Performance'&output.Eval==1)|(input.Mode=='Risk Assessment'&output.RA==1)|(input.Mode=='Status Determination'&output.SD==1)",
+          
+          column(width = 12,
+            
+            HTML("<br>"),
+           
+            h4(htmlOutput("P_Intro_title"),style="font-weight:bold"),
+            htmlOutput("P_Intro_text"),
+           
+            HTML("<br>"),
+            
+            h4(htmlOutput("P_Tab_1_title"),style="font-weight:bold"),
+            htmlOutput("P_Tab_1_text"),
+            DT::dataTableOutput('P_Tab_1'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_1_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_1_text")),
+            plotOutput("P_Fig_1",height="auto"),
+            
+            #HTML("<br>"),
+           
+            h4(htmlOutput("P_Tab_2_title"),style="font-weight:bold"),
+            htmlOutput("P_Tab_2_text"),
+            DT::dataTableOutput('P_Tab_2'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_2_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_2_text")),
+            plotOutput("P_Fig_2",height="auto"),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Tab_3_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Tab_3_text")),
+            DT::dataTableOutput('P_Tab_3'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_3_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_3_text")),
+            plotOutput("P_Fig_3",height="auto"),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Tab_4_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Tab_4_text")),
+            DT::dataTableOutput('P_Tab_4'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_4_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_4_text")),
+            plotOutput("P_Fig_4",height="auto"),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Tab_5_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Tab_5_text")),
+            DT::dataTableOutput('P_Tab_5'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_5_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_5_text")),
+            plotOutput("P_Fig_5",height="auto"),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Tab_6_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Tab_6_text")),
+            DT::dataTableOutput('P_Tab_6'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_6_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_6_text")),
+            plotOutput("P_Fig_6",height="auto"),  
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Tab_7_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Tab_7_text")),
+            DT::dataTableOutput('P_Tab_7'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_7_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_7_text")),
+            plotOutput("P_Fig_7",height="auto"), 
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Tab_8_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Tab_8_text")),
+            DT::dataTableOutput('P_Tab_8'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_8_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_8_text")),
+            plotOutput("P_Fig_8",height="auto"), 
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Tab_9_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Tab_9_text")),
+            DT::dataTableOutput('P_Tab_9'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_9_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_9_text")),
+            plotOutput("P_Fig_9",height="auto"),
+            
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Tab_10_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Tab_10_text")),
+            DT::dataTableOutput('P_Tab_10'),
+            
+            #HTML("<br>"),
+            
+            h4(htmlOutput("P_Fig_10_title"),style="font-weight:bold"),
+            h5(htmlOutput("P_Fig_10_text")),
+            plotOutput("P_Fig_10",height="auto")
+            
+
           ) # column
-      ) # end of Results
-      ), # start conditional panel
+           
+        ) # conditional panel
+      )# end of scrollable window
+    
+      ) # column
+      ), # end of Results
+      #), # start conditional panel
       column(12),
       hr(),
       column(12),
-      column(1),
-      column(10, verbatimTextOutput("Log",placeholder=T)), 
+      
+      column(12, verbatimTextOutput("Log",placeholder=T)), 
       bsTooltip("Log","Application Log"),       
       column(12,
-        column(1),
+        
         column(3,downloadButton("Download_Log","Download Log",style="height:28px"))
       ),
        column(12),
@@ -1655,7 +1571,7 @@ shinyUI(
 
     ) # end of fluid page
   
-  ) # end of server
+  ) # end of ui 
 
 
 

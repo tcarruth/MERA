@@ -79,7 +79,7 @@ Calc_Plan<-function(){
     AM("Starting MSE projections")
     withProgress(message = "Running Planning Analysis", value = 0, {
       silent=T
-      MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel,ntrials=1000,fracD=0.2)
+      MSEobj<<-runMSE(OM,MPs=MPs,silent=silent,parallel=parallel)
     })
     
     # if (input$Skin !="Train") { # don't run rebuild for Train skin
@@ -90,14 +90,14 @@ Calc_Plan<-function(){
     
     withProgress(message = "Rebuilding Analysis", value = 0, {
       if (!'NFref' %in% MPs) MPs <- c("NFref", MPs) # added this so I can calculate Tmin - rebuild time with no fishing - AH
-      MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,control=list(progress=T),parallel=parallel,ntrials=1000,fracD=0.2)
+      MSEobj_reb<<-runMSE(OM_reb,MPs=MPs,silent=silent,parallel=parallel)
     })
     
     MSEobj_reb@Misc[[4]]<<-SampList
     
     # ==== Types of reporting ==========================================================
-    #saveRDS(MSEobj,"C:/temp/MSEobj.rda") 
-    #saveRDS(MSEobj_reb,"C:/temp/MSEobj_reb.rda") 
+    #saveRDS(MSEobj,"C:/temp/MSEobj.rda")  #
+    #saveRDS(MSEobj_reb,"C:/temp/MSEobj_reb.rda")  #
     
     AM("preredoPlan")
     Plan(1)
@@ -116,64 +116,6 @@ Calc_Plan<-function(){
   )
 }
 
-
-
-Calc_RA<-function(){
-  Fpanel(1)
-  MPs<-c('curE','CurC','FMSYref','NFref')
-  nsim<-input$nsim
-  if(LoadOM()==1&input$OM_L){ 
-    OM<<-OM_L
-  }else{
-    if(MadeOM()==0)OM<<-makeOM(PanelState)
-  }
- 
-  MSClog<<-list(PanelState, Just, Des)
-  OM@interval<<-input$interval
-  
-  parallel=F
-  if(input$Parallel){
-    
-    if(nsim>47){
-      
-      parallel=T
-      setup(cpus=ncpus)
-      
-    }
-    
-  }
-  
-  Update_Options()
-  
-  tryCatch({
-    
-    withProgress(message = "Running Risk Assessment", value = 0, {
-      silent=T
-      RAobj<<-runMSE(OM,MPs=MPs,silent=silent,control=list(progress=T),PPD=T,parallel=parallel)
-    })
-    
-    RAobj@Misc[[4]]<<-SampList
-    
-    # ==== Types of reporting ==========================================================
-    RA(1)
-    message("preredoRA")
-    smartRedo()
-    message("postredoRA")
-    
-    #Tweak(0)
-    #updateTabsetPanel(session,"Res_Tab",selected="1")
-    
-  },
-  error = function(e){
-    AM(paste0(e,sep="\n"))
-    shinyalert("Computational error", "This probably occurred because your simulated conditions are not possible.
-                     For example a short lived stock a low stock depletion with recently declining effort.
-                    Try revising operating model parameters.", type = "info")
-    return(0)
-  }
-  
-  )
-}
 
 Calc_Perf<-function(){
   
@@ -211,10 +153,10 @@ Calc_Perf<-function(){
     withProgress(message = "Running Performance Evaluation", value = 0, {
         
       EvalMPs<-input$sel_MP
-      MSEobj_Eval<<-runMSE(OM,MPs=EvalMPs,silent=T,control=list(progress=T),PPD=T,parallel=parallel,ntrials=1000,fracD=0.2)
-      # saveRDS(MSEobj_Eval,"C:/temp/MSEobj_Eval.rda") #
-      # saveRDS(dat,"C:/temp/dat.rda") # 
-      # saveRDS(dat_ind,"C:/temp/dat_ind.rda") # 
+      MSEobj_Eval<<-runMSE(OM,MPs=EvalMPs,silent=T,parallel=parallel)
+       #saveRDS(MSEobj_Eval,"C:/temp/MSEobj_Eval.rda") # 
+       #saveRDS(dat,"C:/temp/dat.rda") #  
+       #saveRDS(dat_ind,"C:/temp/dat_ind.rda") # 
     })
     
     Eval(1)

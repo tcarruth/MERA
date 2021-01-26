@@ -26,7 +26,7 @@ BMSYproj<-function(MSEobj,MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.
   nr<-ceiling(nMPs/nc)
   par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
   
-  B_BMSY<-MSEobj@B_BMSY
+  B_BMSY<-MSEobj@SB_SBMSY
   Blims <- c(0,quantile(B_BMSY,0.95))
 
   for(i in 1:nMPs){
@@ -35,7 +35,7 @@ BMSYproj<-function(MSEobj,MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.
     mtext(MSEobj@MPs[i],3,line=0.2,font=2,col=MPcols[i])
     
     if(i==1){
-      Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
+      Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0#MSEobj_reb@SB_SBMSY[,1,1]#
       legend('topleft',legend=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" ),bty='n')
     }
     if(!is.na(vline))abline(v=yrs[vline],lwd=2)
@@ -78,7 +78,7 @@ B0proj<-function(MSEobj,MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95
     mtext(MSEobj@MPs[i],3,line=0.2,font=2,col=MPcols[i])
     
     if(i==1){
-      Bdeps<-MSEobj@OM$D#MSEobj_reb@B_BMSY[,1,1]#
+      Bdeps<-MSEobj@OM$D#MSEobj_reb@SB_SBMSY[,1,1]#
       legend('topleft',legend=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% unfished SSB" ),bty='n')
     }
     if(!is.na(vline))abline(v=yrs[vline],lwd=2)
@@ -127,8 +127,8 @@ LT_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=6,qcol=rgb(0.4,0.8,0.9
   
   par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
   
-  B_BMSY<-MSEobj_reb@B_BMSY
-  B_B0<-MSEobj_reb@B_BMSY*MSEobj_reb@OM$SSBMSY_SSB0 #<-MSEobj_reb@C/ array(rep(MSEobj_reb@C[,,1],MSEobj_reb@proyears),dim(MSEobj_reb@C))#MSEobj_reb@OM$RefY
+  B_BMSY<-MSEobj_reb@SB_SBMSY
+  B_B0<-MSEobj_reb@SB_SBMSY*MSEobj_reb@OM$SSBMSY_SSB0 #<-MSEobj_reb@C/ array(rep(MSEobj_reb@C[,,1],MSEobj_reb@proyears),dim(MSEobj_reb@C))#MSEobj_reb@OM$RefY
   
   Blims <- c(0,quantile(B_BMSY,0.95))
   B2lims<- c(0,quantile(B_B0,0.95))
@@ -140,7 +140,7 @@ LT_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=6,qcol=rgb(0.4,0.8,0.9
     mtext(MSEobj_reb@MPs[i],3,line=0.2,font=2,col=MPcols[i])
     
     if(i==1){
-      Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
+      Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@SB_SBMSY[,1,1]#
       legend('topleft',legend=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" ),bty='n')
     }
     
@@ -175,8 +175,8 @@ ST_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=6,qcol=rgb(0.4,0.8,0.9
   
   par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
   
-  B_BMSY<-MSEobj_reb@B_BMSY[,,1:20,drop=F]
-  B_B0<-MSEobj_reb@B_BMSY*MSEobj_reb@OM$SSBMSY_SSB0#<-MSEobj_reb@C/ array(rep(MSEobj_reb@C[,,1],MSEobj_reb@proyears),dim(MSEobj_reb@C))#MSEobj_reb@OM$RefY
+  B_BMSY<-MSEobj_reb@SB_SBMSY[,,1:20,drop=F]
+  B_B0<-MSEobj_reb@SB_SBMSY*MSEobj_reb@OM$SSBMSY_SSB0#<-MSEobj_reb@C/ array(rep(MSEobj_reb@C[,,1],MSEobj_reb@proyears),dim(MSEobj_reb@C))#MSEobj_reb@OM$RefY
   
   Blims <- c(0,quantile(B_BMSY,0.95))
  
@@ -193,7 +193,7 @@ ST_HCR<-function(MSEobj, MSEobj_reb,options=list(),maxcol=6,qcol=rgb(0.4,0.8,0.9
     mtext(MSEobj_reb@MPs[i],3,line=0.2,font=2,col=MPcols[i])
     
     if(i==1){
-      Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@B_BMSY[,1,1]#
+      Bdeps<-MSEobj_reb@OM$D/MSEobj_reb@OM$SSBMSY_SSB0#MSEobj_reb@SB_SBMSY[,1,1]#
       legend('topleft',legend=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" ),bty='n')
     }
     
@@ -215,43 +215,47 @@ CCU_plot<-function(MSEobj,MSEobj_reb,options=list(),maxrow=1,maxcol=3,fease=F){
     MPcols<-rep('black',MSEobj@nMPs)
   }
   
+  if(MSEobj@nsim>23){
   
-  #          F2   F3           F4     F5      F6      F7        F8       F9      F10         F11        F12    F13    F14       F15      F16      F17     F18      F19 
-  opt1<-  c("M",  "D", "hs",  "Ftype","Esd",  "qhssim", "qinc",  "L50",  "Sel50sim", "Vmaxlen", "DR",  "Fdisc", "procsd", "Ahsim", "Vhsim", "Asim", "Vsim", "initD",
-            "TACFrac", "TACSD", "TAEFrac","TAESD", "SizeLimFrac","SizeLimSD","Cbias","betas","RefY")
-  
-  MSEtemp<-MSEobj
-  if(length(MSEtemp@Misc)<4)MSEtemp@Misc[[4]]<-NULL
-  MSEtemp@OM<-cbind(MSEtemp@OM,betas=MSEtemp@Obs$betas,MSEtemp@Misc[[4]])
-  MSEtemp@OM<-MSEtemp@OM[,names(MSEtemp@OM)%in%opt1]
-  VOIout<-VOI(MSEtemp,ncomp=15,nbins=6,plot=F)[[1]]
-  
-              
-  qno<-   c("F2",       "F3",             "F4",       "F5",            "F6",         "F7",               "F8",                  "F9",                "F10",        "F11",      "F12",        "F13",              "F14",      "F15",            "F16",         "F17",         "F18",           "F19",
-            "M2",       "M3",          "M4",         "M5",     "M6",               "M7", "D2",    "D3")
-  qtext<- c("Longevity","Stock depletion","Steepness","Effort Pattern","Effort Var.","Hist. catchability","Future catchability","Length at Maturity","Selectivity","Dome Sel.","Discard rate","Post. Rel. Mort.","Rec. Var.","Hist. MPA size", "Hist. Mixing", "Future MPA", "Future Mixing", "Initial Dep.",
-            "TAC offset", "TAC Var.", "TAE offset", "TAE Var", "Size Lim. offset", "Size Lim. Var.", "Cat. Rep. Bias.","Hyperstability")
-  nMPs<-MSEobj@nMPs
-  
-  nrow=ceiling(nMPs/maxcol)
-  par(mfrow=c(max(maxrow,nrow),maxcol),mai=c(2.4,0.4,0.2,0.01),omi=c(0.3,0.3,0.05,0.01))
-  
-  for(i in 1:MSEobj@nMPs){
+    #          F2   F3           F4     F5      F6      F7        F8       F9      F10         F11        F12    F13    F14       F15      F16      F17     F18      F19 
+    opt1<-  c("M",  "D", "hs",  "Ftype","Esd",  "qhssim", "qinc",  "L50",  "Sel50sim", "Vmaxlen", "DR",  "Fdisc", "procsd", "Ahsim", "Vhsim", "Asim", "Vsim", "initD",
+              "TACFrac", "TACSD", "TAEFrac","TAESD", "SizeLimFrac","SizeLimSD","Cbias","betas","RefY")
     
-    MP<-MSEobj@MPs[i]
-    dat<-VOIout[match(MP,VOIout[,1])+0:1,2:16]
-    lab1<-qno[match(as.factor(unlist(dat[1,])),opt1)]
-    dat2<-aggregate(as.numeric(as.character(unlist(dat[2,]))),by=list(lab1),max)
-    dat2<-dat2[order(dat2$x,decreasing=T),]
-    labs<-paste(qno,qtext,sep=" - ")
+    MSEtemp<-MSEobj
+    MSEtemp@OM<-cbind(MSEtemp@OM,betas=MSEtemp@Obs$betas,MSEtemp@Misc[[4]])
+    MSEtemp@OM<-MSEtemp@OM[,names(MSEtemp@OM)%in%opt1]
+    VOIout<-VOI(MSEtemp,ncomp=15,nbins=6,plot=F)[[1]]
     
-    barplot(dat2[,2],names.arg=labs[match(dat2[,1],qno)], las=2,col=rgb(0.4,0.8,0.95),border=NA,cex.axis=1.4,cex.names=1.3)
-    mtext(MP,3,adj=0.8,font=2,cex=1,col=MPcols[i])
+                
+    qno<-   c("F2",       "F3",             "F4",       "F5",            "F6",         "F7",               "F8",                  "F9",                "F10",        "F11",      "F12",        "F13",              "F14",      "F15",            "F16",         "F17",         "F18",           "F19",
+              "M2",       "M3",          "M4",         "M5",     "M6",               "M7", "D2",    "D3")
+    qtext<- c("Longevity","Stock depletion","Steepness","Effort Pattern","Effort Var.","Hist. catchability","Future catchability","Length at Maturity","Selectivity","Dome Sel.","Discard rate","Post. Rel. Mort.","Rec. Var.","Hist. MPA size", "Hist. Mixing", "Future MPA", "Future Mixing", "Initial Dep.",
+              "TAC offset", "TAC Var.", "TAE offset", "TAE Var", "Size Lim. offset", "Size Lim. Var.", "Cat. Rep. Bias.","Hyperstability")
+    nMPs<-MSEobj@nMPs
     
-  }
+    nrow=ceiling(nMPs/maxcol)
+    par(mfrow=c(max(maxrow,nrow),maxcol),mai=c(2.4,0.4,0.2,0.01),omi=c(0.3,0.3,0.05,0.01))
+    
+    for(i in 1:MSEobj@nMPs){
+      
+      MP<-MSEobj@MPs[i]
+      dat<-VOIout[match(MP,VOIout[,1])+0:1,2:16]
+      lab1<-qno[match(as.factor(unlist(dat[1,])),opt1)]
+      dat2<-aggregate(as.numeric(as.character(unlist(dat[2,]))),by=list(lab1),max)
+      dat2<-dat2[order(dat2$x,decreasing=T),]
+      labs<-paste(qno,qtext,sep=" - ")
+      
+      barplot(dat2[,2],names.arg=labs[match(dat2[,1],qno)], las=2,col=rgb(0.4,0.8,0.95),border=NA,cex.axis=1.4,cex.names=1.3)
+      mtext(MP,3,adj=0.8,font=2,cex=1,col=MPcols[i])
+      
+    }
   
-  mtext("Question / operating model characteristic",1,outer=T,line=0.5)
-  mtext("Variability in Long Term Yield (% LTY)",2,outer=T,line=0.5)
+    mtext("Question / operating model characteristic",1,outer=T,line=0.5)
+    mtext("Variability in Long Term Yield (% LTY)",2,outer=T,line=0.5)
+  }else{
+    plot(1,axes=F,col="white",xlab="",ylab="")
+    legend('center',legend='< Requires at least 24 simulations >',bty="n",text.col="dark grey")
+  }  
   
 }
 
@@ -334,7 +338,7 @@ Yproj<-function(MSEobj,MSEobj_reb,options=list(),maxcol=5,qcol=rgb(0.4,0.8,0.95)
   nr<-ceiling(nMPs/nc)
   par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.2,0.01),omi=c(0.5,0.5,0.05,0.05))
   
-  Yd<-MSEobj@C/ array(rep(MSEobj@C[,,1],MSEobj@proyears),dim(MSEobj@C))#MSEobj@OM$RefY
+  Yd<-MSEobj@Catch/ array(rep(MSEobj@Catch[,,1],MSEobj@proyears),dim(MSEobj@Catch))#MSEobj@OM$RefY
   #Yd[is.na(Yd)]<-0
   Yd[Yd==Inf]<-NA
   Yd[Yd==NaN]<-NA
@@ -398,7 +402,7 @@ PB100<<-function (MSEobj = NULL, Ref = 1, Yrs = -5)
                             Yrs[1], ")")
   }
   PMobj@Ref <- Ref
-  PMobj@Stat <- MSEobj@B_BMSY[, , Yrs[2]]
+  PMobj@Stat <- MSEobj@SB_SBMSY[, , Yrs[2]]
   PMobj@Prob <- calcProb(PMobj@Stat > PMobj@Ref, MSEobj)
   PMobj@Mean <- calcMean(PMobj@Prob)
   PMobj@MPs <- MSEobj@MPs
@@ -420,7 +424,7 @@ PB50<<-function (MSEobj = NULL, Ref = 0.5, Yrs = -5)
                             Yrs[1], ")")
   }
   PMobj@Ref <- Ref
-  PMobj@Stat <- MSEobj@B_BMSY[, , Yrs[2]]
+  PMobj@Stat <- MSEobj@SB_SBMSY[, , Yrs[2]]
   PMobj@Prob <- calcProb(PMobj@Stat > PMobj@Ref, MSEobj)
   PMobj@Mean <- calcMean(PMobj@Prob)
   PMobj@MPs <- MSEobj@MPs
@@ -443,8 +447,8 @@ LTY2<<-function (MSEobj = NULL, Ref = 0.5, Yrs = -5)
     PMobj@Caption <- paste0("Prob. Yield > Ref. Yield (Years ", 
                             Yrs[1], "-", Yrs[2], ")")
   }
-  RefYd <- array(MSEobj@OM$RefY, dim = dim(MSEobj@C[, , Yrs[1]:Yrs[2]]))
-  PMobj@Stat <- MSEobj@C[, , Yrs[1]:Yrs[2]]/RefYd
+  RefYd <- array(MSEobj@OM$RefY, dim = dim(MSEobj@Catch[, , Yrs[1]:Yrs[2]]))
+  PMobj@Stat <- MSEobj@Catch[, , Yrs[1]:Yrs[2]]/RefYd
   PMobj@Ref <- 0.5
   PMobj@Prob <- calcProb(PMobj@Stat > PMobj@Ref, MSEobj)
   PMobj@Mean <- calcMean(PMobj@Prob)
@@ -472,7 +476,7 @@ FeaseLabs<-function(MPs,dat=NULL){
     DFeasible<-FeaseMPs # these are calculated when data are loaded
   }
 
-  tempdat0<-DLMtool::SimulatedData
+  tempdat0<-MSEtool::SimulatedData
   tempdat0@Misc<-rep(list(0),2)
   tempdat0@AddInd<-array(NA,c(dim(tempdat0@Ind)[1],5,dim(tempdat0@Ind)[2]))
   for(i in 1:5)tempdat0@AddInd[,i,]<-tempdat0@Ind
@@ -578,12 +582,12 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
     ind<-1+(0:1000*options$res)
     ind<-ind[ind<=proyears]
     
-    LRP<-round(apply(MSEobj@B_BMSY>0.5,2:3,mean)*100,rnd)[,ind]
+    LRP<-round(apply(MSEobj@SB_SBMSY>0.5,2:3,mean)*100,rnd)[,ind]
     Tab1<-as.data.frame(cbind(c("Current effort", "Current catches", "FMSY fishing", "Zero fishing"),LRP),stringsAsFactors = F)
     for(i in 2:ncol(Tab1))Tab1[,i]<-as.numeric(Tab1[,i])
     colnams<-c("MP",ind+Current_Year)
     names(Tab1)<-colnams
-    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@SB_SBMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
     datatable(Tab1,caption=caption,
               extensions = 'Buttons',
@@ -609,12 +613,12 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
     ind<-1+(0:1000*options$res)
     ind<-ind[ind<=proyears]
     
-    TRP<-round(apply(MSEobj@B_BMSY>1,2:3,mean)*100,rnd)[,ind]
+    TRP<-round(apply(MSEobj@SB_SBMSY>1,2:3,mean)*100,rnd)[,ind]
     Tab1<-as.data.frame(cbind(c("Current effort", "Current catches", "FMSY fishing", "Zero fishing"),TRP),stringsAsFactors = F)
     for(i in 2:ncol(Tab1)) Tab1[,i]<-as.numeric(Tab1[,i])
     colnams<-c("MP",ind+Current_Year)
     names(Tab1)<-colnams
-    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@SB_SBMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
     datatable(Tab1,caption=caption,
               extensions = 'Buttons',
@@ -730,8 +734,8 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   
   
   # --- Figures --- 
-  Fig_title[[1]] <- "Figure 1. Depletion estimates (SSB relative to unfished)"
-  Fig_text[[1]] <-"The median, interquartile range and 95% interval of stock depletion estimated by various methods."
+  Fig_title[[1]] <- "Figure 1. Estimated depletion (SSB relative to unfished) expressed as a percentage"
+  Fig_text[[1]] <-"The median, interquartile range and 95% interval of estimated spawning stock depletion."
   
   Figs[[1]]<-function(Status,options=list()){
     
@@ -754,8 +758,7 @@ plotInd<-function(MSEobj_Eval,dat,dat_ind,pCC=TRUE){
   Fig_dim[[1]]<-function(dims)list(height=500,width=400)
   
   Fig_title[[2]] <- "Figure 2. Spawning stock depletion relative to equilibrium SSB in initial year "
-  Fig_text[[2]] <-"The first panel shows median estimated depletion trend for all status determination methods. 
-Subsequent panels show the 90th (light blue), 50th (dark blue) and median estimates (white line) for each status determination method. "
+  Fig_text[[2]] <-"Estimated spawning stock depletion trend. Plotted are the 90th (light blue), 50th (dark blue) and median estimates (white line)."
   
   Figs[[2]]<-function(Status,options=list()){
     
@@ -781,7 +784,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     
     deps<-lapply(Status$Fit,procdeps) # ntot matrices of depletion (nsim x nyears)
     
-    getquants<-function(x)  apply(x,2,quantile,p=c(0.05,0.25,0.5,0.75,0.95))
+    getquants<-function(x)  apply(x,2,quantile,p=c(0.05,0.25,0.5,0.75,0.95),na.rm=T)
     Dqs<-lapply(deps,getquants)
     meds<-matrix(unlist(lapply(Dqs,function(x)x[3,])),ncol=ntot)[,keep,drop=F]
     ny<-nrow(meds)
@@ -848,7 +851,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     ind<-1+(0:1000*options$res)
     ind<-ind[ind<=min(burnin,proyears)]
     
-    LRP<-round(apply(MSEobj@B_BMSY[,,1:burnin,drop=FALSE]>0.5,2:3,mean)*100,rnd)#[,ind]
+    LRP<-round(apply(MSEobj@SB_SBMSY[,,1:burnin,drop=FALSE]>0.5,2:3,mean)*100,rnd)#[,ind]
     
     FT<<-FeaseLabs(MPs=MSEobj@MPs,dat=dat)
     MPcols<<-FT$MPcols  # just do FeaseLabs once or else this computationally costly code has to be reused
@@ -867,7 +870,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     MPwithurl <- !is.na(URLs) 
     Tab1$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab1$MP[MPwithurl],"</a>")
     
-    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@SB_SBMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
     datatable(Tab1,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                    options=list(buttons = 
@@ -897,7 +900,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     ind<-1+(0:1000*options$res)
     ind<-ind[ind<=min(burnin,proyears)]
     
-    TRP<-round(apply(MSEobj@B_BMSY[,,1:burnin,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind]
+    TRP<-round(apply(MSEobj@SB_SBMSY[,,1:burnin,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind]
     #FT<-FeaseLabs(MPs=MSEobj@MPs,dat=NA)
     if(MSEobj@nMPs==1){
       temp<-c(MSEobj@MPs, FT$MP_Type, FT$feasible, TRP)
@@ -913,7 +916,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     MPwithurl <- !is.na(URLs) 
     Tab1$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab1$MP[MPwithurl],"</a>")
     
-    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj@OM$D/MSEobj@OM$SSBMSY_SSB0 #MSEobj_reb@SB_SBMSY[,1,1]#
     caption=paste0("Starting between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
     datatable(Tab1,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
               options=list(buttons = 
@@ -1009,7 +1012,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     proyears<-MSEobj_Eval@proyears
     ind<-1:min(YIU,proyears)
     
-    LRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,1:YIU,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
+    LRP<-matrix(round(apply(MSEobj_Eval@SB_SBMSY[,,1:YIU,drop=FALSE]>0.5,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
     Tab1<-as.data.frame(cbind(MSEobj_Eval@MPs,LRP))
    
     colnams<-c("MP",max(dat@Year)+(1:YIU))
@@ -1021,7 +1024,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     Tab1$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab1$MP[MPwithurl],"</a>")
     
     
-    Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@SB_SBMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
     datatable(Tab1,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
               options=list(buttons = 
@@ -1048,7 +1051,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     proyears<-MSEobj_Eval@proyears
     ind<-1:min(YIU,proyears)
     
-    TRP<-matrix(round(apply(MSEobj_Eval@B_BMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
+    TRP<-matrix(round(apply(MSEobj_Eval@SB_SBMSY[,,ind,drop=FALSE]>1,2:3,mean)*100,rnd)[,ind],nrow=nMPs)
     Tab2<-as.data.frame(cbind(MSEobj_Eval@MPs,TRP))
     colnams<-c("MP",max(dat@Year)+(1:YIU))
     names(Tab2)<-colnams
@@ -1058,7 +1061,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     MPwithurl <- !is.na(URLs) 
     Tab2$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab2$MP[MPwithurl],"</a>")
     
-    Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj_Eval@OM$D/MSEobj_Eval@OM$SSBMSY_SSB0 #MSEobj_reb@SB_SBMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% BMSY" )
     datatable(Tab2,caption=caption, extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                    options=list(buttons = 
@@ -1095,7 +1098,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
     MPwithurl <- !is.na(URLs) 
     Tab3$MP[MPwithurl] <- paste0("<a href='", URLs[MPwithurl]," ' target='_blank'>", Tab3$MP[MPwithurl],"</a>")
     
-    Bdeps<-MSEobj_Eval@OM$D#MSEobj_reb@B_BMSY[,1,1]#
+    Bdeps<-MSEobj_Eval@OM$D#MSEobj_reb@SB_SBMSY[,1,1]#
     caption=paste0("Simulations start between ",round(min(Bdeps)*100,0), "% and ", round(max(Bdeps)*100,0), "% of unfished SSB" )
     datatable(Tab3,caption=caption,extensions = 'Buttons',class = 'display',rownames=FALSE,escape=FALSE,
                 options=list(buttons = 
@@ -1127,7 +1130,7 @@ Subsequent panels show the 90th (light blue), 50th (dark blue) and median estima
   Fig_dim[[3]] <- function(dims)list(height=420,width=600)
  
   Fig_title[[4]] <- "Figure 3. Posterior predicted data versus those observed"
-  Fig_text[[4]] <- "The 'cloud' of posterior predicted data are represented by the grey shaded areas that"
+  Fig_text[[4]] <- "The 'cloud' of posterior predicted data are represented by the grey shaded areas. Points are observed data since an MP has been in use and are color-coded according to their agreement with posterior predictions."
   
   Figs[[4]]<-  function(MSEobj_Eval,dat,dat_ind,options=list())post_marg_plot(MSEobj_Eval,dat,dat_ind,options=list())
   Fig_dim[[4]] <- function(dims)list(height=800,width=800)
